@@ -1,1 +1,1 @@
-# hector2
+# Hector v2
