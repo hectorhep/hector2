@@ -3,7 +3,7 @@
 
 namespace Element
 {
-  class Quadrupole
+  class Quadrupole : public ElementBase
   {
     public:
       Quadrupole();
