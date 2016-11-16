@@ -15,7 +15,6 @@ namespace Element
         Marker, Drift, Monitor,
         RectangularDipole, SectorDipole,
         Quadrupole, Sextupole, Multipole,
-        //VerticalQuadrupole, HorizontalQuadrupole,
         VerticalKicker, HorizontalKicker,
         RectangularCollimator, EllipticalCollimator, CircularCollimator,
         //RomanPot, InteractionPoint,
@@ -61,6 +60,26 @@ namespace Element
       /// Magnetic field strength
       float magneticStrength() const { return magnetic_strength_; }
 
+      void setBetaX( float bx ) { beta_x_ = bx; }
+      float betaX() const { return beta_x_; }
+
+      void setBetaY( float by ) { beta_y_ = by; }
+      float betaY() const { return beta_y_; }
+
+      void setDX( float dx ) { disp_x_ = dx; }
+      /// Horizontal dispersion
+      float DX() const { return disp_x_; }
+
+      void setDY( float dy ) { disp_y_ = dy; }
+      /// Vertical dispersion
+      float DY() const { return disp_y_; }
+
+      void setRelX( float relx ) { rel_x_ = relx; };
+      float relX() const { return rel_x_; }
+
+      void setRelY( float rely ) { rel_y_ = rely; };
+      float relY() const { return rel_y_; }
+
       CLHEP::HepMatrix matrix() const { return matrix_; }
 
       void setAperture( const ApertureBase* apert ) { aperture_ = apert->clone(); }
@@ -78,6 +97,10 @@ namespace Element
       float s_;
 
       float tx_, ty_;
+
+      float beta_x_, beta_y_;
+      float disp_x_, disp_y_;
+      float rel_x_, rel_y_;
 
       CLHEP::HepMatrix matrix_;
   };

@@ -13,6 +13,24 @@ namespace Element
 
     protected:
   };
+
+  class RectangularDipole : public Dipole
+  {
+    public:
+      RectangularDipole( const std::string& name ) : Dipole( ElementBase::RectangularDipole, name ) {;}
+      ~RectangularDipole() {;}
+
+    private:
+  };
+
+  class SectorDipole : public Dipole
+  {
+    public:
+      SectorDipole( const std::string& name ) : Dipole( ElementBase::SectorDipole, name ) {;}
+      ~SectorDipole() {;}
+
+    private:
+  };
 }
 
 #endif

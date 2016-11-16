@@ -1,10 +1,10 @@
-#include "MadXparser.h"
+#include "MADXParser.h"
 
 namespace Parser
 {
-  std::regex MadX::rgx_str_( "^\\%[0-9]?[0-9]?s$" );
+  std::regex MADX::rgx_str_( "^\\%[0-9]?[0-9]?s$" );
 
-  MadX::MadX( const char* filename, int direction ) :
+  MADX::MADX( const char* filename, int direction, float max_s ) :
     dir_( direction/abs( direction ) )
   {
     in_file_ = std::ifstream( filename );
@@ -14,7 +14,8 @@ namespace Parser
 
       header_float_.dump();
 
-      if ( header_float_.hasKey( "length" ) ) beamline_.setLength( header_float_.get( "length" ) );
+      beamline_.setLength( max_s );
+      if ( max_s<0. and header_float_.hasKey( "length" ) ) beamline_.setLength( header_float_.get( "length" ) );
 
       parseElementsFields();
       parseElements();
@@ -28,13 +29,13 @@ namespace Parser
     //header_str_.dump();
   }
 
-  MadX::~MadX()
+  MADX::~MADX()
   {
     if ( in_file_.is_open() ) in_file_.close();
   }
 
   void
-  MadX::parseHeader()
+  MADX::parseHeader()
   {
     std::string line;
     while ( !in_file_.eof() ) {
@@ -62,7 +63,7 @@ namespace Parser
   }
 
   void
-  MadX::parseElementsFields()
+  MADX::parseElementsFields()
   {
     std::string line;
 
@@ -127,12 +128,17 @@ namespace Parser
   }
 
   void
-  MadX::parseElements()
+  MADX::parseElements()
   {
     // parse the optics elements and their characteristics
     std::string line;
 
     in_file_.seekg( in_file_lastline_ );
+
+    // quantities needed whenever direction == 1 (FIXME)
+    float previous_x( 0. ), previous_y( 0. ),
+          previous_dx( 0. ), previous_dy( 0. ),
+          previous_betax( 0. ), previous_betay( 0. );
 
     while ( !in_file_.eof() ) {
       std::getline( in_file_, line );
@@ -178,6 +184,8 @@ namespace Parser
           lowercase( trim( elem_map_str.get( "keyword" ) ) )
         );
 
+        std::cout << name << " ===> " << elemtype << std::endl;
+
         const float s = elem_map_floats.get( "s" ),
                     length = elem_map_floats.get( "l" );
 
@@ -216,8 +224,18 @@ namespace Parser
             beamline_.addElement( &dip );
           } break;
           case Element::ElementBase::HorizontalKicker: {
+            Element::HorizontalKicker kck( name );
+            kck.setS( s );
+            kck.setLength( length );
+            kck.setMagneticStrength( elem_map_floats.get( "hkick" ) );
+            beamline_.addElement( &kck );
           } break;
           case Element::ElementBase::VerticalKicker: {
+            Element::VerticalKicker kck( name );
+            kck.setS( s );
+            kck.setLength( length );
+            kck.setMagneticStrength( elem_map_floats.get( "vkick" ) );
+            beamline_.addElement( &kck );
           } break;
           case Element::ElementBase::RectangularCollimator: {
             Element::RectangularCollimator col( name );
@@ -230,6 +248,13 @@ namespace Parser
             dr.setS( s );
             dr.setLength( length );
             beamline_.addElement( &dr );
+
+            previous_x = elem_map_floats.get( "x" );
+            previous_y = elem_map_floats.get( "y" );
+            previous_dx = elem_map_floats.get( "dx" );
+            previous_dy = elem_map_floats.get( "dy" );
+            previous_betax = elem_map_floats.get( "betx" );
+            previous_betax = elem_map_floats.get( "bety" );
           } break;
           default: break;
         }
@@ -237,15 +262,32 @@ namespace Parser
         Element::ElementBase* elem = beamline_.getElement( name );
         if ( !elem ) continue; // beamline element was not found
 
+        if ( dir_<0 ) {
+          elem->setRelX( elem_map_floats.get( "x" ) );
+          elem->setRelY( elem_map_floats.get( "y" ) );
+          elem->setDX( elem_map_floats.get( "dx" ) );
+          elem->setDY( elem_map_floats.get( "dy" ) );
+          elem->setBetaX( elem_map_floats.get( "betx" ) );
+          elem->setBetaY( elem_map_floats.get( "bety" ) );
+        }
+        else {
+          elem->setRelX( previous_x );
+          elem->setRelY( previous_y );
+          elem->setDX( previous_dx );
+          elem->setDY( previous_dy );
+          elem->setBetaX( previous_betax );
+          elem->setBetaY( previous_betay );
+        }
+
         // associate the aperture type to the element
         const Element::ApertureBase::Type apertype = Element::Dictionary::get()->apertureType(
           lowercase( trim( elem_map_str.get( "apertype" ) ) )
         );
         Element::ApertureBase* aperture = 0;
-        const float aper_1 = elem_map_floats.get( "aper_1" ),
-                    aper_2 = elem_map_floats.get( "aper_2" ),
-                    aper_3 = elem_map_floats.get( "aper_3" ),
-                    aper_4 = elem_map_floats.get( "aper_4" );
+        const float aper_1 = elem_map_floats.get( "aper_1" )*1.e6,
+                    aper_2 = elem_map_floats.get( "aper_2" )*1.e6,
+                    aper_3 = elem_map_floats.get( "aper_3" )*1.e6,
+                    aper_4 = elem_map_floats.get( "aper_4" )*1.e6; // rad -> urad
         switch ( apertype ) {
           case Element::ApertureBase::RectElliptic: aperture = new Element::RectEllipticAperture( aper_1, aper_2, aper_3, aper_4 ); break;
           case Element::ApertureBase::Circular:     aperture = new Element::CircularAperture( aper_1 ); break;
@@ -264,13 +306,13 @@ namespace Parser
   }
 
   std::ostream&
-  operator<<( std::ostream& os, const Parser::MadX::ValueType& type )
+  operator<<( std::ostream& os, const Parser::MADX::ValueType& type )
   {
     switch ( type ) {
-      case Parser::MadX::Unknown: os << "unknown"; break;
-      case Parser::MadX::String: os << "string"; break;
-      case Parser::MadX::Float: os << "float"; break;
-      case Parser::MadX::Integer: os << "integer"; break;
+      case Parser::MADX::Unknown: os << "unknown"; break;
+      case Parser::MADX::String: os << "string"; break;
+      case Parser::MADX::Float: os << "float"; break;
+      case Parser::MADX::Integer: os << "integer"; break;
     }
     return os;
   }

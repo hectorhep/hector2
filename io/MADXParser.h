@@ -1,15 +1,14 @@
-#ifndef MadXparser_h
-#define MadXparser_h
+#ifndef MADXParser_h
+#define MADXParser_h
 
 #include "beamline/Beamline.h"
 
 #include "elements/ElementDict.h"
 
-#include "elements/HorizontalQuadrupole.h"
-#include "elements/VerticalQuadrupole.h"
-#include "elements/RectangularDipole.h"
-#include "elements/SectorDipole.h"
+#include "elements/Quadrupole.h"
+#include "elements/Dipole.h"
 #include "elements/RectangularCollimator.h"
+#include "elements/Kicker.h"
 
 #include "elements/EllipticAperture.h"
 #include "elements/CircularAperture.h"
@@ -28,11 +27,11 @@ using std::ostream;
 
 namespace Parser
 {
-  class MadX
+  class MADX
   {
     public:
-      MadX( const char*, int );
-      ~MadX();
+      MADX( const char*, int, float max_s=-1. );
+      ~MADX();
 
       Beamline beamline() const { return beamline_; }
 

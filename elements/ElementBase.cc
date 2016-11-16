@@ -54,7 +54,7 @@ namespace Element
   std::ostream&
   operator<<( std::ostream& os, const ElementBase& elem )
   {
-    os << "Element (" << elem.type() << ") at s=" << elem.s();
+    os << elem.name() << " (" << elem.type() << ") at s=" << elem.s() << " m";
     return os;
   }
 

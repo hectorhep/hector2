@@ -16,7 +16,8 @@ Beamline::addElement( const Element::ElementBase* elem )
 {
   const float new_size = elem->s()+elem->length();
   if ( new_size>length_ ) {
-    throw Exception( __PRETTY_FUNCTION__, Form( "Element %s is too far away for this beamline!\n\tBeamline length: %.3f m, this element: %.3f m", elem->name(), length_, new_size ), Fatal );
+    if ( length_<0. ) throw Exception( __PRETTY_FUNCTION__, Form( "Element %s is too far away for this beamline!\n\tBeamline length: %.3f m, this element: %.3f m", elem->name().c_str(), length_, new_size ), Fatal );
+    return;
   }
 
   elements_.push_back( elem->clone() );

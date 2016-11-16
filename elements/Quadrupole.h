@@ -13,6 +13,24 @@ namespace Element
 
     protected:
   };
+
+  class HorizontalQuadrupole : public Quadrupole
+  {
+    public:
+      HorizontalQuadrupole( const std::string& name ) : Quadrupole( name ) {;}
+      ~HorizontalQuadrupole() {;}
+
+    private:
+  };
+
+  class VerticalQuadrupole : public Quadrupole
+  {
+    public:
+      VerticalQuadrupole( const std::string& name ) : Quadrupole( name ) {;}
+      ~VerticalQuadrupole() {;}
+
+    private:
+  };
 }
 
 #endif
