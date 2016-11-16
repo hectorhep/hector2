@@ -22,3 +22,12 @@ Beamline::addElement( const Element::ElementBase* elem )
   elements_.push_back( elem->clone() );
   std::sort( elements_.begin(), elements_.end() );
 }
+
+Element::ElementBase*
+Beamline::getElement( const char* name )
+{
+  for ( ElementsMap::iterator it=elements_.begin(); it!=elements_.end(); it++ ) {
+    if ( std::string( ( *it )->name() ).find( name )!=std::string::npos ) return *it;
+  }
+  return 0;
+}

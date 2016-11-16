@@ -3,25 +3,27 @@
 namespace Element
 {
   ElementBase::ElementBase( const Type& type, const char* name ) :
-    type_( type ), name_( name )
+    type_( type ), name_( name ), aperture_( 0 )
   {
   }
 
   ElementBase::~ElementBase()
-  {}
+  {
+    if ( aperture_ ) delete aperture_;
+  }
 
   ElementBase*
   ElementBase::clone() const
   {
-    ElementBase* elem = new ElementBase( type_, name_ );
-    elem->setS( s_ );
-    elem->setX( xpos_ );
-    elem->setY( ypos_ );
-    elem->setTx( tx_ );
-    elem->setTy( ty_ );
-    elem->setLength( length_ );
-    elem->setMagneticStrength( magnetic_strength_ );
-    return elem;
+    ElementBase* out = new ElementBase( type_, name_ );
+    out->setS( s_ );
+    out->setPosition( pos_ );
+    out->setTx( tx_ );
+    out->setTy( ty_ );
+    out->setLength( length_ );
+    out->setMagneticStrength( magnetic_strength_ );
+    if ( aperture_ ) out->setAperture( aperture_ );
+    return out;
   }
 
 }

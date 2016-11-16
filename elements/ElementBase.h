@@ -1,6 +1,8 @@
 #ifndef Elements_ElementBase_h
 #define Elements_ElementBase_h
 
+#include "ApertureBase.h"
+#include <CLHEP/Vector/TwoVector.h>
 #include <CLHEP/Matrix/Matrix.h>
 
 namespace Element
@@ -26,13 +28,8 @@ namespace Element
 
       ElementBase* clone() const;
 
-      bool operator<( const ElementBase& rhs ) const { return s_<rhs.s(); }
-      bool operator<( const ElementBase* rhs ) const { return s_<rhs->s(); }
-      /*struct sorter {
-        inline bool operator()( const ElementBase& el_1, const ElementBase& el_2 ) const { return ( el_1.s()<el_2.s() ); }
-        inline bool operator()( const ElementBase* el_1, const ElementBase* el_2 ) const { return ( el_1->s()<el_2->s() ); }
-      } ordering;*/
-
+      bool operator<( const ElementBase& rhs ) const { return s()<rhs.s(); }
+      bool operator<( const ElementBase* rhs ) const { return s()<rhs->s(); }
 
       const char* name() const { return name_; }
       Type type() const { return type_; }
@@ -41,13 +38,12 @@ namespace Element
       /// Longitudinal position
       float s() const { return s_; }
 
-      void setX( float x ) { xpos_ = x; }
+      void setPosition( const CLHEP::Hep2Vector& pos ) { pos_ = pos; }
+      CLHEP::Hep2Vector position() const { return pos_; }
       /// Horizontal position
-      float x() const { return xpos_; }
-
-      void setY( float y ) { ypos_ = y; }
+      float x() const { return pos_.x(); }
       /// Vertical position
-      float y() const { return ypos_; }
+      float y() const { return pos_.y(); }
 
       void setTx( float tx ) { tx_ = tx; }
       // Horizontal angle
@@ -66,14 +62,20 @@ namespace Element
 
       CLHEP::HepMatrix matrix() const { return matrix_; }
 
+      void setAperture( const ApertureBase* apert ) { aperture_ = apert->clone(); }
+      ApertureBase* aperture() { return aperture_; }
+
     protected:
       Type type_;
       const char* name_;
+      ApertureBase* aperture_;
 
-      float s_;
       float length_;
       float magnetic_strength_;
-      float xpos_, ypos_;
+
+      CLHEP::Hep2Vector pos_;
+      float s_;
+
       float tx_, ty_;
 
       CLHEP::HepMatrix matrix_;

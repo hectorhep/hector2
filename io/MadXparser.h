@@ -4,10 +4,16 @@
 #include "beamline/Beamline.h"
 
 #include "elements/ElementDict.h"
+
 #include "elements/HorizontalQuadrupole.h"
 #include "elements/VerticalQuadrupole.h"
 #include "elements/RectangularDipole.h"
 #include "elements/SectorDipole.h"
+
+#include "elements/EllipticAperture.h"
+#include "elements/CircularAperture.h"
+#include "elements/RectangularAperture.h"
+#include "elements/RectEllipticAperture.h"
 
 #include "core/ParametersMap.h"
 #include "core/UnorderedParametersMap.h"

@@ -16,6 +16,7 @@ class Beamline
     CLHEP::Hep3Vector interactionPoint() const { return ip_; }
 
     void addElement( const Element::ElementBase* );
+    Element::ElementBase* getElement( const char* );
 
     void setLength( float length ) { length_ = length; }
     float length() const { return length_; }
