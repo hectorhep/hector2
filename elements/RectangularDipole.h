@@ -8,7 +8,7 @@ namespace Element
   class RectangularDipole : public Dipole
   {
     public:
-      RectangularDipole( const char* name ) : Dipole( ElementBase::RectangularDipole, name ) {;}
+      RectangularDipole( const std::string& name ) : Dipole( ElementBase::RectangularDipole, name ) {;}
       ~RectangularDipole() {;}
 
     private:

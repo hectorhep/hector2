@@ -8,7 +8,7 @@ namespace Element
   class Dipole : public ElementBase
   {
     public:
-      Dipole( const ElementBase::Type& type, const char* name ) : ElementBase( type, name ) {;}
+      Dipole( const ElementBase::Type& type, const std::string& name ) : ElementBase( type, name ) {;}
       ~Dipole() {;}
 
     protected:

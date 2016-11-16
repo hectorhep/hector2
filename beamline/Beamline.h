@@ -16,7 +16,12 @@ class Beamline
     CLHEP::Hep3Vector interactionPoint() const { return ip_; }
 
     void addElement( const Element::ElementBase* );
-    Element::ElementBase* getElement( const char* );
+    Element::ElementBase* getElement( const std::string& );
+    Element::ElementBase* getElement( const char* name ) { return getElement( std::string( name ) ); }
+
+    typedef std::vector<Element::ElementBase*> ElementsMap;
+    ElementsMap::const_iterator begin() { return elements_.begin(); }
+    ElementsMap::const_iterator end() { return elements_.end(); }
 
     void setLength( float length ) { length_ = length; }
     float length() const { return length_; }
@@ -25,7 +30,6 @@ class Beamline
     CLHEP::Hep3Vector ip_;
     float length_;
 
-    typedef std::vector<Element::ElementBase*> ElementsMap;
     ElementsMap elements_;
 };
 

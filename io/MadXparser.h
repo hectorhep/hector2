@@ -9,6 +9,7 @@
 #include "elements/VerticalQuadrupole.h"
 #include "elements/RectangularDipole.h"
 #include "elements/SectorDipole.h"
+#include "elements/RectangularCollimator.h"
 
 #include "elements/EllipticAperture.h"
 #include "elements/CircularAperture.h"

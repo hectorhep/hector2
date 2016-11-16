@@ -20,14 +20,15 @@ Beamline::addElement( const Element::ElementBase* elem )
   }
 
   elements_.push_back( elem->clone() );
-  std::sort( elements_.begin(), elements_.end() );
+  std::sort( elements_.begin(), elements_.end(), Element::sorter() );
 }
 
 Element::ElementBase*
-Beamline::getElement( const char* name )
+Beamline::getElement( const std::string& name )
 {
-  for ( ElementsMap::iterator it=elements_.begin(); it!=elements_.end(); it++ ) {
-    if ( std::string( ( *it )->name() ).find( name )!=std::string::npos ) return *it;
+  for ( size_t i=0; i<elements_.size(); i++ ) {
+    Element::ElementBase* elem = elements_.at( i );
+    if ( elem->name().find( name )!=std::string::npos ) return elem;
   }
   return 0;
 }

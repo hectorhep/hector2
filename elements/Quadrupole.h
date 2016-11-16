@@ -8,7 +8,7 @@ namespace Element
   class Quadrupole : public ElementBase
   {
     public:
-      Quadrupole( const char* name ) : ElementBase( ElementBase::Quadrupole, name ) {;}
+      Quadrupole( const std::string& name ) : ElementBase( ElementBase::Quadrupole, name ) {;}
       ~Quadrupole() {;}
 
     protected:

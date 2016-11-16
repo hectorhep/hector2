@@ -8,7 +8,7 @@ namespace Element
   class VerticalQuadrupole : public Quadrupole
   {
     public:
-      VerticalQuadrupole( const char* name ) : Quadrupole( name ) {;}
+      VerticalQuadrupole( const std::string& name ) : Quadrupole( name ) {;}
       ~VerticalQuadrupole() {;}
 
     private:

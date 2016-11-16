@@ -9,12 +9,16 @@ namespace Element
   {
     public:
       typedef enum { None, Rectangular, Elliptic, Circular, RectElliptic } Type;
+      friend std::ostream& operator<<( std::ostream&, const Type& );
 
     public:
       ApertureBase( const Type&, const CLHEP::Hep2Vector&, float, float, float, float );
       virtual ~ApertureBase();
 
       ApertureBase* clone() const;
+
+      friend std::ostream& operator<<( std::ostream&, const ApertureBase& );
+      friend std::ostream& operator<<( std::ostream&, const ApertureBase* );
 
       Type type() const { return type_; }
       virtual bool contains( const CLHEP::Hep2Vector& ) const;

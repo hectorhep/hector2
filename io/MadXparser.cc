@@ -18,6 +18,11 @@ namespace Parser
 
       parseElementsFields();
       parseElements();
+
+      for ( Beamline::ElementsMap::const_iterator elem=beamline_.begin(); elem!=beamline_.end(); elem++ ) {
+        std::cout << "---> " << *elem << std::endl;
+      }
+
     } catch ( Exception& e ) { e.dump(); }
 
     //header_str_.dump();
@@ -147,7 +152,7 @@ namespace Parser
         throw Exception( __PRETTY_FUNCTION__, Form( "MAD-X output seems corrupted!\n\tElement %s has %d fields when %d are expected.", trim( values.at( 0 ) ).c_str(), values.size(), elements_fields_.size() ), Fatal );
       }
 
-      // then perform the 3-fold matching between key, value, and value type
+      // then perform the 3-fold matching key <-> value <-> value type
       ParametersMap<float> elem_map_floats;
       ParametersMap<std::string> elem_map_str;
       for ( unsigned short i=0; i<values.size(); i++ ) {
@@ -168,10 +173,11 @@ namespace Parser
 
       try {
 
-        const std::string name = elem_map_str.get( "name" );
+        const std::string name = trim( elem_map_str.get( "name" ) );
         const Element::ElementBase::Type elemtype = Element::Dictionary::get()->elementType(
           lowercase( trim( elem_map_str.get( "keyword" ) ) )
         );
+
         const float s = elem_map_floats.get( "s" ),
                     length = elem_map_floats.get( "l" );
 
@@ -181,14 +187,14 @@ namespace Parser
             const float k1l = elem_map_floats.get( "k1l" ),
                         mag_str_k = -k1l/length;
             if ( k1l>0 ) {
-              Element::HorizontalQuadrupole quad( name.c_str() );
+              Element::HorizontalQuadrupole quad( name );
               quad.setS( s );
               quad.setLength( length );
               quad.setMagneticStrength( mag_str_k );
               beamline_.addElement( &quad );
              }
-            else         {
-              Element::VerticalQuadrupole quad( name.c_str() );
+            else {
+              Element::VerticalQuadrupole quad( name );
               quad.setS( s );
               quad.setLength( length );
               quad.setMagneticStrength( mag_str_k );
@@ -196,14 +202,14 @@ namespace Parser
             }
           } break;
           case Element::ElementBase::RectangularDipole: {
-            Element::RectangularDipole dip( name.c_str() );
+            Element::RectangularDipole dip( name );
             dip.setS( s );
             dip.setLength( length );
             dip.setMagneticStrength( dir_*elem_map_floats.get( "k0l" )/length );
             beamline_.addElement( &dip );
           } break;
           case Element::ElementBase::SectorDipole: {
-            Element::SectorDipole dip( name.c_str() );
+            Element::SectorDipole dip( name );
             dip.setS( s );
             dip.setLength( length );
             dip.setMagneticStrength( dir_*elem_map_floats.get( "k0l" )/length );
@@ -213,10 +219,22 @@ namespace Parser
           } break;
           case Element::ElementBase::VerticalKicker: {
           } break;
+          case Element::ElementBase::RectangularCollimator: {
+            Element::RectangularCollimator col( name );
+            col.setS( s );
+            col.setLength( length );
+            beamline_.addElement( &col );
+          } break;
+          case Element::ElementBase::Drift: {
+            Element::Drift dr( elemtype, name );
+            dr.setS( s );
+            dr.setLength( length );
+            beamline_.addElement( &dr );
+          } break;
           default: break;
         }
 
-        Element::ElementBase* elem = beamline_.getElement( name.c_str() );
+        Element::ElementBase* elem = beamline_.getElement( name );
         if ( !elem ) continue; // beamline element was not found
 
         // associate the aperture type to the element
@@ -229,23 +247,13 @@ namespace Parser
                     aper_3 = elem_map_floats.get( "aper_3" ),
                     aper_4 = elem_map_floats.get( "aper_4" );
         switch ( apertype ) {
-          case Element::ApertureBase::RectElliptic: {
-            aperture = new Element::RectEllipticAperture( aper_1, aper_2, aper_3, aper_4 );
-          } break;
-          case Element::ApertureBase::Circular: {
-            aperture = new Element::CircularAperture( aper_1 );
-          } break;
-          case Element::ApertureBase::Rectangular: {
-            aperture = new Element::RectangularAperture( aper_1, aper_2 );
-          } break;
-          case Element::ApertureBase::Elliptic: {
-            aperture = new Element::EllipticAperture( aper_1, aper_2 );
-            
-          } break;
+          case Element::ApertureBase::RectElliptic: aperture = new Element::RectEllipticAperture( aper_1, aper_2, aper_3, aper_4 ); break;
+          case Element::ApertureBase::Circular:     aperture = new Element::CircularAperture( aper_1 ); break;
+          case Element::ApertureBase::Rectangular:  aperture = new Element::RectangularAperture( aper_1, aper_2 ); break;
+          case Element::ApertureBase::Elliptic:     aperture = new Element::EllipticAperture( aper_1, aper_2 ); break;
           case Element::ApertureBase::None: break;
         }
         if ( aperture ) elem->setAperture( aperture );
-        //std::cout << " " << trim( name ) << " is a " << elemtype << std::endl;
 
       } catch ( Exception& e ) {
         e.dump();

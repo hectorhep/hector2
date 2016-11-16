@@ -35,6 +35,9 @@ namespace Element
     elemtype_map_.insert( std::pair<std::string,ElementBase::Type>( "rbend", ElementBase::RectangularDipole ) );
     elemtype_map_.insert( std::pair<std::string,ElementBase::Type>( "hkicker", ElementBase::HorizontalKicker ) );
     elemtype_map_.insert( std::pair<std::string,ElementBase::Type>( "vkicker", ElementBase::VerticalKicker ) );
+    elemtype_map_.insert( std::pair<std::string,ElementBase::Type>( "rcollimator", ElementBase::RectangularCollimator ) );
+    elemtype_map_.insert( std::pair<std::string,ElementBase::Type>( "ecollimator", ElementBase::EllipticalCollimator ) );
+    elemtype_map_.insert( std::pair<std::string,ElementBase::Type>( "ccollimator", ElementBase::CircularCollimator ) );
     elemtype_map_.insert( std::pair<std::string,ElementBase::Type>( "placeholder", ElementBase::Placeholder ) );
     elemtype_map_.insert( std::pair<std::string,ElementBase::Type>( "instrument", ElementBase::Instrument ) );
   }

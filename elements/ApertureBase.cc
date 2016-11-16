@@ -23,4 +23,33 @@ namespace Element
   {
     return false;
   }
+
+  std::ostream&
+  operator<<( std::ostream& os, const ApertureBase::Type& type )
+  {
+    switch ( type ) {
+      case ApertureBase::None: os << "none"; break;
+      case ApertureBase::Rectangular: os << "rectangular"; break;
+      case ApertureBase::Circular: os << "circular"; break;
+      case ApertureBase::Elliptic: os << "elliptic"; break;
+      case ApertureBase::RectElliptic: os << "rect-elliptic"; break;
+    }
+    return os;
+  }
+
+  std::ostream&
+  operator<<( std::ostream& os, const ApertureBase& ap )
+  {
+    os << "Aperture (" << ap.type() << ")"
+       << " with parameters (" << ap.x1() << ", " << ap.x2() << ", " << ap.x3() << ", " << ap.x4() << ")"
+       << " and centered on " << ap.position();
+    return os;
+  }
+
+  std::ostream&
+  operator<<( std::ostream& os, const ApertureBase* ap )
+  {
+    os << *( ap );
+    return os;
+  }
 }

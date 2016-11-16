@@ -17,21 +17,22 @@ namespace Element
         Quadrupole, Sextupole, Multipole,
         //VerticalQuadrupole, HorizontalQuadrupole,
         VerticalKicker, HorizontalKicker,
-        //RectangularCollimator, EllipticalCollimator, CylindricalCollimator,
+        RectangularCollimator, EllipticalCollimator, CircularCollimator,
         //RomanPot, InteractionPoint,
         Placeholder, Instrument
       } Type;
+      friend std::ostream& operator<<( std::ostream&, const Type& );
 
     public:
-      ElementBase( const Type&, const char* name="invalid element" );
+      ElementBase( const Type&, const std::string& name="invalid element" );
       virtual ~ElementBase();
 
       ElementBase* clone() const;
 
-      bool operator<( const ElementBase& rhs ) const { return s()<rhs.s(); }
-      bool operator<( const ElementBase* rhs ) const { return s()<rhs->s(); }
+      friend std::ostream& operator<<( std::ostream&, const ElementBase& );
+      friend std::ostream& operator<<( std::ostream&, const ElementBase* );
 
-      const char* name() const { return name_; }
+      const std::string& name() const { return name_; }
       Type type() const { return type_; }
 
       void setS( float s ) { s_ = s; }
@@ -67,7 +68,7 @@ namespace Element
 
     protected:
       Type type_;
-      const char* name_;
+      const std::string name_;
       ApertureBase* aperture_;
 
       float length_;
@@ -79,6 +80,12 @@ namespace Element
       float tx_, ty_;
 
       CLHEP::HepMatrix matrix_;
+  };
+
+  struct sorter
+  {
+    inline bool operator()( const ElementBase& lhs, const ElementBase& rhs ) { return ( lhs.s()<rhs.s() ); }
+    inline bool operator()( const ElementBase* lhs, const ElementBase* rhs ) { return ( lhs->s()<rhs->s() ); }
   };
 
 }
