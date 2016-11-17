@@ -16,13 +16,12 @@ namespace Parser
 
       beamline_.setLength( max_s );
       if ( max_s<0. and header_float_.hasKey( "length" ) ) beamline_.setLength( header_float_.get( "length" ) );
+      if ( header_float_.hasKey( "energy" ) ) Constants::beam_energy = header_float_.get( "energy" );
+      if ( header_float_.hasKey( "mass" ) ) Constants::beam_particles_mass = header_float_.get( "mass" );
+      if ( header_float_.hasKey( "charge" ) ) Constants::beam_particles_charge = header_float_.get( "charge" );
 
       parseElementsFields();
       parseElements();
-
-      for ( Beamline::ElementsMap::const_iterator elem=beamline_.begin(); elem!=beamline_.end(); elem++ ) {
-        std::cout << "---> " << *elem << std::endl;
-      }
 
     } catch ( Exception& e ) { e.dump(); }
 
@@ -187,14 +186,17 @@ namespace Parser
         const float s = elem_map_floats.get( "s" ),
                     length = elem_map_floats.get( "l" );
 
-        std::cout << name << " ===> " << elemtype << " at " << s << std::endl;
-
         // create the element
         switch ( elemtype ) {
           case Element::ElementBase::Quadrupole: {
+
             const float k1l = elem_map_floats.get( "k1l" ),
                         mag_str_k = -k1l/length;
             if ( k1l>0 ) {
+//elem_map_str.dump();
+std::cout << ">>>>>>>>>>>>> " << name << " >>> k1l=" << k1l << std::endl;
+//elem_map_floats.dump();
+
               Element::HorizontalQuadrupole quad( name );
               quad.setS( s );
               quad.setLength( length );

@@ -3,6 +3,7 @@
 
 #include "core/Exception.h"
 #include "elements/ElementBase.h"
+#include "Particle.h"
 
 #include <CLHEP/Vector/ThreeVector.h>
 #include <map>
@@ -25,6 +26,9 @@ class Beamline
 
     void setLength( float length ) { length_ = length; }
     float length() const { return length_; }
+
+    CLHEP::HepMatrix matrix( float, float, int );
+    void propagate( const Particle&, float );
 
   private:
     CLHEP::Hep3Vector ip_;

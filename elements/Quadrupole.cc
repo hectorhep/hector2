@@ -9,6 +9,8 @@ namespace Element
     const float ke = fabs( fieldStrength( eloss, mp, qp )/norm_charge ) * norm_charge,
                 omega = sqrt( fabs( ke ) )*length_;
 
+//std::cout << "----> " << name() << " -- " << magneticStrength() << "  " << fieldStrength( eloss, mp, qp ) << "  " << ke << "  " << omega << "  " << norm_charge << std::endl;
+
     matrix_ = CLHEP::HepDiagMatrix( 6, 1 );
     matrix_( 1, 1 ) = cos( omega );
     matrix_( 1, 2 ) = -sqrt( ke ) * sin( omega );
