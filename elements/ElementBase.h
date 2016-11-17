@@ -2,8 +2,11 @@
 #define Elements_ElementBase_h
 
 #include "ApertureBase.h"
+#include "core/Constants.h"
+
 #include <CLHEP/Vector/TwoVector.h>
 #include <CLHEP/Matrix/Matrix.h>
+#include <CLHEP/Matrix/DiagMatrix.h>
 
 namespace Element
 {
@@ -26,7 +29,8 @@ namespace Element
       ElementBase( const Type&, const std::string& name="invalid element" );
       virtual ~ElementBase();
 
-      ElementBase* clone() const;
+      virtual ElementBase* clone() const = 0;
+      virtual void computeMatrix( float, float, int ) = 0;
 
       friend std::ostream& operator<<( std::ostream&, const ElementBase& );
       friend std::ostream& operator<<( std::ostream&, const ElementBase* );
@@ -84,6 +88,8 @@ namespace Element
 
       void setAperture( const ApertureBase* apert ) { aperture_ = apert->clone(); }
       ApertureBase* aperture() { return aperture_; }
+
+      float fieldStrength( float, float, int ) const;
 
     protected:
       Type type_;

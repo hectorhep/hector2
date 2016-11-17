@@ -11,6 +11,9 @@ namespace Element
       Drift( const ElementBase::Type&, const std::string& );
       ~Drift();
 
+      Drift* clone() const { return new Drift( *this ); }
+      void computeMatrix( float, float, int );
+
     private:
   };
 }

@@ -9,6 +9,7 @@
 #include "elements/Dipole.h"
 #include "elements/RectangularCollimator.h"
 #include "elements/Kicker.h"
+#include "elements/Marker.h"
 
 #include "elements/EllipticAperture.h"
 #include "elements/CircularAperture.h"

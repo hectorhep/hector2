@@ -184,10 +184,10 @@ namespace Parser
           lowercase( trim( elem_map_str.get( "keyword" ) ) )
         );
 
-        std::cout << name << " ===> " << elemtype << std::endl;
-
         const float s = elem_map_floats.get( "s" ),
                     length = elem_map_floats.get( "l" );
+
+        std::cout << name << " ===> " << elemtype << " at " << s << std::endl;
 
         // create the element
         switch ( elemtype ) {
@@ -243,6 +243,12 @@ namespace Parser
             col.setLength( length );
             beamline_.addElement( &col );
           } break;
+          case Element::ElementBase::Marker: {
+            Element::Marker mrk( name );
+            mrk.setS( s );
+            mrk.setLength( length );
+            beamline_.addElement( &mrk );
+          } break;
           case Element::ElementBase::Drift: {
             Element::Drift dr( elemtype, name );
             dr.setS( s );
@@ -280,22 +286,24 @@ namespace Parser
         }
 
         // associate the aperture type to the element
-        const Element::ApertureBase::Type apertype = Element::Dictionary::get()->apertureType(
-          lowercase( trim( elem_map_str.get( "apertype" ) ) )
-        );
-        Element::ApertureBase* aperture = 0;
-        const float aper_1 = elem_map_floats.get( "aper_1" )*1.e6,
-                    aper_2 = elem_map_floats.get( "aper_2" )*1.e6,
-                    aper_3 = elem_map_floats.get( "aper_3" )*1.e6,
-                    aper_4 = elem_map_floats.get( "aper_4" )*1.e6; // rad -> urad
-        switch ( apertype ) {
-          case Element::ApertureBase::RectElliptic: aperture = new Element::RectEllipticAperture( aper_1, aper_2, aper_3, aper_4 ); break;
-          case Element::ApertureBase::Circular:     aperture = new Element::CircularAperture( aper_1 ); break;
-          case Element::ApertureBase::Rectangular:  aperture = new Element::RectangularAperture( aper_1, aper_2 ); break;
-          case Element::ApertureBase::Elliptic:     aperture = new Element::EllipticAperture( aper_1, aper_2 ); break;
-          case Element::ApertureBase::None: break;
+        {
+          const Element::ApertureBase::Type apertype = Element::Dictionary::get()->apertureType(
+            lowercase( trim( elem_map_str.get( "apertype" ) ) )
+          );
+          Element::ApertureBase* aperture = 0;
+          const float aper_1 = elem_map_floats.get( "aper_1" )*1.e6,
+                      aper_2 = elem_map_floats.get( "aper_2" )*1.e6,
+                      aper_3 = elem_map_floats.get( "aper_3" )*1.e6,
+                      aper_4 = elem_map_floats.get( "aper_4" )*1.e6; // rad -> urad
+          switch ( apertype ) {
+            case Element::ApertureBase::RectElliptic: aperture = new Element::RectEllipticAperture( aper_1, aper_2, aper_3, aper_4 ); break;
+            case Element::ApertureBase::Circular:     aperture = new Element::CircularAperture( aper_1 ); break;
+            case Element::ApertureBase::Rectangular:  aperture = new Element::RectangularAperture( aper_1, aper_2 ); break;
+            case Element::ApertureBase::Elliptic:     aperture = new Element::EllipticAperture( aper_1, aper_2 ); break;
+            case Element::ApertureBase::None: break;
+          }
+          if ( aperture ) elem->setAperture( aperture );
         }
-        if ( aperture ) elem->setAperture( aperture );
 
       } catch ( Exception& e ) {
         e.dump();

@@ -11,6 +11,9 @@ namespace Element
       Quadrupole( const std::string& name ) : ElementBase( ElementBase::Quadrupole, name ) {;}
       ~Quadrupole() {;}
 
+      virtual Quadrupole* clone() const = 0;
+      virtual void computeMatrix( float, float, int ) = 0;
+
     protected:
   };
 
@@ -20,6 +23,9 @@ namespace Element
       HorizontalQuadrupole( const std::string& name ) : Quadrupole( name ) {;}
       ~HorizontalQuadrupole() {;}
 
+      HorizontalQuadrupole* clone() const { return new HorizontalQuadrupole( *this ); }
+      void computeMatrix( float, float, int );
+
     private:
   };
 
@@ -28,6 +34,9 @@ namespace Element
     public:
       VerticalQuadrupole( const std::string& name ) : Quadrupole( name ) {;}
       ~VerticalQuadrupole() {;}
+
+      VerticalQuadrupole* clone() const { return new VerticalQuadrupole( *this ); }
+      void computeMatrix( float, float, int );
 
     private:
   };

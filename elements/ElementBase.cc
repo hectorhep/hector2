@@ -13,18 +13,15 @@ namespace Element
     if ( aperture_ ) delete aperture_;
   }
 
-  ElementBase*
-  ElementBase::clone() const
+  float
+  ElementBase::fieldStrength( float eloss, float mp, int qp ) const
   {
-    ElementBase* out = new ElementBase( type_, name_ );
-    out->setS( s_ );
-    out->setPosition( pos_ );
-    out->setTx( tx_ );
-    out->setTy( ty_ );
-    out->setLength( length_ );
-    out->setMagneticStrength( magnetic_strength_ );
-    if ( aperture_ ) out->setAperture( aperture_ );
-    return out;
+    const float eini = Constants::beam_energy,
+                mp0 = Constants::beam_particles_mass,
+                e = eini-eloss;
+    const float p0 = sqrt( ( eini-mp0 )*( eini+mp0 ) ),
+                p = sqrt( ( e-mp )*( e+mp ) );
+    return ( qp==0 ) ? 0. : magnetic_strength_*( p0/p )*( qp/Constants::beam_particles_charge );
   }
 
   std::ostream&

@@ -20,6 +20,7 @@ Beamline::addElement( const Element::ElementBase* elem )
     return;
   }
 
+  //elements_.push_back( static_cast<const Element::Element*>( elem )->clone() );
   elements_.push_back( elem->clone() );
   std::sort( elements_.begin(), elements_.end(), Element::sorter() );
 }
