@@ -27,8 +27,8 @@ class Beamline
     Element::ElementBase* getElement( const char* name ) { return getElement( std::string( name ) ); }
 
     typedef std::vector<Element::ElementBase*> ElementsMap;
-    ElementsMap::const_iterator begin() { return elements_.begin(); }
-    ElementsMap::const_iterator end() { return elements_.end(); }
+    const ElementsMap::const_iterator begin() const { return elements_.begin(); }
+    const ElementsMap::const_iterator end() const { return elements_.end(); }
 
     void setLength( float length ) { length_ = length; }
     float length() const { return length_; }

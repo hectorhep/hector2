@@ -12,7 +12,7 @@ Beam::Beam( const size_t& num_part )
   //transv_ini = CLHEP::Hep2Vector()+CLHEp::Hep2Vector( half_crossing_angle, 0. );
 
   for ( size_t i=0; i<num_part; i++ ) {
-    Particle::StateVector vec( pos_ini, mom_ini );
+    Particle::StateVector vec( mom_ini, pos_ini );
     Particle p( vec );
     /*p.setPosition( pos_ini, mom_ini, s_ini );
     //p.setEnergy( e_ini );

@@ -6,7 +6,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-long-long -pedantic -g -fPIC"
 
 #----- define all individual modules to be built beforehand
 
-set(MODULES core io elements beamline)
+set(MODULES core io elements beamline propagator)
 
 #----- enable fortran (for Pythia/Herwig/...)
 
@@ -34,7 +34,8 @@ endforeach()
 add_library(Hector SHARED $<TARGET_OBJECTS:HectorCore>
                           $<TARGET_OBJECTS:HectorIO>
                           $<TARGET_OBJECTS:HectorElements>
-                          $<TARGET_OBJECTS:HectorBeamline>)
+                          $<TARGET_OBJECTS:HectorBeamline>
+                          $<TARGET_OBJECTS:HectorPropagator>)
 set_target_properties(Hector PROPERTIES LINKER_LANGUAGE CXX)
 target_link_libraries(Hector CLHEP)
 install(TARGETS Hector DESTINATION lib)
