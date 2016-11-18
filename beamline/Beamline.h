@@ -8,11 +8,17 @@
 #include <CLHEP/Vector/ThreeVector.h>
 #include <map>
 
+using std::cout;
+
 class Beamline
 {
   public:
     Beamline();
+    Beamline( float, const CLHEP::Hep3Vector& ip=CLHEP::Hep3Vector() );
     ~Beamline();
+
+    void clear();
+    void dump( std::ostream& os=std::cout );
 
     CLHEP::Hep3Vector interactionPoint() const { return ip_; }
 
@@ -31,8 +37,8 @@ class Beamline
     void propagate( const Particle&, float );
 
   private:
-    CLHEP::Hep3Vector ip_;
     float length_;
+    CLHEP::Hep3Vector ip_;
 
     ElementsMap elements_;
 };

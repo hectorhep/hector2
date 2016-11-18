@@ -27,15 +27,15 @@ class Particle
         CLHEP::Hep2Vector pt() const { return CLHEP::Hep2Vector( ( *this )[idx_tx], ( *this )[idx_ty] ); }
 
       private:
-        enum Components { idx_x = 0, idx_tx, idx_y, idx_ty, idx_e, idx_kck };
+        enum Components { idx_x = 1, idx_tx, idx_y, idx_ty, idx_e, idx_kck };
     };
 
   public:
-   Particle();
-   Particle( const StateVector& sv ) : vec_( sv ) {;}
-   ~Particle();
+    Particle();
+    Particle( const StateVector& sv0 ) : vec_( sv0 ) {;}
+    ~Particle();
 
-    void addPosition( const CLHEP::Hep2Vector&, float, const CLHEP::Hep2Vector& );
+    void addPosition( float, const StateVector& );
 
     StateVector vec_;
     float charge_;

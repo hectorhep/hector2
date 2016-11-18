@@ -8,6 +8,6 @@ Particle::~Particle()
 {}
 
 void
-Particle::addPosition( const CLHEP::Hep2Vector& pos, float s, const CLHEP::Hep2Vector& momt )
+Particle::addPosition( float s, const StateVector& sv )
 {
 }

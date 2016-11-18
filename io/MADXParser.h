@@ -34,7 +34,7 @@ namespace Parser
       MADX( const char*, int, float max_s=-1. );
       ~MADX();
 
-      Beamline beamline() const { return beamline_; }
+      Beamline* beamline() const { return beamline_; }
 
     public:
       enum ValueType { Unknown = -1, String, Float, Integer };
@@ -54,7 +54,7 @@ namespace Parser
       std::streampos in_file_lastline_;
 
       int dir_;
-      Beamline beamline_;
+      Beamline* beamline_;
 
       static std::regex rgx_str_;
 

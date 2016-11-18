@@ -5,17 +5,17 @@ namespace Parser
   std::regex MADX::rgx_str_( "^\\%[0-9]?[0-9]?s$" );
 
   MADX::MADX( const char* filename, int direction, float max_s ) :
-    dir_( direction/abs( direction ) )
+    dir_( direction/abs( direction ) ), beamline_( 0 )
   {
     in_file_ = std::ifstream( filename );
 
     try {
       parseHeader();
 
-      header_float_.dump();
+      //header_float_.dump();
 
-      beamline_.setLength( max_s );
-      if ( max_s<0. and header_float_.hasKey( "length" ) ) beamline_.setLength( header_float_.get( "length" ) );
+      beamline_ = new Beamline( max_s );
+      if ( max_s<0. and header_float_.hasKey( "length" ) ) beamline_->setLength( header_float_.get( "length" ) );
       if ( header_float_.hasKey( "energy" ) ) Constants::beam_energy = header_float_.get( "energy" );
       if ( header_float_.hasKey( "mass" ) ) Constants::beam_particles_mass = header_float_.get( "mass" );
       if ( header_float_.hasKey( "charge" ) ) Constants::beam_particles_charge = header_float_.get( "charge" );
@@ -31,6 +31,7 @@ namespace Parser
   MADX::~MADX()
   {
     if ( in_file_.is_open() ) in_file_.close();
+    if ( beamline_ ) delete beamline_;
   }
 
   void
@@ -193,22 +194,18 @@ namespace Parser
             const float k1l = elem_map_floats.get( "k1l" ),
                         mag_str_k = -k1l/length;
             if ( k1l>0 ) {
-//elem_map_str.dump();
-std::cout << ">>>>>>>>>>>>> " << name << " >>> k1l=" << k1l << std::endl;
-//elem_map_floats.dump();
-
               Element::HorizontalQuadrupole quad( name );
               quad.setS( s );
               quad.setLength( length );
               quad.setMagneticStrength( mag_str_k );
-              beamline_.addElement( &quad );
+              beamline_->addElement( &quad );
              }
             else {
               Element::VerticalQuadrupole quad( name );
               quad.setS( s );
               quad.setLength( length );
               quad.setMagneticStrength( mag_str_k );
-              beamline_.addElement( &quad );
+              beamline_->addElement( &quad );
             }
           } break;
           case Element::ElementBase::RectangularDipole: {
@@ -216,46 +213,46 @@ std::cout << ">>>>>>>>>>>>> " << name << " >>> k1l=" << k1l << std::endl;
             dip.setS( s );
             dip.setLength( length );
             dip.setMagneticStrength( dir_*elem_map_floats.get( "k0l" )/length );
-            beamline_.addElement( &dip );
+            beamline_->addElement( &dip );
           } break;
           case Element::ElementBase::SectorDipole: {
             Element::SectorDipole dip( name );
             dip.setS( s );
             dip.setLength( length );
             dip.setMagneticStrength( dir_*elem_map_floats.get( "k0l" )/length );
-            beamline_.addElement( &dip );
+            beamline_->addElement( &dip );
           } break;
           case Element::ElementBase::HorizontalKicker: {
             Element::HorizontalKicker kck( name );
             kck.setS( s );
             kck.setLength( length );
             kck.setMagneticStrength( elem_map_floats.get( "hkick" ) );
-            beamline_.addElement( &kck );
+            beamline_->addElement( &kck );
           } break;
           case Element::ElementBase::VerticalKicker: {
             Element::VerticalKicker kck( name );
             kck.setS( s );
             kck.setLength( length );
             kck.setMagneticStrength( elem_map_floats.get( "vkick" ) );
-            beamline_.addElement( &kck );
+            beamline_->addElement( &kck );
           } break;
           case Element::ElementBase::RectangularCollimator: {
             Element::RectangularCollimator col( name );
             col.setS( s );
             col.setLength( length );
-            beamline_.addElement( &col );
+            beamline_->addElement( &col );
           } break;
           case Element::ElementBase::Marker: {
             Element::Marker mrk( name );
             mrk.setS( s );
             mrk.setLength( length );
-            beamline_.addElement( &mrk );
+            beamline_->addElement( &mrk );
           } break;
           case Element::ElementBase::Drift: {
             Element::Drift dr( elemtype, name );
             dr.setS( s );
             dr.setLength( length );
-            beamline_.addElement( &dr );
+            beamline_->addElement( &dr );
 
             previous_x = elem_map_floats.get( "x" );
             previous_y = elem_map_floats.get( "y" );
@@ -267,7 +264,7 @@ std::cout << ">>>>>>>>>>>>> " << name << " >>> k1l=" << k1l << std::endl;
           default: break;
         }
 
-        Element::ElementBase* elem = beamline_.getElement( name );
+        Element::ElementBase* elem = beamline_->getElement( name );
         if ( !elem ) continue; // beamline element was not found
 
         if ( dir_<0 ) {
@@ -305,6 +302,7 @@ std::cout << ">>>>>>>>>>>>> " << name << " >>> k1l=" << k1l << std::endl;
             case Element::ApertureBase::None: break;
           }
           if ( aperture ) elem->setAperture( aperture );
+          //delete aperture;
         }
 
       } catch ( Exception& e ) {

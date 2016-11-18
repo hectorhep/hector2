@@ -11,6 +11,8 @@ namespace Element
       RectangularAperture( float, float, const CLHEP::Hep2Vector& pos=CLHEP::Hep2Vector() );
       ~RectangularAperture();
 
+      RectangularAperture* clone() const { return new RectangularAperture( *this ); }
+
       bool contains( const CLHEP::Hep2Vector& ) const;
 
   };

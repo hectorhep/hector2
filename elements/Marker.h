@@ -8,11 +8,10 @@ namespace Element
   class Marker : public ElementBase
   {
     public:
-      Marker( const std::string& name ) : ElementBase( ElementBase::Marker, name ) {;}
-      ~Marker() {;}
+      Marker( const std::string& name );
 
       Marker* clone() const { return new Marker( *this ); }
-      void computeMatrix( float, float, int ) { matrix_ = CLHEP::HepDiagMatrix( 6, 1 ); }
+      void computeMatrix( float, float, int );
 
     private:
 

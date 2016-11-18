@@ -2,7 +2,10 @@
 #define Elements_ElementBase_h
 
 #include "ApertureBase.h"
+#include "core/Utils.h"
 #include "core/Constants.h"
+
+#include <sstream>
 
 #include <CLHEP/Vector/TwoVector.h>
 #include <CLHEP/Matrix/Matrix.h>
@@ -43,6 +46,7 @@ namespace Element
       float s() const { return s_; }
 
       void setPosition( const CLHEP::Hep2Vector& pos ) { pos_ = pos; }
+      /// X-Y position of the element at a given s
       CLHEP::Hep2Vector position() const { return pos_; }
       /// Horizontal position
       float x() const { return pos_.x(); }
@@ -87,7 +91,7 @@ namespace Element
       CLHEP::HepMatrix matrix() const { return matrix_; }
 
       void setAperture( const ApertureBase* apert ) { aperture_ = apert->clone(); }
-      ApertureBase* aperture() { return aperture_; }
+      ApertureBase* aperture() const { return aperture_; }
 
       float fieldStrength( float, float, int ) const;
 

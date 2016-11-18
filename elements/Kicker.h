@@ -10,7 +10,6 @@ namespace Element
   {
     public:
       Kicker( const ElementBase::Type& type, const std::string& name ) : ElementBase( type, name ) {;}
-      ~Kicker() {;}
 
       virtual Kicker* clone() const = 0;
       virtual void computeMatrix( float, float, int ) = 0;
@@ -20,7 +19,6 @@ namespace Element
   {
     public:
       HorizontalKicker( const std::string& name ) : Kicker( ElementBase::HorizontalKicker, name ) {;}
-      ~HorizontalKicker() {;}
 
       HorizontalKicker* clone() const { return new HorizontalKicker( *this ); }
       void computeMatrix( float, float, int );
@@ -30,7 +28,6 @@ namespace Element
   {
     public:
       VerticalKicker( const std::string& name ) : Kicker( ElementBase::VerticalKicker, name ) {;}
-      ~VerticalKicker() {;}
 
       VerticalKicker* clone() const { return new VerticalKicker( *this ); }
       void computeMatrix( float, float, int );

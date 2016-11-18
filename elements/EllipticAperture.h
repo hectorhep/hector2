@@ -11,6 +11,8 @@ namespace Element
       EllipticAperture( float, float, const CLHEP::Hep2Vector& pos=CLHEP::Hep2Vector() );
       ~EllipticAperture();
 
+      EllipticAperture* clone() const { return new EllipticAperture( *this ); }
+
       bool contains( const CLHEP::Hep2Vector& ) const;
 
   };

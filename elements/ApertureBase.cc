@@ -12,18 +12,6 @@ namespace Element
   {
   }
 
-  ApertureBase*
-  ApertureBase::clone() const
-  {
-    return new ApertureBase( type_, pos_, x1_, x2_, x3_, x4_ );
-  }
-
-  bool
-  ApertureBase::contains( const CLHEP::Hep2Vector& ) const
-  {
-    return false;
-  }
-
   std::ostream&
   operator<<( std::ostream& os, const ApertureBase::Type& type )
   {
@@ -40,9 +28,9 @@ namespace Element
   std::ostream&
   operator<<( std::ostream& os, const ApertureBase& ap )
   {
-    os << "Aperture (" << ap.type() << ")"
-       << " with parameters (" << ap.x1() << ", " << ap.x2() << ", " << ap.x3() << ", " << ap.x4() << ")"
-       << " and centered on " << ap.position();
+    os << ap.type() << " aperture"
+       << " (param. (" << ap.x1() << ", " << ap.x2() << ", " << ap.x3() << ", " << ap.x4() << "),"
+       << " center at " << ap.position() << ")";
     return os;
   }
 

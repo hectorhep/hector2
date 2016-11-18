@@ -10,7 +10,6 @@ namespace Element
   {
     public:
       Dipole( const ElementBase::Type& type, const std::string& name ) : ElementBase( type, name ) {;}
-      ~Dipole() {;}
 
       virtual Dipole* clone() const = 0;
       virtual void computeMatrix( float, float, int ) = 0;
@@ -22,7 +21,6 @@ namespace Element
   {
     public:
       RectangularDipole( const std::string& name ) : Dipole( ElementBase::RectangularDipole, name ) {;}
-      ~RectangularDipole() {;}
 
       RectangularDipole* clone() const { return new RectangularDipole( *this ); }
       void computeMatrix( float, float, int );
@@ -34,7 +32,6 @@ namespace Element
   {
     public:
       SectorDipole( const std::string& name ) : Dipole( ElementBase::SectorDipole, name ) {;}
-      ~SectorDipole() {;}
 
       SectorDipole* clone() const { return new SectorDipole( *this ); }
       void computeMatrix( float, float, int );

@@ -51,7 +51,10 @@ namespace Element
   std::ostream&
   operator<<( std::ostream& os, const ElementBase& elem )
   {
-    os << elem.name() << " (" << elem.type() << ") at s=" << elem.s() << " m";
+    os << "[" << elem.type() << "] " << elem.name() << " at s=" << elem.s() << " m.";
+    if ( elem.aperture() ) {
+      os << " with " << elem.aperture();
+    }
     return os;
   }
 

@@ -1,14 +1,28 @@
 #include "Beamline.h"
 
-Beamline::Beamline()
+Beamline::Beamline() :
+  length_( 0. )
 {
 }
 
+Beamline::Beamline( float length, const CLHEP::Hep3Vector& ip ) :
+  length_( length ), ip_( ip )
+{
+}
+
+
 Beamline::~Beamline()
 {
-  for ( ElementsMap::iterator it=elements_.begin(); it!=elements_.end(); it++ ) {
-    if ( *it ) delete *it;
+  clear();
+}
+
+void
+Beamline::clear()
+{
+  for ( ElementsMap::iterator elem=elements_.begin(); elem!=elements_.end(); elem++ ) {
+    if ( *elem ) delete *elem;
   }
+  elements_.clear();
 }
 
 void
@@ -20,8 +34,6 @@ Beamline::addElement( const Element::ElementBase* elem )
     return;
   }
 
-  std::cout << "New element added: " << elem << std::endl;
-  //elements_.push_back( static_cast<const Element::Element*>( elem )->clone() );
   elements_.push_back( elem->clone() );
   std::sort( elements_.begin(), elements_.end(), Element::sorter() );
 }
@@ -44,11 +56,7 @@ Beamline::matrix( float eloss, float mp, int qp )
   for ( size_t i=0; i<elements_.size(); i++ ) {
     Element::ElementBase* elem = elements_.at( i );
     elem->computeMatrix( eloss, mp, qp );
-for ( size_t j=0; j<6; j++ ) {
-  for ( size_t k=0; k<6; k++ ) {
-if ( elem->matrix()( j, k ) > 100. )
-    std::cout << "for element " << elem->name() << "(" << elem->type() << ")" << elem->matrix() << std::endl;
-}}
+    //std::cout << "for element " << elem->name() << "(" << elem->type() << ")" << elem->matrix() << std::endl;
     out = out*elem->matrix();
   }
 
@@ -64,4 +72,17 @@ Beamline::propagate( const Particle& part, float s )
       
     }
   }
+}
+
+void
+Beamline::dump( std::ostream& os )
+{
+  os << "========== Beamline dump ==========\n"
+     << " interaction point: " << interactionPoint() << "\n"
+     << " length: " << length() << " m\n"
+     << " elements list: ";
+  for ( ElementsMap::const_iterator it=elements_.begin(); it!=elements_.end(); it++ ) {
+    os << "\n  * " << *it;
+  }
+  os << "\n";
 }

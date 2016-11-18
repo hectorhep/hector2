@@ -42,6 +42,12 @@ install(TARGETS Hector DESTINATION lib)
 add_executable(hector main.cpp)
 target_link_libraries(hector Hector)
 
+#----- add the tests
+
+add_subdirectory(test)
+
+#----- copy the data files
+
 file(GLOB input RELATIVE ${PROJECT_SOURCE_DIR} data/twiss/*)
 foreach(_files ${input})
   configure_file(

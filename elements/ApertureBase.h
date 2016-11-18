@@ -15,13 +15,13 @@ namespace Element
       ApertureBase( const Type&, const CLHEP::Hep2Vector&, float, float, float, float );
       virtual ~ApertureBase();
 
-      ApertureBase* clone() const;
+      virtual ApertureBase* clone() const = 0;
+      virtual bool contains( const CLHEP::Hep2Vector& ) const = 0;
 
       friend std::ostream& operator<<( std::ostream&, const ApertureBase& );
       friend std::ostream& operator<<( std::ostream&, const ApertureBase* );
 
       Type type() const { return type_; }
-      virtual bool contains( const CLHEP::Hep2Vector& ) const;
 
       float x1() const { return x1_; }
       float x2() const { return x2_; }

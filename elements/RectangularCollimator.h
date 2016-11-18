@@ -9,7 +9,9 @@ namespace Element
   {
     public:
       RectangularCollimator( const std::string& name ) : Drift( ElementBase::RectangularCollimator, name ) {;}
-      ~RectangularCollimator() {;}
+
+      RectangularCollimator* clone() const { return new RectangularCollimator( *this ); }
+      //void computeMatrix( float, float, int );
 
     private:
 
