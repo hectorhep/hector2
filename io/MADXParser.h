@@ -31,7 +31,7 @@ namespace Parser
   class MADX
   {
     public:
-      MADX( const char*, int, float max_s=-1. );
+      MADX( const char*, const char*, int, float max_s=-1. );
       ~MADX();
 
       Beamline* beamline() const { return beamline_; }
@@ -53,6 +53,7 @@ namespace Parser
       std::ifstream in_file_;
       std::streampos in_file_lastline_;
 
+      std::string ip_name_;
       int dir_;
       Beamline* beamline_;
 

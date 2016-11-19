@@ -68,25 +68,15 @@ namespace Element
       /// Magnetic field strength
       float magneticStrength() const { return magnetic_strength_; }
 
-      void setBetaX( float bx ) { beta_x_ = bx; }
-      float betaX() const { return beta_x_; }
+      void setBeta( const CLHEP::Hep2Vector& beta ) { beta_ = beta; }
+      CLHEP::Hep2Vector beta() const { return beta_; }
 
-      void setBetaY( float by ) { beta_y_ = by; }
-      float betaY() const { return beta_y_; }
+      void setDispersion( const CLHEP::Hep2Vector& disp ) { disp_ = disp; }
+      /// Horizontal and vertical dispersion
+      CLHEP::Hep2Vector dispersion() const { return disp_; }
 
-      void setDX( float dx ) { disp_x_ = dx; }
-      /// Horizontal dispersion
-      float DX() const { return disp_x_; }
-
-      void setDY( float dy ) { disp_y_ = dy; }
-      /// Vertical dispersion
-      float DY() const { return disp_y_; }
-
-      void setRelX( float relx ) { rel_x_ = relx; };
-      float relX() const { return rel_x_; }
-
-      void setRelY( float rely ) { rel_y_ = rely; };
-      float relY() const { return rel_y_; }
+      void setRelativePosition( const CLHEP::Hep2Vector& pos ) { rel_pos_ = pos; };
+      CLHEP::Hep2Vector relativePosition() const { return rel_pos_; }
 
       CLHEP::HepMatrix matrix() const { return matrix_; }
 
@@ -108,9 +98,9 @@ namespace Element
 
       float tx_, ty_;
 
-      float beta_x_, beta_y_;
-      float disp_x_, disp_y_;
-      float rel_x_, rel_y_;
+      CLHEP::Hep2Vector beta_;
+      CLHEP::Hep2Vector disp_;
+      CLHEP::Hep2Vector rel_pos_;
 
       CLHEP::HepMatrix matrix_;
   };

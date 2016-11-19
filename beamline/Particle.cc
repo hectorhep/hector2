@@ -1,12 +1,12 @@
 #include "Particle.h"
 
 Particle::Particle() :
-  charge_( 0 )
+  charge_( 0 ), stopped_( false )
 {
 }
 
 Particle::Particle( const StateVector& sv0 ) :
-  pos0_( sv0 ), charge_( 0 )
+  pos0_( sv0 ), charge_( 0 ), stopped_( false )
 {
   addPosition( 0., pos0_ );
 }
@@ -16,9 +16,10 @@ Particle::~Particle()
 {}
 
 void
-Particle::addPosition( float s, const StateVector& sv )
+Particle::addPosition( float s, const StateVector& sv, bool stopped )
 {
   positions_.insert( std::pair<float, StateVector>( s, sv ) );
+  stopped_ = stopped;
 }
 
 void

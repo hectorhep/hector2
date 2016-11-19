@@ -67,11 +67,13 @@ class Particle
     void dump( std::ostream& os=std::cout ) const;
 
     StateVector firstPosition() const { return positions_.begin()->second; }
-    void addPosition( float, const StateVector& );
+    StateVector lastPosition() const { return positions_.end()->second; }
+    void addPosition( float, const StateVector&, bool stopped=false );
 
   private:
     StateVector pos0_;
     int charge_;
+    bool stopped_;
 
     std::map<float, StateVector> positions_;
 

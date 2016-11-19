@@ -4,8 +4,8 @@ namespace Parser
 {
   std::regex MADX::rgx_str_( "^\\%[0-9]?[0-9]?s$" );
 
-  MADX::MADX( const char* filename, int direction, float max_s ) :
-    dir_( direction/abs( direction ) ), beamline_( 0 )
+  MADX::MADX( const char* filename, const char* ip_name, int direction, float max_s ) :
+    ip_name_( ip_name ), dir_( direction/abs( direction ) ), beamline_( 0 )
   {
     in_file_ = std::ifstream( filename );
 
@@ -136,9 +136,10 @@ namespace Parser
     in_file_.seekg( in_file_lastline_ );
 
     // quantities needed whenever direction == 1 (FIXME)
-    float previous_x( 0. ), previous_y( 0. ),
-          previous_dx( 0. ), previous_dy( 0. ),
-          previous_betax( 0. ), previous_betay( 0. );
+    CLHEP::Hep2Vector previous_relpos, previous_disp, previous_beta;
+
+    float s_offset( 0. );
+    bool found_interaction_point = false;
 
     while ( !in_file_.eof() ) {
       std::getline( in_file_, line );
@@ -174,18 +175,26 @@ namespace Parser
         }
       }
 
-      /*elem_map_str.dump();
-      elem_map_floats.dump();*/
-
       try {
 
         const std::string name = trim( elem_map_str.get( "name" ) );
+        const float s_bl = elem_map_floats.get( "s" ),
+                    length = elem_map_floats.get( "l" );
+
+        // start filling the beamline from the declared interaction point
+        if ( !found_interaction_point ) {
+          if ( name!=ip_name_ ) continue;
+
+          found_interaction_point = true;
+          s_offset = s_bl+length;
+        }
+
+        const float s = s_bl-s_offset;
+
+        // convert the element type from string to object
         const Element::ElementBase::Type elemtype = Element::Dictionary::get()->elementType(
           lowercase( trim( elem_map_str.get( "keyword" ) ) )
         );
-
-        const float s = elem_map_floats.get( "s" ),
-                    length = elem_map_floats.get( "l" );
 
         // create the element
         switch ( elemtype ) {
@@ -254,34 +263,26 @@ namespace Parser
             dr.setLength( length );
             beamline_->addElement( &dr );
 
-            previous_x = elem_map_floats.get( "x" );
-            previous_y = elem_map_floats.get( "y" );
-            previous_dx = elem_map_floats.get( "dx" );
-            previous_dy = elem_map_floats.get( "dy" );
-            previous_betax = elem_map_floats.get( "betx" );
-            previous_betax = elem_map_floats.get( "bety" );
+            previous_relpos = CLHEP::Hep2Vector( elem_map_floats.get( "x" ), elem_map_floats.get( "y" ) );
+            previous_disp = CLHEP::Hep2Vector( elem_map_floats.get( "dx" ), elem_map_floats.get( "dy" ) );
+            previous_beta = CLHEP::Hep2Vector( elem_map_floats.get( "betx" ), elem_map_floats.get( "bety" ) );
           } break;
           default: break;
         }
 
+        // retrieve the pointer to the newly created beamline element
         Element::ElementBase* elem = beamline_->getElement( name );
         if ( !elem ) continue; // beamline element was not found
 
         if ( dir_<0 ) {
-          elem->setRelX( elem_map_floats.get( "x" ) );
-          elem->setRelY( elem_map_floats.get( "y" ) );
-          elem->setDX( elem_map_floats.get( "dx" ) );
-          elem->setDY( elem_map_floats.get( "dy" ) );
-          elem->setBetaX( elem_map_floats.get( "betx" ) );
-          elem->setBetaY( elem_map_floats.get( "bety" ) );
+          elem->setRelativePosition( CLHEP::Hep2Vector( elem_map_floats.get( "x" ), elem_map_floats.get( "y" ) ) );
+          elem->setDispersion( CLHEP::Hep2Vector( elem_map_floats.get( "dx" ), elem_map_floats.get( "dy" ) ) );
+          elem->setBeta( CLHEP::Hep2Vector( elem_map_floats.get( "betx" ), elem_map_floats.get( "bety" ) ) );
         }
         else {
-          elem->setRelX( previous_x );
-          elem->setRelY( previous_y );
-          elem->setDX( previous_dx );
-          elem->setDY( previous_dy );
-          elem->setBetaX( previous_betax );
-          elem->setBetaY( previous_betay );
+          elem->setRelativePosition( previous_relpos );
+          elem->setDispersion( previous_disp );
+          elem->setBeta( previous_beta );
         }
 
         // associate the aperture type to the element
