@@ -11,7 +11,7 @@ namespace Element
       Marker( const std::string& name );
 
       Marker* clone() const { return new Marker( *this ); }
-      void computeMatrix( float, float, int );
+      CLHEP::HepMatrix matrix( float, float, int ) const;
 
     private:
 

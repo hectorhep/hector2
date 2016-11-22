@@ -2,27 +2,29 @@
 
 namespace Element
 {
-  void
-  HorizontalKicker::computeMatrix( float eloss, float mp, int qp )
+  CLHEP::HepMatrix
+  HorizontalKicker::matrix( float eloss, float mp, int qp ) const
   {
     const float ke = -fieldStrength( eloss, mp, qp );
 
-    matrix_ = CLHEP::HepDiagMatrix( 6, 1 );
-    matrix_( 2, 1 ) = length_;
-    matrix_( 4, 3 ) = length_;
-    matrix_( 6, 1 ) = length_*tan( -fieldStrength( eloss, mp, qp ) ) / 2.;
-    matrix_( 6, 2 ) = ke;
+    CLHEP::HepMatrix mat = CLHEP::HepDiagMatrix( 6, 1 );
+    mat( 2, 1 ) = length_;
+    mat( 4, 3 ) = length_;
+    mat( 6, 1 ) = length_*tan( -fieldStrength( eloss, mp, qp ) ) / 2.;
+    mat( 6, 2 ) = ke;
+    return mat;
   }
 
-  void
-  VerticalKicker::computeMatrix( float eloss, float mp, int qp )
+  CLHEP::HepMatrix
+  VerticalKicker::matrix( float eloss, float mp, int qp ) const
   {
     const float ke = -fieldStrength( eloss, mp, qp );
 
-    matrix_ = CLHEP::HepDiagMatrix( 6, 1 );
-    matrix_( 2, 1 ) = length_;
-    matrix_( 4, 3 ) = length_;
-    matrix_( 6, 3 ) = length_*tan( ke ) / 2.;
-    matrix_( 6, 4 ) = ke;
+    CLHEP::HepMatrix mat = CLHEP::HepDiagMatrix( 6, 1 );
+    mat( 2, 1 ) = length_;
+    mat( 4, 3 ) = length_;
+    mat( 6, 3 ) = length_*tan( ke ) / 2.;
+    mat( 6, 4 ) = ke;
+    return mat;
   }
 }

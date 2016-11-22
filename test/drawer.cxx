@@ -1,10 +1,15 @@
 #include "beamline/Beamline.h"
 #include "io/MADXParser.h"
+#include "propagator/Propagator.h"
 
 #include "utils.h"
+#include "Canvas.h"
 
-#include "TCanvas.h"
-#include "TPave.h"
+#include <CLHEP/Random/RandGauss.h>
+
+#include "TGraph.h"
+#include "TMultiGraph.h"
+#include "TAxis.h"
 
 int
 main( int argc, char* argv[] )
@@ -16,41 +21,95 @@ main( int argc, char* argv[] )
   const char* ip = ( argc>3 ) ? argv[3] : "IP5";
 
   // general plotting parameters
-  const float size_x = 800.,
-              size_y = 0.2,
-              scale_y = 5.;
+  const float max_s = 500.;
+  const double smearing = 1.e-1; // rad
 
-  TCanvas c( "beamline", "", size_x, 200. );
+  Canvas c( "beamline", argv[1], true );
+  
+  Parser::MADX parser_beam1( argv[1], ip, +1, max_s ),
+               parser_beam2( argv[2], ip, +1, max_s );
 
-  // loop over the two beamlines
-  for ( unsigned int i=0; i<2; i++ ) {
-//if (i==1) break;
-    Parser::MADX parser( argv[1+i], ip, +1, 500. );
-    Beamline* bl = parser.beamline();
+  // look at both the beamlines
 
-    for ( Beamline::ElementsMap::const_iterator it=bl->begin(); it!=bl->end(); it++ ) {
-      Element::ElementBase* elem = *it;
-      if ( elem->type()==Element::ElementBase::Drift ) continue; //FIXME
-      if ( elem->type()==Element::ElementBase::Marker and elem->name()!=ip ) continue;
-      const float pos_x_ini = elem->s()/bl->length(),
-                  pos_x_end = pos_x_ini + elem->length()/bl->length(),
-                  pos_y_low_x = elem->x()*scale_y-size_y/2.,
-//                  pos_y_low_x = elem->relativePosition().x()*scale_y-size_y/2.,
-                  pos_y_high_x = pos_y_low_x+size_y,
-                  pos_y_low_y = elem->y()*scale_y-size_y/2.,
-//                  pos_y_low_y = elem->relativePosition().y()*scale_y-size_y/2.,
-                  pos_y_high_y = pos_y_low_y+size_y;
+  Propagator prop1( parser_beam1.beamline() ),
+             prop2( parser_beam2.beamline() );
 
-      // ROOT and its brilliant memory management...
-      TPave* elem_box = new TPave( pos_x_ini, 0.5+pos_y_low_x, pos_x_end, 0.5+pos_y_high_x, 1 );
-      elem_box->SetFillStyle( 1001 );
-      elem_box->SetFillColor( elementColour( elem ) );
-      elem_box->Draw();
+  const double mass = Constants::beam_particles_mass,
+               energy = Constants::beam_energy;  
+  const CLHEP::Hep3Vector mom0( 0, 0., sqrt( energy*energy-mass*mass ) );
+
+  TMultiGraph mg1_x, mg2_x,
+              mg1_y, mg2_y;
+
+  for ( unsigned int i=0; i<1; i++ ) {
+
+    const float rot_x = CLHEP::RandGauss::shoot( 0., smearing ),
+                rot_y = CLHEP::RandGauss::shoot( 0., smearing );
+
+    CLHEP::HepLorentzVector p0( mom0, energy );
+    p0.rotateX( rot_x );
+    p0.rotateY( rot_y );
+
+    Particle p( p0 );
+    p.setCharge( +1 );
+
+    { // beamline 1 propagation
+      prop1.propagate( p, max_s );
+
+      TGraph gr_x, gr_y;
+      unsigned short j = 0;
+      for ( Particle::PositionsMap::const_iterator it=p.begin(); it!=p.end(); it++, j++ ) {
+        gr_x.SetPoint( j, it->first, it->second.position().x() );
+        gr_y.SetPoint( j, it->first, it->second.position().y() );
+      }
+      gr_x.SetLineColor( kBlack );
+      gr_y.SetLineColor( kBlack );
+      mg1_x.Add( dynamic_cast<TGraph*>( gr_x.Clone() ) );
+      mg1_y.Add( dynamic_cast<TGraph*>( gr_y.Clone() ) );
     }
+    { // beamline 2 propagation
+      prop2.propagate( p, max_s );
+
+      TGraph gr_x, gr_y;
+      unsigned short j = 0;
+      for ( Particle::PositionsMap::const_iterator it=p.begin(); it!=p.end(); it++, j++ ) {
+        gr_x.SetPoint( j, it->first, it->second.position().x() );
+        gr_y.SetPoint( j, it->first, it->second.position().y() );
+      }
+      gr_x.SetLineColor( kRed );
+      gr_y.SetLineColor( kRed );
+      mg2_x.Add( dynamic_cast<TGraph*>( gr_x.Clone() ) );
+      mg2_y.Add( dynamic_cast<TGraph*>( gr_y.Clone() ) );
+    }
+    //p.dump();
   }
 
+  c.cd( 1 ); // x-axis
+  mg1_x.Draw( "al" );
+  mg2_x.Draw( "l" );
+  mg1_x.GetYaxis()->SetRangeUser( -0.1, 0.1 );
+  mg1_x.GetXaxis()->SetTitle( "s (m)" );
+  mg1_x.GetYaxis()->SetTitle( "x (m)" );
+  drawBeamline( 'x', parser_beam1.beamline(), 0, max_s, ip );
+  drawBeamline( 'x', parser_beam2.beamline(), 1, max_s, ip );
+  mg1_x.Draw( "lp" );
+  mg2_x.Draw( "lp" );
+  c.Prettify( mg1_x.GetHistogram() );
+
+  c.cd( 2 ); // y-axis
+  mg1_y.Draw( "al" );
+  mg2_y.Draw( "l" );
+  mg1_y.GetYaxis()->SetRangeUser( -0.1, 0.1 );
+  mg1_y.GetXaxis()->SetTitle( "s (m)" );
+  mg1_y.GetYaxis()->SetTitle( "y (m)" );
+  drawBeamline( 'y', parser_beam1.beamline(), 0, max_s, ip );
+  drawBeamline( 'y', parser_beam2.beamline(), 1, max_s, ip );
+  mg1_y.Draw( "lp" );
+  mg2_y.Draw( "lp" );
+  c.Prettify( mg1_y.GetHistogram() );
+
   //c.SetMargin( 5., 5., 5., 5. );
-  c.SaveAs( "beamline.pdf" );
+  c.Save( "pdf" );
 
   return 0;
 }

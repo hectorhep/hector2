@@ -12,7 +12,7 @@ namespace Element
       ~Drift();
 
       Drift* clone() const { return new Drift( *this ); }
-      void computeMatrix( float, float, int );
+      CLHEP::HepMatrix matrix( float, float, int ) const;
 
     private:
   };

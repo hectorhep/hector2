@@ -55,9 +55,7 @@ Beamline::matrix( float eloss, float mp, int qp )
 
   for ( size_t i=0; i<elements_.size(); i++ ) {
     Element::ElementBase* elem = elements_.at( i );
-    elem->computeMatrix( eloss, mp, qp );
-    //std::cout << "for element " << elem->name() << "(" << elem->type() << ")" << elem->matrix() << std::endl;
-    out = out*elem->matrix();
+    out = out*elem->matrix( eloss, mp, qp );
   }
 
   return out;

@@ -10,7 +10,8 @@ class Propagator
     Propagator( const Beamline* );
     ~Propagator();
 
-    void propagate( Particle&, float );
+    void propagate( Particle&, float ) const;
+    std::pair<float,Particle::StateVector> hitPosition( const Particle::StateVector& ini_pos, const Element::ElementBase* ele, float eloss, float mp, int qp ) const;
 
   private:
     const Beamline* beamline_;

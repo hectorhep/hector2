@@ -8,6 +8,7 @@ namespace Element
   class ApertureBase
   {
     public:
+      /// List of types allowed for an aperture
       typedef enum { None, Rectangular, Elliptic, Circular, RectElliptic } Type;
       friend std::ostream& operator<<( std::ostream&, const Type& );
 
@@ -15,7 +16,9 @@ namespace Element
       ApertureBase( const Type&, const CLHEP::Hep2Vector&, float, float, float, float );
       virtual ~ApertureBase();
 
+      /// Return a pointer to a clone of the current aperture
       virtual ApertureBase* clone() const = 0;
+      /// Check if a position is contained in the aperture
       virtual bool contains( const CLHEP::Hep2Vector& ) const = 0;
 
       friend std::ostream& operator<<( std::ostream&, const ApertureBase& );

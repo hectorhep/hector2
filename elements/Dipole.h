@@ -12,7 +12,7 @@ namespace Element
       Dipole( const ElementBase::Type& type, const std::string& name ) : ElementBase( type, name ) {;}
 
       virtual Dipole* clone() const = 0;
-      virtual void computeMatrix( float, float, int ) = 0;
+      virtual CLHEP::HepMatrix matrix( float, float, int ) const = 0;
 
     protected:
   };
@@ -23,7 +23,7 @@ namespace Element
       RectangularDipole( const std::string& name ) : Dipole( ElementBase::RectangularDipole, name ) {;}
 
       RectangularDipole* clone() const { return new RectangularDipole( *this ); }
-      void computeMatrix( float, float, int );
+      CLHEP::HepMatrix matrix( float, float, int ) const;
 
     private:
   };
@@ -34,7 +34,7 @@ namespace Element
       SectorDipole( const std::string& name ) : Dipole( ElementBase::SectorDipole, name ) {;}
 
       SectorDipole* clone() const { return new SectorDipole( *this ); }
-      void computeMatrix( float, float, int );
+      CLHEP::HepMatrix matrix( float, float, int ) const;
 
     private:
   };

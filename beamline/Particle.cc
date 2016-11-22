@@ -18,6 +18,9 @@ Particle::~Particle()
 void
 Particle::addPosition( float s, const StateVector& sv, bool stopped )
 {
+  if ( positions_.size()>0 and lastPosition().m()!=sv.m() ) {
+    throw Exception( __PRETTY_FUNCTION__, Form( "Particle mass is not conserved in propagation!\n\tPrevious mass was %.3f GeV, new mass is %.3f GeV", lastPosition().m(), sv.m() ), Fatal );
+  }
   positions_.insert( std::pair<float, StateVector>( s, sv ) );
   stopped_ = stopped;
 }

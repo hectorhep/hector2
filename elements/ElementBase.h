@@ -16,6 +16,7 @@ namespace Element
   class ElementBase
   {
     public:
+      /// List of types allowed for an element
       typedef enum {
         Invalid = -1,
         Marker, Drift, Monitor,
@@ -29,24 +30,38 @@ namespace Element
       friend std::ostream& operator<<( std::ostream&, const Type& );
 
     public:
-      ElementBase( const Type&, const std::string& name="invalid element" );
+      /// Build a new element
+      /// \param[in] type Element type (see Element::ElementBase::Type)
+      /// \param[in] name Element name
+      ElementBase( const Type& type, const std::string& name="invalid element" );
       virtual ~ElementBase();
 
+      /// Return a pointer to a clone of the current element
       virtual ElementBase* clone() const = 0;
-      virtual void computeMatrix( float, float, int ) = 0;
+      /// Compute the propagation matrix
+      /// \param[in] eloss Particle energy loss in the element (GeV)
+      /// \param[in] mp Particle mass (GeV)
+      /// \param[in] qp Particle charge (e)
+      virtual CLHEP::HepMatrix matrix( float eloss, float mp, int qp ) const = 0;
 
+      /// Human-readable printout of the properties of an element
       friend std::ostream& operator<<( std::ostream&, const ElementBase& );
+      /// Human-readable printout of the properties of the pointer to an element
       friend std::ostream& operator<<( std::ostream&, const ElementBase* );
 
+      /// Element name
       const std::string& name() const { return name_; }
+      /// Element type
       Type type() const { return type_; }
 
+      /// Set the longitudinal position of the entrance of the element
       void setS( float s ) { s_ = s; }
       /// Longitudinal position
       float s() const { return s_; }
 
+      /// Set the x-y position of the centre of the element
       void setPosition( const CLHEP::Hep2Vector& pos ) { pos_ = pos; }
-      /// X-Y position of the element at a given s
+      /// x-y position of the element at a given s
       CLHEP::Hep2Vector position() const { return pos_; }
       /// Horizontal position
       float x() const { return pos_.x(); }
@@ -60,10 +75,12 @@ namespace Element
       // Vertical angle
       float Ty() const { return ty_; }
 
+      /// Set the element length (m)
       void setLength( float length ) { length_ = length; }
-      /// Element length
+      /// Element length (m)
       float length() const { return length_; }
 
+      /// Set the element magnetic field strength
       void setMagneticStrength( float k ) { magnetic_strength_ = k; }
       /// Magnetic field strength
       float magneticStrength() const { return magnetic_strength_; }
@@ -71,6 +88,7 @@ namespace Element
       void setBeta( const CLHEP::Hep2Vector& beta ) { beta_ = beta; }
       CLHEP::Hep2Vector beta() const { return beta_; }
 
+      /// Set the x-y (horizontal and vertical) dispersions
       void setDispersion( const CLHEP::Hep2Vector& disp ) { disp_ = disp; }
       /// Horizontal and vertical dispersion
       CLHEP::Hep2Vector dispersion() const { return disp_; }
@@ -78,22 +96,27 @@ namespace Element
       void setRelativePosition( const CLHEP::Hep2Vector& pos ) { rel_pos_ = pos; };
       CLHEP::Hep2Vector relativePosition() const { return rel_pos_; }
 
-      CLHEP::HepMatrix matrix() const { return matrix_; }
-
       void setAperture( const ApertureBase* apert ) { aperture_ = apert->clone(); }
       ApertureBase* aperture() const { return aperture_; }
 
       float fieldStrength( float, float, int ) const;
 
     protected:
+      /// Element type
       Type type_;
+      /// Element name
       const std::string name_;
+      /// Pointer to the associated aperture object (if any)
       ApertureBase* aperture_;
 
+      /// Element longitudinal length
       float length_;
+      /// Magnetic strength of the object
       float magnetic_strength_;
 
+      /// x-y position of the element
       CLHEP::Hep2Vector pos_;
+      /// Longitudinal position of the element
       float s_;
 
       float tx_, ty_;
@@ -101,8 +124,6 @@ namespace Element
       CLHEP::Hep2Vector beta_;
       CLHEP::Hep2Vector disp_;
       CLHEP::Hep2Vector rel_pos_;
-
-      CLHEP::HepMatrix matrix_;
   };
 
   struct sorter

@@ -12,7 +12,7 @@ namespace Element
       Kicker( const ElementBase::Type& type, const std::string& name ) : ElementBase( type, name ) {;}
 
       virtual Kicker* clone() const = 0;
-      virtual void computeMatrix( float, float, int ) = 0;
+      virtual CLHEP::HepMatrix matrix( float, float, int ) const = 0;
   };
 
   class HorizontalKicker : public Kicker
@@ -21,7 +21,7 @@ namespace Element
       HorizontalKicker( const std::string& name ) : Kicker( ElementBase::HorizontalKicker, name ) {;}
 
       HorizontalKicker* clone() const { return new HorizontalKicker( *this ); }
-      void computeMatrix( float, float, int );
+      CLHEP::HepMatrix matrix( float, float, int ) const;
   };
 
   class VerticalKicker : public Kicker
@@ -30,7 +30,7 @@ namespace Element
       VerticalKicker( const std::string& name ) : Kicker( ElementBase::VerticalKicker, name ) {;}
 
       VerticalKicker* clone() const { return new VerticalKicker( *this ); }
-      void computeMatrix( float, float, int );
+      CLHEP::HepMatrix matrix( float, float, int ) const;
   };
 }
 

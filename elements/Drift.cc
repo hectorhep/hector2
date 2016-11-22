@@ -10,11 +10,12 @@ namespace Element
   Drift::~Drift()
   {}
 
-  void
-  Drift::computeMatrix( float, float, int )
+  CLHEP::HepMatrix
+  Drift::matrix( float, float, int ) const
   {
-    matrix_ = CLHEP::HepDiagMatrix( 6, 1 );
-    matrix_( 2, 1 ) = length_;
-    matrix_( 4, 3 ) = length_;
+    CLHEP::HepMatrix mat = CLHEP::HepDiagMatrix( 6, 1 );
+    mat( 2, 1 ) = length_;
+    mat( 4, 3 ) = length_;
+    return mat;
   }
 }

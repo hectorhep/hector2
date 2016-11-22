@@ -6,9 +6,9 @@ namespace Element
   {
   }
 
-  void
-  Marker::computeMatrix( float, float, int )
+  CLHEP::HepMatrix
+  Marker::matrix( float, float, int ) const
   {
-    matrix_ = CLHEP::HepDiagMatrix( 6, 1 );
+    return CLHEP::HepDiagMatrix( 6, 1 );
   }
 }
