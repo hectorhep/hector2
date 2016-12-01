@@ -6,47 +6,48 @@
 #include <string>
 #include <map>
 
-namespace Element
+namespace Hector
 {
-  class Dictionary
+  class ElementDictionary
   {
     public:
-      ~Dictionary() { built_ = false; }
-      static Dictionary* get();
+      static ElementDictionary& get();
 
-      ApertureBase::Type apertureType( const std::string& str ) const {
-        std::map<std::string,ApertureBase::Type>::const_iterator it = apertype_map_.find( str );
-        if ( it==apertype_map_.end() ) return ApertureBase::None;
-        return it->second;
+      Aperture::ApertureBase::Type apertureType( const std::string& str ) const {
+        std::map<std::string,Aperture::ApertureBase::Type>::const_iterator it = apertype_map_.find( str );
+        if ( it!=apertype_map_.end() ) return it->second;
+        return Aperture::ApertureBase::None;
       }
-      ApertureBase::Type apertureType( const char* str ) const { return apertureType( std::string( str ) ); }
-      std::string apertureTypeStr( const ApertureBase::Type& type ) const {
-        for ( std::map<std::string,ApertureBase::Type>::const_iterator it=apertype_map_.begin(); it!=apertype_map_.end(); it++ ) {
+      Aperture::ApertureBase::Type apertureType( const char* str ) const { return apertureType( std::string( str ) ); }
+      std::string apertureTypeStr( const Aperture::ApertureBase::Type& type ) const {
+        std::map<std::string,Aperture::ApertureBase::Type>::const_iterator it;
+        for ( it=apertype_map_.begin(); it!=apertype_map_.end(); it++ ) {
           if ( it->second==type ) return it->first;
         }
         return "";
       }
 
-      ElementBase::Type elementType( const std::string& str ) const {
-        std::map<std::string,ElementBase::Type>::const_iterator it = elemtype_map_.find( str );
-        if ( it==elemtype_map_.end() ) return ElementBase::Invalid;
-        return it->second;
+      Element::ElementBase::Type elementType( const std::string& str ) const {
+        std::map<std::string,Element::ElementBase::Type>::const_iterator it = elemtype_map_.find( str );
+        if ( it!=elemtype_map_.end() ) return it->second;
+        return Element::ElementBase::Invalid;
       }
-      ElementBase::Type elementType( const char* str ) const { return elementType( std::string( str ) ); }
-      std::string elementTypeStr( const ElementBase::Type& type ) const {
-        for ( std::map<std::string,ElementBase::Type>::const_iterator it=elemtype_map_.begin(); it!=elemtype_map_.end(); it++ ) {
+      Element::ElementBase::Type elementType( const char* str ) const { return elementType( std::string( str ) ); }
+      std::string elementTypeStr( const Element::ElementBase::Type& type ) const {
+        std::map<std::string,Element::ElementBase::Type>::const_iterator it;
+        for ( it=elemtype_map_.begin(); it!=elemtype_map_.end(); it++ ) {
           if ( it->second==type ) return it->first;
         }
         return "";
       }
 
     private:
-      Dictionary();
-      static Dictionary* dictionary_;
-      static bool built_;
+      ElementDictionary();
+      ElementDictionary( const ElementDictionary& );
+      void operator=( const ElementDictionary& );
 
-      std::map<std::string,ApertureBase::Type> apertype_map_;
-      std::map<std::string,ElementBase::Type> elemtype_map_;
+      std::map<std::string,Aperture::ApertureBase::Type> apertype_map_;
+      std::map<std::string,Element::ElementBase::Type> elemtype_map_;
   };
 }
 

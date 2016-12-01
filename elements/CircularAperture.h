@@ -3,18 +3,21 @@
 
 #include "EllipticAperture.h"
 
-namespace Element
+namespace Hector
 {
-  class CircularAperture : public EllipticAperture
+  namespace Aperture
   {
-    public:
-      CircularAperture( float, const CLHEP::Hep2Vector& pos=CLHEP::Hep2Vector() );
-      ~CircularAperture();
+    class CircularAperture : public EllipticAperture
+    {
+      public:
+        CircularAperture( float, const CLHEP::Hep2Vector& pos=CLHEP::Hep2Vector() );
+        ~CircularAperture();
 
-      CircularAperture* clone() const { return new CircularAperture( *this ); }
+        CircularAperture* clone() const { return new CircularAperture( *this ); }
 
-    private:
-  };
+      private:
+    };
+  }
 }
 
 #endif

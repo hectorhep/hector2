@@ -5,16 +5,19 @@
 
 #include <vector>
 
-class Beam
+namespace Hector
 {
-  public:
-    Beam( const size_t& );
-    ~Beam();
+  class Beam
+  {
+    public:
+      Beam( const size_t& );
+      ~Beam();
 
-  private:
-    std::vector<Particle> part_;
-    float energy_;
+    private:
+      std::vector<Particle> part_;
+      float energy_;
 
-};
+  };
+}
 
 #endif

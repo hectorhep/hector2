@@ -3,19 +3,22 @@
 
 #include "Drift.h"
 
-namespace Element
+namespace Hector
 {
-  class RectangularCollimator : public Drift
+  namespace Element
   {
-    public:
-      RectangularCollimator( const std::string& name ) : Drift( ElementBase::RectangularCollimator, name ) {;}
+    class RectangularCollimator : public Drift
+    {
+      public:
+        RectangularCollimator( const std::string& name ) : Drift( ElementBase::RectangularCollimator, name ) {;}
 
-      RectangularCollimator* clone() const { return new RectangularCollimator( *this ); }
-      //void computeMatrix( float, float, int );
+        RectangularCollimator* clone() const { return new RectangularCollimator( *this ); }
+        //void computeMatrix( float, float, int );
 
-    private:
+      private:
 
-  };
+    };
+  }
 }
 
 #endif

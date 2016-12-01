@@ -1,12 +1,15 @@
 #ifndef Core_Constants_h
 #define Core_Constants_h
 
-struct Constants
+namespace Hector
 {
-  static float beam_energy;
-  static float beam_particles_mass;
-  static int beam_particles_charge;
-  static bool use_relative_energy;
-};
+  struct Constants
+  {
+    static float beam_energy;
+    static float beam_particles_mass;
+    static int beam_particles_charge;
+    static bool use_relative_energy;
+  };
+}
 
 #endif

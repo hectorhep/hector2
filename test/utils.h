@@ -3,6 +3,8 @@
 #include "TColor.h"
 #include "TPave.h"
 
+using namespace Hector;
+
 Color_t
 elementColour( const Element::ElementBase* elem )
 {

@@ -3,19 +3,22 @@
 
 #include "ApertureBase.h"
 
-namespace Element
+namespace Hector
 {
-  class RectEllipticAperture : public ApertureBase
+  namespace Aperture
   {
-    public:
-      RectEllipticAperture( float, float, float, float, const CLHEP::Hep2Vector& pos=CLHEP::Hep2Vector() );
-      ~RectEllipticAperture();
+    class RectEllipticAperture : public ApertureBase
+    {
+      public:
+        RectEllipticAperture( float, float, float, float, const CLHEP::Hep2Vector& pos=CLHEP::Hep2Vector() );
+        ~RectEllipticAperture();
 
-      RectEllipticAperture* clone() const { return new RectEllipticAperture( *this ); }
+        RectEllipticAperture* clone() const { return new RectEllipticAperture( *this ); }
 
-      bool contains( const CLHEP::Hep2Vector& ) const;
+        bool contains( const CLHEP::Hep2Vector& ) const;
 
-  };
+    };
+  }
 }
 
 #endif

@@ -4,10 +4,11 @@
 int
 main( int argc, char* argv[] )
 {
-  Beamline line( 10. );
-  Element::Marker marker( "test" );
-
-  line.addElement( &marker );
+  Hector::Beamline line( 10. );
+  
+  /*Hector::Element::Marker marker( "test" );
+  line.addElement( &marker );*/
+  line.addElement( new Hector::Element::Marker( "test" ), true );
 
   line.dump();
 

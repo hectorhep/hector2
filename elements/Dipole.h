@@ -4,40 +4,43 @@
 #include "ElementBase.h"
 #include "core/Exception.h"
 
-namespace Element
+namespace Hector
 {
-  class Dipole : public ElementBase
+  namespace Element
   {
-    public:
-      Dipole( const ElementBase::Type& type, const std::string& name ) : ElementBase( type, name ) {;}
+    class Dipole : public ElementBase
+    {
+      public:
+        Dipole( const ElementBase::Type& type, const std::string& name ) : ElementBase( type, name ) {;}
 
-      virtual Dipole* clone() const = 0;
-      virtual CLHEP::HepMatrix matrix( float, float, int ) const = 0;
+        virtual Dipole* clone() const = 0;
+        virtual CLHEP::HepMatrix matrix( float, float, int ) const = 0;
 
-    protected:
-  };
+      protected:
+    };
 
-  class RectangularDipole : public Dipole
-  {
-    public:
-      RectangularDipole( const std::string& name ) : Dipole( ElementBase::RectangularDipole, name ) {;}
+    class RectangularDipole : public Dipole
+    {
+      public:
+        RectangularDipole( const std::string& name ) : Dipole( ElementBase::RectangularDipole, name ) {;}
 
-      RectangularDipole* clone() const { return new RectangularDipole( *this ); }
-      CLHEP::HepMatrix matrix( float, float, int ) const;
+        RectangularDipole* clone() const { return new RectangularDipole( *this ); }
+        CLHEP::HepMatrix matrix( float, float, int ) const;
 
-    private:
-  };
+      private:
+    };
 
-  class SectorDipole : public Dipole
-  {
-    public:
-      SectorDipole( const std::string& name ) : Dipole( ElementBase::SectorDipole, name ) {;}
+    class SectorDipole : public Dipole
+    {
+      public:
+        SectorDipole( const std::string& name ) : Dipole( ElementBase::SectorDipole, name ) {;}
 
-      SectorDipole* clone() const { return new SectorDipole( *this ); }
-      CLHEP::HepMatrix matrix( float, float, int ) const;
+        SectorDipole* clone() const { return new SectorDipole( *this ); }
+        CLHEP::HepMatrix matrix( float, float, int ) const;
 
-    private:
-  };
+      private:
+    };
+  }
 }
 
 #endif

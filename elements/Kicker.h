@@ -4,34 +4,37 @@
 #include "ElementBase.h"
 #include "core/Constants.h"
 
-namespace Element
+namespace Hector
 {
-  class Kicker : public ElementBase
+  namespace Element
   {
-    public:
-      Kicker( const ElementBase::Type& type, const std::string& name ) : ElementBase( type, name ) {;}
+    class Kicker : public ElementBase
+    {
+      public:
+        Kicker( const ElementBase::Type& type, const std::string& name ) : ElementBase( type, name ) {;}
 
-      virtual Kicker* clone() const = 0;
-      virtual CLHEP::HepMatrix matrix( float, float, int ) const = 0;
-  };
+        virtual Kicker* clone() const = 0;
+        virtual CLHEP::HepMatrix matrix( float, float, int ) const = 0;
+    };
 
-  class HorizontalKicker : public Kicker
-  {
-    public:
-      HorizontalKicker( const std::string& name ) : Kicker( ElementBase::HorizontalKicker, name ) {;}
+    class HorizontalKicker : public Kicker
+    {
+      public:
+        HorizontalKicker( const std::string& name ) : Kicker( ElementBase::HorizontalKicker, name ) {;}
 
-      HorizontalKicker* clone() const { return new HorizontalKicker( *this ); }
-      CLHEP::HepMatrix matrix( float, float, int ) const;
-  };
+        HorizontalKicker* clone() const { return new HorizontalKicker( *this ); }
+        CLHEP::HepMatrix matrix( float, float, int ) const;
+    };
 
-  class VerticalKicker : public Kicker
-  {
-    public:
-      VerticalKicker( const std::string& name ) : Kicker( ElementBase::VerticalKicker, name ) {;}
+    class VerticalKicker : public Kicker
+    {
+      public:
+        VerticalKicker( const std::string& name ) : Kicker( ElementBase::VerticalKicker, name ) {;}
 
-      VerticalKicker* clone() const { return new VerticalKicker( *this ); }
-      CLHEP::HepMatrix matrix( float, float, int ) const;
-  };
+        VerticalKicker* clone() const { return new VerticalKicker( *this ); }
+        CLHEP::HepMatrix matrix( float, float, int ) const;
+    };
+  }
 }
 
 #endif

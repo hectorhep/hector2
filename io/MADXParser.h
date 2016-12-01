@@ -26,40 +26,43 @@
 
 using std::ostream;
 
-namespace Parser
+namespace Hector
 {
-  class MADX
+  namespace Parser
   {
-    public:
-      MADX( const char*, const char*, int, float max_s=-1. );
-      ~MADX();
+    class MADX
+    {
+      public:
+        MADX( const char*, const char*, int, float max_s=-1. );
+        ~MADX();
 
-      Beamline* beamline() const { return beamline_; }
+        Beamline* beamline() const { return beamline_; }
 
-    public:
-      enum ValueType { Unknown = -1, String, Float, Integer };
-      friend std::ostream& operator<<( std::ostream&, const ValueType& );
+      public:
+        enum ValueType { Unknown = -1, String, Float, Integer };
+        friend std::ostream& operator<<( std::ostream&, const ValueType& );
 
-    private:
-      void parseHeader();
-      void parseElementsFields();
-      void parseElements();
+      private:
+        void parseHeader();
+        void parseElementsFields();
+        void parseElements();
 
-      ParametersMap<std::string> header_str_;
-      ParametersMap<float> header_float_;
+        ParametersMap<std::string> header_str_;
+        ParametersMap<float> header_float_;
 
-      UnorderedParametersMap<ValueType> elements_fields_;
+        UnorderedParametersMap<ValueType> elements_fields_;
 
-      std::ifstream in_file_;
-      std::streampos in_file_lastline_;
+        std::ifstream in_file_;
+        std::streampos in_file_lastline_;
 
-      std::string ip_name_;
-      int dir_;
-      Beamline* beamline_;
+        std::string ip_name_;
+        int dir_;
+        Beamline* beamline_;
 
-      static std::regex rgx_str_;
+        static std::regex rgx_str_;
 
-  };
+    };
+  }
 }
 
 #endif

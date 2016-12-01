@@ -3,19 +3,22 @@
 
 #include "ElementBase.h"
 
-namespace Element
+namespace Hector
 {
-  class Marker : public ElementBase
+  namespace Element
   {
-    public:
-      Marker( const std::string& name );
+    class Marker : public ElementBase
+    {
+      public:
+        Marker( const std::string& name );
 
-      Marker* clone() const { return new Marker( *this ); }
-      CLHEP::HepMatrix matrix( float, float, int ) const;
+        Marker* clone() const { return new Marker( *this ); }
+        CLHEP::HepMatrix matrix( float, float, int ) const;
 
-    private:
+      private:
 
-  };
+    };
+  }
 }
 
 #endif

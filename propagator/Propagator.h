@@ -4,17 +4,20 @@
 #include "beamline/Beamline.h"
 #include "beamline/Particle.h"
 
-class Propagator
+namespace Hector
 {
-  public:
-    Propagator( const Beamline* );
-    ~Propagator();
+  class Propagator
+  {
+    public:
+      Propagator( const Beamline* );
+      ~Propagator();
 
-    void propagate( Particle&, float ) const;
-    std::pair<float,Particle::StateVector> hitPosition( const Particle::StateVector& ini_pos, const Element::ElementBase* ele, float eloss, float mp, int qp ) const;
+      void propagate( Particle&, float ) const;
+      std::pair<float,Particle::StateVector> hitPosition( const Particle::StateVector& ini_pos, const Element::ElementBase* ele, float eloss, float mp, int qp ) const;
 
-  private:
-    const Beamline* beamline_;
-};
+    private:
+      const Beamline* beamline_;
+  };
+}
 
 #endif
