@@ -85,11 +85,10 @@ main( int argc, char* argv[] )
   }
 
   c.cd( 1 ); // x-axis
+  mg1_x.SetTitle( ".\\x (m)" );
   mg1_x.Draw( "al" );
   mg2_x.Draw( "l" );
   mg1_x.GetYaxis()->SetRangeUser( -0.1, 0.1 );
-  mg1_x.GetXaxis()->SetTitle( "s (m)" );
-  mg1_x.GetYaxis()->SetTitle( "x (m)" );
   drawBeamline( 'x', parser_beam1.beamline(), 0, max_s, ip );
   drawBeamline( 'x', parser_beam2.beamline(), 1, max_s, ip );
   mg1_x.Draw( "lp" );
@@ -97,11 +96,10 @@ main( int argc, char* argv[] )
   c.Prettify( mg1_x.GetHistogram() );
 
   c.cd( 2 ); // y-axis
+  mg1_y.SetTitle( "s (m)\\y (m)" );
   mg1_y.Draw( "al" );
   mg2_y.Draw( "l" );
   mg1_y.GetYaxis()->SetRangeUser( -0.1, 0.1 );
-  mg1_y.GetXaxis()->SetTitle( "s (m)" );
-  mg1_y.GetYaxis()->SetTitle( "y (m)" );
   drawBeamline( 'y', parser_beam1.beamline(), 0, max_s, ip );
   drawBeamline( 'y', parser_beam2.beamline(), 1, max_s, ip );
   mg1_y.Draw( "lp" );

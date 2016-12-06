@@ -10,10 +10,10 @@ int main( int argc, char* argv[] )
   Hector::Propagator prop( parser.beamline() );
   parser.beamline()->dump();
 
-  CLHEP::HepLorentzVector mom0( 0., 0., 0., 0.938 );
-  for ( unsigned int i=0; i<1; i++ ) {
+  CLHEP::HepLorentzVector mom0( 0., 0., 0., Hector::Constants::beam_particles_mass );
+  for ( unsigned int i=0; i<10; i++ ) {
     //mom0.setE( 100.+i*10. );
-    const float beta = 0.999 + i*1.e-5;
+    const float beta = i*1.e-6;
     mom0.boostZ( beta );
 std::cout << beta << " -> " << mom0 << std::endl;
     Hector::Particle p( mom0 );

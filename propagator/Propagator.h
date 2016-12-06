@@ -2,7 +2,7 @@
 #define Propagator_Propagator_h
 
 #include "beamline/Beamline.h"
-#include "beamline/Particle.h"
+#include "Particle.h"
 
 namespace Hector
 {

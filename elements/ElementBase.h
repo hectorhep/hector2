@@ -29,6 +29,7 @@ namespace Hector
           //RomanPot, InteractionPoint,
           Placeholder, Instrument
         } Type;
+        /// Human-readable printout of a element type
         friend std::ostream& operator<<( std::ostream&, const Type& );
 
       public:
@@ -70,11 +71,13 @@ namespace Hector
         /// Vertical position
         float y() const { return pos_.y(); }
 
+        /// Set the horizontal angle (computed with respect to the s coordinate)
         void setTx( float tx ) { tx_ = tx; }
-        // Horizontal angle
+        /// Horizontal angle
         float Tx() const { return tx_; }
+        /// Set the vertical angle (computed with respect to the s coordinate)
         void setTy( float ty ) { ty_ = ty; }
-        // Vertical angle
+        /// Vertical angle
         float Ty() const { return ty_; }
 
         /// Set the element length (m)
@@ -87,7 +90,9 @@ namespace Hector
         /// Magnetic field strength
         float magneticStrength() const { return magnetic_strength_; }
 
+        /// Set the beta factor
         void setBeta( const CLHEP::Hep2Vector& beta ) { beta_ = beta; }
+        /// Beta factor
         CLHEP::Hep2Vector beta() const { return beta_; }
 
         /// Set the x-y (horizontal and vertical) dispersions
@@ -95,15 +100,20 @@ namespace Hector
         /// Horizontal and vertical dispersion
         CLHEP::Hep2Vector dispersion() const { return disp_; }
 
+        /// Set the relative position of the element
         void setRelativePosition( const CLHEP::Hep2Vector& pos ) { rel_pos_ = pos; };
+        /// Relative position of the element
         CLHEP::Hep2Vector relativePosition() const { return rel_pos_; }
 
+        /// Set the aperture for this element
         void setAperture( const Aperture::ApertureBase* apert, bool delete_after=false ) {
           aperture_ = apert->clone();
           if ( delete_after ) delete apert;
         }
+        /// Aperture
         Aperture::ApertureBase* aperture() const { return aperture_; }
 
+        /// Compute the field strength of the element for a given energy loss of a particle of given mass and charge
         float fieldStrength( float, float, int ) const;
 
       protected:
@@ -124,10 +134,16 @@ namespace Hector
         /// Longitudinal position of the element
         float s_;
 
-        float tx_, ty_;
+        /// Horizontal angle
+        float tx_;
+        /// Vertical angle
+        float ty_;
 
+        /// Beta factor
         CLHEP::Hep2Vector beta_;
+        /// Dispersion
         CLHEP::Hep2Vector disp_;
+        /// Relative position of the element
         CLHEP::Hep2Vector rel_pos_;
     };
 
