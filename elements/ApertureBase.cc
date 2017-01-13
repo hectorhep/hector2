@@ -5,8 +5,7 @@ namespace Hector
   namespace Aperture
   {
     ApertureBase::ApertureBase( const Type& type, const CLHEP::Hep2Vector& pos, float x1, float x2, float x3, float x4 ) :
-      type_( type ), pos_( pos ),
-      x1_( x1 ), x2_( x2 ), x3_( x3 ), x4_( x4 ) // shape parameters
+      type_( type ), pos_( pos )
     {
     }
 
@@ -31,7 +30,7 @@ namespace Hector
     operator<<( std::ostream& os, const ApertureBase& ap )
     {
       os << ap.type() << " aperture"
-         << " (param. (" << ap.x1() << ", " << ap.x2() << ", " << ap.x3() << ", " << ap.x4() << "),"
+         << " (param. (" << ap.p( 0 ) << ", " << ap.p( 1 ) << ", " << ap.p( 2 ) << ", " << ap.p( 3 ) << "),"
          << " center at " << ap.position() << ")";
       return os;
     }

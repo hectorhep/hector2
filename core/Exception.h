@@ -3,12 +3,14 @@
 
 #include "Utils.h"
 
-#include <iostream>
 #include <iomanip>
+#include <iostream>
 #include <string>
 #include <cstdlib> // exit()
 
-#define PrintInfo(m) Exception(__PRETTY_FUNCTION__, m, Info).Dump();
+#define PrintInfo(m) Exception(__PRETTY_FUNCTION__, m, Info).dump();
+
+using std::cerr;
 
 namespace Hector
 {
@@ -17,13 +19,7 @@ namespace Hector
    * \author Laurent Forthomme <laurent.forthomme@cern.ch>
    * \date 27 Mar 2015
    */
-  typedef enum
-  {
-    Undefined=-1,
-    Info,
-    JustWarning,
-    Fatal
-  } ExceptionType;
+  typedef enum { Undefined=-1, Info, JustWarning, Fatal } ExceptionType;
 
   /**
    * \brief A simple exception handler
@@ -33,30 +29,22 @@ namespace Hector
   class Exception
   {
     public:
-      inline Exception( const char* from, std::string desc, ExceptionType type=Undefined, const int id=0 ) {
-        from_ = from;
-        description_ = desc;
-        type_ = type;
-        error_num_ = id;
-      }
+      inline Exception( const char* from, std::string desc, ExceptionType type=Undefined, const int id=0 ) :
+        from_( from ), description_( desc ), type_( type ), error_num_( id ) {}
       
-      inline Exception( const char* from, const char* desc, ExceptionType type=Undefined, const int id=0 ) {
-        from_ = from;
-        description_ = desc;
-        type_ = type;
-        error_num_ = id;
-      }
+      inline Exception( const char* from, const char* desc, ExceptionType type=Undefined, const int id=0 ) :
+        from_( from ), description_( desc ), type_( type ), error_num_( id ) {}
 
       inline ~Exception() {
         if ( type()==Fatal ) exit(0);
         // we stop this process' execution on fatal exception
       }
       
-      inline std::string from() const { return from_; }
-      inline int errorNumber() const { return error_num_; }
-      inline std::string description() const { return description_; }
-      inline ExceptionType type() const { return type_; }
-      inline std::string typeString() const {
+      inline const std::string from() const { return from_; }
+      inline const int errorNumber() const { return error_num_; }
+      inline const std::string description() const { return description_; }
+      inline const ExceptionType type() const { return type_; }
+      inline const std::string typeString() const {
         switch ( type() ) {
           case JustWarning:        return "\033[34;1mJustWarning\033[0m";
           case Info:               return "\033[33;1mInfo\033[0m";
@@ -82,7 +70,7 @@ namespace Hector
              << " Error #" << errorNumber() << std::endl;
         os << "===========================================================" << std::endl;
       }
-      inline std::string oneLine() const {
+      inline const std::string oneLine() const {
         std::ostringstream os;
         os << "[" << type() << "] === " << from() << " === "
            << description();

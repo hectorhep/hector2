@@ -5,10 +5,13 @@
 #include <CLHEP/Matrix/Matrix.h>
 #include <CLHEP/Vector/TwoVector.h>
 #include <CLHEP/Vector/LorentzVector.h>
+#include <CLHEP/Units/SystemOfUnits.h> // pi
+#include <CLHEP/Random/RandFlat.h>
 
 #include <map>
 
 #include "core/Exception.h"
+#include "core/Constants.h"
 
 using std::cout;
 
@@ -24,11 +27,12 @@ namespace Hector
         public:
           StateVector() : CLHEP::HepVector( 6, 0 ), m_( 0. ) {
             ( *this )[K] = 1.;
+            ( *this )[E] = Constants::beam_energy;
           }
           /// Build a state using a 6-component vector and a particle mass
           /// \param[in] vec A 6-component vector
           /// \param[in] mass Particle mass (GeV)
-          StateVector( const CLHEP::HepVector& vec, float mass ) : CLHEP::HepVector( vec ), m_( mass ) {;}
+          StateVector( const CLHEP::HepVector& vec, float mass ) : CLHEP::HepVector( vec ), m_( mass ) {}
           /// Build a state using a particle kinematics and position
           /// \param[in] mom Four-momentum of the particle (GeV)
           /// \param[in] pos x-y position of the particle (m)
@@ -38,7 +42,7 @@ namespace Hector
             setMomentum( mom );
             ( *this )[K] = 1.;
           }
-          ~StateVector() {;}
+          ~StateVector() {}
 
           void setEnergy( float energy ) { ( *this )[E] = energy; }
           /// Particle energy (GeV)
@@ -46,36 +50,17 @@ namespace Hector
           float kick() const { return ( *this )[K]; }
 
           /// Fill the components of a state according to the particle position
-          void setPosition( const CLHEP::Hep2Vector& pos ) {
-            ( *this )[X] = pos.x();
-            ( *this )[Y] = pos.y();
-          }
+          void setPosition( const CLHEP::Hep2Vector& pos );
           /// x-y position of a particle (m)
-          CLHEP::Hep2Vector position() const { return CLHEP::Hep2Vector( ( *this )[X], ( *this )[Y] ); }
+          CLHEP::Hep2Vector position() const;
 
           /// Fill the components of a state according to the particle kinematics
-          void setMomentum( const CLHEP::HepLorentzVector& mom ) {
-            ( *this )[TX] = atan2( mom.px(), mom.pz() );
-            ( *this )[TY] = atan2( mom.py(), mom.pz() );
-            ( *this )[E] = mom.e();
-          }
+          void setMomentum( const CLHEP::HepLorentzVector& mom );
           /// Four-momentum of the particle (GeV)
-          CLHEP::HepLorentzVector momentum() const {
-            const float pz = sqrt( ( energy()*energy()-m_*m_ )/( 1.+pow( tan( Tx() ), 2 )+pow( tan( Ty() ), 2 ) ) ),
-                        px = pz*tan( Tx() ),
-                        py = pz*tan( Ty() );
-            return CLHEP::HepLorentzVector( px, py, pz, energy() );
-          }
+          CLHEP::HepLorentzVector momentum() const;
           /// Set the particle mass (GeV)
           /// \warning Use with care! edits the energy as well as the mass to maintain a consistant kinematics.
-          void setM( float mass ) {
-            if ( mass!=momentum().m() ) {
-              m_ = mass;
-              ( *this )[E] = sqrt( momentum().mag2()+m_*m_ ); // match the energy accordingly
-              return;
-            }
-            m_ = mass;
-          }
+          void setM( float mass );
           /// Particle mass (GeV)
           float m() const { return m_; }
           /// Horizontal component of the polar angle
@@ -91,28 +76,38 @@ namespace Hector
     public:
       Particle();
       Particle( const CLHEP::HepLorentzVector& mom ) : Particle( StateVector( mom ) ) {;}
-      Particle( const StateVector& );
+      Particle( const StateVector&, float s0=0. );
       ~Particle();
+
+      static Particle fromMassCharge( float mass, float charge );
 
       void clear() { positions_.erase( ++begin(), end() ); }
 
       void setCharge( int ch ) { charge_ = ch; }
       int charge() const { return charge_; }
 
-      float mass() const { return firstPosition().m(); }
+      float mass() const { return firstStateVector().m(); }
 
       void dump( std::ostream& os=std::cout ) const;
 
-      StateVector firstPosition() const { return positions_.begin()->second; }
-      StateVector lastPosition() const { return positions_.rbegin()->second; }
+      const float firstPosition() const { return positions_.begin()->first; }
+      const float lastPosition() const { return positions_.rbegin()->first; }
+
+      StateVector& firstStateVector() { return positions_.begin()->second; }
+      StateVector& lastStateVector() { return positions_.rbegin()->second; }
+      const StateVector& firstStateVector() const { return positions_.begin()->second; }
+      const StateVector& lastStateVector() const { return positions_.rbegin()->second; }
+
       PositionsMap::iterator begin() { return positions_.begin(); }
       PositionsMap::iterator end() { return positions_.end(); }
       const PositionsMap::const_iterator begin() const { return positions_.begin(); }
       const PositionsMap::const_iterator end() const { return positions_.end(); }
+
       void addPosition( float, const StateVector&, bool stopped=false );
 
+      void emitGamma( float e_gamma, float q2, float phi_min=0., float phi_max=2*CLHEP::pi );
+
     private:
-      StateVector pos0_;
       int charge_;
       bool stopped_;
 

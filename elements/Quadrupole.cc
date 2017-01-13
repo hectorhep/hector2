@@ -11,8 +11,6 @@ namespace Hector
       const float ke = fabs( fieldStrength( eloss, mp, qp )/norm_charge ) * norm_charge,
                   omega = sqrt( fabs( ke ) )*length_;
 
-  //std::cout << "----> " << name() << " -- " << magneticStrength() << "  " << fieldStrength( eloss, mp, qp ) << "  " << ke << "  " << omega << "  " << norm_charge << std::endl;
-
       CLHEP::HepMatrix mat = CLHEP::HepDiagMatrix( 6, 1 );
       mat( 1, 1 ) = cos( omega );
       mat( 1, 2 ) = -sqrt( ke ) * sin( omega );

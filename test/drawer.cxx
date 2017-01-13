@@ -22,26 +22,26 @@ main( int argc, char* argv[] )
 
   // general plotting parameters
   const float max_s = 500.;
-  const double smearing = 1.e-1; // rad
+  const double smearing = 0.1; // rad
+  const unsigned int num_particles = 100;
 
-  Canvas c( "beamline", argv[1], true );
-  
-  Parser::MADX parser_beam1( argv[1], ip, +1, max_s ),
-               parser_beam2( argv[2], ip, +1, max_s );
+  Hector::Parser::MADX parser_beam1( argv[1], ip, +1, max_s ),
+                       parser_beam2( argv[2], ip, +1, max_s );
 
+//parser_beam1.beamline()->dump();
   // look at both the beamlines
 
-  Propagator prop1( parser_beam1.beamline() ),
-             prop2( parser_beam2.beamline() );
+  Hector::Propagator prop1( parser_beam1.beamline() ),
+                     prop2( parser_beam2.beamline() );
 
-  const double mass = Constants::beam_particles_mass,
-               energy = Constants::beam_energy;  
+  const double mass = Hector::Constants::beam_particles_mass,
+               energy = Hector::Constants::beam_energy;
   const CLHEP::Hep3Vector mom0( 0, 0., sqrt( energy*energy-mass*mass ) );
 
   TMultiGraph mg1_x, mg2_x,
               mg1_y, mg2_y;
 
-  for ( unsigned int i=0; i<1; i++ ) {
+  /*for ( unsigned int i=0; i<num_particles; i++ ) {
 
     const float rot_x = CLHEP::RandGauss::shoot( 0., smearing ),
                 rot_y = CLHEP::RandGauss::shoot( 0., smearing );
@@ -82,13 +82,53 @@ main( int argc, char* argv[] )
       mg2_y.Add( dynamic_cast<TGraph*>( gr_y.Clone() ) );
     }
     //p.dump();
+  }*/
+
+  Hector::BeamProducer::Particles gun = Hector::BeamProducer::gaussianParticleGun( 1000, Hector::Constants::beam_energy/2., Hector::Constants::beam_energy );
+  //Hector::BeamProducer::Particles gun = Hector::BeamProducer::TXscanner( 100, Hector::Constants::beam_energy, -100, 100, max_s );
+  for ( Hector::BeamProducer::Particles::iterator p=gun.begin(); p!=gun.end(); p++ ) {
+    //p->dump();
+    { // beamline 1 propagation
+      prop1.propagate( *p, max_s );
+      TGraph gr_x, gr_y;
+      unsigned short j = 0;
+      for ( Hector::Particle::PositionsMap::const_iterator it=p->begin(); it!=p->end(); it++, j++ ) {
+        gr_x.SetPoint( j, it->first, it->second.position().x() );
+        gr_y.SetPoint( j, it->first, it->second.position().y() );
+        //std::cout << "--> " << it->second.position() << std::endl;
+      }
+      gr_x.SetLineColor( kBlack );
+      gr_y.SetLineColor( kBlack );
+      mg1_x.Add( dynamic_cast<TGraph*>( gr_x.Clone() ) );
+      mg1_y.Add( dynamic_cast<TGraph*>( gr_y.Clone() ) );
+    }
+    p->clear();
+    { // beamline 2 propagation
+      prop2.propagate( *p, max_s );
+
+      TGraph gr_x, gr_y;
+      unsigned short j = 0;
+      for ( Hector::Particle::PositionsMap::const_iterator it=p->begin(); it!=p->end(); it++, j++ ) {
+        gr_x.SetPoint( j, it->first, it->second.position().x() );
+        gr_y.SetPoint( j, it->first, it->second.position().y() );
+      }
+      gr_x.SetLineColor( kRed );
+      gr_y.SetLineColor( kRed );
+      mg2_x.Add( dynamic_cast<TGraph*>( gr_x.Clone() ) );
+      mg2_y.Add( dynamic_cast<TGraph*>( gr_y.Clone() ) );
+    }
   }
+
+  // drawing part
+
+  Canvas c( "beamline", Form( "#scale[0.6]{%s - %s}", argv[1], argv[2] ), true );
 
   c.cd( 1 ); // x-axis
   mg1_x.SetTitle( ".\\x (m)" );
   mg1_x.Draw( "al" );
   mg2_x.Draw( "l" );
   mg1_x.GetYaxis()->SetRangeUser( -0.1, 0.1 );
+  mg1_x.GetXaxis()->SetRangeUser( 0., max_s );
   drawBeamline( 'x', parser_beam1.beamline(), 0, max_s, ip );
   drawBeamline( 'x', parser_beam2.beamline(), 1, max_s, ip );
   mg1_x.Draw( "lp" );

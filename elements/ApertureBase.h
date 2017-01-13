@@ -2,6 +2,7 @@
 #define Elements_Aperture_h
 
 #include <CLHEP/Vector/TwoVector.h>
+#include <vector>
 
 namespace Hector
 {
@@ -28,10 +29,7 @@ namespace Hector
 
         Type type() const { return type_; }
 
-        float x1() const { return x1_; }
-        float x2() const { return x2_; }
-        float x3() const { return x3_; }
-        float x4() const { return x4_; }
+        float p( const size_t& i ) const { return ( i<param_.size() ) ? param_.at( i ) : -1.0; }
 
         void setPosition( const CLHEP::Hep2Vector& pos ) { pos_ = pos; }
         void setPosition( float x, float y ) { setPosition( CLHEP::Hep2Vector( x, y ) ); }
@@ -43,7 +41,8 @@ namespace Hector
       protected:
         Type type_;
         CLHEP::Hep2Vector pos_;
-        float x1_, x2_, x3_, x4_;
+        /// Aperture shape parameters
+        std::vector<float> param_;
     };
   }
 }

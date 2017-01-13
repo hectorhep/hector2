@@ -13,8 +13,8 @@ namespace Hector
   class UnorderedParametersMap : public std::vector< std::pair<std::string,T> >
   {
     public:
-      UnorderedParametersMap() {;}
-      ~UnorderedParametersMap() {;}
+      UnorderedParametersMap() {}
+      ~UnorderedParametersMap() {}
 
       /// Does the map have this key?
       bool hasKey( const char* key ) const {

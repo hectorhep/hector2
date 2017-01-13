@@ -16,12 +16,12 @@ namespace Hector
     CLHEP::HepMatrix mat = CLHEP::HepDiagMatrix( 6, 1 );
     part.clear();
 
-    const Particle::StateVector in_pos = part.firstPosition();
+    const Particle::StateVector in_pos = part.firstStateVector();
     const double energy_loss = Constants::beam_energy-in_pos.energy();
 
     for ( Beamline::ElementsMap::const_iterator it=beamline_->begin(); it!=beamline_->end(); it++ ) {
       const Element::ElementBase* elem = *it;
-      mat = mat*elem->matrix( energy_loss, in_pos.momentum().m(), part.charge() );
+      mat = mat*elem->matrix( energy_loss, part.mass(), part.charge() );
 
       Particle::StateVector out_pos( mat*in_pos, in_pos.m() );
       double elem_s = elem->s();
@@ -32,11 +32,13 @@ namespace Hector
         const bool has_passed_entrance = aper->contains( in_pos.position() ),
                    has_passed_exit = aper->contains( out_pos.position() );
 
-        if ( !has_passed_entrance or !has_passed_exit ) has_stopped = true;
+        has_stopped = ( !has_passed_entrance or !has_passed_exit );
         if ( !has_passed_exit ) {
-          std::pair<float,Particle::StateVector> hp = hitPosition( out_pos, elem, energy_loss, in_pos.momentum().m(), part.charge() );
-          elem_s += hp.first;
-          out_pos = hp.second;
+          try {
+            std::pair<float,Particle::StateVector> hp = hitPosition( out_pos, elem, energy_loss, in_pos.momentum().m(), part.charge() );
+            elem_s += hp.first;
+            out_pos = hp.second;
+          } catch ( Exception& e ) {}
         }
 
       }
@@ -53,7 +55,7 @@ namespace Hector
   {
     // first check the validity of the element
     if ( ele->length()<=0. ) {
-      throw Exception( __PRETTY_FUNCTION__, Form( "Element %s has invalid length: %f m", ele->name(), ele->length() ), Fatal );
+      throw Exception( __PRETTY_FUNCTION__, Form( "Element %s has invalid length: %f m", ele->name().c_str(), ele->length() ), JustWarning );
     }
 
     Particle::StateVector vec = ini_pos;
@@ -102,6 +104,14 @@ namespace Hector
     const Particle::StateVector stop = Particle::StateVector( ele_tmp->matrix( eloss, mp, qp ) * ( vec-shift ) + shift, vec.m() );
 
     return std::pair<float,Particle::StateVector>( ( max_pos+min_pos )/2., ini_pos );
+  }
+
+  void
+  Propagator::propagate( BeamProducer::Particles& beam ) const
+  {
+    for ( BeamProducer::Particles::iterator it=beam.begin(); it!=beam.end(); it++ ) {
+      propagate( *it, 0. ); // s0?
+    }
   }
 }
 

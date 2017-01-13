@@ -16,7 +16,7 @@ namespace Hector
     RectangularAperture::contains( const CLHEP::Hep2Vector& pos ) const
     {
       const CLHEP::Hep2Vector vec( pos-pos_ );
-      return ( fabs( vec.x() )<x1_ and fabs( vec.y() )<x2_ );
+      return ( fabs( vec.x() )<p( 0 ) and fabs( vec.y() )<p( 1 ) );
     }
   }
 }

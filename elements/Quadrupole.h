@@ -10,7 +10,7 @@ namespace Hector
     class Quadrupole : public ElementBase
     {
       public:
-        Quadrupole( const std::string& name ) : ElementBase( ElementBase::Quadrupole, name ) {;}
+        Quadrupole( const std::string& name ) : ElementBase( ElementBase::Quadrupole, name ) {}
 
         virtual Quadrupole* clone() const = 0;
         virtual CLHEP::HepMatrix matrix( float, float, int ) const = 0;
@@ -21,7 +21,7 @@ namespace Hector
     class HorizontalQuadrupole : public Quadrupole
     {
       public:
-        HorizontalQuadrupole( const std::string& name ) : Quadrupole( name ) {;}
+        HorizontalQuadrupole( const std::string& name ) : Quadrupole( name ) {}
 
         HorizontalQuadrupole* clone() const { return new HorizontalQuadrupole( *this ); }
         CLHEP::HepMatrix matrix( float, float, int ) const;
@@ -32,7 +32,7 @@ namespace Hector
     class VerticalQuadrupole : public Quadrupole
     {
       public:
-        VerticalQuadrupole( const std::string& name ) : Quadrupole( name ) {;}
+        VerticalQuadrupole( const std::string& name ) : Quadrupole( name ) {}
 
         VerticalQuadrupole* clone() const { return new VerticalQuadrupole( *this ); }
         CLHEP::HepMatrix matrix( float, float, int ) const;

@@ -13,8 +13,8 @@ namespace Hector
   class ParametersMap : public std::map<std::string,T>
   {
     public:
-      ParametersMap() {;}
-      ~ParametersMap() {;}
+      ParametersMap() {}
+      ~ParametersMap() {}
 
       /// Does the map have this key?
       bool hasKey( const char* key ) const { return map::find( std::string( key ) )!=map::end(); }

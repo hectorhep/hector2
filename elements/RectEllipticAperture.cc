@@ -15,8 +15,8 @@ namespace Hector
     RectEllipticAperture::contains( const CLHEP::Hep2Vector& pos ) const
     {
       const CLHEP::Hep2Vector vec1( pos-pos_ ),
-                              vec2( ( pos.x()-pos_.x() )/x3_, ( pos.y()-pos_.y() )/x4_ );
-      return ( ( fabs( vec1.x() )<x1_ ) and ( fabs( vec1.y() )<x2_ ) // rectangular part
+                              vec2( ( pos.x()-pos_.x() )/p( 2 ), ( pos.y()-pos_.y() )/p( 3 ) );
+      return ( ( fabs( vec1.x() )<p( 0 ) ) and ( fabs( vec1.y() )<p( 1 ) ) // rectangular part
            and ( vec2.mag2()<1. ) ); // elliptic part
     }
   }

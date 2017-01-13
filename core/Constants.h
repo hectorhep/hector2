@@ -7,6 +7,7 @@ namespace Hector
   {
     static float beam_energy;
     static float beam_particles_mass;
+    static float crossing_angle;
     static int beam_particles_charge;
     static bool use_relative_energy;
   };

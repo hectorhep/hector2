@@ -118,9 +118,9 @@ class Canvas : public TCanvas
       }
       obj->GetXaxis()->SetTitle( x_title );
       obj->GetYaxis()->SetTitle( y_title );
-      //obj->SetTitle( "" );
+      obj->SetTitle( "" );
     }
-    //else obj->GetXaxis()->SetTitle(ttle);
+    else obj->GetXaxis()->SetTitle(ttle);
   }
 
   inline void DrawDiagonal(const TH1* obj) {

@@ -5,6 +5,7 @@ namespace Hector
   namespace Parser
   {
     std::regex MADX::rgx_str_( "^\\%[0-9]?[0-9]?s$" );
+    std::regex MADX::rgx_hdr_( "^\\@ (\\w+) +\\%([0-9]+s|le) +\\\"?([^\"\\n]+)" );
 
     MADX::MADX( const char* filename, const char* ip_name, int direction, float max_s ) :
       ip_name_( ip_name ), dir_( direction/abs( direction ) ), beamline_( 0 )
@@ -37,30 +38,36 @@ namespace Hector
     }
 
     void
+    MADX::printInfo() const
+    {
+      std::ostringstream os;
+      os << "MAD-X output successfully parsed. Metadata:";
+      if ( header_str_.hasKey( "title" ) ) os << "\n\t Title: " << header_str_.get( "title" );
+      if ( header_str_.hasKey( "origin" ) ) os << "\n\t Origin: " << trim( header_str_.get( "origin" ) );
+      if ( header_str_.hasKey( "date" ) or header_str_.hasKey( "time" ) ) os << "\n\t Date: " << trim( header_str_.get( "date" ) ) << " @ " << trim( header_str_.get( "time" ) );
+      if ( header_float_.hasKey( "energy" ) ) os << "\n\t Simulated single beam energy: " << header_float_.get( "energy" ) << " GeV";
+      if ( header_str_.hasKey( "sequence" ) ) os << "\n\t Sequence: " << header_str_.get( "sequence" );
+      if ( header_str_.hasKey( "particle" ) ) os << "\n\t Beam particles: " << header_str_.get( "particle" );
+      PrintInfo( os.str().c_str() );
+    }
+
+    void
     MADX::parseHeader()
     {
       std::string line;
       while ( !in_file_.eof() ) {
         std::getline( in_file_, line );
-        std::stringstream str( trim( line ) );
-        if ( str.str().length()==0 ) continue;
 
-        // only keep the lines starting by a '@' ; rest is for beamline elements
-        const char first_chr = str.str().at( str.str().find_first_not_of( ' ' ) );
-        if ( first_chr!='@' ) return;
+        std::smatch match;
+        if ( !std::regex_search( line, match, rgx_hdr_ ) ) return;
+
+        const bool is_float = ( match.str( 2 )=="le" );
+        const std::string key = lowercase( match.str( 1 ) );
+        if ( is_float ) header_float_.add( key, atof( match.str( 3 ).c_str() ) );
+        else header_str_.add( key, match.str( 3 ) );
 
         // keep track of the last line read in the file
         in_file_lastline_ = in_file_.tellg();
-
-        // fill the header maps
-        std::string chr, key, type, value;
-        while ( str >> chr >> key >> type >> value ) {
-          const bool is_string = std::regex_match( type, rgx_str_ ),
-                     is_float = ( !is_string and type=="%le" ); //FIXME
-          key = lowercase( key );
-          if ( is_string ) header_str_.add( key, value );
-          if ( is_float ) header_float_.add( key, atof( value.c_str() ) );
-        }
       }
     }
 
@@ -293,10 +300,10 @@ namespace Hector
               lowercase( trim( elem_map_str.get( "apertype" ) ) )
             );
             Aperture::ApertureBase* aperture = 0;
-            const float aper_1 = elem_map_floats.get( "aper_1" )*1.e6,
-                        aper_2 = elem_map_floats.get( "aper_2" )*1.e6,
-                        aper_3 = elem_map_floats.get( "aper_3" )*1.e6,
-                        aper_4 = elem_map_floats.get( "aper_4" )*1.e6; // rad -> urad
+            const float aper_1 = elem_map_floats.get( "aper_1" )/**1.e6*/,
+                        aper_2 = elem_map_floats.get( "aper_2" )/**1.e6*/,
+                        aper_3 = elem_map_floats.get( "aper_3" )/**1.e6*/,
+                        aper_4 = elem_map_floats.get( "aper_4" )/**1.e6*/; // rad -> urad
             switch ( apertype ) {
               case Aperture::ApertureBase::RectElliptic: aperture = new Aperture::RectEllipticAperture( aper_1, aper_2, aper_3, aper_4 ); break;
               case Aperture::ApertureBase::Circular:     aperture = new Aperture::CircularAperture( aper_1 ); break;

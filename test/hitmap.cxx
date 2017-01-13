@@ -21,14 +21,14 @@ main( int argc, char* argv[] )
   const float s_pos = atof( argv[2] );
   const char* ip = ( argc>3 ) ? argv[3] : "IP5";
 
-  Parser::MADX parser( argv[1], ip, +1, s_pos );
+  Hector::Parser::MADX parser( argv[1], ip, +1, s_pos );
 
   // look at both the beamlines
 
-  Propagator prop( parser.beamline() );
+  Hector::Propagator prop( parser.beamline() );
 
-  const double mass = Constants::beam_particles_mass,
-               energy = Constants::beam_energy;
+  const double mass = Hector::Constants::beam_particles_mass,
+               energy = Hector::Constants::beam_energy;
   const CLHEP::Hep3Vector mom0( 0, 0., sqrt( energy*energy-mass*mass ) );
 
   TH2D hitmap( "hitmap", "x (m)\\y (m)", 1000, -0.2, 0.2, 1000, -0.2, 0.2 );
@@ -53,14 +53,14 @@ main( int argc, char* argv[] )
     smear_x.Fill( rot_x );
     smear_y.Fill( rot_y );
 
-    Particle p( p0 );
+    Hector::Particle p( p0 );
     p.setCharge( +1 );
 
     { // propagation through the beamline
       prop.propagate( p, s_pos );
 
-      Particle::PositionsMap::const_iterator it = --p.end();
-      Particle::StateVector sv = it->second;
+      Hector::Particle::PositionsMap::const_iterator it = --p.end();
+      Hector::Particle::StateVector sv = it->second;
       hitmap.Fill( sv.position().x(), sv.position().y() );
     }
     //p.dump();

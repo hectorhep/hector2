@@ -41,6 +41,7 @@ namespace Hector
       public:
         enum ValueType { Unknown = -1, String, Float, Integer };
         friend std::ostream& operator<<( std::ostream&, const ValueType& );
+        void printInfo() const;
 
       private:
         void parseHeader();
@@ -59,7 +60,7 @@ namespace Hector
         int dir_;
         Beamline* beamline_;
 
-        static std::regex rgx_str_;
+        static std::regex rgx_str_, rgx_hdr_;
 
     };
   }

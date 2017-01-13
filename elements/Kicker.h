@@ -11,7 +11,7 @@ namespace Hector
     class Kicker : public ElementBase
     {
       public:
-        Kicker( const ElementBase::Type& type, const std::string& name ) : ElementBase( type, name ) {;}
+        Kicker( const ElementBase::Type& type, const std::string& name ) : ElementBase( type, name ) {}
 
         virtual Kicker* clone() const = 0;
         virtual CLHEP::HepMatrix matrix( float, float, int ) const = 0;
@@ -20,7 +20,7 @@ namespace Hector
     class HorizontalKicker : public Kicker
     {
       public:
-        HorizontalKicker( const std::string& name ) : Kicker( ElementBase::HorizontalKicker, name ) {;}
+        HorizontalKicker( const std::string& name ) : Kicker( ElementBase::HorizontalKicker, name ) {}
 
         HorizontalKicker* clone() const { return new HorizontalKicker( *this ); }
         CLHEP::HepMatrix matrix( float, float, int ) const;
@@ -29,7 +29,7 @@ namespace Hector
     class VerticalKicker : public Kicker
     {
       public:
-        VerticalKicker( const std::string& name ) : Kicker( ElementBase::VerticalKicker, name ) {;}
+        VerticalKicker( const std::string& name ) : Kicker( ElementBase::VerticalKicker, name ) {}
 
         VerticalKicker* clone() const { return new VerticalKicker( *this ); }
         CLHEP::HepMatrix matrix( float, float, int ) const;
