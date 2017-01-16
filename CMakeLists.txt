@@ -31,6 +31,9 @@ endforeach()
 
 #----- link everything into the library and executable
 
+# do not forget to retrieve
+# http://home.thep.lu.se/~leif/LHEF/LHEF.h
+
 add_library(Hector SHARED $<TARGET_OBJECTS:HectorCore>
                           $<TARGET_OBJECTS:HectorIO>
                           $<TARGET_OBJECTS:HectorElements>

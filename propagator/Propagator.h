@@ -16,7 +16,7 @@ namespace Hector
       void propagate( Particle&, float ) const;
       std::pair<float,Particle::StateVector> hitPosition( const Particle::StateVector& ini_pos, const Element::ElementBase* ele, float eloss, float mp, int qp ) const;
 
-      void propagate( BeamProducer::Particles& ) const;
+      void propagate( Particles& ) const;
 
     private:
       const Beamline* beamline_;

@@ -7,4 +7,3 @@ include_directories(${PROJECT_SOURCE_DIR})
 
 add_library(HectorIO OBJECT ${sources})
 set_target_properties(HectorIO PROPERTIES LINKER_LANGUAGE CXX)
-

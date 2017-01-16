@@ -17,9 +17,11 @@ using std::cout;
 
 namespace Hector
 {
+  /// Generic particle model inserted in a beam
   class Particle
   {
     public:
+      /// Six-dimensional state vector associated to a particle at a given s
       class StateVector : public CLHEP::HepVector
       {
         public:
@@ -114,6 +116,9 @@ namespace Hector
       PositionsMap positions_;
 
   };
+
+  /// Collection of particles composing the beam
+  typedef std::vector<Particle> Particles;
 }
 
 #endif

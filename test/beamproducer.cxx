@@ -28,9 +28,9 @@ main( int argc, char* argv[] )
 
   Hector::Propagator prop( parser.beamline() );
 
-  Hector::BeamProducer::Particles part = Hector::BeamProducer::TXscanner( 100, Hector::Constants::beam_energy, 0., 10., s_max );
+  Hector::Particles part = Hector::BeamProducer::TXscanner( 100, Hector::Constants::beam_energy, 0., 10., s_max );
   //Hector::BeamProducer::Particles part = Hector::BeamProducer::particleGun( 2, 6000., 6500. );
-  for ( Hector::BeamProducer::Particles::const_iterator p=part.begin(); p!=part.end(); p++ ) {
+  for ( Hector::Particles::const_iterator p=part.begin(); p!=part.end(); p++ ) {
     //std::cout << "--> " << p->firstStateVector().energy() << " ---> " << p->firstStateVector().m() << " | " << p->firstStateVector().momentum() << std::endl;
     p->dump();
   }

@@ -8,12 +8,12 @@
 
 namespace Hector
 {
-  /// Set of particles composing a beam
+  /// Generator for beam of particles
   namespace BeamProducer
   {
-    typedef std::vector<Particle> Particles;
-
+    /// Beam of particles to scan the optics following the x axis
     Particles Xscanner( const size_t& num_part, float e_ini, float x_min, float x_max, float y=0., float s_ini=0. );
+    /// Beam of particles to scan the optics following the y axis
     Particles Yscanner( const size_t& num_part, float e_ini, float y_min, float y_max, float x=0., float s_ini=0. );
     Particles TXscanner( const size_t& num_part, float e_ini, float tx_min, float tx_max, float ty=0., float s_ini=0. );
     Particles TYscanner( const size_t& num_part, float e_ini, float ty_min, float ty_max, float tx=0., float s_ini=0. );

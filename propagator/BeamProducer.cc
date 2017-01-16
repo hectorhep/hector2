@@ -9,7 +9,7 @@ namespace Hector
   CLHEP::Hep2Vector pos_ini( -500., 0. );
   CLHEP::HepLorentzVector mom_ini( half_crossing_angle, 0., 0., mp );*/
 
-  BeamProducer::Particles
+  Particles
   BeamProducer::Xscanner( const size_t& num_part, float e_ini, float x_min, float x_max, float y, float s_ini )
   {
     Particles out;
@@ -23,7 +23,7 @@ namespace Hector
     return out;
   }
 
-  BeamProducer::Particles
+  Particles
   BeamProducer::Yscanner( const size_t& num_part, float e_ini, float y_min, float y_max, float x, float s_ini )
   {
     Particles out;
@@ -37,7 +37,7 @@ namespace Hector
     return out;
   }
 
-  BeamProducer::Particles
+  Particles
   BeamProducer::TXscanner( const size_t& num_part, float e_ini, float tx_min, float tx_max, float ty, float s_ini )
   {
     Particles out;
@@ -52,14 +52,14 @@ namespace Hector
     return out;
   }
 
-  BeamProducer::Particles
+  Particles
   BeamProducer::TYscanner( const size_t& num_part, float e_ini, float ty_min, float ty_max, float tx, float s_ini )
   {
     Particles out;
     return out;
   }
 
-  BeamProducer::Particles
+  Particles
   BeamProducer::gaussianParticleGun( const size_t& num_part,
                                      float e_min, float e_max, float s_min, float s_max,
                                      float x_min, float x_max, float y_min, float y_max,
@@ -86,7 +86,7 @@ namespace Hector
     return out;
   }
 
-  BeamProducer::Particles
+  Particles
   BeamProducer::flatParticleGun( const size_t& num_part,
                                  float e_min, float e_max, float s_min, float s_max,
                                  float x_min, float x_max, float y_min, float y_max,

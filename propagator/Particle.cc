@@ -76,11 +76,11 @@ namespace Hector
     // and if q2 < q2min, we force q2 = q2min (-> cos(eta) = 1)
     // BUT the user knows something was wrong with the value of "H_BeamParticle::isphysical"
 
-    bool is_physical = true;
+    /*bool is_physical = true;
     if ( ( q2_gamma>q2max ) or ( q2_gamma<q2min ) ) {
       PrintInfo( Form( "WARNING: Non physical particle! Q2=%.5f GeV**2 and E=%.5f GeV are not compatible.", q2_gamma, e_gamma ) );
       is_physical = false;
-    }
+    }*///FIXME
 
     const double q2 = ( q2_gamma>q2max ) ? q2max : ( q2_gamma<q2min ) ? q2min : q2_gamma;
 

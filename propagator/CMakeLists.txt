@@ -7,4 +7,3 @@ include_directories(${PROJECT_SOURCE_DIR})
 
 add_library(HectorPropagator OBJECT ${sources})
 set_target_properties(HectorPropagator PROPERTIES LINKER_LANGUAGE CXX)
-

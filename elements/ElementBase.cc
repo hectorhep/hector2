@@ -7,9 +7,7 @@ namespace Hector
     ElementBase::ElementBase( const Type& type, const std::string& name ) :
       type_( type ), name_( name ), aperture_( 0 ),
       length_( 0. ), magnetic_strength_( 0. ), s_( 0. ), tx_( 0. ), ty_( 0. )
-      //matrix_( CLHEP::HepDiagMatrix( 6, 1 );
-    {
-    }
+    {}
 
     ElementBase::~ElementBase()
     {
@@ -19,12 +17,14 @@ namespace Hector
     float
     ElementBase::fieldStrength( float eloss, float mp, int qp ) const
     {
+      if ( qp==0 ) return 0.;
+
       const float eini = Constants::beam_energy,
                   mp0 = Constants::beam_particles_mass,
                   e = eini-eloss;
-      const float p0 = sqrt( ( eini-mp0 )*( eini+mp0 ) ),
-                  p = sqrt( ( e-mp )*( e+mp ) );
-      return ( qp==0 ) ? 0. : magnetic_strength_*( p0/p )*( qp/Constants::beam_particles_charge );
+      const float p0 = sqrt( ( eini-mp0 )*( eini+mp0 ) ), // e_ini^2 - p_0^2 = mp0^2
+                  p = sqrt( ( e-mp )*( e+mp ) ); // e^2 - p^2 = mp^2
+      return magnetic_strength_*( p0/p )*( qp/Constants::beam_particles_charge );
     }
 
     std::ostream&

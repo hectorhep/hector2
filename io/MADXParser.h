@@ -30,17 +30,21 @@ namespace Hector
 {
   namespace Parser
   {
+    /// Parsing tool for MAD-X output stp files
     class MADX
     {
       public:
         MADX( const char*, const char*, int, float max_s=-1. );
         ~MADX();
 
+        /// Retrieve the beamline parsed from the MAD-X output file
         Beamline* beamline() const { return beamline_; }
 
       public:
+        /// Type of content stored in the parameters map
         enum ValueType { Unknown = -1, String, Float, Integer };
         friend std::ostream& operator<<( std::ostream&, const ValueType& );
+        /// Print all useful information parsed from the MAD-X output file
         void printInfo() const;
 
       private:

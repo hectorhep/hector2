@@ -107,9 +107,9 @@ namespace Hector
   }
 
   void
-  Propagator::propagate( BeamProducer::Particles& beam ) const
+  Propagator::propagate( Particles& beam ) const
   {
-    for ( BeamProducer::Particles::iterator it=beam.begin(); it!=beam.end(); it++ ) {
+    for ( Particles::iterator it=beam.begin(); it!=beam.end(); it++ ) {
       propagate( *it, 0. ); // s0?
     }
   }
