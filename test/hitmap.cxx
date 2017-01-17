@@ -67,25 +67,25 @@ main( int argc, char* argv[] )
   }
 
   {
-    Canvas c( "hitmap", "" );
+    Hector::Canvas c( "hitmap", "" );
     hitmap.Draw( "colz" );
     c.Prettify( &hitmap );
     c.Save( "pdf" );
   }
   {
-    Canvas c( "initial_pt", "" );
+    Hector::Canvas c( "initial_pt", "" );
     pt_ini.Draw();
     c.Prettify( &pt_ini );
     c.Save( "pdf" );
   }
   {
-    Canvas c( "initial_px", "" );
+    Hector::Canvas c( "initial_px", "" );
     px_ini.Draw();
     c.Prettify( &px_ini );
     c.Save( "pdf" );
   }
   {
-    Canvas c( "smearing_param", "" );
+    Hector::Canvas c( "smearing_param", "" );
     smear_x.Draw();
     smear_y.SetLineColor( kRed+1 );
     smear_y.Draw( "same" );

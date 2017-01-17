@@ -7,6 +7,7 @@ namespace Hector
 {
   namespace Element
   {
+    /// A generic quadrupole object
     class Quadrupole : public ElementBase
     {
       public:
@@ -18,6 +19,7 @@ namespace Hector
       protected:
     };
 
+    /// Horizontal quadrupole object builder
     class HorizontalQuadrupole : public Quadrupole
     {
       public:
@@ -29,6 +31,7 @@ namespace Hector
       private:
     };
 
+    /// Vertical quadrupole object builder
     class VerticalQuadrupole : public Quadrupole
     {
       public:

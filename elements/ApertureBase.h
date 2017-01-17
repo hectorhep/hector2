@@ -6,6 +6,7 @@
 
 namespace Hector
 {
+  /// Collection of apertures to be associated to element objects
   namespace Aperture
   {
     class ApertureBase
@@ -27,19 +28,28 @@ namespace Hector
         friend std::ostream& operator<<( std::ostream&, const ApertureBase& );
         friend std::ostream& operator<<( std::ostream&, const ApertureBase* );
 
+        /// Type of aperture (rectangular, elliptic, rect-elliptic, circular)
         Type type() const { return type_; }
 
+        /// Retrieve a shape parameter of the aperture
         float p( const size_t& i ) const { return ( i<param_.size() ) ? param_.at( i ) : -1.0; }
 
+        /// Set the transverse position of the aperture
         void setPosition( const CLHEP::Hep2Vector& pos ) { pos_ = pos; }
+        /// Set the transverse position of the aperture
         void setPosition( float x, float y ) { setPosition( CLHEP::Hep2Vector( x, y ) ); }
-        CLHEP::Hep2Vector position() const { return pos_; }
 
+        /// Get the transverse position of the aperture
+        CLHEP::Hep2Vector position() const { return pos_; }
+        /// Get the horizontal position of the aperture
         float x() const { return pos_.x(); }
+        /// Get the vertical position of the aperture
         float y() const { return pos_.y(); }
 
       protected:
+        /// Type of aperture
         Type type_;
+        /// Transverse position of the aperture
         CLHEP::Hep2Vector pos_;
         /// Aperture shape parameters
         std::vector<float> param_;

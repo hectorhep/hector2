@@ -46,24 +46,26 @@ namespace Hector
           }
           ~StateVector() {}
 
+          /// Set the particle energy (in GeV)
           void setEnergy( float energy ) { ( *this )[E] = energy; }
-          /// Particle energy (GeV)
+          /// Particle energy (in GeV)
           float energy() const { return ( *this )[E]; }
+          /// Particle kick
           float kick() const { return ( *this )[K]; }
 
           /// Fill the components of a state according to the particle position
           void setPosition( const CLHEP::Hep2Vector& pos );
-          /// x-y position of a particle (m)
+          /// x-y position of a particle (in m)
           CLHEP::Hep2Vector position() const;
 
           /// Fill the components of a state according to the particle kinematics
           void setMomentum( const CLHEP::HepLorentzVector& mom );
-          /// Four-momentum of the particle (GeV)
+          /// Four-momentum of the particle (in GeV)
           CLHEP::HepLorentzVector momentum() const;
-          /// Set the particle mass (GeV)
+          /// Set the particle mass (in GeV)
           /// \warning Use with care! edits the energy as well as the mass to maintain a consistant kinematics.
           void setM( float mass );
-          /// Particle mass (GeV)
+          /// Particle mass (in GeV)
           float m() const { return m_; }
           /// Horizontal component of the polar angle
           float Tx() const { return ( *this )[TX]; }
@@ -73,44 +75,71 @@ namespace Hector
         private:
           float m_;
       };
+      /// Particle trajectory holder ; map of state vectors indexed to the s-position
       typedef std::map<float,StateVector> PositionsMap;
 
     public:
       Particle();
-      Particle( const CLHEP::HepLorentzVector& mom ) : Particle( StateVector( mom ) ) {;}
+      /// Construct a particle according to its first state vector's 4-momentum
+      Particle( const CLHEP::HepLorentzVector& mom ) : Particle( StateVector( mom ) ) {}
+      /// Construct a particle according to its first state vector/s-position couple
       Particle( const StateVector&, float s0=0. );
       ~Particle();
 
+      /// Build a Particle object from a mass and electric charge
       static Particle fromMassCharge( float mass, float charge );
 
+      /// Clear all state vectors (but the initial one)
       void clear() { positions_.erase( ++begin(), end() ); }
 
+      /// Set the electric charge (in e)
       void setCharge( int ch ) { charge_ = ch; }
+      /// Electric charge (in e)
       int charge() const { return charge_; }
 
+      /// Set the particle's PDG id
+      void setPDGid( int pdgid ) { pdgId_ = pdgid; }
+      /// Particle's PDG id
+      int pdgId() const { return pdgId_; }
+
+      /// Mass (in GeV/c2)
       float mass() const { return firstStateVector().m(); }
 
+      /// Print all useful information about a particle
       void dump( std::ostream& os=std::cout ) const;
 
+      /// First position associated to the particle along s
       const float firstPosition() const { return positions_.begin()->first; }
+      /// Last position associated to the particle along s
       const float lastPosition() const { return positions_.rbegin()->first; }
 
+      /// First state vector associated to the particle
       StateVector& firstStateVector() { return positions_.begin()->second; }
+      /// Last state vector associated to the particle
       StateVector& lastStateVector() { return positions_.rbegin()->second; }
+      /// First state vector associated to the particle
       const StateVector& firstStateVector() const { return positions_.begin()->second; }
+      /// Last state vector associated to the particle
       const StateVector& lastStateVector() const { return positions_.rbegin()->second; }
 
+      /// Iterator to the first s-position/state vector couple of the particle's trajectory
       PositionsMap::iterator begin() { return positions_.begin(); }
+      /// Iterator to the last s-position/state vector couple of the particle's trajectory
       PositionsMap::iterator end() { return positions_.end(); }
+      /// Iterator to the first s-position/state vector couple of the particle's trajectory
       const PositionsMap::const_iterator begin() const { return positions_.begin(); }
+      /// Iterator to the last s-position/state vector couple of the particle's trajectory
       const PositionsMap::const_iterator end() const { return positions_.end(); }
 
+      /// Add a new s-position/state vector couple to the particle's trajectory
       void addPosition( float, const StateVector&, bool stopped=false );
 
+      /// Let the particle emit a photon
       void emitGamma( float e_gamma, float q2, float phi_min=0., float phi_max=2*CLHEP::pi );
 
     private:
       int charge_;
+      int pdgId_;
       bool stopped_;
 
       PositionsMap positions_;

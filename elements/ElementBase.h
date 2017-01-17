@@ -13,8 +13,10 @@
 
 namespace Hector
 {
+  /// Collection of beamline elements
   namespace Element
   {
+    /// A generic beamline element object
     class ElementBase
     {
       public:
@@ -147,9 +149,12 @@ namespace Hector
         CLHEP::Hep2Vector rel_pos_;
     };
 
+    /// Sorting methods for the beamline construction (using the s position of each elements)
     struct sorter
     {
+      /// Compare the references to two elements
       inline bool operator()( const ElementBase& lhs, const ElementBase& rhs ) { return ( lhs.s()<rhs.s() ); }
+      /// Compare the pointers to two elements
       inline bool operator()( const ElementBase* lhs, const ElementBase* rhs ) { return ( lhs->s()<rhs->s() ); }
     };
 

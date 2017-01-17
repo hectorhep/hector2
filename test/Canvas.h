@@ -14,217 +14,221 @@
 
 #define font_type(x) 130+x
 
-class PaveText : public TPaveText
+namespace Hector
 {
- public:
-  inline PaveText( const float& x1, const float& y1, const float& x2, const float& y2, const char* text="" ) :
-    TPaveText( x1, y1, x2, y2, "NDC" )
+  class Canvas : public TCanvas
   {
-    TPaveText::SetTextAlign( 13 );
-    if ( strcmp( text, "" )!=0 ) {
-      TString txt = text;
-      if ( txt.Contains( "\\" ) ) {
-        TObjArray* tok = txt.Tokenize( "\\" );
-        for ( int i=0; i<tok->GetEntries(); i++ ) { TPaveText::AddText( dynamic_cast<TObjString*>( tok->At( i ) )->String() ); }
-      }
-      else TPaveText::AddText( text );
-    }
-    TPaveText::SetFillColor( 0 );
-    TPaveText::SetFillStyle( 0 );
-    TPaveText::SetLineColor( 0 );
-    TPaveText::SetShadowColor( 0 );
-    TPaveText::SetTextFont( font_type( 2 ) );
-    TPaveText::SetTextSize( 0.058 );
-  }
-};
-
-class Canvas : public TCanvas
-{
- public:
-  inline Canvas( const char* name, const char* title="", bool ratio=false ) :
-    //TCanvas( name, "", 450, 450 ),
-    TCanvas( name, "", 600, 600 ),
-    fTitle( title ), fTopLabel( 0 ),
-    fLeg( 0 ), fLegX1( 0.5 ), fLegY1( 0.75 ),
-    fRatio( ratio )
-  {
-    Build();
-  }
-  inline ~Canvas() {
-    if ( fLeg ) delete fLeg;
-    if ( fTopLabel ) delete fTopLabel;
-  }
-
-  inline void SetSize( const float& size=600 ) {
-    TCanvas::SetCanvasSize( size, 600 );
-  }
-
-  inline void Prettify( TH1* obj ) {
-    TAxis* x = dynamic_cast<TAxis*>( obj->GetXaxis() ),
-          *y = dynamic_cast<TAxis*>( obj->GetYaxis() ),
-          *z = dynamic_cast<TAxis*>( obj->GetZaxis() );
-    x->SetLabelFont( font_type( 3 ) ); x->SetLabelSize( 20 );
-    x->SetTitleFont( font_type( 3 ) ); x->SetTitleSize( 29 );
-    y->SetLabelFont( font_type( 3 ) ); y->SetLabelSize( 20 );
-    y->SetTitleFont( font_type( 3 ) ); y->SetTitleSize( 29 );
-    z->SetLabelFont( font_type( 3 ) ); z->SetLabelSize( 20 );
-    z->SetTitleFont( font_type( 3 ) ); z->SetTitleSize( 29 );
-    y->SetTitleOffset( 1.4 );
-    if ( fRatio ) {
-      x->SetTitleOffset( 1.4 );
-      x->SetTickLength( 0.05 );
-      y->SetTickLength( 0.03 );
-    }
-    // axis titles
-    TString ttle = obj->GetTitle();
-    if ( ttle.Contains( "\\" ) ) {
-      TObjArray* tok = ttle.Tokenize( "\\" );
-      TString x_title = "", y_title = "", unit = "", form_spec = "", distrib = "";
-      if ( tok->GetEntries()>0 ) x_title = dynamic_cast<TObjString*>( tok->At( 0 ) )->String();
-      if ( tok->GetEntries()>1 ) y_title = dynamic_cast<TObjString*>( tok->At( 1 ) )->String();
-      if ( tok->GetEntries()>2 ) {
-        unit = ( ( TObjString* )tok->At( 2 ) )->String();
-        if ( unit.Contains( "?" ) ) { // extract format specifier
-          TObjArray* tok2 = unit.Tokenize( "?" );
-          if ( tok2->GetEntries()>1 ) {
-            unit = dynamic_cast<TObjString*>( tok2->At( 0 ) )->String();
-            form_spec = dynamic_cast<TObjString*>( tok2->At( 1 ) )->String();
+   public:
+    class PaveText : public TPaveText
+    {
+     public:
+      inline PaveText( const float& x1, const float& y1, const float& x2, const float& y2, const char* text="" ) :
+        TPaveText( x1, y1, x2, y2, "NDC" )
+      {
+        TPaveText::SetTextAlign( 13 );
+        if ( strcmp( text, "" )!=0 ) {
+          TString txt = text;
+          if ( txt.Contains( "\\" ) ) {
+            TObjArray* tok = txt.Tokenize( "\\" );
+            for ( int i=0; i<tok->GetEntries(); i++ ) { TPaveText::AddText( dynamic_cast<TObjString*>( tok->At( i ) )->String() ); }
           }
-          else {
-            unit = "";
-            form_spec = dynamic_cast<TObjString*>( tok2->At( 0 ) )->String();
+          else TPaveText::AddText( text );
+        }
+        TPaveText::SetFillColor( 0 );
+        TPaveText::SetFillStyle( 0 );
+        TPaveText::SetLineColor( 0 );
+        TPaveText::SetShadowColor( 0 );
+        TPaveText::SetTextFont( font_type( 2 ) );
+        TPaveText::SetTextSize( 0.058 );
+      }
+    };
+
+   public:
+    inline Canvas( const char* name, const char* title="", bool ratio=false ) :
+      //TCanvas( name, "", 450, 450 ),
+      TCanvas( name, "", 600, 600 ),
+      fTitle( title ), fTopLabel( 0 ),
+      fLeg( 0 ), fLegX1( 0.5 ), fLegY1( 0.75 ),
+      fRatio( ratio )
+    {
+      Build();
+    }
+    inline ~Canvas() {
+      if ( fLeg ) delete fLeg;
+      if ( fTopLabel ) delete fTopLabel;
+    }
+
+    inline void SetSize( const float& size=600 ) {
+      TCanvas::SetCanvasSize( size, 600 );
+    }
+
+    inline void Prettify( TH1* obj ) {
+      TAxis* x = dynamic_cast<TAxis*>( obj->GetXaxis() ),
+            *y = dynamic_cast<TAxis*>( obj->GetYaxis() ),
+            *z = dynamic_cast<TAxis*>( obj->GetZaxis() );
+      x->SetLabelFont( font_type( 3 ) ); x->SetLabelSize( 20 );
+      x->SetTitleFont( font_type( 3 ) ); x->SetTitleSize( 29 );
+      y->SetLabelFont( font_type( 3 ) ); y->SetLabelSize( 20 );
+      y->SetTitleFont( font_type( 3 ) ); y->SetTitleSize( 29 );
+      z->SetLabelFont( font_type( 3 ) ); z->SetLabelSize( 20 );
+      z->SetTitleFont( font_type( 3 ) ); z->SetTitleSize( 29 );
+      y->SetTitleOffset( 1.4 );
+      if ( fRatio ) {
+        x->SetTitleOffset( 1.4 );
+        x->SetTickLength( 0.05 );
+        y->SetTickLength( 0.03 );
+      }
+      // axis titles
+      TString ttle = obj->GetTitle();
+      if ( ttle.Contains( "\\" ) ) {
+        TObjArray* tok = ttle.Tokenize( "\\" );
+        TString x_title = "", y_title = "", unit = "", form_spec = "", distrib = "";
+        if ( tok->GetEntries()>0 ) x_title = dynamic_cast<TObjString*>( tok->At( 0 ) )->String();
+        if ( tok->GetEntries()>1 ) y_title = dynamic_cast<TObjString*>( tok->At( 1 ) )->String();
+        if ( tok->GetEntries()>2 ) {
+          unit = ( ( TObjString* )tok->At( 2 ) )->String();
+          if ( unit.Contains( "?" ) ) { // extract format specifier
+            TObjArray* tok2 = unit.Tokenize( "?" );
+            if ( tok2->GetEntries()>1 ) {
+              unit = dynamic_cast<TObjString*>( tok2->At( 0 ) )->String();
+              form_spec = dynamic_cast<TObjString*>( tok2->At( 1 ) )->String();
+            }
+            else {
+              unit = "";
+              form_spec = dynamic_cast<TObjString*>( tok2->At( 0 ) )->String();
+            }
           }
         }
-      }
-      if ( tok->GetEntries()>3 ) {
-        distrib = ( ( TObjString* )tok->At( 3 ) )->String();
-      }
-      if ( !unit.IsNull() or !form_spec.IsNull() ) {
-        if ( !unit.IsNull() ) x_title = Form( "%s (%s)", x_title.Data(), unit.Data() );
-        if ( !distrib.IsNull() ) {
-          if ( !form_spec.IsNull() ) {
-            TString format = Form( "%%s (%s / %%%s %%s)", distrib.Data(), form_spec.Data() );
-            y_title = Form( format.Data(), y_title.Data(), GetBinning( obj ), unit.Data() );
-          }
-          else y_title = Form( "%s (%s / %d %s)", y_title.Data(), distrib.Data(), static_cast<unsigned int>( GetBinning( obj ) ), unit.Data() );
+        if ( tok->GetEntries()>3 ) {
+          distrib = ( ( TObjString* )tok->At( 3 ) )->String();
         }
-        else { 
-          if ( !form_spec.IsNull() ) {
-            TString format = Form( "%%s / %%%s %%s", form_spec.Data() );
-            y_title = Form( format.Data(), y_title.Data(), GetBinning( obj ), unit.Data() );
+        if ( !unit.IsNull() or !form_spec.IsNull() ) {
+          if ( !unit.IsNull() ) x_title = Form( "%s (%s)", x_title.Data(), unit.Data() );
+          if ( !distrib.IsNull() ) {
+            if ( !form_spec.IsNull() ) {
+              TString format = Form( "%%s (%s / %%%s %%s)", distrib.Data(), form_spec.Data() );
+              y_title = Form( format.Data(), y_title.Data(), GetBinning( obj ), unit.Data() );
+            }
+            else y_title = Form( "%s (%s / %d %s)", y_title.Data(), distrib.Data(), static_cast<unsigned int>( GetBinning( obj ) ), unit.Data() );
           }
-          else y_title = Form( "%s / %d %s", y_title.Data(), static_cast<unsigned int>( GetBinning( obj ) ), unit.Data() );
+          else { 
+            if ( !form_spec.IsNull() ) {
+              TString format = Form( "%%s / %%%s %%s", form_spec.Data() );
+              y_title = Form( format.Data(), y_title.Data(), GetBinning( obj ), unit.Data() );
+            }
+            else y_title = Form( "%s / %d %s", y_title.Data(), static_cast<unsigned int>( GetBinning( obj ) ), unit.Data() );
+          }
+        }
+        obj->GetXaxis()->SetTitle( x_title );
+        obj->GetYaxis()->SetTitle( y_title );
+        obj->SetTitle( "" );
+      }
+      else obj->GetXaxis()->SetTitle(ttle);
+    }
+
+    inline void DrawDiagonal(const TH1* obj) {
+      TLine l;
+      l.SetLineWidth( 2 );
+      l.SetLineColor( kGray );
+      l.SetLineStyle( 2 );
+      l.DrawLine( obj->GetXaxis()->GetXmin(), obj->GetYaxis()->GetXmin(), obj->GetXaxis()->GetXmax(), obj->GetYaxis()->GetXmax() );
+    }
+
+    inline void SetTopLabel(const char* lab="") {
+      TCanvas::cd();
+      if (strcmp(lab, "")!=0) fTitle = lab;
+      if (!fTopLabel) BuildTopLabel();
+      else fTopLabel->Clear();
+      fTopLabel->AddText(fTitle);
+      //fTopLabel->Draw();
+    }
+
+    inline void SetLegendX1(double x) { fLegX1 = x; }
+    inline void SetLegendY1(double y) { fLegY1 = y; }
+    inline void AddLegendEntry(const TObject* obj, const char* title, Option_t* option="lpf") {
+      if (!fLeg) BuildLegend();
+      fLeg->AddEntry(obj, title, option);
+      const unsigned int num_entries = fLeg->GetNRows();
+      if ( num_entries>3 ) {
+        fLeg->SetY1( fLeg->GetY1()-( num_entries-3 )*0.025 );
+      }
+    }
+
+    inline void Save(const char* ext, const char* out_dir=".") {
+      if (strstr(ext, "pdf")==NULL) {
+        if (strstr(ext, "png")==NULL) {
+          return;
         }
       }
-      obj->GetXaxis()->SetTitle( x_title );
-      obj->GetYaxis()->SetTitle( y_title );
-      obj->SetTitle( "" );
+      TCanvas::cd();
+      if (fLeg) fLeg->Draw();
+      if (fTopLabel) fTopLabel->Draw();
+      TCanvas::SaveAs(Form("%s/%s.%s", out_dir, TCanvas::GetName(), ext).c_str());
     }
-    else obj->GetXaxis()->SetTitle(ttle);
-  }
 
-  inline void DrawDiagonal(const TH1* obj) {
-    TLine l;
-    l.SetLineWidth( 2 );
-    l.SetLineColor( kGray );
-    l.SetLineStyle( 2 );
-    l.DrawLine( obj->GetXaxis()->GetXmin(), obj->GetYaxis()->GetXmin(), obj->GetXaxis()->GetXmax(), obj->GetYaxis()->GetXmax() );
-  }
+   private:
+    inline void Build() {
+      TCanvas::SetLeftMargin(0.14);
+      TCanvas::SetTopMargin(0.06);
+      TCanvas::SetRightMargin(0.1);
+      TCanvas::SetBottomMargin(0.15);
+      TCanvas::SetTicks(1,1);
 
-  inline void SetTopLabel(const char* lab="") {
-    TCanvas::cd();
-    if (strcmp(lab, "")!=0) fTitle = lab;
-    if (!fTopLabel) BuildTopLabel();
-    else fTopLabel->Clear();
-    fTopLabel->AddText(fTitle);
-    //fTopLabel->Draw();
-  }
-
-  inline void SetLegendX1(double x) { fLegX1 = x; }
-  inline void SetLegendY1(double y) { fLegY1 = y; }
-  inline void AddLegendEntry(const TObject* obj, const char* title, Option_t* option="lpf") {
-    if (!fLeg) BuildLegend();
-    fLeg->AddEntry(obj, title, option);
-    const unsigned int num_entries = fLeg->GetNRows();
-    if ( num_entries>3 ) {
-      fLeg->SetY1( fLeg->GetY1()-( num_entries-3 )*0.025 );
+      SetTopLabel();
+      if (fRatio) DivideCanvas();
     }
-  }
 
-  inline void Save(const char* ext, const char* out_dir=".") {
-    if (strstr(ext, "pdf")==NULL) {
-      if (strstr(ext, "png")==NULL) {
-        return;
-      }
+    inline void DivideCanvas() {
+      TCanvas::Divide(1,2);
+      TPad* p1 = (TPad*)TCanvas::GetPad(1),
+           *p2 = (TPad*)TCanvas::GetPad(2);
+      p1->SetPad(0., 0.5, 1., 1.);
+      p2->SetPad(0., 0.0, 1., 0.5);
+      p1->SetLeftMargin(TCanvas::GetLeftMargin());
+      p1->SetRightMargin(TCanvas::GetRightMargin());
+      p2->SetLeftMargin(TCanvas::GetLeftMargin());
+      p2->SetRightMargin(TCanvas::GetRightMargin());
+      p1->SetBottomMargin(0.07);
+      p2->SetTopMargin(0.07);
+      p1->SetTopMargin(TCanvas::GetTopMargin()+0.08);
+      p2->SetBottomMargin(TCanvas::GetBottomMargin()+0.03);
+      p1->SetTicks(1,1); p2->SetTicks(1,1);
+      p1->SetGrid(1,0); p2->SetGrid(1,0);
+      TCanvas::cd(1);
     }
-    TCanvas::cd();
-    if (fLeg) fLeg->Draw();
-    if (fTopLabel) fTopLabel->Draw();
-    TCanvas::SaveAs(Form("%s/%s.%s", out_dir, TCanvas::GetName(), ext));
-  }
 
- private:
-  inline void Build() {
-    TCanvas::SetLeftMargin(0.14);
-    TCanvas::SetTopMargin(0.06);
-    TCanvas::SetRightMargin(0.1);
-    TCanvas::SetBottomMargin(0.15);
-    TCanvas::SetTicks(1,1);
+    inline void BuildTopLabel() {
+      TCanvas::cd();
+      fTopLabel = new TPaveText(0.5, 0.95, 0.915, 0.96, "NB NDC");
+      fTopLabel->SetFillStyle(0);
+      fTopLabel->SetFillColor(0);
+      fTopLabel->SetLineColor(0);
+      fTopLabel->SetLineStyle(0);
+      fTopLabel->SetTextFont( font_type( 2 ) );
+      fTopLabel->SetTextSize(0.04);
+      fTopLabel->SetTextAlign(kHAlignRight+kVAlignBottom);
+    }
 
-    SetTopLabel();
-    if (fRatio) DivideCanvas();
-  }
+    inline void BuildLegend() {
+      if (fLeg) return;
+      if (fRatio) TCanvas::cd(1);
+      fLeg = new TLegend( fLegX1, fLegY1, fLegX1+0.3, fLegY1+0.15 );
+      fLeg->SetLineColor(kWhite);
+      fLeg->SetLineWidth(0);
+      fLeg->SetFillStyle(0);
+      fLeg->SetTextFont( font_type( 2 ) );
+      fLeg->SetTextSize(0.04);
+    }
+    inline float GetBinning(const TH1* h) {
+      return (h->GetXaxis()->GetXmax()-h->GetXaxis()->GetXmin())/h->GetXaxis()->GetNbins();
+    }
 
-  inline void DivideCanvas() {
-    TCanvas::Divide(1,2);
-    TPad* p1 = (TPad*)TCanvas::GetPad(1),
-         *p2 = (TPad*)TCanvas::GetPad(2);
-    p1->SetPad(0., 0.5, 1., 1.);
-    p2->SetPad(0., 0.0, 1., 0.5);
-    p1->SetLeftMargin(TCanvas::GetLeftMargin());
-    p1->SetRightMargin(TCanvas::GetRightMargin());
-    p2->SetLeftMargin(TCanvas::GetLeftMargin());
-    p2->SetRightMargin(TCanvas::GetRightMargin());
-    p1->SetBottomMargin(0.07);
-    p2->SetTopMargin(0.07);
-    p1->SetTopMargin(TCanvas::GetTopMargin()+0.08);
-    p2->SetBottomMargin(TCanvas::GetBottomMargin()+0.03);
-    p1->SetTicks(1,1); p2->SetTicks(1,1);
-    p1->SetGrid(1,0); p2->SetGrid(1,0);
-    TCanvas::cd(1);
-  }
-
-  inline void BuildTopLabel() {
-    TCanvas::cd();
-    fTopLabel = new TPaveText(0.5, 0.95, 0.915, 0.96, "NB NDC");
-    fTopLabel->SetFillStyle(0);
-    fTopLabel->SetFillColor(0);
-    fTopLabel->SetLineColor(0);
-    fTopLabel->SetLineStyle(0);
-    fTopLabel->SetTextFont( font_type( 2 ) );
-    fTopLabel->SetTextSize(0.04);
-    fTopLabel->SetTextAlign(kHAlignRight+kVAlignBottom);
-  }
-
-  inline void BuildLegend() {
-    if (fLeg) return;
-    if (fRatio) TCanvas::cd(1);
-    fLeg = new TLegend( fLegX1, fLegY1, fLegX1+0.3, fLegY1+0.15 );
-    fLeg->SetLineColor(kWhite);
-    fLeg->SetLineWidth(0);
-    fLeg->SetFillStyle(0);
-    fLeg->SetTextFont( font_type( 2 ) );
-    fLeg->SetTextSize(0.04);
-  }
-  inline float GetBinning(const TH1* h) {
-    return (h->GetXaxis()->GetXmax()-h->GetXaxis()->GetXmin())/h->GetXaxis()->GetNbins();
-  }
-
-  TString fTitle;
-  TPaveText* fTopLabel;
-  TLegend* fLeg;
-  double fLegX1, fLegY1;
-  bool fRatio;
-};
+    TString fTitle;
+    TPaveText* fTopLabel;
+    TLegend* fLeg;
+    double fLegX1, fLegY1;
+    bool fRatio;
+  };
+}
 
 #endif

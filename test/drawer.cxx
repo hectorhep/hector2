@@ -84,9 +84,9 @@ main( int argc, char* argv[] )
     //p.dump();
   }*/
 
-  Hector::BeamProducer::Particles gun = Hector::BeamProducer::gaussianParticleGun( 1000, Hector::Constants::beam_energy/2., Hector::Constants::beam_energy );
+  Hector::Particles gun = Hector::BeamProducer::gaussianParticleGun( 1000, Hector::Constants::beam_energy/2., Hector::Constants::beam_energy );
   //Hector::BeamProducer::Particles gun = Hector::BeamProducer::TXscanner( 100, Hector::Constants::beam_energy, -100, 100, max_s );
-  for ( Hector::BeamProducer::Particles::iterator p=gun.begin(); p!=gun.end(); p++ ) {
+  for ( Hector::Particles::iterator p=gun.begin(); p!=gun.end(); p++ ) {
     //p->dump();
     { // beamline 1 propagation
       prop1.propagate( *p, max_s );
@@ -121,7 +121,7 @@ main( int argc, char* argv[] )
 
   // drawing part
 
-  Canvas c( "beamline", Form( "#scale[0.6]{%s - %s}", argv[1], argv[2] ), true );
+  Hector::Canvas c( "beamline", Form( "#scale[0.6]{%s - %s}", argv[1], argv[2] ), true );
 
   c.cd( 1 ); // x-axis
   mg1_x.SetTitle( ".\\x (m)" );

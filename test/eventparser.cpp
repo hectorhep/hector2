@@ -12,9 +12,13 @@ main( int argc, char* argv[] )
   Hector::Parser::LHE parser( argv[1] );
 
   parser.printInfo();
-  Hector::Particles part = parser.nextEvent();
-  for ( Hector::Particles::const_iterator it=part.begin(); it!=part.end(); it++ ) {
-    it->dump();
+
+  Hector::Particles part;
+  while ( parser.nextEvent( part ) ) {
+    for ( Hector::Particles::const_iterator it=part.begin(); it!=part.end(); it++ ) {
+      //it->dump();
+      std::cout << "particle with pdgId=" << it->pdgId() << " has mass " << it->mass() << std::endl;
+    }
   }
 
   return 0;

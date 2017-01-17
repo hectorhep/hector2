@@ -5,12 +5,12 @@
 #include "utils.h"
 #include "Canvas.h"
 
-#include <CLHEP/Random/RandGauss.h>
 #include <CLHEP/Units/SystemOfUnits.h>
 
 #include "TH2.h"
 #include "TH1.h"
 
+/// \test Produce a vector of particles for a given pattern
 int
 main( int argc, char* argv[] )
 {

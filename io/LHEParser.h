@@ -3,37 +3,45 @@
 
 #include "propagator/Particle.h"
 
-#include <fstream>
-#include <regex>
+#include "LHEF.h"
 
 namespace Hector
 {
+  /// List of all useful parsers
   namespace Parser
   {
     class LHE
     {
       public:
-        LHE( const char* );
+        /// Parse a LHEF file to build a particles vector for each event
+        /// \param[in] filename Path to the .lhe file to parse
+        LHE( const char* filename );
         ~LHE();
 
+        /// Display general information retrieved from the LHEF file
         void printInfo() const;
 
-        Particles nextEvent();
+        /// Retrieve the next event in the LHEF bank
+        /// \return True, if the event retrieved is valid, false otherwise
+        /// \param[out] parts Vector of final state particles contained in the event
+        bool nextEvent( Particles& parts );
 
-        float crossSection() const { return cross_section_; }
-        float crossSectionError() const { return err_cross_section_; }
+        /// Process cross section (in pb)
+        float crossSection() const { return *( reader_.heprup.XSECUP.begin() ); }
+        /// Error on the process cross section (in pb)
+        float crossSectionError() const { return *( reader_.heprup.XERRUP.begin() ); }
+
+        /// PDG id of the positive z beam
+        int beam1PDGId() const { return reader_.heprup.IDBMUP.first; }
+        /// PDG id of the negative z beam
+        int beam2PDGid() const { return reader_.heprup.IDBMUP.second; }
+        /// Energy of the positive z beam (in GeV)
+        float beam1Energy() const { return reader_.heprup.EBMUP.first; }
+        /// Energy of the negative z beam (in GeV)
+        float beam2Energy() const { return reader_.heprup.EBMUP.second; }
 
       private:
-        void parseHeader();
-
-        static std::regex rgx_hdr_beg_, rgx_hdr_end_, rgx_hdr_line1_, rgx_hdr_line2_, rgx_evt_hdr_, rgx_evt_prt_;
-
-        std::ifstream in_file_;
-        bool has_header_;
-        float cross_section_, err_cross_section_;
-        int beam1_pdgid_, beam2_pdgid_;
-        float beam1_energy_, beam2_energy_;
-        float qcd_scale_;
+        LHEF::Reader reader_;
     };
   }
 }

@@ -8,6 +8,7 @@ namespace Hector
 {
   namespace Element
   {
+    /// A generic dipole object
     class Dipole : public ElementBase
     {
       public:
@@ -19,6 +20,7 @@ namespace Hector
       protected:
     };
 
+    /// Rectangular dipole object builder
     class RectangularDipole : public Dipole
     {
       public:
@@ -30,6 +32,7 @@ namespace Hector
       private:
     };
 
+    /// Sector dipole object builder
     class SectorDipole : public Dipole
     {
       public:
