@@ -42,6 +42,7 @@ add_library(Hector SHARED $<TARGET_OBJECTS:HectorCore>
 set_target_properties(Hector PROPERTIES LINKER_LANGUAGE CXX)
 target_link_libraries(Hector CLHEP)
 install(TARGETS Hector DESTINATION lib)
+install(DIRECTORY ${MODULES} DESTINATION include/Hector FILES_MATCHING PATTERN "*.h")
 
 add_executable(hector main.cpp)
 target_link_libraries(hector Hector)

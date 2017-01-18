@@ -3,12 +3,12 @@
 namespace Hector
 {
   Beamline::Beamline() :
-    length_( 0. ), has_next_element_( false )
+    max_length_( 0. ), has_next_element_( false )
   {
   }
 
   Beamline::Beamline( float length, const CLHEP::Hep3Vector& ip ) :
-    length_( length ), ip_( ip ), has_next_element_( false )
+    max_length_( length ), ip_( ip ), has_next_element_( false )
   {
   }
 
@@ -31,12 +31,12 @@ namespace Hector
   Beamline::addElement( const Element::ElementBase* elem, bool delete_after )
   {
     const float new_size = elem->s()+elem->length();
-    if ( new_size>length_ ) {
+    if ( new_size>max_length_ ) {
       if ( has_next_element_ ) {
-        if ( length_<0. ) {
+        if ( max_length_<0. ) {
           throw Exception( __PRETTY_FUNCTION__, Form( "Element %s is too far away for this beamline!\n"
                                                       "\tBeamline length: %.3f m, this element: %.3f m",
-                                                      elem->name().c_str(), length_, new_size ), Fatal );
+                                                      elem->name().c_str(), max_length_, new_size ), Fatal );
         }
         return;
       }
@@ -69,6 +69,14 @@ namespace Hector
     }
 
     return out;
+  }
+
+  float
+  Beamline::length() const
+  {
+    if ( elements_.size()==0 ) return 0.;
+    Element::ElementBase* elem = *( --elements_.end() );
+    return elem->s()+elem->length();
   }
 
   void

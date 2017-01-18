@@ -61,8 +61,8 @@ namespace Hector
         //std::cout << in_pos.second.position() << out_pos.second.position() << std::endl;
         const bool has_passed_entrance = aper->contains( in_pos.stateVector().position() ),
                    has_passed_exit = aper->contains( out_pos.stateVector().position() );
-        if ( !has_passed_entrance ) { std::cout << Form( "Particle stopped at the entrance of %s", prev_elem->name() ) << std::endl; return; }
-        if ( !has_passed_exit ) { std::cout << Form( "Particle stopped inside %s", prev_elem->name() ) << std::endl; }
+        if ( !has_passed_entrance ) { std::cout << Form( "Particle stopped at the entrance of %s", prev_elem->name().c_str() ) << std::endl; return; }
+        if ( !has_passed_exit ) { std::cout << Form( "Particle stopped inside %s", prev_elem->name().c_str() ) << std::endl; }
       }
 
       if ( out_pos.s()>=s ) { // we are in the next element

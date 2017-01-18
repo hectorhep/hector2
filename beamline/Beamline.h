@@ -50,16 +50,16 @@ namespace Hector
       const ElementsMap::const_iterator end() const { return elements_.end(); }
 
       /// Set the longitudinal length of the beamline (in m)
-      void setLength( float length ) { length_ = length; }
+      void setLength( float length ) { max_length_ = length; }
       /// Longitudinal length of the beamline (in m)
-      float length() const { return length_; }
+      float length() const;
 
       /// Total propagation matrix of all combined beamline elements
       CLHEP::HepMatrix matrix( float, float, int );
 
     private:
-      /// Beamline length (in m)
-      float length_;
+      /// Beamline maximal length (in m)
+      float max_length_;
       /// Position of the interaction point
       CLHEP::Hep3Vector ip_;
 
