@@ -25,6 +25,7 @@ namespace Hector
       class StateVector : public CLHEP::HepVector
       {
         public:
+          /// Human-readable enumeration of the 6 state vector coordinates
           enum Components { X = 0, TX, Y, TY, E, K };
         public:
           StateVector() : CLHEP::HepVector( 6, 0 ), m_( 0. ) {
@@ -89,7 +90,19 @@ namespace Hector
       ~Particle();
 
     public:
-      typedef std::pair<float,Particle::StateVector> Position;
+      /// A s-position/state vector couple providing the full particle position
+      class Position : private std::pair<float,StateVector>
+      {
+        public:
+          /// Construct a couple between a longitudinal position and a state vector
+          Position( const float& s, const StateVector& sv ) : std::pair<float,StateVector>( s, sv ) {}
+          /// Longitudinal position
+          const float& s() const { return this->first; }
+          /// State vector components
+          const StateVector stateVector() const { return this->second; }
+          /// A pair of longitudinal position/state vector
+          const std::pair<float,StateVector>& pair() const { return ( *this ); }
+      };
 
       /// Build a Particle object from a mass and electric charge
       static Particle fromMassCharge( float mass, float charge );

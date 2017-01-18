@@ -7,6 +7,7 @@ namespace Hector
 {
   namespace Aperture
   {
+    /// Rectangular shape aperture
     class RectangularAperture : public ApertureBase
     {
       public:

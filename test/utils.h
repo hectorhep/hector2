@@ -2,6 +2,7 @@
 
 #include "TColor.h"
 #include "TPave.h"
+#include "TMarker.h"
 
 Color_t
 elementColour( const Hector::Element::ElementBase* elem )
@@ -34,7 +35,7 @@ drawBeamline( const char axis, const Hector::Beamline* bl, const unsigned short 
   for ( Hector::Beamline::ElementsMap::const_iterator it=bl->begin(); it!=bl->end(); it++ ) {
     Hector::Element::ElementBase* elem = *it;
     if ( elem->type()==Hector::Element::ElementBase::Drift ) continue; //FIXME
-    if ( elem->type()==Hector::Element::ElementBase::Marker and elem->name()!=ip ) continue;
+    //if ( elem->type()==Hector::Element::ElementBase::Marker and elem->name()!=ip ) continue;
 
     // introduce a x- and y-offset for drawing purposes
     int offset = 0;
@@ -46,6 +47,11 @@ drawBeamline( const char axis, const Hector::Beamline* bl, const unsigned short 
                 pos_x_end = pos_x_ini + elem->length(),
                 pos_y_low = ( ( axis=='x' ) ? elem->x()*scale_y-size_y/2.+offset*size_y : elem->y()*scale_y-size_y/2.+offset*size_y ),
                 pos_y_high = pos_y_low+size_y;
+
+    if ( elem->type()==Hector::Element::ElementBase::Marker and elem->name()==ip ) {
+      TMarker* arr = new TMarker( pos_x_ini, 0., 24 );
+      arr->Draw();
+    }
 
     // ROOT and its brilliant memory management...
     TPave* elem_box = new TPave( pos_x_ini, pos_y_low, pos_x_end, pos_y_high, 0 );

@@ -18,10 +18,10 @@ namespace Hector
     shift.setAngles(
       CLHEP::Hep2Vector( tan( ele->angles().x() ), tan( ele->angles().y() ) )
     );
-    CLHEP::HepVector vec( ele->matrix( eloss, ini_pos.second.m(), qp ) * ( ini_pos.second-shift ) + shift );
+    CLHEP::HepVector vec( ele->matrix( eloss, ini_pos.stateVector().m(), qp ) * ( ini_pos.stateVector()-shift ) + shift );
     vec[Particle::StateVector::TX] = atan( vec[Particle::StateVector::TX] );
     vec[Particle::StateVector::TY] = atan( vec[Particle::StateVector::TY] );
-    return Particle::Position( ele->s()+ele->length(), Particle::StateVector( vec, ini_pos.second.m() ) ); // assume that mass is conserved here
+    return Particle::Position( ele->s()+ele->length(), Particle::StateVector( vec, ini_pos.stateVector().m() ) ); // assume that mass is conserved here
   }
 
 
@@ -42,7 +42,7 @@ namespace Hector
       Particle::Position out_pos( -1., Particle::StateVector() );
 
       // between two elements
-      if ( in_pos.first>prev_elem->s() and in_pos.first<elem->s() ) {
+      if ( in_pos.s()>prev_elem->s() and in_pos.s()<elem->s() ) {
         Element::ElementBase* elem_tmp = prev_elem->clone();
         elem_tmp->setS( first_s );
         elem_tmp->setLength( elem->s()-first_s );
@@ -50,26 +50,26 @@ namespace Hector
         if ( elem_tmp ) delete elem_tmp;
       }
       // before one element
-      if ( in_pos.first<=elem->s() ) {
+      if ( in_pos.s()<=elem->s() ) {
         out_pos = passThrough( in_pos, elem, energy_loss, part.charge() );
       }
-      if ( out_pos.first<0. ) continue; // no new point to add to the particle's trajectory
+      if ( out_pos.s()<0. ) continue; // no new point to add to the particle's trajectory
 
       // check if particle was stopped
       const Aperture::ApertureBase* aper = prev_elem->aperture();
       if ( aper and aper->type()!=Aperture::ApertureBase::None ) {
         //std::cout << in_pos.second.position() << out_pos.second.position() << std::endl;
-        const bool has_passed_entrance = aper->contains( in_pos.second.position() ),
-                   has_passed_exit = aper->contains( out_pos.second.position() );
+        const bool has_passed_entrance = aper->contains( in_pos.stateVector().position() ),
+                   has_passed_exit = aper->contains( out_pos.stateVector().position() );
         if ( !has_passed_entrance ) { std::cout << Form( "Particle stopped at the entrance of %s", prev_elem->name() ) << std::endl; return; }
         if ( !has_passed_exit ) { std::cout << Form( "Particle stopped inside %s", prev_elem->name() ) << std::endl; }
       }
 
-      if ( out_pos.first>=s ) { // we are in the next element
-        const float l = out_pos.first-in_pos.first;
+      if ( out_pos.s()>=s ) { // we are in the next element
+        const float l = out_pos.s()-in_pos.s();
         if ( l==0 ) { std::cout << Form( "No luck in choosing position (s=%.3f m) ; no propagation possible!", s ) << std::endl; return; }
-        const CLHEP::Hep2Vector s_pos = in_pos.second.position() + ( s-in_pos.first )*( out_pos.second.position()-in_pos.second.position() )/l;
-        Particle::StateVector out_s( in_pos.second, in_pos.second.m() );
+        const CLHEP::Hep2Vector s_pos = in_pos.stateVector().position() + ( s-in_pos.s() )*( out_pos.stateVector().position()-in_pos.stateVector().position() )/l;
+        Particle::StateVector out_s( in_pos.stateVector(), in_pos.stateVector().m() );
         out_s.setPosition( s_pos );
         part.addPosition( Particle::Position( s, out_s ) );
         std::cout << out_s.position() << std::endl;

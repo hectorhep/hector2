@@ -7,6 +7,7 @@ namespace Hector
 {
   namespace Aperture
   {
+    /// Elliptic shape aperture
     class EllipticAperture : public ApertureBase
     {
       public:

@@ -146,7 +146,7 @@ namespace Hector
     };
 
     /// Sorting methods for the beamline construction (using the s position of each elements)
-    struct sorter
+    struct ElementsSorter
     {
       /// Compare the references to two elements
       inline bool operator()( const ElementBase& lhs, const ElementBase& rhs ) { return ( lhs.s()<rhs.s() ); }

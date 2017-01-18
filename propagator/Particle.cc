@@ -30,12 +30,12 @@ namespace Hector
   void
   Particle::addPosition( const Position& pos, bool stopped )
   {
-    if ( positions_.size()>0 and lastStateVector().m()!=pos.second.m() ) {
+    if ( positions_.size()>0 and lastStateVector().m()!=pos.stateVector().m() ) {
       throw Exception( __PRETTY_FUNCTION__, Form( "Particle mass is not conserved in propagation!\n\t"
                                                   "Previous mass was %.3f GeV, new mass is %.3f GeV",
-                                                  lastStateVector().m(), pos.second.m() ), Fatal );
+                                                  lastStateVector().m(), pos.stateVector().m() ), Fatal );
     }
-    positions_.insert( pos );
+    positions_.insert( pos.pair() );
     stopped_ = stopped;
   }
 

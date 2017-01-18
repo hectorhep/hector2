@@ -17,21 +17,29 @@ namespace Hector
     public:
       Beamline();
       /// Build a beamline from a longitudinal size and a interaction point position
-      Beamline( float, const CLHEP::Hep3Vector& ip=CLHEP::Hep3Vector() );
+      /// \param[in] length Longitudinal length of the beamline
+      /// \param[in] ip Position of the interaction point
+      Beamline( float s, const CLHEP::Hep3Vector& ip=CLHEP::Hep3Vector() );
       ~Beamline();
 
       /// Remove and clean all elements in the beamline
       void clear();
+      /// Print all useful information on a beamline and all its enclosing elements
+      /// \param[out] os Output stream where to dump the information
       void dump( std::ostream& os=std::cout );
 
       /// Retrieve the position of the interaction point
       CLHEP::Hep3Vector interactionPoint() const { return ip_; }
 
       /// Add a new element in the beamline
-      void addElement( const Element::ElementBase*, bool delete_after=false );
+      /// \param[in] elem Element to be copied and added to the beamline
+      /// \param[in] delete_after Is the parent element to be deleted afterwards?
+      void addElement( const Element::ElementBase* elem, bool delete_after=false );
       /// Retrieve a beamline element given its name
-      Element::ElementBase* getElement( const std::string& );
+      /// \param[in] name Name of the element to be retrieved
+      Element::ElementBase* getElement( const std::string& name );
       /// Retrieve a beamline element given its name
+      /// \param[in] name Name of the element to be retrieved
       Element::ElementBase* getElement( const char* name ) { return getElement( std::string( name ) ); }
 
       /// List of elements in the beamline
@@ -41,17 +49,16 @@ namespace Hector
       /// Constant iterator to the last element in the beamline
       const ElementsMap::const_iterator end() const { return elements_.end(); }
 
-      /// Set the longitudinal length of the beamline (m)
+      /// Set the longitudinal length of the beamline (in m)
       void setLength( float length ) { length_ = length; }
-      /// Longitudinal length of the beamline (m)
+      /// Longitudinal length of the beamline (in m)
       float length() const { return length_; }
 
       /// Total propagation matrix of all combined beamline elements
       CLHEP::HepMatrix matrix( float, float, int );
-      void propagate( const Particle&, float );
 
     private:
-      /// Beamline length (m)
+      /// Beamline length (in m)
       float length_;
       /// Position of the interaction point
       CLHEP::Hep3Vector ip_;

@@ -169,8 +169,8 @@ namespace Hector
         }
 
         // then perform the 3-fold matching key <-> value <-> value type
-        ParametersMap<float> elem_map_floats;
-        ParametersMap<std::string> elem_map_str;
+        ParametersMap::Ordered<float> elem_map_floats;
+        ParametersMap::Ordered<std::string> elem_map_str;
         for ( unsigned short i=0; i<values.size(); i++ ) {
           const std::string value = values.at( i ),
                             key = elements_fields_.key( i );
@@ -179,7 +179,7 @@ namespace Hector
             case String: elem_map_str.add( key, value ); break;
             case Float: elem_map_floats.add( key, atof( value.c_str() ) ); break;
             case Unknown: default: {
-              throw Exception( __PRETTY_FUNCTION__, Form( "MAD-X predicts an unknown-type optics element parameter:\n\t (%s) for %s", elements_fields_.at( i ).first.c_str(), trim( values.at( 0 ) ).c_str() ), JustWarning );
+              throw Exception( __PRETTY_FUNCTION__, Form( "MAD-X predicts an unknown-type optics element parameter:\n\t (%s) for %s", elements_fields_.key( i ).c_str(), trim( values.at( 0 ) ).c_str() ), JustWarning );
             } break;
           }
         }

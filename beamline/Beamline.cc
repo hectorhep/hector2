@@ -44,7 +44,7 @@ namespace Hector
     }
 
     elements_.push_back( elem->clone() );
-    std::sort( elements_.begin(), elements_.end(), Element::sorter() );
+    std::sort( elements_.begin(), elements_.end(), Element::ElementsSorter() );
     if ( delete_after ) delete elem;
   }
 
@@ -69,17 +69,6 @@ namespace Hector
     }
 
     return out;
-  }
-
-  void
-  Beamline::propagate( const Particle& part, float s )
-  {
-    for ( size_t i=0; i<elements_.size(); i++ ) {
-      Element::ElementBase* elem = elements_.at( i );
-      if ( elem->s()==s ) {
-        
-      }
-    }
   }
 
   void

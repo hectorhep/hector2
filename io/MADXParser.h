@@ -16,7 +16,7 @@
 #include "elements/RectangularAperture.h"
 #include "elements/RectEllipticAperture.h"
 
-#include "core/ParametersMap.h"
+#include "core/OrderedParametersMap.h"
 #include "core/UnorderedParametersMap.h"
 
 #include <fstream>
@@ -52,10 +52,10 @@ namespace Hector
         void parseElementsFields();
         void parseElements();
 
-        ParametersMap<std::string> header_str_;
-        ParametersMap<float> header_float_;
+        ParametersMap::Ordered<std::string> header_str_;
+        ParametersMap::Ordered<float> header_float_;
 
-        UnorderedParametersMap<ValueType> elements_fields_;
+        ParametersMap::Unordered<ValueType> elements_fields_;
 
         std::ifstream in_file_;
         std::streampos in_file_lastline_;
