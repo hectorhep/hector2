@@ -300,10 +300,10 @@ namespace Hector
               lowercase( trim( elem_map_str.get( "apertype" ) ) )
             );
             Aperture::ApertureBase* aperture = 0;
-            const float aper_1 = elem_map_floats.get( "aper_1" )/**1.e6*/,
-                        aper_2 = elem_map_floats.get( "aper_2" )/**1.e6*/,
-                        aper_3 = elem_map_floats.get( "aper_3" )/**1.e6*/,
-                        aper_4 = elem_map_floats.get( "aper_4" )/**1.e6*/; // rad -> urad
+            const float aper_1 = elem_map_floats.get( "aper_1" ),
+                        aper_2 = elem_map_floats.get( "aper_2" ),
+                        aper_3 = elem_map_floats.get( "aper_3" ),
+                        aper_4 = elem_map_floats.get( "aper_4" ); // MAD-X provides it in m
             switch ( apertype ) {
               case Aperture::ApertureBase::RectElliptic: aperture = new Aperture::RectEllipticAperture( aper_1, aper_2, aper_3, aper_4 ); break;
               case Aperture::ApertureBase::Circular:     aperture = new Aperture::CircularAperture( aper_1 ); break;

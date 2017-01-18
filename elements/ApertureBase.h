@@ -9,15 +9,21 @@ namespace Hector
   /// Collection of apertures to be associated to element objects
   namespace Aperture
   {
+    /// A generic aperture object for a beamline element
     class ApertureBase
     {
       public:
         /// List of types allowed for an aperture
         typedef enum { None, Rectangular, Elliptic, Circular, RectElliptic } Type;
+        /// Human-readable printout of an aperture type
         friend std::ostream& operator<<( std::ostream&, const Type& );
 
       public:
-        ApertureBase( const Type&, const CLHEP::Hep2Vector&, float, float, float, float );
+        /// Build a new aperture to an element
+        /// \param[in] type Aperture type (see Aperture::ApertureBase::Type)
+        /// \param[in] pos Aperture position
+        /// \param[in] param Shape parameters
+        ApertureBase( const Type& type, const CLHEP::Hep2Vector& pos, const std::vector<float>& param );
         virtual ~ApertureBase();
 
         /// Return a pointer to a clone of the current aperture
@@ -25,7 +31,9 @@ namespace Hector
         /// Check if a position is contained in the aperture
         virtual bool contains( const CLHEP::Hep2Vector& ) const = 0;
 
+        /// Human-readable printout of the properties of an aperture
         friend std::ostream& operator<<( std::ostream&, const ApertureBase& );
+        /// Human-readable printout of the properties of an aperture
         friend std::ostream& operator<<( std::ostream&, const ApertureBase* );
 
         /// Type of aperture (rectangular, elliptic, rect-elliptic, circular)

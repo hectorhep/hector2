@@ -4,8 +4,8 @@ namespace Hector
 {
   namespace Aperture
   {
-    ApertureBase::ApertureBase( const Type& type, const CLHEP::Hep2Vector& pos, float x1, float x2, float x3, float x4 ) :
-      type_( type ), pos_( pos )
+    ApertureBase::ApertureBase( const Type& type, const CLHEP::Hep2Vector& pos, const std::vector<float>& param ) :
+      type_( type ), pos_( pos ), param_( param )
     {
     }
 

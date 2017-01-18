@@ -51,7 +51,7 @@ namespace Hector
 
         /// Human-readable printout of the properties of an element
         friend std::ostream& operator<<( std::ostream&, const ElementBase& );
-        /// Human-readable printout of the properties of the pointer to an element
+        /// Human-readable printout of the properties of an element
         friend std::ostream& operator<<( std::ostream&, const ElementBase* );
 
         /// Element name
@@ -73,14 +73,13 @@ namespace Hector
         /// Vertical position
         float y() const { return pos_.y(); }
 
-        /// Set the horizontal angle (computed with respect to the s coordinate)
-        void setTx( float tx ) { tx_ = tx; }
+        /// Set the horizontal and vertical angles of the element (computed with respect to the s coordinate)
+        void setAngles( const CLHEP::Hep2Vector& angles ) { angles_ = angles; }
+        CLHEP::Hep2Vector angles() const { return angles_; }
         /// Horizontal angle
-        float Tx() const { return tx_; }
-        /// Set the vertical angle (computed with respect to the s coordinate)
-        void setTy( float ty ) { ty_ = ty; }
+        float Tx() const { return angles_.x(); }
         /// Vertical angle
-        float Ty() const { return ty_; }
+        float Ty() const { return angles_.y(); }
 
         /// Set the element length (m)
         void setLength( float length ) { length_ = length; }
@@ -133,13 +132,10 @@ namespace Hector
 
         /// x-y position of the element
         CLHEP::Hep2Vector pos_;
+        /// Horizontal and vertical angles of the element
+        CLHEP::Hep2Vector angles_;
         /// Longitudinal position of the element
         float s_;
-
-        /// Horizontal angle
-        float tx_;
-        /// Vertical angle
-        float ty_;
 
         /// Beta factor
         CLHEP::Hep2Vector beta_;

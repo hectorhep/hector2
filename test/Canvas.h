@@ -126,7 +126,7 @@ namespace Hector
       else obj->GetXaxis()->SetTitle(ttle);
     }
 
-    inline void DrawDiagonal(const TH1* obj) {
+    inline void DrawDiagonal( const TH1* obj ) {
       TLine l;
       l.SetLineWidth( 2 );
       l.SetLineColor( kGray );
@@ -134,7 +134,7 @@ namespace Hector
       l.DrawLine( obj->GetXaxis()->GetXmin(), obj->GetYaxis()->GetXmin(), obj->GetXaxis()->GetXmax(), obj->GetYaxis()->GetXmax() );
     }
 
-    inline void SetTopLabel(const char* lab="") {
+    inline void SetTopLabel( const char* lab="" ) {
       TCanvas::cd();
       if (strcmp(lab, "")!=0) fTitle = lab;
       if (!fTopLabel) BuildTopLabel();
@@ -143,84 +143,85 @@ namespace Hector
       //fTopLabel->Draw();
     }
 
-    inline void SetLegendX1(double x) { fLegX1 = x; }
-    inline void SetLegendY1(double y) { fLegY1 = y; }
-    inline void AddLegendEntry(const TObject* obj, const char* title, Option_t* option="lpf") {
-      if (!fLeg) BuildLegend();
-      fLeg->AddEntry(obj, title, option);
+    inline void SetLegendX1( double x ) { fLegX1 = x; }
+    inline void SetLegendY1( double y ) { fLegY1 = y; }
+    inline void AddLegendEntry( const TObject* obj, const char* title, Option_t* option="lpf" ) {
+      if ( !fLeg ) BuildLegend();
+      fLeg->AddEntry( obj, title, option );
       const unsigned int num_entries = fLeg->GetNRows();
       if ( num_entries>3 ) {
         fLeg->SetY1( fLeg->GetY1()-( num_entries-3 )*0.025 );
       }
     }
 
-    inline void Save(const char* ext, const char* out_dir=".") {
-      if (strstr(ext, "pdf")==NULL) {
-        if (strstr(ext, "png")==NULL) {
+    inline void Save( const char* ext, const char* out_dir="." ) {
+      if ( strstr( ext, "pdf" )==NULL ) {
+        if ( strstr( ext, "png" )==NULL ) {
           return;
         }
       }
       TCanvas::cd();
-      if (fLeg) fLeg->Draw();
-      if (fTopLabel) fTopLabel->Draw();
-      TCanvas::SaveAs(Form("%s/%s.%s", out_dir, TCanvas::GetName(), ext).c_str());
+      if ( fLeg ) fLeg->Draw();
+      if ( fTopLabel ) fTopLabel->Draw();
+      TCanvas::SaveAs( Form( "%s/%s.%s", out_dir, TCanvas::GetName(), ext ).c_str() );
     }
 
    private:
     inline void Build() {
-      TCanvas::SetLeftMargin(0.14);
-      TCanvas::SetTopMargin(0.06);
-      TCanvas::SetRightMargin(0.1);
-      TCanvas::SetBottomMargin(0.15);
-      TCanvas::SetTicks(1,1);
+      TCanvas::SetLeftMargin( 0.14 );
+      TCanvas::SetTopMargin( 0.06 );
+      TCanvas::SetRightMargin( 0.1 );
+      TCanvas::SetBottomMargin( 0.15 );
+      TCanvas::SetTicks( 1, 1 );
 
       SetTopLabel();
-      if (fRatio) DivideCanvas();
+      if ( fRatio ) DivideCanvas();
     }
 
     inline void DivideCanvas() {
-      TCanvas::Divide(1,2);
-      TPad* p1 = (TPad*)TCanvas::GetPad(1),
-           *p2 = (TPad*)TCanvas::GetPad(2);
-      p1->SetPad(0., 0.5, 1., 1.);
-      p2->SetPad(0., 0.0, 1., 0.5);
-      p1->SetLeftMargin(TCanvas::GetLeftMargin());
-      p1->SetRightMargin(TCanvas::GetRightMargin());
-      p2->SetLeftMargin(TCanvas::GetLeftMargin());
-      p2->SetRightMargin(TCanvas::GetRightMargin());
-      p1->SetBottomMargin(0.07);
-      p2->SetTopMargin(0.07);
-      p1->SetTopMargin(TCanvas::GetTopMargin()+0.08);
-      p2->SetBottomMargin(TCanvas::GetBottomMargin()+0.03);
-      p1->SetTicks(1,1); p2->SetTicks(1,1);
-      p1->SetGrid(1,0); p2->SetGrid(1,0);
-      TCanvas::cd(1);
+      TCanvas::Divide( 1, 2 );
+      TPad* p1 = dynamic_cast<TPad*>( TCanvas::GetPad( 1 ) ),
+           *p2 = dynamic_cast<TPad*>( TCanvas::GetPad( 2 ) );
+      p1->SetPad( 0., 0.5, 1., 1. );
+      p2->SetPad( 0., 0.0, 1., 0.5 );
+      p1->SetLeftMargin( TCanvas::GetLeftMargin() );
+      p1->SetRightMargin( TCanvas::GetRightMargin() );
+      p2->SetLeftMargin( TCanvas::GetLeftMargin() );
+      p2->SetRightMargin( TCanvas::GetRightMargin() );
+      p1->SetBottomMargin( 0.07 );
+      p2->SetTopMargin( 0.07 );
+      p1->SetTopMargin( TCanvas::GetTopMargin()+0.08 );
+      p2->SetBottomMargin( TCanvas::GetBottomMargin()+0.03 );
+      p1->SetTicks( 1, 1 ); p2->SetTicks( 1, 1 );
+      p1->SetGrid( 1, 0 ); p2->SetGrid( 1, 0 );
+      TCanvas::cd( 1 );
     }
 
     inline void BuildTopLabel() {
       TCanvas::cd();
-      fTopLabel = new TPaveText(0.5, 0.95, 0.915, 0.96, "NB NDC");
-      fTopLabel->SetFillStyle(0);
-      fTopLabel->SetFillColor(0);
-      fTopLabel->SetLineColor(0);
-      fTopLabel->SetLineStyle(0);
+      fTopLabel = new TPaveText( 0.5, 0.95, 0.915, 0.96, "NB NDC" );
+      fTopLabel->SetFillStyle( 0 );
+      fTopLabel->SetFillColor( 0 );
+      fTopLabel->SetLineColor( 0 );
+      fTopLabel->SetLineStyle( 0 );
       fTopLabel->SetTextFont( font_type( 2 ) );
-      fTopLabel->SetTextSize(0.04);
-      fTopLabel->SetTextAlign(kHAlignRight+kVAlignBottom);
+      fTopLabel->SetTextSize( 0.04 );
+      fTopLabel->SetTextAlign( kHAlignRight+kVAlignBottom );
     }
 
     inline void BuildLegend() {
-      if (fLeg) return;
-      if (fRatio) TCanvas::cd(1);
+      if ( fLeg ) return;
+      if ( fRatio ) TCanvas::cd( 1 );
       fLeg = new TLegend( fLegX1, fLegY1, fLegX1+0.3, fLegY1+0.15 );
-      fLeg->SetLineColor(kWhite);
-      fLeg->SetLineWidth(0);
-      fLeg->SetFillStyle(0);
+      fLeg->SetLineColor( kWhite );
+      fLeg->SetLineWidth( 0 );
+      fLeg->SetFillStyle( 0 );
       fLeg->SetTextFont( font_type( 2 ) );
-      fLeg->SetTextSize(0.04);
+      fLeg->SetTextSize( 0.04 );
     }
-    inline float GetBinning(const TH1* h) {
-      return (h->GetXaxis()->GetXmax()-h->GetXaxis()->GetXmin())/h->GetXaxis()->GetNbins();
+    inline float GetBinning( const TH1* h ) {
+      if ( !h ) return -1.;
+      return ( h->GetXaxis()->GetXmax()-h->GetXaxis()->GetXmin() )/h->GetXaxis()->GetNbins();
     }
 
     TString fTitle;

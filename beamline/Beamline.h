@@ -58,6 +58,7 @@ namespace Hector
 
       /// List of elements defining the beamline
       ElementsMap elements_;
+      bool has_next_element_;
   };
 }
 

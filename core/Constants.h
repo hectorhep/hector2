@@ -4,6 +4,7 @@
 /// Mother of all namespaces/objects in Hector
 namespace Hector
 {
+  /// List of constants to be left untouched once the run is started
   struct Constants
   {
     /// Energy of the primary particles in the beam (in GeV)

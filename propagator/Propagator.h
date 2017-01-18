@@ -7,18 +7,25 @@
 
 namespace Hector
 {
+  /// Main object to propagate particles through a beamline
   class Propagator
   {
     public:
+      /// Construct the object for a given beamline
       Propagator( const Beamline* );
       ~Propagator();
 
+      /// Propagate a particle up to a given position ; maps all state vectors to the intermediate s-coordinates
       void propagate( Particle&, float ) const;
-      std::pair<float,Particle::StateVector> hitPosition( const Particle::StateVector& ini_pos, const Element::ElementBase* ele, float eloss, float mp, int qp ) const;
+      /// Get the s-coordinate/state vector for the particle at the level of a beamline element
+      Particle::Position hitPosition( const Particle::StateVector& ini_pos, const Element::ElementBase* ele, float eloss, float mp, int qp ) const;
 
+      /// Propagate a list particle up to a given position ; maps all state vectors to the intermediate s-coordinates
       void propagate( Particles& ) const;
 
     private:
+      Particle::Position passThrough( const Particle::Position& ini_pos, const Element::ElementBase* ele, float eloss, int qp ) const;
+
       const Beamline* beamline_;
   };
 }

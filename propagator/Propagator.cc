@@ -10,47 +10,102 @@ namespace Hector
   Propagator::~Propagator()
   {}
 
+  Particle::Position
+  Propagator::passThrough( const Particle::Position& ini_pos, const Element::ElementBase* ele, float eloss, int qp ) const
+  {
+    Particle::StateVector shift;
+    shift.setPosition( ele->position() );
+    shift.setAngles(
+      CLHEP::Hep2Vector( tan( ele->angles().x() ), tan( ele->angles().y() ) )
+    );
+    CLHEP::HepVector vec( ele->matrix( eloss, ini_pos.second.m(), qp ) * ( ini_pos.second-shift ) + shift );
+    vec[Particle::StateVector::TX] = atan( vec[Particle::StateVector::TX] );
+    vec[Particle::StateVector::TY] = atan( vec[Particle::StateVector::TY] );
+    return Particle::Position( ele->s()+ele->length(), Particle::StateVector( vec, ini_pos.second.m() ) ); // assume that mass is conserved here
+  }
+
+
   void
   Propagator::propagate( Particle& part, float s ) const
   {
-    CLHEP::HepMatrix mat = CLHEP::HepDiagMatrix( 6, 1 );
     part.clear();
 
-    const Particle::StateVector in_pos = part.firstStateVector();
-    const double energy_loss = Constants::beam_energy-in_pos.energy();
+    const double energy_loss = Constants::beam_energy-part.firstStateVector().energy();
 
-    for ( Beamline::ElementsMap::const_iterator it=beamline_->begin(); it!=beamline_->end(); it++ ) {
-      const Element::ElementBase* elem = *it;
-      mat = mat*elem->matrix( energy_loss, part.mass(), part.charge() );
+    for ( Beamline::ElementsMap::const_iterator it=beamline_->begin()+1; it!=beamline_->end(); it++ ) {
+      // extract the previous and the current element in the beamline
+      const Element::ElementBase *prev_elem = *( it-1 ), *elem = *( it );
 
-      Particle::StateVector out_pos( mat*in_pos, in_pos.m() );
-      double elem_s = elem->s();
+      const Particle::Position in_pos = part.lastPosition();
+      const float first_s = part.firstS();
+
+      Particle::Position out_pos( -1., Particle::StateVector() );
+
+      // between two elements
+      if ( in_pos.first>prev_elem->s() and in_pos.first<elem->s() ) {
+        Element::ElementBase* elem_tmp = prev_elem->clone();
+        elem_tmp->setS( first_s );
+        elem_tmp->setLength( elem->s()-first_s );
+        out_pos = passThrough( in_pos, elem_tmp, energy_loss, part.charge() );
+        if ( elem_tmp ) delete elem_tmp;
+      }
+      // before one element
+      if ( in_pos.first<=elem->s() ) {
+        out_pos = passThrough( in_pos, elem, energy_loss, part.charge() );
+      }
+      if ( out_pos.first<0. ) continue; // no new point to add to the particle's trajectory
+
+      // check if particle was stopped
+      const Aperture::ApertureBase* aper = prev_elem->aperture();
+      if ( aper and aper->type()!=Aperture::ApertureBase::None ) {
+        //std::cout << in_pos.second.position() << out_pos.second.position() << std::endl;
+        const bool has_passed_entrance = aper->contains( in_pos.second.position() ),
+                   has_passed_exit = aper->contains( out_pos.second.position() );
+        if ( !has_passed_entrance ) { std::cout << Form( "Particle stopped at the entrance of %s", prev_elem->name() ) << std::endl; return; }
+        if ( !has_passed_exit ) { std::cout << Form( "Particle stopped inside %s", prev_elem->name() ) << std::endl; }
+      }
+
+      if ( out_pos.first>=s ) { // we are in the next element
+        const float l = out_pos.first-in_pos.first;
+        if ( l==0 ) { std::cout << Form( "No luck in choosing position (s=%.3f m) ; no propagation possible!", s ) << std::endl; return; }
+        const CLHEP::Hep2Vector s_pos = in_pos.second.position() + ( s-in_pos.first )*( out_pos.second.position()-in_pos.second.position() )/l;
+        Particle::StateVector out_s( in_pos.second, in_pos.second.m() );
+        out_s.setPosition( s_pos );
+        part.addPosition( Particle::Position( s, out_s ) );
+        std::cout << out_s.position() << std::endl;
+      }
+      else part.addPosition( out_pos );
+
+      /*std::cout << ">>> " << l << "\t" << s_pos << std::endl;*/
+
+      /*mat = mat*elem->matrix( energy_loss, part.mass(), part.charge() );
+
+      Particle::Position out_pos( elem->s(), Particle::StateVector out_pos( mat*in_pos, in_pos.m() ) );
 
       bool has_stopped = false;
       const Aperture::ApertureBase* aper = elem->aperture();
       if ( aper and aper->type()!=Aperture::ApertureBase::None ) {
         const bool has_passed_entrance = aper->contains( in_pos.position() ),
-                   has_passed_exit = aper->contains( out_pos.position() );
+                   has_passed_exit = aper->contains( out_pos.second.position() );
 
         has_stopped = ( !has_passed_entrance or !has_passed_exit );
         if ( !has_passed_exit ) {
           try {
-            std::pair<float,Particle::StateVector> hp = hitPosition( out_pos, elem, energy_loss, in_pos.momentum().m(), part.charge() );
-            elem_s += hp.first;
-            out_pos = hp.second;
+            out_pos = hitPosition( out_pos.second, elem, energy_loss );
+            out_pos.first += elem_s;
           } catch ( Exception& e ) {}
         }
 
       }
       try {
-        part.addPosition( elem_s, out_pos, has_stopped );
+        part.addPosition( out_pos, has_stopped );
       } catch ( Exception& e ) { e.dump(); }
 
-      if ( has_stopped ) break;
+      if ( has_stopped ) break;*/
     }
   }
 
-  std::pair<float,Particle::StateVector>
+  Particle::Position
   Propagator::hitPosition( const Particle::StateVector& ini_pos, const Element::ElementBase* ele, float eloss, float mp, int qp ) const
   {
     // first check the validity of the element
@@ -69,12 +124,13 @@ namespace Hector
 
     bool inside = false;
     for ( size_t i=0; i<niter; i++ ) {
+
       ele_tmp->setLength( max_pos );
       Particle::StateVector shift;
-      shift[Particle::StateVector::X] = ele_tmp->x();
-      shift[Particle::StateVector::Y] = ele_tmp->y();
-      shift[Particle::StateVector::TX] = tan( ele_tmp->Tx() );
-      shift[Particle::StateVector::TY] = tan( ele_tmp->Ty() );
+      shift.setPosition( ele_tmp->position() );
+      shift.setAngles(
+        CLHEP::Hep2Vector( tan( ele_tmp->Tx() ), tan( ele_tmp->Ty() ) )
+      );
 
       const Particle::StateVector max = Particle::StateVector( ele_tmp->matrix( eloss, mp, qp ) * ( vec-shift ) + shift, vec.m() );
 
@@ -96,21 +152,21 @@ namespace Hector
     // estimate state vector in the middle
     ele_tmp->setLength( ( max_pos-min_pos )/2. );
     Particle::StateVector shift;
-    shift[Particle::StateVector::X] = ele_tmp->x();
-    shift[Particle::StateVector::Y] = ele_tmp->y();
-    shift[Particle::StateVector::TX] = tan( ele_tmp->Tx() );
-    shift[Particle::StateVector::TY] = tan( ele_tmp->Ty() );
+    shift.setPosition( ele_tmp->position() );
+    shift.setAngles(
+      CLHEP::Hep2Vector( tan( ele_tmp->Tx() ), tan( ele_tmp->Ty() ) )
+    );
     
     const Particle::StateVector stop = Particle::StateVector( ele_tmp->matrix( eloss, mp, qp ) * ( vec-shift ) + shift, vec.m() );
 
-    return std::pair<float,Particle::StateVector>( ( max_pos+min_pos )/2., ini_pos );
+    return Particle::Position( ( max_pos+min_pos )/2., ini_pos );
   }
 
   void
   Propagator::propagate( Particles& beam ) const
   {
     for ( Particles::iterator it=beam.begin(); it!=beam.end(); it++ ) {
-      propagate( *it, 0. ); // s0?
+      propagate( *it, it->firstS() );
     }
   }
 }

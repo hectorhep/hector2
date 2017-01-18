@@ -31,7 +31,7 @@ main( int argc, char* argv[] )
                energy = Hector::Constants::beam_energy;
   const CLHEP::Hep3Vector mom0( 0, 0., sqrt( energy*energy-mass*mass ) );
 
-  TH2D hitmap( "hitmap", "x (m)\\y (m)", 1000, -0.2, 0.2, 1000, -0.2, 0.2 );
+  TH2D hitmap( "hitmap", "x (m)\\y (m)", 200, -0.2e-4, 0.2e-4, 200, -0.2e-4, 0.2e-4 );
   TH1D smear_x( "smear_x", "", 100, -10., 10. ),
        smear_y( "smear_y", "", 100, -10., 10. );
   TH1D pt_ini( "pt_ini", "Initial transverse momentum\\Entries\\GeV", 100, 0., 100. ),
@@ -59,9 +59,9 @@ main( int argc, char* argv[] )
     { // propagation through the beamline
       prop.propagate( p, s_pos );
 
-      Hector::Particle::PositionsMap::const_iterator it = --p.end();
-      Hector::Particle::StateVector sv = it->second;
-      hitmap.Fill( sv.position().x(), sv.position().y() );
+      const Hector::Particle::Position last_pos = p.lastPosition();
+      std::cout << last_pos.second.position() << std::endl;
+      hitmap.Fill( last_pos.second.position().x(), last_pos.second.position().y() );
     }
     //p.dump();
   }

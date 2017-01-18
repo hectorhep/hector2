@@ -28,14 +28,14 @@ namespace Hector
   }
 
   void
-  Particle::addPosition( float s, const StateVector& sv, bool stopped )
+  Particle::addPosition( const Position& pos, bool stopped )
   {
-    if ( positions_.size()>0 and lastStateVector().m()!=sv.m() ) {
+    if ( positions_.size()>0 and lastStateVector().m()!=pos.second.m() ) {
       throw Exception( __PRETTY_FUNCTION__, Form( "Particle mass is not conserved in propagation!\n\t"
                                                   "Previous mass was %.3f GeV, new mass is %.3f GeV",
-                                                  lastStateVector().m(), sv.m() ), Fatal );
+                                                  lastStateVector().m(), pos.second.m() ), Fatal );
     }
-    positions_.insert( std::pair<float, StateVector>( s, sv ) );
+    positions_.insert( pos );
     stopped_ = stopped;
   }
 
@@ -53,7 +53,7 @@ namespace Hector
   void
   Particle::emitGamma( float e_gamma, float q2_gamma, float phi_min, float phi_max )
   {
-    const float pos_ini = firstPosition();
+    const float pos_ini = firstS();
     Particle::StateVector sv_ini = firstStateVector();
 
     if ( q2_gamma==0. ) {
@@ -125,10 +125,26 @@ namespace Hector
   }
 
   void
+  Particle::StateVector::setAngles( const CLHEP::Hep2Vector& ang )
+  {
+    ( *this )[TX] = ang.x();
+    ( *this )[TY] = ang.y();
+  }
+
+  CLHEP::Hep2Vector
+  Particle::StateVector::angles() const
+  {
+    return CLHEP::Hep2Vector( ( *this )[TX], ( *this )[TY] );
+  }
+
+  void
   Particle::StateVector::setMomentum( const CLHEP::HepLorentzVector& mom )
   {
-    ( *this )[TX] = atan2( mom.px(), mom.pz() );
-    ( *this )[TY] = atan2( mom.py(), mom.pz() );
+    const CLHEP::Hep2Vector angles(
+      atan2( mom.px(), mom.pz() ),
+      atan2( mom.py(), mom.pz() )
+    );
+    setAngles( angles );
     ( *this )[E] = mom.e();
   }
 

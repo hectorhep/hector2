@@ -12,7 +12,11 @@ namespace Hector
       public:
         Marker( const std::string& name );
 
-        Marker* clone() const { return new Marker( *this ); }
+        Marker* clone() const {
+          Marker* out = new Marker( *this );
+          if ( aperture_ ) out->setAperture( aperture_->clone() );
+          return out;
+        }
         CLHEP::HepMatrix matrix( float, float, int ) const;
 
       private:

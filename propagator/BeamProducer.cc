@@ -76,11 +76,12 @@ namespace Hector
       vec[Particle::StateVector::TX] = CLHEP::RandGauss::shoot( (tx_min+tx_max)/2., ( tx_max-tx_min )/2. );
       vec[Particle::StateVector::TY] = CLHEP::RandGauss::shoot( (ty_min+ty_max)/2., ( ty_max-ty_min )/2. );
       vec[Particle::StateVector::E] = CLHEP::RandGauss::shoot( (e_min+e_max)/2., ( e_max-e_min )/2. );
-      vec.setM( mass );
+      //vec.setM( mass );
 
       Particle p( vec, s );
       p.setCharge( charge );
-      p.dump();
+      std::cout << e_min << " -- " << e_max << ":" << p.firstStateVector().energy() << std::endl;
+      //p.dump();
       out.push_back( p );
     }
     return out;

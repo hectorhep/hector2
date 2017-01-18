@@ -6,7 +6,7 @@ namespace Hector
   {
     ElementBase::ElementBase( const Type& type, const std::string& name ) :
       type_( type ), name_( name ), aperture_( 0 ),
-      length_( 0. ), magnetic_strength_( 0. ), s_( 0. ), tx_( 0. ), ty_( 0. )
+      length_( 0. ), magnetic_strength_( 0. ), s_( 0. )
     {}
 
     ElementBase::~ElementBase()

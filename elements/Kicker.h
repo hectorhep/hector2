@@ -22,7 +22,11 @@ namespace Hector
       public:
         HorizontalKicker( const std::string& name ) : Kicker( ElementBase::HorizontalKicker, name ) {}
 
-        HorizontalKicker* clone() const { return new HorizontalKicker( *this ); }
+        HorizontalKicker* clone() const {
+          HorizontalKicker* out = new HorizontalKicker( *this );
+          if ( aperture_ ) out->setAperture( aperture_->clone() );
+          return out;
+        }
         CLHEP::HepMatrix matrix( float, float, int ) const;
     };
 
@@ -31,7 +35,11 @@ namespace Hector
       public:
         VerticalKicker( const std::string& name ) : Kicker( ElementBase::VerticalKicker, name ) {}
 
-        VerticalKicker* clone() const { return new VerticalKicker( *this ); }
+        VerticalKicker* clone() const {
+          VerticalKicker* out = new VerticalKicker( *this );
+          if ( aperture_ ) out->setAperture( aperture_->clone() );
+          return out;
+        }
         CLHEP::HepMatrix matrix( float, float, int ) const;
     };
   }

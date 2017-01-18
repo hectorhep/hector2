@@ -7,7 +7,7 @@ Color_t
 elementColour( const Hector::Element::ElementBase* elem )
 {
   switch ( elem->type() ) {
-    case Hector::Element::ElementBase::Marker: return kWhite;
+    case Hector::Element::ElementBase::Marker: return kBlue+3;
     case Hector::Element::ElementBase::Drift: return kBlack;
     case Hector::Element::ElementBase::RectangularDipole: return kRed;
     case Hector::Element::ElementBase::SectorDipole: return kGreen;
@@ -28,8 +28,8 @@ elementColour( const Hector::Element::ElementBase* elem )
 void
 drawBeamline( const char axis, const Hector::Beamline* bl, const unsigned short beam, float size_x, const char* ip )
 {
-  const float size_y = 0.05,
-              scale_y = 3.;
+  const float size_y = 0.05, // general scale of the element x/y position
+              scale_y = 3.; // element x/y displacement magnification factor
 
   for ( Hector::Beamline::ElementsMap::const_iterator it=bl->begin(); it!=bl->end(); it++ ) {
     Hector::Element::ElementBase* elem = *it;
@@ -42,12 +42,9 @@ drawBeamline( const char axis, const Hector::Beamline* bl, const unsigned short 
       if ( beam==0 ) offset = +1;
       if ( beam==1 ) offset = -1;
     }
-    /*const float pos_x_ini = elem->s()/bl->length(),
-                pos_x_end = pos_x_ini + elem->length()/bl->length(),*/
     const float pos_x_ini = elem->s(),
                 pos_x_end = pos_x_ini + elem->length(),
                 pos_y_low = ( ( axis=='x' ) ? elem->x()*scale_y-size_y/2.+offset*size_y : elem->y()*scale_y-size_y/2.+offset*size_y ),
-//                pos_y_low_x = elem->relativePosition().x()*scale_y-size_y/2.,
                 pos_y_high = pos_y_low+size_y;
 
     // ROOT and its brilliant memory management...

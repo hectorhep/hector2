@@ -26,7 +26,11 @@ namespace Hector
       public:
         RectangularDipole( const std::string& name ) : Dipole( ElementBase::RectangularDipole, name ) {}
 
-        RectangularDipole* clone() const { return new RectangularDipole( *this ); }
+        RectangularDipole* clone() const {
+          RectangularDipole* out = new RectangularDipole( *this );
+          if ( aperture_ ) out->setAperture( aperture_->clone() );
+          return out;
+        }
         CLHEP::HepMatrix matrix( float, float, int ) const;
 
       private:
@@ -38,7 +42,11 @@ namespace Hector
       public:
         SectorDipole( const std::string& name ) : Dipole( ElementBase::SectorDipole, name ) {}
 
-        SectorDipole* clone() const { return new SectorDipole( *this ); }
+        SectorDipole* clone() const {
+          SectorDipole* out = new SectorDipole( *this );
+          if ( aperture_ ) out->setAperture( aperture_->clone() );
+          return out;
+        }
         CLHEP::HepMatrix matrix( float, float, int ) const;
 
       private:

@@ -57,6 +57,8 @@ namespace Hector
           void setPosition( const CLHEP::Hep2Vector& pos );
           /// x-y position of a particle (in m)
           CLHEP::Hep2Vector position() const;
+          void setAngles( const CLHEP::Hep2Vector& angles );
+          CLHEP::Hep2Vector angles() const;
 
           /// Fill the components of a state according to the particle kinematics
           void setMomentum( const CLHEP::HepLorentzVector& mom );
@@ -86,6 +88,9 @@ namespace Hector
       Particle( const StateVector&, float s0=0. );
       ~Particle();
 
+    public:
+      typedef std::pair<float,Particle::StateVector> Position;
+
       /// Build a Particle object from a mass and electric charge
       static Particle fromMassCharge( float mass, float charge );
 
@@ -108,10 +113,13 @@ namespace Hector
       /// Print all useful information about a particle
       void dump( std::ostream& os=std::cout ) const;
 
+      Position firstPosition() { return Position( positions_.begin()->first, positions_.begin()->second ); }
+      Position lastPosition() { return Position( positions_.rbegin()->first, positions_.rbegin()->second ); }
+
       /// First position associated to the particle along s
-      const float firstPosition() const { return positions_.begin()->first; }
+      const float firstS() const { return positions_.begin()->first; }
       /// Last position associated to the particle along s
-      const float lastPosition() const { return positions_.rbegin()->first; }
+      const float lastS() const { return positions_.rbegin()->first; }
 
       /// First state vector associated to the particle
       StateVector& firstStateVector() { return positions_.begin()->second; }
@@ -132,7 +140,8 @@ namespace Hector
       const PositionsMap::const_iterator end() const { return positions_.end(); }
 
       /// Add a new s-position/state vector couple to the particle's trajectory
-      void addPosition( float, const StateVector&, bool stopped=false );
+      void addPosition( const Position&, bool stopped=false );
+      void addPosition( float s, const StateVector& sv, bool stopped=false ) { addPosition( Position( s, sv ), stopped ); }
 
       /// Let the particle emit a photon
       void emitGamma( float e_gamma, float q2, float phi_min=0., float phi_max=2*CLHEP::pi );
