@@ -29,6 +29,7 @@ namespace Hector
     return str;
   }
 
+  /// Remove leading and trailing whitespaces to a string
   inline std::string trim( const std::string& str ) {
     if ( str=="" ) return str;
     size_t first = str.find_first_not_of( ' ' ),
@@ -39,6 +40,7 @@ namespace Hector
     return str.substr( first, ( last-first+1 ) );
   }
 
+  /// Get the lowercase version of a string
   inline std::string lowercase( const std::string& str ) {
     std::string s( str );
     std::transform( str.begin(), str.end(), s.begin(), ::tolower );

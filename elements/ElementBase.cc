@@ -27,6 +27,7 @@ namespace Hector
       return magnetic_strength_*( p0/p )*( qp/Constants::beam_particles_charge );
     }
 
+    /// Human-readable printout of a beamline element type
     std::ostream&
     operator<<( std::ostream& os, const ElementBase::Type& type )
     {
@@ -51,6 +52,7 @@ namespace Hector
       return os;
     }
 
+    /// Human-readable printout of a beamline element object
     std::ostream&
     operator<<( std::ostream& os, const ElementBase& elem )
     {
@@ -61,6 +63,7 @@ namespace Hector
       return os;
     }
 
+    /// Human-readable printout of a beamline element object
     std::ostream&
     operator<<( std::ostream& os, const ElementBase* elem )
     {

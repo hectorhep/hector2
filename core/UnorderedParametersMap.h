@@ -18,6 +18,7 @@ namespace Hector
         Unordered() {}
         ~Unordered() {}
 
+        /// Number of keys stored in the map
         size_t size() const { return map::size(); }
 
         /// Does the map have this key?

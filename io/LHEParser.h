@@ -10,6 +10,7 @@ namespace Hector
   /// List of all useful parsers
   namespace Parser
   {
+    /// Parsing tool for LHEF files to use as beams of primary particles
     class LHE
     {
       public:

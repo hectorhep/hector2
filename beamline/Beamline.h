@@ -19,7 +19,7 @@ namespace Hector
       /// Build a beamline from a longitudinal size and a interaction point position
       /// \param[in] length Longitudinal length of the beamline
       /// \param[in] ip Position of the interaction point
-      Beamline( float s, const CLHEP::Hep3Vector& ip=CLHEP::Hep3Vector() );
+      Beamline( float length, const CLHEP::Hep3Vector& ip=CLHEP::Hep3Vector() );
       ~Beamline();
 
       /// Remove and clean all elements in the beamline

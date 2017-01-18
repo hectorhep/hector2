@@ -75,6 +75,7 @@ namespace Hector
 
         /// Set the horizontal and vertical angles of the element (computed with respect to the s coordinate)
         void setAngles( const CLHEP::Hep2Vector& angles ) { angles_ = angles; }
+        /// Horizontal and vertical tilts of the element (with respect to the s axis)
         CLHEP::Hep2Vector angles() const { return angles_; }
         /// Horizontal angle
         float Tx() const { return angles_.x(); }
