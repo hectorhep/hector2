@@ -36,15 +36,15 @@ namespace Hector
         case ElementBase::Marker: os << "marker"; break;
         case ElementBase::Drift: os << "drift"; break;
         case ElementBase::Monitor: os << "monitor"; break;
-        case ElementBase::RectangularDipole: os << "rectangular dipole"; break;
+        case ElementBase::RectangularDipole: os << "rect.dipole"; break;
         case ElementBase::SectorDipole: os << "sector dipole"; break;
         case ElementBase::Quadrupole: os << "quadrupole"; break;
         case ElementBase::Sextupole: os << "sextupole"; break;
         case ElementBase::Multipole: os << "multipole"; break;
         case ElementBase::VerticalKicker: os << "vertical kicker"; break;
-        case ElementBase::HorizontalKicker: os << "horizontal kicker"; break;
-        case ElementBase::RectangularCollimator: os << "rectangular collimator"; break;
-        case ElementBase::EllipticalCollimator: os << "elliptical collimator"; break;
+        case ElementBase::HorizontalKicker: os << "horiz.kicker"; break;
+        case ElementBase::RectangularCollimator: os << "rect.collimator"; break;
+        case ElementBase::EllipticalCollimator: os << "ellip.collimator"; break;
         case ElementBase::CircularCollimator: os << "circular collimator"; break;
         case ElementBase::Placeholder: os << "placeholder"; break;
         case ElementBase::Instrument: os << "instrument"; break;
@@ -56,9 +56,10 @@ namespace Hector
     std::ostream&
     operator<<( std::ostream& os, const ElementBase& elem )
     {
-      os << "[" << elem.type() << "] " << elem.name() << " at s=" << elem.s() << " m.";
+      std::ostringstream oss; oss << elem.type();
+      os << Form( "[%15s] %15s at s=%.2f m.", oss.str().c_str(), elem.name().c_str(), elem.s() );
       if ( elem.aperture() ) {
-        os << " with " << elem.aperture();
+        os << "\taperture: " << elem.aperture();
       }
       return os;
     }

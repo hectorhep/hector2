@@ -29,7 +29,7 @@ namespace Hector
     std::ostream&
     operator<<( std::ostream& os, const ApertureBase& ap )
     {
-      os << ap.type() << " aperture"
+      os << ap.type()
          << " (param. (" << ap.p( 0 ) << ", " << ap.p( 1 ) << ", " << ap.p( 2 ) << ", " << ap.p( 3 ) << "),"
          << " center at " << ap.position() << ")";
       return os;

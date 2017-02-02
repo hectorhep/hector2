@@ -11,6 +11,7 @@ namespace Hector
     class RectangularAperture : public ApertureBase
     {
       public:
+        /// Class constructor
         RectangularAperture( float, float, const CLHEP::Hep2Vector& pos=CLHEP::Hep2Vector() );
         ~RectangularAperture();
 

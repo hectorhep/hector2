@@ -26,16 +26,12 @@ namespace Hector
     CLHEP::HepMatrix
     VerticalQuadrupole::matrix( float eloss, float mp, int qp ) const
     {
-      const float ke = fieldStrength( eloss, mp, qp ),
-                  omega = sqrt( fabs( ke ) )*length_;
+      const float ke = fieldStrength( eloss, mp, qp );
+      if ( ke==0. ) { return Drift::genericMatrix( length_ ); } // simple drift matrix
 
+      const float omega = sqrt( fabs( ke ) )*length_;
       CLHEP::HepMatrix mat = CLHEP::HepDiagMatrix( 6, 1 );
 
-      if ( ke==0. ) { // simple drift matrix
-        mat( 2, 1 ) = length_;
-        mat( 4, 3 ) = length_;
-        return mat;
-      }
       mat( 1, 1 ) = cosh( omega );
       mat( 1, 2 ) = sqrt( ke ) * sinh( omega );
       mat( 2, 1 ) = 1./sqrt( ke ) * sinh( omega );

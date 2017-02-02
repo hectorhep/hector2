@@ -11,24 +11,20 @@ namespace Hector
 
       CLHEP::HepMatrix mat = CLHEP::HepDiagMatrix( 6, 1 );
 
-      if ( ke==0. ) { // simple drift matrix
-        mat( 2, 1 ) = length_;
-        mat( 4, 3 ) = length_;
-        return mat;
-      }
+      if ( ke==0. ) { return Drift::genericMatrix( length_ ); } // simple drift matrix
 
       const float radius = 1./ke,
-                  norm_l = length_/radius;
+                  theta = length_/radius;
 
-      mat( 1, 1 ) = cos( norm_l );
-      mat( 1, 2 ) = -1./radius * sin( norm_l );
-      mat( 2, 1 ) = radius* sin( norm_l );
-      mat( 2, 2 ) = cos( norm_l );
+      mat( 1, 1 ) = cos( theta );
+      mat( 1, 2 ) = -1./radius * sin( theta );
+      mat( 2, 1 ) = radius* sin( theta );
+      mat( 2, 2 ) = cos( theta );
       mat( 4, 3 ) = length_;
       if ( !Constants::use_relative_energy ) {
         const float simp = 2.*radius*pow( sin( length_/( 2.*radius ) ), 2 ) / Constants::beam_energy;
         mat( 5, 1 ) = simp;
-        mat( 5, 2 ) = sin( norm_l ) / Constants::beam_energy;
+        mat( 5, 2 ) = sin( theta ) / Constants::beam_energy;
       }
       return mat;
     }
@@ -41,23 +37,21 @@ namespace Hector
       CLHEP::HepMatrix mat = CLHEP::HepDiagMatrix( 6, 1 );
 
       if ( ke==0. ) { // simple drift matrix
-        mat( 2, 1 ) = length_;
-        mat( 4, 3 ) = length_;
         Exception( __PRETTY_FUNCTION__, "Dipole has no effect. Results will be corrupted.", JustWarning ).dump();
-        return mat;
+        return Drift::genericMatrix( length_ );
       }
 
       const float radius = 1./ke,
-                  norm_l = length_/radius,
+                  theta = length_/radius,
                   simp = 2.*radius*pow( sin( length_/( 2.*radius ) ), 2 ) / Constants::beam_energy;
 
-      mat( 1, 1 ) = cos( norm_l );
-      mat( 1, 2 ) = -1./radius * sin( norm_l );
-      mat( 2, 1 ) = radius * sin( norm_l );
-      mat( 2, 2 ) = cos( norm_l );
+      mat( 1, 1 ) = cos( theta );
+      mat( 1, 2 ) = -1./radius * sin( theta );
+      mat( 2, 1 ) = radius * sin( theta );
+      mat( 2, 2 ) = cos( theta );
       mat( 4, 3 ) = length_;
       mat( 5, 1 ) = simp;
-      mat( 5, 2 ) = sin( norm_l ) / Constants::beam_energy;
+      mat( 5, 2 ) = sin( theta ) / Constants::beam_energy;
 
       if ( Constants::use_relative_energy ) {
         const float psy = ke*length_/2.;

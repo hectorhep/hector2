@@ -20,7 +20,7 @@ main( int argc, char* argv[] )
   }
   // general plotting parameters
   const float max_s = ( argc>3 ) ? atof( argv[3] ) : 500.;
-  const unsigned int num_particles = 100;
+  const unsigned int num_particles = 200;
 
   Hector::Parser::MADX parser_beam1( argv[1], "IP5", +1, max_s ),
                        parser_beam2( argv[2], "IP5", +1, max_s );
@@ -38,13 +38,13 @@ parser_beam1.beamline()->dump();
   TMultiGraph mg1_x, mg2_x,
               mg1_y, mg2_y;
 
-  Hector::Particles gun = Hector::BeamProducer::gaussianParticleGun( num_particles, Hector::Constants::beam_energy/1.25, Hector::Constants::beam_energy );
-  //Hector::Particles gun = Hector::BeamProducer::TXscanner( num_particles, Hector::Constants::beam_energy, -100, 100, max_s );
+  Hector::Particles gun = Hector::BeamProducer::gaussianParticleGun( num_particles, Hector::Constants::beam_energy/1.2, Hector::Constants::beam_energy );
+  //Hector::Particles gun = Hector::BeamProducer::TYscanner( num_particles, Hector::Constants::beam_energy, -1, 1, max_s );
 
   for ( Hector::Particles::iterator p=gun.begin(); p!=gun.end(); p++ ) {
     { // beamline 1 propagation
       p->clear();
-      prop1.propagate( *p, max_s );
+      try { prop1.propagate( *p, max_s ); } catch ( Hector::Exception& e ) { e.dump(); }
       TGraph gr_x, gr_y;
       unsigned short j = 0;
       for ( Hector::Particle::PositionsMap::const_iterator it=p->begin(); it!=p->end(); it++, j++ ) {
@@ -59,7 +59,7 @@ parser_beam1.beamline()->dump();
     }
     { // beamline 2 propagation
       p->clear();
-      prop2.propagate( *p, max_s );
+      try { prop2.propagate( *p, max_s ); } catch ( Hector::Exception& e ) { e.dump(); }
 
       TGraph gr_x, gr_y;
       unsigned short j = 0;
@@ -106,7 +106,8 @@ parser_beam1.beamline()->dump();
   //c.SetMargin( 5., 5., 5., 5. );
 
   c.cd();
-  Hector::Canvas::PaveText bl( 0.01, 0., 0.05, 0.05, Form( "#scale[0.3]{Beam 1: %s - Beam 2: %s}", argv[1], argv[2] ) );
+  const std::string file1( argv[1] ), file2( argv[2] );
+  Hector::Canvas::PaveText bl( 0.01, 0., 0.05, 0.05, Form( "#scale[0.3]{Beam 1: %s - Beam 2: %s}", file1.substr( file1.find_last_of( "/\\" )+1 ).c_str(), file2.substr( file2.find_last_of( "/\\")+1 ).c_str() ) );
   bl.Draw();
 
   c.Save( "pdf" );

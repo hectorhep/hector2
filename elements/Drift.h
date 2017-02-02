@@ -10,6 +10,7 @@ namespace Hector
     class Drift : public ElementBase
     {
       public:
+        /// Class constructor
         Drift( const ElementBase::Type&, const std::string& );
         ~Drift();
 
@@ -18,7 +19,23 @@ namespace Hector
           if ( aperture_ ) out->setAperture( aperture_->clone() );
           return out;
         }
-        CLHEP::HepMatrix matrix( float, float, int ) const;
+        /** \note \f$
+          \mathbf{M} = \left(
+          \begin{array}{cccccc}
+          1 & 0 & 0 & 0 & 0 & 0\\
+          l & 1 & 0 & 0 & 0 & 0\\
+          0 & 0 & 1 & 0 & 0 & 0\\
+          0 & 0 & l & 1 & 0 & 0\\
+          0 & 0 & 0 & 0 & 1 & 0\\
+          0 & 0 & 0 & 0 & 0 & 1\\
+          \end{array}
+          \right)
+          \f$
+        */
+        CLHEP::HepMatrix matrix( float eloss=-1., float mp=-1., int qp=0 ) const;
+        /// Build a transfer matrix for a given drift length
+        /// \param[in] length drift length
+        static CLHEP::HepMatrix genericMatrix( float length );
 
       private:
     };

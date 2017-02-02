@@ -10,6 +10,7 @@ namespace Hector
     class Marker : public ElementBase
     {
       public:
+        /// Class constructor
         Marker( const std::string& name );
 
         Marker* clone() const {
@@ -17,6 +18,10 @@ namespace Hector
           if ( aperture_ ) out->setAperture( aperture_->clone() );
           return out;
         }
+        /** \note \f$
+          \mathbf{M} = \mathbf{I}_6
+          \f$
+        */
         CLHEP::HepMatrix matrix( float, float, int ) const;
 
       private:

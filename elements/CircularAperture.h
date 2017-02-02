@@ -11,6 +11,7 @@ namespace Hector
     class CircularAperture : public EllipticAperture
     {
       public:
+        /// Class constructor
         CircularAperture( float, const CLHEP::Hep2Vector& pos=CLHEP::Hep2Vector() );
         ~CircularAperture();
 

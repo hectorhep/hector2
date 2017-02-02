@@ -11,6 +11,7 @@ namespace Hector
     class EllipticAperture : public ApertureBase
     {
       public:
+        /// Class constructor
         EllipticAperture( float, float, const CLHEP::Hep2Vector& pos=CLHEP::Hep2Vector() );
         ~EllipticAperture();
 

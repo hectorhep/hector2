@@ -24,7 +24,8 @@ namespace Hector
       void propagate( Particles& ) const;
 
     private:
-      Particle::Position passThrough( const Particle::Position& ini_pos, const Element::ElementBase* ele, float eloss, int qp ) const;
+      /// Extract a particle position at the exit of an element once it enters it
+      Particle::Position propagateThrough( const Particle::Position& ini_pos, const Element::ElementBase* ele, float eloss, int qp ) const;
 
       const Beamline* beamline_;
   };

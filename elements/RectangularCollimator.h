@@ -10,6 +10,7 @@ namespace Hector
     class RectangularCollimator : public Drift
     {
       public:
+        /// Class constructor
         RectangularCollimator( const std::string& name ) : Drift( ElementBase::RectangularCollimator, name ) {}
 
         RectangularCollimator* clone() const {

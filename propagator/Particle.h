@@ -126,7 +126,9 @@ namespace Hector
       /// Print all useful information about a particle
       void dump( std::ostream& os=std::cout ) const;
 
+      /// First s position-state vector couple recorded
       Position firstPosition() { return Position( positions_.begin()->first, positions_.begin()->second ); }
+      /// Last s position-state vector couple recorded
       Position lastPosition() { return Position( positions_.rbegin()->first, positions_.rbegin()->second ); }
 
       /// First position associated to the particle along s
@@ -154,6 +156,7 @@ namespace Hector
 
       /// Add a new s-position/state vector couple to the particle's trajectory
       void addPosition( const Position&, bool stopped=false );
+      /// Add a new s-position/state vector couple to the particle's trajectory
       void addPosition( float s, const StateVector& sv, bool stopped=false ) { addPosition( Position( s, sv ), stopped ); }
 
       /// Let the particle emit a photon
