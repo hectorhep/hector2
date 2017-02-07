@@ -30,19 +30,19 @@ namespace Hector
           return out;
         }
         /** \note \f$
-          \mathbf{M} = \left(
-          \begin{array}{cccccc}
-          1 & 0 & 0 & 0 & 0 & 0\\
-          l & 1 & 0 & 0 & 0 & 0\\
-          0 & 0 & 1 & 0 & 0 & 0\\
-          0 & 0 & l & 1 & 0 & 0\\
-          0 & 0 & 0 & 0 & 1 & 0\\
-          \frac{l}{2} \tan{k} & k & 0 & 0 & 0 & 1\\
-          \end{array}
-          \right)
-          \f$
-          assuming \f$ k =  k_{0} \cdot \frac{p_{0}}{p_{0} - dp} \cdot \frac{q_{\mathrm{particle}}}{q_{\mathrm{beam}}} \f$
-        */
+         * \mathbf{M} = \left(
+         * \begin{array}{cccccc}
+         * 1 & 0 & 0 & 0 & 0 & 0\\
+         * l & 1 & 0 & 0 & 0 & 0\\
+         * 0 & 0 & 1 & 0 & 0 & 0\\
+         * 0 & 0 & l & 1 & 0 & 0\\
+         * 0 & 0 & 0 & 0 & 1 & 0\\
+         * \frac{l}{2} \tan{k} & k & 0 & 0 & 0 & 1\\
+         * \end{array}
+         * \right)
+         * \f$
+         * assuming \f$ k =  k_{0} \cdot \frac{p_{0}}{p_{0} - dp} \cdot \frac{q_{\mathrm{particle}}}{q_{\mathrm{beam}}} \f$
+         */
         CLHEP::HepMatrix matrix( float, float, int ) const;
     };
 
@@ -58,19 +58,19 @@ namespace Hector
           return out;
         }
         /** \note \f$
-          \mathbf{M} = \left(
-          \begin{array}{cccccc}
-          1 & 0 & 0 & 0 & 0 & 0\\
-          l & 1 & 0 & 0 & 0 & 0\\
-          0 & 0 & 1 & 0 & 0 & 0\\
-          0 & 0 & l & 1 & 0 & 0\\
-          0 & 0 & 0 & 0 & 1 & 0\\
-          0 & 0 & \frac{l}{2} \tan{k} & k & 0 & 1\\
-          \end{array}
-          \right)
-          \f$
-          assuming \f$ k =  k_{0} \cdot \frac{p_{0}}{p_{0} - dp} \cdot \frac{q_{\mathrm{particle}}}{q_{\mathrm{beam}}} \f$
-        */
+         * \mathbf{M} = \left(
+         * \begin{array}{cccccc}
+         * 1 & 0 & 0 & 0 & 0 & 0\\
+         * l & 1 & 0 & 0 & 0 & 0\\
+         * 0 & 0 & 1 & 0 & 0 & 0\\
+         * 0 & 0 & l & 1 & 0 & 0\\
+         * 0 & 0 & 0 & 0 & 1 & 0\\
+         * 0 & 0 & \frac{l}{2} \tan{k} & k & 0 & 1\\
+         * \end{array}
+         * \right)
+         * \f$
+         * assuming \f$ k =  k_{0} \cdot \frac{p_{0}}{p_{0} - dp} \cdot \frac{q_{\mathrm{particle}}}{q_{\mathrm{beam}}} \f$
+         */
         CLHEP::HepMatrix matrix( float, float, int ) const;
     };
   }

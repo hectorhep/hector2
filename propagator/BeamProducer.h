@@ -52,6 +52,12 @@ namespace Hector
     {
       public:
         /// Class constructor
+        /// \param[in] num_part number of particles to generate for a full scan
+        /// \param[in] e_ini initial energy for the particles
+        /// \param[in] x_min minimal parameter value
+        /// \param[in] x_max maximal parameter value
+        /// \param[in] y fixed parameter value
+        /// \param[in] s_ini initial s position
         Xscanner( const unsigned short& num_part, float e_ini, float x_min, float x_max, float y=0., float s_ini=0. ) :
           LinearScanner( num_part, x_min, x_max, y, y, s_ini, e_ini ) {}
         Particle shoot();
@@ -61,6 +67,13 @@ namespace Hector
     class Yscanner : public LinearScanner
     {
       public:
+        /// Class constructor
+        /// \param[in] num_part number of particles to generate for a full scan
+        /// \param[in] e_ini initial energy for the particles
+        /// \param[in] x fixed parameter value
+        /// \param[in] y_min minimal parameter value
+        /// \param[in] y_max maximal parameter value
+        /// \param[in] s_ini initial s position
         Yscanner( const unsigned short& num_part, float e_ini, float y_min, float y_max, float x=0., float s_ini=0. ) :
           LinearScanner( num_part, y_min, y_max, x, x, s_ini, e_ini ) {}
         Particle shoot();
@@ -70,6 +83,13 @@ namespace Hector
     class TXscanner : public LinearScanner
     {
       public:
+        /// Class constructor
+        /// \param[in] num_part number of particles to generate for a full scan
+        /// \param[in] e_ini initial energy for the particles
+        /// \param[in] tx_min minimal parameter value
+        /// \param[in] tx_max maximal parameter value
+        /// \param[in] ty fixed parameter value
+        /// \param[in] s_ini initial s position
         TXscanner( const unsigned short& num_part, float e_ini, float tx_min, float tx_max, float ty=0., float s_ini=0. ) :
           LinearScanner( num_part, tx_min, tx_max, ty, ty, s_ini, e_ini ) {}
         Particle shoot();
@@ -79,6 +99,13 @@ namespace Hector
     class TYscanner : public LinearScanner
     {
       public:
+        /// Class constructor
+        /// \param[in] num_part number of particles to generate for a full scan
+        /// \param[in] e_ini initial energy for the particles
+        /// \param[in] tx fixed parameter value
+        /// \param[in] ty_min minimal parameter value
+        /// \param[in] ty_max maximal parameter value
+        /// \param[in] s_ini initial s position
         TYscanner( const unsigned short& num_part, float e_ini, float ty_min, float ty_max, float tx=0., float s_ini=0. ) :
           LinearScanner( num_part, ty_min, ty_max, tx, tx, s_ini, e_ini ) {}
         Particle shoot();

@@ -48,8 +48,7 @@ namespace Hector
     const float tx = p1_.first + LinearScanner::next()*( p1_.second-p1_.first )/( num_part_-1 ),
                 ty = p2_.first;
     Particle::StateVector vec;
-    vec[Particle::StateVector::TX] = tx;
-    vec[Particle::StateVector::TY] = ty;
+    vec.setAngles( CLHEP::Hep2Vector( tx, ty ) );
     vec.setEnergy( e_ini_ );
 
     return Particle( vec, s_.first );
@@ -61,8 +60,7 @@ namespace Hector
     const float tx = p2_.first,
                 ty = p1_.first + LinearScanner::next()*( p1_.second-p1_.first )/( num_part_-1 );
     Particle::StateVector vec;
-    vec[Particle::StateVector::TX] = tx;
-    vec[Particle::StateVector::TY] = ty;
+    vec.setAngles( CLHEP::Hep2Vector( tx, ty ) );
     vec.setEnergy( e_ini_ );
 
     return Particle( vec, s_.first );

@@ -4,8 +4,9 @@ namespace Hector
 {
   namespace Parser
   {
-    std::regex MADX::rgx_str_( "^\\%[0-9]?[0-9]?s$" );
+    std::regex MADX::rgx_typ_( "^\\%[0-9]{0,}(s|le)$" );
     std::regex MADX::rgx_hdr_( "^\\@ (\\w+) +\\%([0-9]+s|le) +\\\"?([^\"\\n]+)" );
+    std::regex MADX::rgx_elm_hdr_( "^\\s{0,}([\\*\\$])(.+)" );
 
     MADX::MADX( const char* filename, const char* ip_name, int direction, float max_s ) :
       ip_name_( ip_name ), dir_( direction/abs( direction ) ), beamline_( 0 )
@@ -70,9 +71,8 @@ namespace Hector
         std::smatch match;
         if ( !std::regex_search( line, match, rgx_hdr_ ) ) return;
 
-        const bool is_float = ( match.str( 2 )=="le" );
         const std::string key = lowercase( match.str( 1 ) );
-        if ( is_float ) header_float_.add( key, atof( match.str( 3 ).c_str() ) );
+        if ( match.str( 2 )=="le" ) header_float_.add( key, atof( match.str( 3 ).c_str() ) );
         else header_str_.add( key, match.str( 3 ) );
 
         // keep track of the last line read in the file
@@ -86,62 +86,34 @@ namespace Hector
       std::string line;
 
       in_file_.seekg( in_file_lastline_ );
+      std::vector<std::string> list_names, list_types;
 
       while ( !in_file_.eof() ) {
         std::getline( in_file_, line );
-        std::stringstream str( trim( line ) );
-        if ( str.str().length()==0 ) continue;
-        const char first_chr = str.str().at( str.str().find_first_not_of( ' ' ) );
 
-        // first look at the expected number of fields for each beamline element
-        if ( first_chr!='*' ) break;
+        std::smatch match;
+        if ( !std::regex_search( line, match, rgx_elm_hdr_ ) ) break;
 
-        std::vector<std::string> list_names, list_types;
-
-        // fields names
-        std::string buffer;
-        while ( str.good() ) {
-          str >> buffer;
-          if ( trim( buffer )=="*" ) continue;
-          list_names.push_back( lowercase( trim( buffer ) ) );
+        std::string field;
+        std::stringstream str( match.str( 2 ) );
+        switch ( match.str( 1 )[0] ) {
+          case '*': while ( str>>field ) list_names.push_back( lowercase( field ) ); break; // field names
+          case '$': while ( str>>field ) list_types.push_back( field ); break; // field types
+          default: break;
         }
-        list_names.pop_back(); // remove the last element (overcounting)
-
         in_file_lastline_ = in_file_.tellg();
+      }
 
-        std::string line2;
-        std::getline( in_file_, line2 );
-        std::stringstream str2( trim( line2 ) );
-        if ( str2.str().length()!=0 ) {
-          const char first_chr = str2.str().at( str2.str().find_first_not_of( ' ' ) );
-          if ( first_chr=='$' ) {
-            // list of fields stored below
-            std::string buffer2;
-            while ( str2.good() ) {
-              str2 >> buffer2;
-              if ( trim( buffer2 )=="$" ) continue;
-              list_types.push_back( trim( buffer2 ) );
-            }
-            list_types.pop_back(); // remove the last element (overcounting)
-          }
-
-          in_file_lastline_ = in_file_.tellg();
-
+      // perform the matching name <-> data type
+      bool has_lists_matching = ( list_names.size()==list_types.size() );
+      for ( unsigned short i=0; i<list_names.size(); i++ ) {
+        ValueType type = Unknown;
+        std::smatch match;
+        if ( has_lists_matching and std::regex_search( list_types.at( i ), match, rgx_typ_ ) ) {
+          if ( match.str( 1 )=="le" ) type = Float;
+          else if ( match.str( 1 )=="s" ) type = String;
         }
-
-        // perform the matching name <-> data type
-        bool has_lists_matching = ( list_names.size()==list_types.size() );
-        for ( unsigned short i=0; i<list_names.size(); i++ ) {
-          ValueType type = Unknown;
-          if ( has_lists_matching ) {
-            const std::string type_string = list_types.at( i );
-            if ( std::regex_match( type_string, rgx_str_ ) ) type = String;
-            if ( type_string=="%le" ) type = Float; //FIXME
-          }
-          elements_fields_.add( list_names.at( i ), type );
-        }
-
-        //elements_fields_.dump();
+        elements_fields_.add( list_names.at( i ), type );
       }
     }
 

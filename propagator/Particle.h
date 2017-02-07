@@ -58,7 +58,9 @@ namespace Hector
           void setPosition( const CLHEP::Hep2Vector& pos );
           /// x-y position of a particle (in m)
           CLHEP::Hep2Vector position() const;
+          /// Fill the components of a state according to the particle x'-y' angles (in rad)
           void setAngles( const CLHEP::Hep2Vector& angles );
+          /// x'-y' angles of a particles (in rad)
           CLHEP::Hep2Vector angles() const;
 
           /// Fill the components of a state according to the particle kinematics

@@ -18,10 +18,8 @@ namespace Hector
           if ( aperture_ ) out->setAperture( aperture_->clone() );
           return out;
         }
-        /** \note \f$
-          \mathbf{M} = \mathbf{I}_6
-          \f$
-        */
+        /** \note \f$ \mathbf{M} = \mathbf{I}_6 \f$
+         */
         CLHEP::HepMatrix matrix( float, float, int ) const;
 
       private:

@@ -34,19 +34,19 @@ namespace Hector
           return out;
         }
         /** \note \f$
-          \mathbf{M} = \left(
-          \begin{array}{cccccc}
-          \cos{\omega} & -\sqrt{k}\sin{\omega} & 0 & 0 & 0 & 0\\
-          \frac{1}{\sqrt{k}}\sin{\omega} & \cos{\omega} & 0 & 0 & 0 & 0\\
-          0 & 0 & \cosh{\omega} & \sqrt{k}\sinh{\omega} & 0 & 0\\
-          0 & 0 & \frac{1}{\sqrt{k}}sinh{\omega} & \cosh{\omega} & 0 & 0\\
-          0 & 0 & 0 & 0 & 1 & 0\\
-          0 & 0 & 0 & 0 & 0 & 1\\
-          \end{array}
-          \right)
-          \f$
-          assuming \f$ k =  k_{0} \cdot \frac{p_{0}}{p_{0} - dp} \cdot \frac{q_{\mathrm{particle}}}{q_{\mathrm{beam}}} \f$ and \f$ \omega \equiv \omega(k,l) = l \sqrt{|k|} \f$
-        */
+         * \mathbf{M} = \left(
+         * \begin{array}{cccccc}
+         * \cos{\omega} & -\sqrt{k}\sin{\omega} & 0 & 0 & 0 & 0\\
+         * \frac{1}{\sqrt{k}}\sin{\omega} & \cos{\omega} & 0 & 0 & 0 & 0\\
+         * 0 & 0 & \cosh{\omega} & \sqrt{k}\sinh{\omega} & 0 & 0\\
+         * 0 & 0 & \frac{1}{\sqrt{k}}\sinh{\omega} & \cosh{\omega} & 0 & 0\\
+         * 0 & 0 & 0 & 0 & 1 & 0\\
+         * 0 & 0 & 0 & 0 & 0 & 1\\
+         * \end{array}
+         * \right)
+         * \f$
+         * assuming \f$ k =  k_{0} \cdot \frac{p_{0}}{p_{0} - \mathrm{d}p} \cdot \frac{q_{\mathrm{part}}}{q_{\mathrm{b}}} \f$ and \f$ \omega \equiv \omega(k,l) = l \sqrt{|k|} \f$
+         */
         CLHEP::HepMatrix matrix( float, float, int ) const;
 
       private:
@@ -65,19 +65,19 @@ namespace Hector
           return out;
         }
         /** \note \f$
-          \mathbf{M} = \left(
-          \begin{array}{cccccc}
-          \cosh{\omega} & \sqrt{k}\sinh{\omega} & 0 & 0 & 0 & 0\\
-          \frac{1}{\sqrt{k}}\sinh{\omega} & \cosh{\omega} & 0 & 0 & 0 & 0\\
-          0 & 0 & \cos{\omega} & -\sqrt{k}\sin{\omega} & 0 & 0\\
-          0 & 0 & \frac{1}{\sqrt{k}}\sin{\omega} & \cos{\omega} & 0 & 0\\
-          0 & 0 & 0 & 0 & 1 & 0\\
-          0 & 0 & 0 & 0 & 0 & 1\\
-          \end{array}
-          \right)
-          \f$
-          assuming \f$ k =  k_{0} \cdot \frac{p_{0}}{p_{0} - dp} \cdot \frac{q_{\mathrm{particle}}}{q_{\mathrm{beam}}} \f$ and \f$ \omega \equiv \omega(k,l) = l \sqrt{|k|} \f$
-        */
+         * \mathbf{M} = \left(
+         * \begin{array}{cccccc}
+         * \cosh{\omega} & \sqrt{k}\sinh{\omega} & 0 & 0 & 0 & 0\\
+         * \frac{1}{\sqrt{k}}\sinh{\omega} & \cosh{\omega} & 0 & 0 & 0 & 0\\
+         * 0 & 0 & \cos{\omega} & -\sqrt{k}\sin{\omega} & 0 & 0\\
+         * 0 & 0 & \frac{1}{\sqrt{k}}\sin{\omega} & \cos{\omega} & 0 & 0\\
+         * 0 & 0 & 0 & 0 & 1 & 0\\
+         * 0 & 0 & 0 & 0 & 0 & 1\\
+         * \end{array}
+         * \right)
+         * \f$
+         * assuming \f$ k =  k_{0} \cdot \frac{p_{0}}{p_{0} - \mathrm{d}p} \cdot \frac{q_{\mathrm{part}}}{q_{\mathrm{b}}} \f$ and \f$ \omega \equiv \omega(k,l) = l \sqrt{|k|} \f$
+         */
         CLHEP::HepMatrix matrix( float, float, int ) const;
 
       private:

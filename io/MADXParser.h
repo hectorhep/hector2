@@ -34,6 +34,7 @@ namespace Hector
     class MADX
     {
       public:
+        /// Class constructor
         MADX( const char*, const char*, int, float max_s=-1. );
         ~MADX();
 
@@ -43,6 +44,7 @@ namespace Hector
       public:
         /// Type of content stored in the parameters map
         enum ValueType { Unknown = -1, String, Float, Integer };
+        /// Human-readable printout of a value type
         friend std::ostream& operator<<( std::ostream&, const ValueType& );
         /// Print all useful information parsed from the MAD-X output file
         void printInfo() const;
@@ -64,7 +66,7 @@ namespace Hector
         int dir_;
         Beamline* beamline_;
 
-        static std::regex rgx_str_, rgx_hdr_;
+        static std::regex rgx_typ_, rgx_hdr_, rgx_elm_hdr_;
 
     };
   }

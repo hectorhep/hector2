@@ -22,14 +22,23 @@ namespace Hector
       public:
         /// List of types allowed for an element
         typedef enum {
-          Invalid = -1,
-          Marker, Drift, Monitor,
-          RectangularDipole, SectorDipole,
-          Quadrupole, Sextupole, Multipole,
-          VerticalKicker, HorizontalKicker,
-          RectangularCollimator, EllipticalCollimator, CircularCollimator,
+          Invalid = -1, ///< Invalid element
+          Marker, ///< Simple s-marker
+          Drift, ///< Drift element
+          Monitor, ///< Monitoring element
+          RectangularDipole, ///< Rectangular-type dipole
+          SectorDipole, ///< Sector-type dipole
+          Quadrupole, ///< Generic (vertical or horizontal) quadrupole
+          Sextupole, ///< Generic sextupole
+          Multipole, ///< Generic multipole
+          VerticalKicker, ///< Vertical-type kicker
+          HorizontalKicker, ///< Horizontal-type kicker
+          RectangularCollimator, ///< Rectangular-type collimator
+          EllipticalCollimator, ///< Rectangular-type collimator
+          CircularCollimator, ///< Circular-type collimator
           //RomanPot, InteractionPoint,
-          Placeholder, Instrument
+          Placeholder, ///< A placeholder element
+          Instrument ///< A measurement apparatus
         } Type;
         /// Human-readable printout of a element type
         friend std::ostream& operator<<( std::ostream&, const Type& );
