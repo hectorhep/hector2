@@ -12,6 +12,7 @@ using std::cout;
 
 namespace Hector
 {
+  /// A beamline, or collection of optics elements
   class Beamline
   {
     public:

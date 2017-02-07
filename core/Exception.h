@@ -14,18 +14,10 @@ using std::cerr;
 
 namespace Hector
 {
-  /**
-   * \brief Enumeration of exception severities
-   * \author Laurent Forthomme <laurent.forthomme@cern.ch>
-   * \date 27 Mar 2015
-   */
+  /// Enumeration of exception severities
   typedef enum { Undefined=-1, Info, JustWarning, Fatal } ExceptionType;
 
-  /**
-   * \brief A simple exception handler
-   * \author Laurent Forthomme <laurent.forthomme@cern.ch>
-   * \date 24 Mar 2015
-   */
+  /// A simple exception handler
   class Exception
   {
     public:

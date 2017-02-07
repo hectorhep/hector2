@@ -70,7 +70,7 @@ namespace Hector
         Particle::StateVector out_s( in_pos.stateVector(), in_pos.stateVector().m() );
         out_s.setPosition( s_pos );
         part.addPosition( Particle::Position( s, out_s ) );
-        std::cout << out_s.position() << std::endl;
+        //std::cout << out_s.position() << std::endl;
       }
       else part.addPosition( out_pos );
 

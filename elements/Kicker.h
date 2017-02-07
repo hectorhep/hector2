@@ -37,7 +37,7 @@ namespace Hector
           0 & 0 & 1 & 0 & 0 & 0\\
           0 & 0 & l & 1 & 0 & 0\\
           0 & 0 & 0 & 0 & 1 & 0\\
-          l \tan(k) /2 & k & 0 & 0 & 0 & 1\\
+          \frac{l}{2} \tan{k} & k & 0 & 0 & 0 & 1\\
           \end{array}
           \right)
           \f$
@@ -65,7 +65,7 @@ namespace Hector
           0 & 0 & 1 & 0 & 0 & 0\\
           0 & 0 & l & 1 & 0 & 0\\
           0 & 0 & 0 & 0 & 1 & 0\\
-          0 & 0 & l \tan(k) /2 & k & 0 & 1\\
+          0 & 0 & \frac{l}{2} \tan{k} & k & 0 & 1\\
           \end{array}
           \right)
           \f$

@@ -2,6 +2,8 @@
 #define Core_Constants_h
 
 /// Mother of all namespaces/objects in Hector
+/// \author Laurent Forthomme <laurent.forthomme@cernSPAMNOT.ch>
+/// \date Nov 2016
 namespace Hector
 {
   /// List of constants to be left untouched once the run is started

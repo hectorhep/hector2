@@ -1,5 +1,6 @@
 #include "io/MADXParser.h"
 #include "propagator/Propagator.h"
+#include "propagator/BeamProducer.h"
 
 int main( int argc, char* argv[] )
 {
@@ -8,19 +9,19 @@ int main( int argc, char* argv[] )
   std::cout << "beamline matrix: " << parser.beamline()->matrix( 100., Hector::Constants::beam_particles_mass, +1 ) << std::endl;
 
   Hector::Propagator prop( parser.beamline() );
-  parser.beamline()->dump();
+  //parser.beamline()->dump();
+  parser.printInfo();
 
-  CLHEP::HepLorentzVector mom0( 0., 0., 0., Hector::Constants::beam_particles_mass );
-  for ( unsigned int i=0; i<10; i++ ) {
-    const float pz = Hector::Constants::beam_energy - ( i+1 )*10.;
-    mom0.setPz( pz );
-    mom0.setE( sqrt( pz*pz+std::pow( Hector::Constants::beam_particles_mass, 2 ) ) );
-    Hector::Particle p( mom0 );
+  const unsigned short num_part = 100;
+  //Hector::BeamProducer::gaussianParticleGun gun( Hector::Constants::beam_energy/1.25, Hector::Constants::beam_energy );
+  Hector::BeamProducer::TXscanner gun( num_part, Hector::Constants::beam_energy, 0., 1. );
+  for ( unsigned int i=0; i<num_part; i++ ) {
+    Hector::Particle p = gun.shoot();
     p.setCharge( +1 );
     try {
-      prop.propagate( p, 220. );
+      prop.propagate( p, 215.5 );
     } catch ( Hector::Exception& e ) { e.dump(); }
-    //p.dump();
+    std::cout << p.lastPosition().stateVector().position() << std::endl;
   }
 
   return 0;

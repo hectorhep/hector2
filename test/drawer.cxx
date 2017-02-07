@@ -38,16 +38,17 @@ parser_beam1.beamline()->dump();
   TMultiGraph mg1_x, mg2_x,
               mg1_y, mg2_y;
 
-  Hector::Particles gun = Hector::BeamProducer::gaussianParticleGun( num_particles, Hector::Constants::beam_energy/1.2, Hector::Constants::beam_energy );
-  //Hector::Particles gun = Hector::BeamProducer::TYscanner( num_particles, Hector::Constants::beam_energy, -1, 1, max_s );
+  Hector::BeamProducer::gaussianParticleGun gun( Hector::Constants::beam_energy/1.2, Hector::Constants::beam_energy );
+  //Hector::BeamProducer::TYscanner gun( num_particles, Hector::Constants::beam_energy, -1, 1, max_s );
 
-  for ( Hector::Particles::iterator p=gun.begin(); p!=gun.end(); p++ ) {
+  for ( size_t i=0; i<num_particles; i++ ) {
+    Hector::Particle p = gun.shoot();
     { // beamline 1 propagation
-      p->clear();
-      try { prop1.propagate( *p, max_s ); } catch ( Hector::Exception& e ) { e.dump(); }
+      p.clear();
+      try { prop1.propagate( p, max_s ); } catch ( Hector::Exception& e ) { e.dump(); }
       TGraph gr_x, gr_y;
       unsigned short j = 0;
-      for ( Hector::Particle::PositionsMap::const_iterator it=p->begin(); it!=p->end(); it++, j++ ) {
+      for ( Hector::Particle::PositionsMap::const_iterator it=p.begin(); it!=p.end(); it++, j++ ) {
         gr_x.SetPoint( j, it->first, it->second.position().x() );
         gr_y.SetPoint( j, it->first, it->second.position().y() );
         //std::cout << "--> " << it->second.position() << std::endl;
@@ -58,12 +59,12 @@ parser_beam1.beamline()->dump();
       mg1_y.Add( dynamic_cast<TGraph*>( gr_y.Clone() ) );
     }
     { // beamline 2 propagation
-      p->clear();
-      try { prop2.propagate( *p, max_s ); } catch ( Hector::Exception& e ) { e.dump(); }
+      p.clear();
+      try { prop2.propagate( p, max_s ); } catch ( Hector::Exception& e ) { e.dump(); }
 
       TGraph gr_x, gr_y;
       unsigned short j = 0;
-      for ( Hector::Particle::PositionsMap::const_iterator it=p->begin(); it!=p->end(); it++, j++ ) {
+      for ( Hector::Particle::PositionsMap::const_iterator it=p.begin(); it!=p.end(); it++, j++ ) {
         gr_x.SetPoint( j, it->first, it->second.position().x() );
         gr_y.SetPoint( j, it->first, it->second.position().y() );
       }

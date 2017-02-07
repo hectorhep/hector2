@@ -37,19 +37,19 @@ namespace Hector
         /** \note \f$
           \mathbf{M} = \left(
           \begin{array}{cccccc}
-          \cos(l/r) & \frac{-1}{r} \sin(l/r) & 0 & 0 & 0 & 0\\
-          r \sin(l/r) & \cos(l/r) & 0 & 0 & 0 & 0\\
+          \cos{\frac{l}{r}} & \frac{-1}{r} \sin{\frac{l}{r}} & 0 & 0 & 0 & 0\\
+          r \sin{\frac{l}{r}} & \cos{\frac{l}{r}} & 0 & 0 & 0 & 0\\
           0 & 0 & 1 & 0 & 0 & 0\\
           0 & 0 & l & 1 & 0 & 0\\
-          2r \sin^2(l/2r)/E_{\mathrm{beam}} & \sin(l/r)/E_{\mathrm{beam}} & 0 & 0 & 1 &0\\
+          \frac{2r}{E_{\mathrm{b}}} \sin^2{\frac{l}{2r}} & \frac{1}{E_{\mathrm{b}}}\sin{\frac{l}{r}} & 0 & 0 & 1 &0\\
           0 & 0 & 0 & 0 & 0 & 1\\
           \end{array}
           \right)
           \f$
-          assuming \f$ 1/r \equiv k = k_{0} \cdot \frac{p_{0}}{p_{0} - dp} \cdot \frac{q_{\mathrm{particle}}}{q_{\mathrm{beam}}} \f$ and \f$ E_{\mathrm{beam}}=7000\f$ GeV.
+          assuming \f$ 1/r \equiv k = k_{0} \cdot \frac{p_{0}}{p_{0} - dp} \cdot \frac{q_{\mathrm{particle}}}{q_{\mathrm{beam}}} \f$ and \f$ E_{\mathrm{b}}=7000\f$ GeV.
         */
-        /// \warning numerical sensitivity with \f$ r(1-\cos(l/r))/E_{\mathrm{beam}}\f$.
-        ///  Using \f$ 2\sin^2(x/2) = 1-\cos(x)\f$ instead (see the variable called "simp")
+        /// \warning Numerical sensitivity expected with \f$ \frac{r}{E_{\mathrm{b}}} \left(1-\cos{\frac{l}{r}}\right)\f$.
+        ///  Using \f$ \cos{2x} = 1-2\sin^{2}{x} \f$ to transform this term (see the variable called "simp")
         CLHEP::HepMatrix matrix( float, float, int ) const;
 
       private:
@@ -72,8 +72,8 @@ namespace Hector
         /** \note \f$
           \mathbf{M}_{\mathrm{bending-off}} = \left(
           \begin{array}{cccccc}
-          \cos(l/r) & \frac{-1}{r} \sin(l/r) & 0 & 0 & 0 & 0\\
-          r \sin(l/r) & \cos(l/r) & 0 & 0 & 0 & 0\\
+          \cos{\frac{l}{r}} & \frac{-1}{r} \sin{\frac{l}{r}} & 0 & 0 & 0 & 0\\
+          r \sin{\frac{l}{r}} & \cos{\frac{l}{r}} & 0 & 0 & 0 & 0\\
           0 & 0 & 1 & 0 & 0 & 0\\
           0 & 0 & l & 1 & 0 & 0\\
           0 & 0 & 0 & 0 & 1 & 0\\
@@ -83,16 +83,16 @@ namespace Hector
           \f$\f$
           \mathbf{M}_{\mathrm{bending-on}} = \left(
           \begin{array}{cccccc}
-          \cos(l/r) & \frac{-1}{r} \sin(l/r) & 0 & 0 & 0 & 0\\
-          r \sin(l/r) & \cos(l/r) & 0 & 0 & 0 & 0\\
+          \cos{\frac{l}{r}} & \frac{-1}{r} \sin{\frac{l}{r}} & 0 & 0 & 0 & 0\\
+          r \sin{\frac{l}{r}} & \cos{\frac{l}{r}} & 0 & 0 & 0 & 0\\
           0 & 0 & 1 & 0 & 0 &0\\
           0 & 0 & l & 1 & 0 &0\\
-          2r \sin^2(l/2r)/E_{\mathrm{beam}} & \sin(l/r)/E_{\mathrm{beam}} & 0 & 0 & 1 & 0\\
+          \frac{2r}{E_{\mathrm{b}}} \sin^2{\frac{l}{2r}} & \frac{1}{E_{\mathrm{b}}} \sin{\frac{l}{r}} & 0 & 0 & 1 & 0\\
           0 & 0 & 0 & 0 & 0 & 1\\
           \end{array}
           \right)
           \f$
-         assuming \f$ 1/r \equiv k =  k_{0} \cdot \frac{p_{0}}{p_{0} - dp} \cdot \frac{q_{\mathrm{particle}}}{q_{\mathrm{beam}}} \f$
+         assuming \f$ \frac{1}{r} \equiv k =  k_{0} \cdot \frac{p_{0}}{p_{0} - dp} \cdot \frac{q_{\mathrm{particle}}}{q_{\mathrm{b}}} \f$
         */
         CLHEP::HepMatrix matrix( float, float, int ) const;
 
