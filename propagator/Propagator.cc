@@ -16,10 +16,15 @@ namespace Hector
     Particle::StateVector shift;
     shift.setPosition( ele->position() );
     shift.setAngles( CLHEP::Hep2Vector( tan( ele->angles().x() ), tan( ele->angles().y() ) ) );
-    CLHEP::HepVector vec( ele->matrix( eloss, ini_pos.stateVector().m(), qp ) * ( ini_pos.stateVector()-shift ) + shift );
-    vec[Particle::StateVector::TX] = atan( vec[Particle::StateVector::TX] );
-    vec[Particle::StateVector::TY] = atan( vec[Particle::StateVector::TY] );
-    return Particle::Position( ele->s()+ele->length(), Particle::StateVector( vec, ini_pos.stateVector().m() ) ); // assume that mass is conserved here
+
+    // perform the propagation (assuming that mass is conserved...)
+    Particle::StateVector vec( ele->matrix( eloss, ini_pos.stateVector().m(), qp ) * ( ini_pos.stateVector().vector()-shift.vector() ) + shift.vector(), ini_pos.stateVector().m() );
+
+    // convert the angles -> tan-1( angle )
+    const CLHEP::Hep2Vector ang_old = vec.angles();
+    vec.setAngles( CLHEP::Hep2Vector( atan( ang_old.x() ), atan( ang_old.y() ) ) );
+
+    return Particle::Position( ele->s()+ele->length(), vec );
   }
 
 
@@ -28,6 +33,9 @@ namespace Hector
   {
     part.clear();
 
+    /*const double energy_loss = ( Constants::use_relative_energy )
+      ? Constants::beam_energy-part.lastStateVector().energy()
+      : part.lastStateVector().energy();*/
     const double energy_loss = Constants::beam_energy-part.lastStateVector().energy();
 
     for ( Beamline::ElementsMap::const_iterator it=beamline_->begin()+1; it!=beamline_->end(); it++ ) {
@@ -63,16 +71,17 @@ namespace Hector
         if ( !has_passed_exit ) { PrintInfo( Form( "Particle stopped inside %s", prev_elem->name().c_str() ) ); }
       }
 
-      if ( out_pos.s()>=s ) { // we are in the next element
+      if ( out_pos.s()>=s ) { // we are in the next element (-> interpolate to get the state vector at the requested s)
         const float l = out_pos.s()-in_pos.s();
         if ( l==0 ) { throw Exception( __PRETTY_FUNCTION__, Form( "No luck in choosing position (s=%.3f m)\n\tPropagation is impossible!", s ), JustWarning ); }
         const CLHEP::Hep2Vector s_pos = in_pos.stateVector().position() + ( s-in_pos.s() )*( out_pos.stateVector().position()-in_pos.stateVector().position() )/l;
-        Particle::StateVector out_s( in_pos.stateVector(), in_pos.stateVector().m() );
+        Particle::StateVector out_s( in_pos.stateVector() );
         out_s.setPosition( s_pos );
         part.addPosition( Particle::Position( s, out_s ) );
-        //std::cout << out_s.position() << std::endl;
       }
-      else part.addPosition( out_pos );
+      else {
+        part.addPosition( out_pos );
+      }
 
       /*std::cout << ">>> " << l << "\t" << s_pos << std::endl;*/
 
@@ -130,7 +139,7 @@ namespace Hector
         CLHEP::Hep2Vector( tan( ele_tmp->Tx() ), tan( ele_tmp->Ty() ) )
       );
 
-      const Particle::StateVector max = Particle::StateVector( ele_tmp->matrix( eloss, mp, qp ) * ( vec-shift ) + shift, vec.m() );
+      const Particle::StateVector max = Particle::StateVector( ele_tmp->matrix( eloss, mp, qp ) * ( vec.vector()-shift.vector() ) + shift.vector(), vec.m() );
 
       if ( ele_tmp->aperture() ) {
         inside = ele_tmp->aperture()->contains( max.position() );
@@ -155,7 +164,7 @@ namespace Hector
       CLHEP::Hep2Vector( tan( ele_tmp->Tx() ), tan( ele_tmp->Ty() ) )
     );
     
-    const Particle::StateVector stop = Particle::StateVector( ele_tmp->matrix( eloss, mp, qp ) * ( vec-shift ) + shift, vec.m() );
+    const Particle::StateVector stop = Particle::StateVector( ele_tmp->matrix( eloss, mp, qp ) * ( vec.vector()-shift.vector() ) + shift.vector(), vec.m() );
 
     return Particle::Position( ( max_pos+min_pos )/2., ini_pos );
   }

@@ -13,7 +13,7 @@ namespace Hector
     static float beam_energy;
     /// Mass of the primary particles in the beam (in GeV/c2)
     static float beam_particles_mass;
-    /// Crossing angle of the particles beams (in urad)
+    /// Crossing angle of the particles beams (in rad)
     static float crossing_angle;
     /// Electric charge of the primary particles in the beam (in e)
     static int beam_particles_charge;

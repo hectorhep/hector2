@@ -12,7 +12,7 @@ namespace Hector
   namespace BeamProducer
   {
     /// Lower and upper limits
-    typedef std::pair<float, float> limits;
+    typedef std::pair<float, float> params;
     /// Generic scanner for a given granularity of a parameter
     class LinearScanner
     {
@@ -20,7 +20,7 @@ namespace Hector
         /// Class constructor
         LinearScanner( const unsigned short& num_part, float p1_ini, float p1_end, float p2_ini, float p2_end=999., float s_ini=0., float e_ini=0. ) :
           num_part_( num_part ), num_gen_( 0 ),
-          p1_( std::pair<float,float>( p1_ini, p1_end ) ), p2_( std::pair<float,float>( p2_ini, p2_end ) ), s_( s_ini, s_ini ),
+          p1_( p1_ini, p1_end ), p2_( p2_ini, p2_end ), s_( s_ini, s_ini ),
           e_ini_( e_ini )
         {
           if ( p2_.second==999. ) { p2_.second = p2_.first; }
@@ -38,11 +38,11 @@ namespace Hector
         /// Number of particles already generated in the scan
         unsigned short num_gen_;
         /// Lower and upper limits for the first scan parameter
-        limits p1_;
+        params p1_;
         /// Lower and upper limits for the second scan parameter
-        limits p2_;
+        params p2_;
         /// Lower and upper limits for the s coordinate to generate
-        limits s_;
+        params s_;
         /// Initial beam energy
         float e_ini_;
     };
@@ -112,43 +112,89 @@ namespace Hector
     };
 
     /// A generic templated particle gun
-    template<class rnd>
+    template<class T>
     class ParticleGun
     {
       public:
         /// Class constructor
-        ParticleGun( float e_min, float e_max, float s_min=0., float s_max=0.,
+        ParticleGun( float e_min=Constants::beam_energy, float e_max=Constants::beam_energy,
+                     float s_min=0., float s_max=0.,
                      float x_min=0., float x_max=0., float y_min=0., float y_max=0.,
                      float tx_min=-CLHEP::pi/2., float tx_max=CLHEP::pi/2., float ty_min=-CLHEP::pi/2., float ty_max=CLHEP::pi/2.,
                      float mass=Constants::beam_particles_mass, float charge=Constants::beam_particles_charge ) :
-          e_( e_min, e_max ), s_( s_min, s_max ),
-          x_( x_min, x_max ), y_( y_min, y_max ),
-          tx_( tx_min, tx_max ), ty_( ty_min, ty_max ),
+          e_( parameters( e_min, e_max ) ), s_( parameters( s_min, s_max ) ),
+          x_( parameters( x_min, x_max ) ), y_( parameters( y_min, y_max ) ),
+          tx_( parameters( tx_min, tx_max ) ), ty_( parameters( ty_min, ty_max ) ),
           mass_( mass ), charge_( charge ) {}
 
         /// Generate one particle according to the templated distribution
         Particle shoot() const {
           Particle::StateVector vec;
-          const float s = rnd::shoot( s_.first, s_.second ),
-                      x = rnd::shoot( x_.first, x_.second ),
-                      y = rnd::shoot( y_.first, y_.second ),
-                      tx = rnd::shoot( tx_.first, tx_.second ),
-                      ty = rnd::shoot( ty_.first, ty_.second ),
-                      e = rnd::shoot( e_.first, e_.second );
+          const float s = T::shoot( s_.first, s_.second ),
+                      x = T::shoot( x_.first, x_.second ),
+                      y = T::shoot( y_.first, y_.second ),
+                      tx = T::shoot( tx_.first, tx_.second ),
+                      ty = T::shoot( ty_.first, ty_.second ),
+                      e = T::shoot( e_.first, e_.second );
           vec.setPosition( CLHEP::Hep2Vector( x, y ) );
           vec.setAngles( CLHEP::Hep2Vector( tx, ty ) );
-          vec.setEnergy( e );
           vec.setM( mass_ );
+          vec.setEnergy( e );
 
           Particle p( vec, s );
           p.setCharge( charge_ );
           return p;
         }
 
+        //----- Full beam information
+
+        /// Set the parameters to the initial beam energy distribution
+        void setEparams( float e1, float e2 ) { e_ = params( e1, e2 ); }
+        /// Set the lower and upper limits to the initial beam energy distribution
+        void setElimits( float e1, float e2=-1. ) {
+          if ( e2<0 ) e2 = e1; // energies are supposingly positive
+          e_ = parameters( e1, e2 );
+        }
+
+        /// Set the parameters to the initial longitudinal beam position distribution
+        void setSparams( float s1, float s2 ) { s_ = params( s1, s2 ); }
+        /// Set the lower and upper limits to the initial longitudinal beam position distribution
+        void setSlimits( float s1, float s2 ) { s_ = parameters( s1, s2 ); }
+
+        /// Set the parameters to the horizontal beam position distribution
+        void setXparams( float x1, float x2 ) { x_ = params( x1, x2 ); }
+        /// Set the lower and upper limits to the horizontal beam position distribution
+        void setXlimits( float x1, float x2 ) { x_ = parameters( x1, x2 ); }
+
+        /// Set the parameters to the vertical beam position distribution
+        void setYparams( float y1, float y2 ) { y_ = params( y1, y2 ); }
+        /// Set the lower and upper limits to the vertical beam position distribution
+        void setYlimits( float y1, float y2 ) { y_ = parameters( y1, y2 ); }
+
+        /// Set the parameters to the horizontal angular distribution
+        void setTXparams( float tx1, float tx2 ) { tx_ = params( tx1, tx2 ); }
+        /// Set the lower and upper limits to the horizontal angular distribution
+        void setTXlimits( float tx1, float tx2 ) { tx_ = parameters( tx1, tx2 ); }
+
+        /// Set the parameters to the vertical angular distribution
+        void setTYparams( float ty1, float ty2 ) { ty_ = params( ty1, ty2 ); }
+        /// Set the lower and upper limits to the vertical angular parameter distribution
+        void setTYlimits( float ty1, float ty2 ) { ty_ = parameters( ty1, ty2 ); }
+
+        //----- Single particle information
+
+        /// Set the outgoing particles' mass (in GeV)
+        void setParticleMass( float mass ) { mass_ = mass; }
+        /// Set the outgoing particles' charge (in e)
+        void setParticleCharge( float q ) { charge_ = q; }
+
       private:
-        limits e_, s_;
-        limits x_, y_;
-        limits tx_, ty_;
+        /// Translate lower and upper limits into parameters to give to the random generator
+        params parameters( const float& lim1, const float& lim2 ) { return params( lim1, lim2 ); }
+
+        params e_, s_;
+        params x_, y_;
+        params tx_, ty_;
         float mass_, charge_;
     };
 
@@ -156,6 +202,9 @@ namespace Hector
     typedef ParticleGun<CLHEP::RandFlat> flatParticleGun;
     /// Beam of particles with gaussian s, x, y, Tx, Ty and energy distributions
     typedef ParticleGun<CLHEP::RandGauss> gaussianParticleGun;
+
+    /// Specialization for Gaussian parameters
+    template<> params gaussianParticleGun::parameters( const float& lim1, const float& lim2 );
   }
 }
 

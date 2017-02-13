@@ -97,6 +97,7 @@ namespace Hector
         float length() const { return length_; }
 
         /// Set the element magnetic field strength
+        /// \note Strength \f$ k = \frac{e}{p}\frac{\partial B}{\partial x} \f$
         void setMagneticStrength( float k ) { magnetic_strength_ = k; }
         /// Magnetic field strength
         float magneticStrength() const { return magnetic_strength_; }
@@ -124,7 +125,8 @@ namespace Hector
         /// Aperture
         Aperture::ApertureBase* aperture() const { return aperture_; }
 
-        /// Compute the field strength of the element for a given energy loss of a particle of given mass and charge
+        /// Compute the modified field strength of the element for a given energy loss of a particle of given mass and charge
+        /// \note \f$ k_e = k \cdot \frac{p}{p-\mathrm{d}p} \cdot \frac{q_{\mathrm{part}}}{q_{\mathrm{b}}} \f$
         float fieldStrength( float, float, int ) const;
 
       protected:

@@ -22,9 +22,9 @@ namespace Hector
   {
     public:
       /// Six-dimensional state vector associated to a particle at a given s
-      class StateVector : public CLHEP::HepVector
+      class StateVector : private CLHEP::HepVector
       {
-        public:
+        private:
           /// Human-readable enumeration of the 6 state vector coordinates
           enum Components { X = 0, TX, Y, TY, E, K };
         public:
@@ -47,10 +47,19 @@ namespace Hector
           }
           ~StateVector() {}
 
+          /// Human-readable printout of the state vector
+          friend std::ostream& operator<<( std::ostream&, const StateVector& );
+
+          const CLHEP::HepVector& vector() const { return *this; }
+
           /// Set the particle energy (in GeV)
           void setEnergy( float energy ) { ( *this )[E] = energy; }
           /// Particle energy (in GeV)
           float energy() const { return ( *this )[E]; }
+          /// Set the energy loss \f$ \xi \f$
+          void setXi( float xi ) { setEnergy( Constants::beam_energy*( 1.-xi ) ); }
+          /// Energy loss \f$ \xi \f$
+          float xi() const { return 1.-energy()/Constants::beam_energy; }
           /// Particle kick
           float kick() const { return ( *this )[K]; }
 

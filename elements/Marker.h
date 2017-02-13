@@ -7,6 +7,7 @@ namespace Hector
 {
   namespace Element
   {
+    /// Marker object builder
     class Marker : public ElementBase
     {
       public:

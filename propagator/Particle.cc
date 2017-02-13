@@ -43,10 +43,11 @@ namespace Hector
   Particle::dump( std::ostream& os ) const
   {
     os << "Particle of charge " << charge_ << "\n"
-       << " initial position: " << firstStateVector().T() << "\n"
-       << " list of associated state vectors:\n";
+       << " initial position: " << firstStateVector() << "\n";
+    if ( positions_.size()==1 ) return;
+    os << " list of associated state vectors:\n";
     for ( std::map<float, StateVector>::const_iterator it=positions_.begin(); it!=positions_.end(); it++ ) {
-      std::cout << "   s = " << it->first << " m: " << it->second.T();
+      std::cout << Form( "   s = %8.3f m:", it->first ) << " " << it->second << std::endl;
     }
   }
 
@@ -101,8 +102,8 @@ namespace Hector
     const double theta = atan( seta/( Constants::beam_energy/gkk-ceta ) ),
                  phi = CLHEP::RandFlat::shoot( phi_min, phi_max );
 
-    sv_ini[Particle::StateVector::TX] += theta*cos(phi);
-    sv_ini[Particle::StateVector::TY] -= theta*sin(phi);
+    CLHEP::Hep2Vector old_ang( sv_ini.angles() );
+    sv_ini.setAngles( old_ang + CLHEP::Hep2Vector( theta*cos( phi ), -theta*sin( phi ) ) );
 
     // caution: emitting a photon erases all known positions !
     positions_.clear();
@@ -171,5 +172,13 @@ namespace Hector
       return;
     }
     m_ = mass;
+  }
+
+  /// Human-readable printout of a state vector
+  std::ostream&
+  operator<<( std::ostream& os, const Particle::StateVector& vec )
+  {
+    return os << Form( "{ x = % 6.4e m, x' = % 6.3e rad, y = % 6.4e m, y' = % 6.3e rad, k = % 3.1f, E = %6.3e GeV }",
+                       vec.position().x(), vec.angles().x(), vec.position().y(), vec.angles().y(), vec.kick(), vec.energy() );
   }
 }

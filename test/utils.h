@@ -2,6 +2,7 @@
 
 #include "TColor.h"
 #include "TPave.h"
+#include "TLatex.h"
 #include "TMarker.h"
 
 Color_t
@@ -32,6 +33,10 @@ drawBeamline( const char axis, const Hector::Beamline* bl, const unsigned short 
   const float size_y = 0.05, // general scale of the element x/y position
               scale_y = 3.; // element x/y displacement magnification factor
 
+  TLatex txt;
+  txt.SetTextSize( 0.03 );
+  txt.SetTextAngle( 45. );
+
   for ( Hector::Beamline::ElementsMap::const_iterator it=bl->begin(); it!=bl->end(); it++ ) {
     Hector::Element::ElementBase* elem = *it;
     if ( elem->type()==Hector::Element::ElementBase::Drift ) continue; //FIXME
@@ -52,6 +57,9 @@ drawBeamline( const char axis, const Hector::Beamline* bl, const unsigned short 
       TMarker* arr = new TMarker( pos_x_ini, 0., 24 );
       arr->Draw();
     }
+    /*if ( elem->type()==Hector::Element::ElementBase::Marker ) {
+      txt.DrawLatex( elem->s(), pos_y_low, elem->name().c_str() );
+    }*/
 
     // ROOT and its brilliant memory management...
     TPave* elem_box = new TPave( pos_x_ini, pos_y_low, pos_x_end, pos_y_high, 0 );

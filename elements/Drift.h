@@ -7,6 +7,7 @@ namespace Hector
 {
   namespace Element
   {
+    /// Drift object builder
     class Drift : public ElementBase
     {
       public:

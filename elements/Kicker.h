@@ -8,6 +8,7 @@ namespace Hector
 {
   namespace Element
   {
+    /// A generic kicker object
     class Kicker : public ElementBase
     {
       public:
@@ -18,6 +19,7 @@ namespace Hector
         virtual CLHEP::HepMatrix matrix( float, float, int ) const = 0;
     };
 
+    /// Horizontal kicker object builder
     class HorizontalKicker : public Kicker
     {
       public:
@@ -46,6 +48,7 @@ namespace Hector
         CLHEP::HepMatrix matrix( float, float, int ) const;
     };
 
+    /// Vertical kicker object builder
     class VerticalKicker : public Kicker
     {
       public:

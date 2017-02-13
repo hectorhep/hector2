@@ -7,6 +7,7 @@ namespace Hector
 {
   namespace Element
   {
+    /// Rectangular collimator object builder
     class RectangularCollimator : public Drift
     {
       public:

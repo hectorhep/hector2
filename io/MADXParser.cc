@@ -22,15 +22,15 @@ namespace Hector
         if ( max_s<0. and header_float_.hasKey( "length" ) ) beamline_->setLength( header_float_.get( "length" ) );
         if ( header_float_.hasKey( "energy" ) and Constants::beam_energy!=header_float_.get( "energy" ) ) {
           Constants::beam_energy = header_float_.get( "energy" );
-          Exception( __PRETTY_FUNCTION__, Form( "Beam energy changed to %.1f GeV to match the MAD-X optics parameters", Constants::beam_energy ), JustWarning ).dump();
+          PrintWarning( Form( "Beam energy changed to %.1f GeV to match the MAD-X optics parameters", Constants::beam_energy ) );
         }
         if ( header_float_.hasKey( "mass" ) and Constants::beam_particles_mass!=header_float_.get( "mass" ) ) {
           Constants::beam_particles_mass = header_float_.get( "mass" );
-          Exception( __PRETTY_FUNCTION__, Form( "Beam particles mass changed to %.4f GeV to match the MAD-X optics parameters", Constants::beam_particles_mass ), JustWarning ).dump();
+          PrintWarning( Form( "Beam particles mass changed to %.4f GeV to match the MAD-X optics parameters", Constants::beam_particles_mass ) );
         }
         if ( header_float_.hasKey( "charge" ) and Constants::beam_particles_charge!=static_cast<int>( header_float_.get( "charge" ) ) ) {
           Constants::beam_particles_charge = static_cast<int>( header_float_.get( "charge" ) );
-          Exception( __PRETTY_FUNCTION__, Form( "Beam particles charge changed to %d e to match the MAD-X optics parameters", Constants::beam_particles_charge ), JustWarning ).dump();
+          PrintWarning( Form( "Beam particles charge changed to %d e to match the MAD-X optics parameters", Constants::beam_particles_charge ) );
         }
 
         parseElementsFields();
@@ -58,6 +58,7 @@ namespace Hector
       if ( header_float_.hasKey( "energy" ) ) os << "\n\t Simulated single beam energy: " << header_float_.get( "energy" ) << " GeV";
       if ( header_str_.hasKey( "sequence" ) ) os << "\n\t Sequence: " << header_str_.get( "sequence" );
       if ( header_str_.hasKey( "particle" ) ) os << "\n\t Beam particles: " << header_str_.get( "particle" );
+      if ( header_float_.hasKey( "length" ) ) os << "\n\t Maximal beamline length: " << header_float_.get( "length" ) << " m";
       PrintInfo( os.str().c_str() );
     }
 
@@ -97,8 +98,8 @@ namespace Hector
         std::string field;
         std::stringstream str( match.str( 2 ) );
         switch ( match.str( 1 )[0] ) {
-          case '*': while ( str>>field ) list_names.push_back( lowercase( field ) ); break; // field names
-          case '$': while ( str>>field ) list_types.push_back( field ); break; // field types
+          case '*': while ( str >> field ) { list_names.push_back( lowercase( field ) ); } break; // field names
+          case '$': while ( str >> field ) { list_types.push_back( field ); } break; // field types
           default: break;
         }
         in_file_lastline_ = in_file_.tellg();
@@ -182,9 +183,8 @@ namespace Hector
           const float s = s_bl-s_offset;
 
           // convert the element type from string to object
-          const Element::ElementBase::Type elemtype = ElementDictionary::get().elementType(
-            lowercase( trim( elem_map_str.get( "keyword" ) ) )
-          );
+          const std::string elem_type = lowercase( trim( elem_map_str.get( "keyword" ) ) );
+          const Element::ElementBase::Type elemtype = ElementDictionary::get().elementType( elem_type );
 
           // create the element
           switch ( elemtype ) {
@@ -198,7 +198,7 @@ namespace Hector
                 quad.setLength( length );
                 quad.setMagneticStrength( mag_str_k );
                 beamline_->addElement( &quad );
-               }
+              }
               else {
                 Element::VerticalQuadrupole quad( name );
                 quad.setS( s );
@@ -208,31 +208,47 @@ namespace Hector
               }
             } break;
             case Element::ElementBase::RectangularDipole: {
+              const float k0l = elem_map_floats.get( "k0l" );
+              //if ( k0l==0. ) PrintWarning( Form( "Trying to add a rectangular dipole (%s) with k0l=%.2e", name.c_str(), k0l ) );
+              if ( k0l==0. ) throw Exception( __PRETTY_FUNCTION__, Form( "Trying to add a rectangular dipole (%s) with k0l=%.2e", name.c_str(), k0l ), JustWarning );
+
               Element::RectangularDipole dip( name );
               dip.setS( s );
               dip.setLength( length );
-              dip.setMagneticStrength( dir_*elem_map_floats.get( "k0l" )/length );
+              dip.setMagneticStrength( dir_*k0l/length );
               beamline_->addElement( &dip );
             } break;
             case Element::ElementBase::SectorDipole: {
+              const float k0l = elem_map_floats.get( "k0l" );
+              //if ( k0l==0. ) PrintWarning( Form( "Trying to add a sector dipole (%s) with k0l=%.2e", name.c_str(), k0l ) );
+              if ( k0l==0. ) throw Exception( __PRETTY_FUNCTION__, Form( "Trying to add a sector dipole (%s) with k0l=%.2e", name.c_str(), k0l ), JustWarning );
+
               Element::SectorDipole dip( name );
               dip.setS( s );
               dip.setLength( length );
-              dip.setMagneticStrength( dir_*elem_map_floats.get( "k0l" )/length );
+              dip.setMagneticStrength( dir_*k0l/length );
               beamline_->addElement( &dip );
             } break;
             case Element::ElementBase::HorizontalKicker: {
+              const float hkick = elem_map_floats.get( "hkick" );
+              //if ( hkick==0. ) PrintWarning( Form( "Trying to add a horizontal kicker (%s) with kick=%.2e", name.c_str(), hkick ) );
+              if ( hkick==0. ) throw Exception( __PRETTY_FUNCTION__, Form( "Trying to add a horizontal kicker (%s) with kick=%.2e", name.c_str(), hkick ), JustWarning );
+
               Element::HorizontalKicker kck( name );
               kck.setS( s );
               kck.setLength( length );
-              kck.setMagneticStrength( elem_map_floats.get( "hkick" ) );
+              kck.setMagneticStrength( hkick );
               beamline_->addElement( &kck );
             } break;
             case Element::ElementBase::VerticalKicker: {
+              const float vkick = elem_map_floats.get( "vkick" );
+              //if ( vkick==0. ) PrintWarning( Form( "Trying to add a vertical kicker (%s) with kick=%.2e", name.c_str(), vkick ) );
+              if ( vkick==0. ) throw Exception( __PRETTY_FUNCTION__, Form( "Trying to add a vertical kicker (%s) with kick=%.2e", name.c_str(), vkick ), JustWarning );
+
               Element::VerticalKicker kck( name );
               kck.setS( s );
               kck.setLength( length );
-              kck.setMagneticStrength( elem_map_floats.get( "vkick" ) );
+              kck.setMagneticStrength( vkick );
               beamline_->addElement( &kck );
             } break;
             case Element::ElementBase::RectangularCollimator: {
@@ -275,16 +291,15 @@ namespace Hector
             elem->setBeta( previous_beta );
           }
 
-          // associate the aperture type to the element
-          {
-            const Aperture::ApertureBase::Type apertype = ElementDictionary::get().apertureType(
-              lowercase( trim( elem_map_str.get( "apertype" ) ) )
-            );
+          { // associate the aperture type to the element
+            const std::string aper_type = lowercase( trim( elem_map_str.get( "apertype" ) ) );
+            const Aperture::ApertureBase::Type apertype = ElementDictionary::get().apertureType( aper_type );
             Aperture::ApertureBase* aperture = 0;
             const float aper_1 = elem_map_floats.get( "aper_1" ),
                         aper_2 = elem_map_floats.get( "aper_2" ),
                         aper_3 = elem_map_floats.get( "aper_3" ),
                         aper_4 = elem_map_floats.get( "aper_4" ); // MAD-X provides it in m
+            //std::cout << elem->type() << "\t" << apertype << "\t" << aper_1 << "\t" << aper_2 << "\t" << aper_3 << "\t" << aper_4 << std::endl;
             switch ( apertype ) {
               case Aperture::ApertureBase::RectElliptic: aperture = new Aperture::RectEllipticAperture( aper_1, aper_2, aper_3, aper_4 ); break;
               case Aperture::ApertureBase::Circular:     aperture = new Aperture::CircularAperture( aper_1 ); break;
@@ -293,12 +308,11 @@ namespace Hector
               case Aperture::ApertureBase::None: break;
             }
             if ( aperture ) elem->setAperture( aperture, true );
-            //delete aperture;
           }
 
         } catch ( Exception& e ) {
           e.dump();
-          throw Exception( __PRETTY_FUNCTION__, "Failed to add a new element", Fatal );
+          //throw Exception( __PRETTY_FUNCTION__, "Failed to add a new element", JustWarning );
         }
 
       }

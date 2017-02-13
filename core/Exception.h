@@ -8,14 +8,20 @@
 #include <string>
 #include <cstdlib> // exit()
 
-#define PrintInfo(m) Exception(__PRETTY_FUNCTION__, m, Info).dump();
+#define PrintInfo(m) Exception( __PRETTY_FUNCTION__, m, Info ).dump();
+#define PrintWarning(m) Exception( __PRETTY_FUNCTION__, m, JustWarning ).dump();
 
 using std::cerr;
 
 namespace Hector
 {
   /// Enumeration of exception severities
-  typedef enum { Undefined=-1, Info, JustWarning, Fatal } ExceptionType;
+  typedef enum {
+    Undefined=-1, ///< Invalid exception type
+    Info, ///< Simple log to interact with the end user
+    JustWarning, ///< Simple warning (proceeds with the execution)
+    Fatal ///< Fatal error (exits the program)
+  } ExceptionType;
 
   /// A simple exception handler
   class Exception
@@ -48,7 +54,7 @@ namespace Hector
       /// Prettified (colourised) string of the exception type
       inline const std::string typeString() const {
         switch ( type() ) {
-          case JustWarning:        return "\033[34;1mJustWarning\033[0m";
+          case JustWarning:        return "\033[32;1mJustWarning\033[0m";
           case Info:               return "\033[33;1mInfo\033[0m";
           case Fatal:              return "\033[31;1mFatal\033[0m";
           case Undefined: default: return "\33[7;1mUndefined\033[0m";

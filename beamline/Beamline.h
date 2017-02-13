@@ -42,6 +42,7 @@ namespace Hector
       /// Retrieve a beamline element given its name
       /// \param[in] name Name of the element to be retrieved
       Element::ElementBase* getElement( const char* name ) { return getElement( std::string( name ) ); }
+      unsigned short numElements() const { return elements_.size(); }
 
       /// List of elements in the beamline
       typedef std::vector<Element::ElementBase*> ElementsMap;

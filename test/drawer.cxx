@@ -20,12 +20,11 @@ main( int argc, char* argv[] )
   }
   // general plotting parameters
   const float max_s = ( argc>3 ) ? atof( argv[3] ) : 500.;
-  const unsigned int num_particles = 200;
+  const unsigned int num_particles = 2;
 
   Hector::Parser::MADX parser_beam1( argv[1], "IP5", +1, max_s ),
                        parser_beam2( argv[2], "IP5", +1, max_s );
 
-parser_beam1.beamline()->dump();
   // look at both the beamlines
 
   Hector::Propagator prop1( parser_beam1.beamline() ),
@@ -38,7 +37,13 @@ parser_beam1.beamline()->dump();
   TMultiGraph mg1_x, mg2_x,
               mg1_y, mg2_y;
 
-  Hector::BeamProducer::gaussianParticleGun gun( Hector::Constants::beam_energy/1.2, Hector::Constants::beam_energy );
+  const float beam_lateral_width_ip = 16.63e-6, // in meters
+              beam_angular_divergence_ip = 30.23e-3; // in radians
+  Hector::BeamProducer::gaussianParticleGun gun;
+  gun.setXparams( 0., beam_lateral_width_ip );
+  gun.setYparams( 0., beam_lateral_width_ip );
+  gun.setTXparams( 0., beam_angular_divergence_ip );
+  gun.setTYparams( 0., beam_angular_divergence_ip );
   //Hector::BeamProducer::TYscanner gun( num_particles, Hector::Constants::beam_energy, -1, 1, max_s );
 
   for ( size_t i=0; i<num_particles; i++ ) {
@@ -108,8 +113,7 @@ parser_beam1.beamline()->dump();
 
   c.cd();
   const std::string file1( argv[1] ), file2( argv[2] );
-  Hector::Canvas::PaveText bl( 0.01, 0., 0.05, 0.05, Form( "#scale[0.3]{Beam 1: %s - Beam 2: %s}", file1.substr( file1.find_last_of( "/\\" )+1 ).c_str(), file2.substr( file2.find_last_of( "/\\")+1 ).c_str() ) );
-  bl.Draw();
+  Hector::Canvas::PaveText( 0.01, 0., 0.05, 0.05, Form( "#scale[0.3]{Beam 1: %s - Beam 2: %s}", file1.substr( file1.find_last_of( "/\\" )+1 ).c_str(), file2.substr( file2.find_last_of( "/\\")+1 ).c_str() ) ).Draw();
 
   c.Save( "pdf" );
 

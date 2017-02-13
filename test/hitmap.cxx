@@ -22,21 +22,29 @@ main( int argc, char* argv[] )
   const char* ip = ( argc>3 ) ? argv[3] : "IP5";
 
   Hector::Parser::MADX parser( argv[1], ip, +1, s_pos );
+  parser.printInfo();
 
   // look at both the beamlines
 
   Hector::Propagator prop( parser.beamline() );
 
-  TH2D hitmap( "hitmap", "x (m)\\y (m)", 200, -2e-2, 2e-2, 200, -2e-2, 2e-2 );
+  TH2D hitmap( "hitmap", "x (m)\\y (m)", 200, -2e-3, 2e-3, 200, -2e-3, 2e-3 );
 
   const unsigned int num_particles = 10000;
-  Hector::BeamProducer::gaussianParticleGun gun( Hector::Constants::beam_energy/1.2, Hector::Constants::beam_energy );
+  const float beam_lateral_width_ip = 16.63e-6, // in meters
+              beam_angular_divergence_ip = 30.23e-6, // in radians
+              particles_energy = 6000.; // in GeV
+  Hector::BeamProducer::gaussianParticleGun gun;
+  gun.setElimits( particles_energy );
+  gun.setXparams( 0., beam_lateral_width_ip );
+  gun.setYparams( 0., beam_lateral_width_ip );
+  gun.setTXparams( Hector::Constants::crossing_angle, beam_angular_divergence_ip );
+  gun.setTYparams( 0., beam_angular_divergence_ip );
   //Hector::BeamProducer::Xscanner gun( num_particles, Hector::Constants::beam_energy, 0., 0.1 );
   for ( size_t i=0; i!=num_particles; i++ ) {
 
     { // propagation through the beamline
       Hector::Particle p = gun.shoot();
-      std::cout << p.firstPosition().stateVector().momentum() << std::endl;
       try { prop.propagate( p, s_pos ); } catch ( Hector::Exception& e ) { /*e.dump();*/ continue; }
 
       const Hector::Particle::Position last_pos = p.lastPosition();
