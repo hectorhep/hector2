@@ -29,11 +29,7 @@ namespace Hector
         /// Class constructo
         RectangularDipole( const std::string& name ) : Dipole( ElementBase::RectangularDipole, name ) {}
 
-        RectangularDipole* clone() const {
-          RectangularDipole* out = new RectangularDipole( *this );
-          if ( aperture_ ) out->setAperture( aperture_->clone() );
-          return out;
-        }
+        RectangularDipole* clone() const { return new RectangularDipole( *this ); }
         /** \note \f$
          * \mathbf{M} = \left(
          * \begin{array}{cccccc}
@@ -62,11 +58,7 @@ namespace Hector
         /// Class constructor
         SectorDipole( const std::string& name ) : Dipole( ElementBase::SectorDipole, name ) {}
 
-        SectorDipole* clone() const {
-          SectorDipole* out = new SectorDipole( *this );
-          if ( aperture_ ) out->setAperture( aperture_->clone() );
-          return out;
-        }
+        SectorDipole* clone() const { return new SectorDipole( *this ); }
 
         /// \note Matrix depends if the bending is on or off.
         /** \note \f$

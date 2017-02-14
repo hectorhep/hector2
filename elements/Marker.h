@@ -14,11 +14,7 @@ namespace Hector
         /// Class constructor
         Marker( const std::string& name );
 
-        Marker* clone() const {
-          Marker* out = new Marker( *this );
-          if ( aperture_ ) out->setAperture( aperture_->clone() );
-          return out;
-        }
+        Marker* clone() const { return new Marker( *this ); }
         /** \note \f$ \mathbf{M} = \mathbf{I}_6 \f$
          */
         CLHEP::HepMatrix matrix( float, float, int ) const;

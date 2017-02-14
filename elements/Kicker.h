@@ -26,11 +26,7 @@ namespace Hector
         /// Class constructor
         HorizontalKicker( const std::string& name ) : Kicker( ElementBase::HorizontalKicker, name ) {}
 
-        HorizontalKicker* clone() const {
-          HorizontalKicker* out = new HorizontalKicker( *this );
-          if ( aperture_ ) out->setAperture( aperture_->clone() );
-          return out;
-        }
+        HorizontalKicker* clone() const { return new HorizontalKicker( *this ); }
         /** \note \f$
          * \mathbf{M} = \left(
          * \begin{array}{cccccc}
@@ -43,7 +39,7 @@ namespace Hector
          * \end{array}
          * \right)
          * \f$
-         * assuming \f$ k =  k_{0} \cdot \frac{p_{0}}{p_{0} - dp} \cdot \frac{q_{\mathrm{particle}}}{q_{\mathrm{beam}}} \f$
+         * assuming \f$ k =  k_{0} \cdot \frac{p_{0}}{p_{0} - \mathrm{d}p} \cdot \frac{q_{\mathrm{particle}}}{q_{\mathrm{beam}}} \f$
          */
         CLHEP::HepMatrix matrix( float, float, int ) const;
     };
@@ -55,11 +51,7 @@ namespace Hector
         /// Class constructor
         VerticalKicker( const std::string& name ) : Kicker( ElementBase::VerticalKicker, name ) {}
 
-        VerticalKicker* clone() const {
-          VerticalKicker* out = new VerticalKicker( *this );
-          if ( aperture_ ) out->setAperture( aperture_->clone() );
-          return out;
-        }
+        VerticalKicker* clone() const { return new VerticalKicker( *this ); }
         /** \note \f$
          * \mathbf{M} = \left(
          * \begin{array}{cccccc}
@@ -72,7 +64,7 @@ namespace Hector
          * \end{array}
          * \right)
          * \f$
-         * assuming \f$ k =  k_{0} \cdot \frac{p_{0}}{p_{0} - dp} \cdot \frac{q_{\mathrm{particle}}}{q_{\mathrm{beam}}} \f$
+         * assuming \f$ k =  k_{0} \cdot \frac{p_{0}}{p_{0} - \mathrm{d}p} \cdot \frac{q_{\mathrm{particle}}}{q_{\mathrm{beam}}} \f$
          */
         CLHEP::HepMatrix matrix( float, float, int ) const;
     };

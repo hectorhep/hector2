@@ -4,8 +4,7 @@ namespace Hector
 {
   Propagator::Propagator( const Beamline* beamline ) :
     beamline_( beamline )
-  {
-  }
+  {}
 
   Propagator::~Propagator()
   {}
@@ -18,7 +17,8 @@ namespace Hector
     shift.setAngles( CLHEP::Hep2Vector( tan( ele->angles().x() ), tan( ele->angles().y() ) ) );
 
     // perform the propagation (assuming that mass is conserved...)
-    Particle::StateVector vec( ele->matrix( eloss, ini_pos.stateVector().m(), qp ) * ( ini_pos.stateVector().vector()-shift.vector() ) + shift.vector(), ini_pos.stateVector().m() );
+    Particle::StateVector vec( ele->matrix( eloss, ini_pos.stateVector().m(), qp ) * ( ini_pos.stateVector().vector()-shift.vector() ) + shift.vector(),
+                               ini_pos.stateVector().m() );
 
     // convert the angles -> tan-1( angle )
     const CLHEP::Hep2Vector ang_old = vec.angles();

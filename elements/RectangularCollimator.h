@@ -12,13 +12,9 @@ namespace Hector
     {
       public:
         /// Class constructor
-        RectangularCollimator( const std::string& name ) : Drift( ElementBase::RectangularCollimator, name ) {}
+        RectangularCollimator( const std::string& name ) : Drift( name, ElementBase::RectangularCollimator ) {}
 
-        RectangularCollimator* clone() const {
-          RectangularCollimator* out = new RectangularCollimator( *this );
-          if ( aperture_ ) out->setAperture( aperture_->clone() );
-          return out;
-        }
+        RectangularCollimator* clone() const { return new RectangularCollimator( *this ); }
         //void computeMatrix( float, float, int );
 
       private:

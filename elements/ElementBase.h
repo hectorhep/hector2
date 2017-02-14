@@ -48,6 +48,8 @@ namespace Hector
         /// \param[in] type Element type (see Element::ElementBase::Type)
         /// \param[in] name Element name
         ElementBase( const Type& type, const std::string& name="invalid element" );
+        /// Copy constructor (cloning the associated aperture if any)
+        ElementBase( const ElementBase& elem );
         virtual ~ElementBase();
 
         /// Return a pointer to a clone of the current element
@@ -75,6 +77,8 @@ namespace Hector
 
         /// Set the x-y position of the centre of the element
         void setPosition( const CLHEP::Hep2Vector& pos ) { pos_ = pos; }
+        /// Change the x-y position of the element
+        void offset( const CLHEP::Hep2Vector& offset ) { pos_ += offset; }
         /// x-y position of the element at a given s
         CLHEP::Hep2Vector position() const { return pos_; }
         /// Horizontal position
@@ -84,6 +88,8 @@ namespace Hector
 
         /// Set the horizontal and vertical angles of the element (computed with respect to the s coordinate)
         void setAngles( const CLHEP::Hep2Vector& angles ) { angles_ = angles; }
+        /// Change the orientation of the element
+        void tilt( const CLHEP::Hep2Vector& tilt ) { angles_ += tilt; }
         /// Horizontal and vertical tilts of the element (with respect to the s axis)
         CLHEP::Hep2Vector angles() const { return angles_; }
         /// Horizontal angle
@@ -118,9 +124,8 @@ namespace Hector
         CLHEP::Hep2Vector relativePosition() const { return rel_pos_; }
 
         /// Set the aperture for this element
-        void setAperture( const Aperture::ApertureBase* apert, bool delete_after=false ) {
+        void setAperture( const Aperture::ApertureBase* apert ) {
           aperture_ = apert->clone();
-          if ( delete_after ) delete apert;
         }
         /// Aperture
         Aperture::ApertureBase* aperture() const { return aperture_; }

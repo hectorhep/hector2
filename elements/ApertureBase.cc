@@ -6,11 +6,11 @@ namespace Hector
   {
     ApertureBase::ApertureBase( const Type& type, const CLHEP::Hep2Vector& pos, const std::vector<float>& param ) :
       type_( type ), pos_( pos ), param_( param )
-    {
-    }
+    {}
 
     ApertureBase::~ApertureBase()
     {
+      param_.clear();
     }
 
     std::ostream&
@@ -30,7 +30,7 @@ namespace Hector
     operator<<( std::ostream& os, const ApertureBase& ap )
     {
       os << ap.type()
-         << " (param. (" << ap.p( 0 ) << ", " << ap.p( 1 ) << ", " << ap.p( 2 ) << ", " << ap.p( 3 ) << "),"
+         << Form( " (param. (%.4f, %.4f, %.4f, %.4f),", ap.p( 0 ), ap.p( 1 ), ap.p( 2 ), ap.p( 3 ) )
          << " center at " << ap.position() << ")";
       return os;
     }

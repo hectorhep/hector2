@@ -36,6 +36,8 @@ namespace Hector
         parseElementsFields();
         parseElements();
 
+        beamline_->computeSequence();
+
       } catch ( Exception& e ) { e.dump(); }
 
       //header_str_.dump();
@@ -54,7 +56,7 @@ namespace Hector
       os << "MAD-X output successfully parsed. Metadata:";
       if ( header_str_.hasKey( "title" ) ) os << "\n\t Title: " << header_str_.get( "title" );
       if ( header_str_.hasKey( "origin" ) ) os << "\n\t Origin: " << trim( header_str_.get( "origin" ) );
-      if ( header_str_.hasKey( "date" ) or header_str_.hasKey( "time" ) ) os << "\n\t Date: " << trim( header_str_.get( "date" ) ) << " @ " << trim( header_str_.get( "time" ) );
+      if ( header_str_.hasKey( "date" ) or header_str_.hasKey( "time" ) ) os << "\n\t Export date: " << trim( header_str_.get( "date" ) ) << " @ " << trim( header_str_.get( "time" ) );
       if ( header_float_.hasKey( "energy" ) ) os << "\n\t Simulated single beam energy: " << header_float_.get( "energy" ) << " GeV";
       if ( header_str_.hasKey( "sequence" ) ) os << "\n\t Sequence: " << header_str_.get( "sequence" );
       if ( header_str_.hasKey( "particle" ) ) os << "\n\t Beam particles: " << header_str_.get( "particle" );
@@ -264,10 +266,10 @@ namespace Hector
               beamline_->addElement( &mrk );
             } break;
             case Element::ElementBase::Drift: {
-              Element::Drift dr( elemtype, name );
+              /*Element::Drift dr( name );
               dr.setS( s );
               dr.setLength( length );
-              beamline_->addElement( &dr );
+              beamline_->addElement( &dr );*/
 
               previous_relpos = CLHEP::Hep2Vector( elem_map_floats.get( "x" ), elem_map_floats.get( "y" ) );
               previous_disp = CLHEP::Hep2Vector( elem_map_floats.get( "dx" ), elem_map_floats.get( "dy" ) );
@@ -307,7 +309,10 @@ namespace Hector
               case Aperture::ApertureBase::Elliptic:     aperture = new Aperture::EllipticAperture( aper_1, aper_2 ); break;
               case Aperture::ApertureBase::None: break;
             }
-            if ( aperture ) elem->setAperture( aperture, true );
+            if ( aperture ) {
+              elem->setAperture( aperture );
+              delete aperture;
+            }
           }
 
         } catch ( Exception& e ) {

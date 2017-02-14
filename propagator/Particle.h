@@ -50,6 +50,7 @@ namespace Hector
           /// Human-readable printout of the state vector
           friend std::ostream& operator<<( std::ostream&, const StateVector& );
 
+          /// Get the 6-vector associated to this state
           const CLHEP::HepVector& vector() const { return *this; }
 
           /// Set the particle energy (in GeV)

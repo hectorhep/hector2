@@ -12,15 +12,12 @@ namespace Hector
     {
       public:
         /// Class constructor
-        Drift( const ElementBase::Type&, const std::string& );
-        ~Drift();
+        Drift( const std::string&, const ElementBase::Type& type=ElementBase::Drift );
 
-        Drift* clone() const {
-          Drift* out = new Drift( *this );
-          if ( aperture_ ) out->setAperture( aperture_->clone() );
-          return out;
+        Drift* clone() const { return new Drift( *this ); }
+        CLHEP::HepMatrix matrix( float eloss=-1., float mp=-1., int qp=0 ) const {
+          return genericMatrix( length_ );
         }
-        CLHEP::HepMatrix matrix( float eloss=-1., float mp=-1., int qp=0 ) const;
         /// Build a transfer matrix for a given drift length
         /// \param[in] length drift length
         /** \note \f$

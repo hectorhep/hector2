@@ -48,16 +48,19 @@ main( int argc, char* argv[] )
       try { prop.propagate( p, s_pos ); } catch ( Hector::Exception& e ) { /*e.dump();*/ continue; }
 
       const Hector::Particle::Position last_pos = p.lastPosition();
-      //std::cout << last_pos.stateVector().position() << std::endl;
       hitmap.Fill( last_pos.stateVector().position().x(), last_pos.stateVector().position().y() );
     }
-    //p.dump();
   }
 
   {
-    Hector::Canvas c( "hitmap", "" );
+    Hector::Canvas c( "hitmap", Form( "Hector v2 simulation, s = %.2f m", s_pos ) );
     hitmap.Draw( "colz" );
+
+    const std::string file( argv[1] );
+    Hector::Canvas::PaveText( 0.0, 0., 0.0015, 0.0015, Form( "#scale[0.3]{Beamline: %s}", file.substr( file.find_last_of( "/\\" )+1 ).c_str() ) ).Draw();
+
     c.Prettify( &hitmap );
+
     c.Save( "pdf" );
   }
 

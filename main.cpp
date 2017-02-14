@@ -21,7 +21,7 @@ int main( int argc, char* argv[] )
     try {
       prop.propagate( p, 215.5 );
     } catch ( Hector::Exception& e ) { e.dump(); }
-    std::cout << p.lastPosition().stateVector().position() << std::endl;
+    //std::cout << p.lastPosition().stateVector().position() << std::endl;
   }
 
   return 0;

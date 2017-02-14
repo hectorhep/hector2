@@ -23,7 +23,7 @@ namespace Hector
     {
      public:
       inline PaveText( const float& x1, const float& y1, const float& x2, const float& y2, const char* text="" ) :
-        TPaveText( x1, y1, x2, y2, "NDC" )
+        TPaveText( x1, y1, x2, y2, "NB NDC" )
       {
         TPaveText::SetTextAlign( 13 );
         if ( strcmp( text, "" )!=0 ) {
@@ -136,11 +136,10 @@ namespace Hector
 
     inline void SetTopLabel( const char* lab="" ) {
       TCanvas::cd();
-      if (strcmp(lab, "")!=0) fTitle = lab;
-      if (!fTopLabel) BuildTopLabel();
+      if ( strcmp( lab, "" )!=0 ) fTitle = lab;
+      if ( !fTopLabel ) BuildTopLabel();
       else fTopLabel->Clear();
-      fTopLabel->AddText(fTitle);
-      //fTopLabel->Draw();
+      fTopLabel->AddText( fTitle );
     }
 
     inline void SetLegendX1( double x ) { fLegX1 = x; }
@@ -199,12 +198,7 @@ namespace Hector
 
     inline void BuildTopLabel() {
       TCanvas::cd();
-      fTopLabel = new TPaveText( 0.5, 0.95, 0.915, 0.96, "NB NDC" );
-      fTopLabel->SetFillStyle( 0 );
-      fTopLabel->SetFillColor( 0 );
-      fTopLabel->SetLineColor( 0 );
-      fTopLabel->SetLineStyle( 0 );
-      fTopLabel->SetTextFont( font_type( 2 ) );
+      fTopLabel = new PaveText( 0.5, 0.95, 0.915, 0.96 );
       fTopLabel->SetTextSize( 0.04 );
       fTopLabel->SetTextAlign( kHAlignRight+kVAlignBottom );
     }
@@ -225,7 +219,7 @@ namespace Hector
     }
 
     TString fTitle;
-    TPaveText* fTopLabel;
+    PaveText* fTopLabel;
     TLegend* fLeg;
     double fLegX1, fLegY1;
     bool fRatio;

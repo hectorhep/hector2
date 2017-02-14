@@ -28,11 +28,7 @@ namespace Hector
         /// Class constructor
         HorizontalQuadrupole( const std::string& name ) : Quadrupole( name ) {}
 
-        HorizontalQuadrupole* clone() const {
-          HorizontalQuadrupole* out = new HorizontalQuadrupole( *this );
-          if ( aperture_ ) out->setAperture( aperture_->clone() );
-          return out;
-        }
+        HorizontalQuadrupole* clone() const { return new HorizontalQuadrupole( *this ); }
         /** \note \f$
          * \mathbf{M} = \left(
          * \begin{array}{cccccc}
@@ -59,11 +55,7 @@ namespace Hector
         /// Class constructor
         VerticalQuadrupole( const std::string& name ) : Quadrupole( name ) {}
 
-        VerticalQuadrupole* clone() const {
-          VerticalQuadrupole* out = new VerticalQuadrupole( *this );
-          if ( aperture_ ) out->setAperture( aperture_->clone() );
-          return out;
-        }
+        VerticalQuadrupole* clone() const { return new VerticalQuadrupole( *this ); }
         /** \note \f$
          * \mathbf{M} = \left(
          * \begin{array}{cccccc}
