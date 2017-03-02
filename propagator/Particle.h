@@ -65,11 +65,15 @@ namespace Hector
           float kick() const { return ( *this )[K]; }
 
           /// Fill the components of a state according to the particle position
-          void setPosition( const CLHEP::Hep2Vector& pos );
+          void setPosition( const float& x, const float& y );
+          /// Fill the components of a state according to the particle position
+          void setPosition( const CLHEP::Hep2Vector& pos ) { setPosition( pos.x(), pos.y() ); }
           /// x-y position of a particle (in m)
           CLHEP::Hep2Vector position() const;
           /// Fill the components of a state according to the particle x'-y' angles (in rad)
-          void setAngles( const CLHEP::Hep2Vector& angles );
+          void setAngles( const float& tx, const float& ty );
+          /// Fill the components of a state according to the particle x'-y' angles (in rad)
+          void setAngles( const CLHEP::Hep2Vector& angles ) { setAngles( angles.x(), angles.y() ); }
           /// x'-y' angles of a particles (in rad)
           CLHEP::Hep2Vector angles() const;
 

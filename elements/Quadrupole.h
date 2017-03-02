@@ -13,7 +13,10 @@ namespace Hector
     {
       public:
         /// (virtual) class constructor
-        Quadrupole( const std::string& name ) : ElementBase( ElementBase::Quadrupole, name ) {}
+        Quadrupole( const Type& type, const std::string& name, float spos, float length, float mag_str ) :
+          ElementBase( type, name, spos, length ) {
+          setMagneticStrength( mag_str );
+        }
 
         virtual Quadrupole* clone() const = 0;
         virtual CLHEP::HepMatrix matrix( float, float, int ) const = 0;
@@ -26,7 +29,8 @@ namespace Hector
     {
       public:
         /// Class constructor
-        HorizontalQuadrupole( const std::string& name ) : Quadrupole( name ) {}
+        HorizontalQuadrupole( const std::string& name, float spos, float length, float mag_str ) :
+          Quadrupole( anHorizontalQuadrupole, name, spos, length, mag_str ) {}
 
         HorizontalQuadrupole* clone() const { return new HorizontalQuadrupole( *this ); }
         /** \note \f$
@@ -53,7 +57,8 @@ namespace Hector
     {
       public:
         /// Class constructor
-        VerticalQuadrupole( const std::string& name ) : Quadrupole( name ) {}
+        VerticalQuadrupole( const std::string& name, float spos, float length, float mag_str ) :
+          Quadrupole( aVerticalQuadrupole, name, spos, length, mag_str ) {}
 
         VerticalQuadrupole* clone() const { return new VerticalQuadrupole( *this ); }
         /** \note \f$

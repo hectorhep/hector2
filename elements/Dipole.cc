@@ -20,8 +20,8 @@ namespace Hector
       CLHEP::HepMatrix mat = CLHEP::HepDiagMatrix( 6, 1 );
 
       mat( 1, 1 ) = cos( theta );
-      mat( 1, 2 ) = -1./radius * sin( theta );
-      mat( 2, 1 ) = radius* sin( theta );
+      mat( 1, 2 ) = sin( theta ) * ( -1./radius );
+      mat( 2, 1 ) = sin( theta ) * radius;
       mat( 2, 2 ) = cos( theta );
       mat( 4, 3 ) = length_;
       if ( Constants::use_relative_energy ) {
@@ -49,8 +49,8 @@ namespace Hector
       CLHEP::HepMatrix mat = CLHEP::HepDiagMatrix( 6, 1 );
 
       mat( 1, 1 ) = cos( theta );
-      mat( 1, 2 ) = -1./radius * sin( theta );
-      mat( 2, 1 ) = radius * sin( theta );
+      mat( 1, 2 ) = sin( theta ) * ( -1./radius );
+      mat( 2, 1 ) = sin( theta ) * radius;
       mat( 2, 2 ) = cos( theta );
       mat( 4, 3 ) = length_;
       mat( 5, 1 ) = simp;

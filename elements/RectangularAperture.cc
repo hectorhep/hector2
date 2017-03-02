@@ -5,7 +5,7 @@ namespace Hector
   namespace Aperture
   {
     RectangularAperture::RectangularAperture( float rect_length, float rect_height, const CLHEP::Hep2Vector& pos ) :
-      ApertureBase( ApertureBase::Rectangular, pos, std::vector<float>({ rect_length, rect_height, 0., 0. }) )
+      ApertureBase( aRectangularAperture, pos, std::vector<float>({ rect_length, rect_height, 0., 0. }) )
     {}
 
     RectangularAperture::~RectangularAperture()

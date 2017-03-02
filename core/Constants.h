@@ -19,6 +19,7 @@ namespace Hector
     static int beam_particles_charge;
     /// Do we use the relative energy loss in the path computation through elements?
     static bool use_relative_energy;
+    static bool correct_beamline_overlaps;
   };
 }
 

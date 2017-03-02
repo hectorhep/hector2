@@ -2,6 +2,7 @@
 #define Elements_Kicker_h
 
 #include "ElementBase.h"
+#include "Drift.h"
 #include "core/Constants.h"
 
 namespace Hector
@@ -13,7 +14,10 @@ namespace Hector
     {
       public:
         /// (virtual) class constructor
-        Kicker( const ElementBase::Type& type, const std::string& name ) : ElementBase( type, name ) {}
+        Kicker( const Type& type, const std::string& name, float spos, float length, float mag_str ) :
+          ElementBase( type, name, spos, length ) {
+          setMagneticStrength( mag_str );
+        }
 
         virtual Kicker* clone() const = 0;
         virtual CLHEP::HepMatrix matrix( float, float, int ) const = 0;
@@ -24,7 +28,8 @@ namespace Hector
     {
       public:
         /// Class constructor
-        HorizontalKicker( const std::string& name ) : Kicker( ElementBase::HorizontalKicker, name ) {}
+        HorizontalKicker( const std::string& name, float spos, float length, float mag_str ) :
+          Kicker( anHorizontalKicker, name, spos, length, mag_str ) {}
 
         HorizontalKicker* clone() const { return new HorizontalKicker( *this ); }
         /** \note \f$
@@ -49,7 +54,8 @@ namespace Hector
     {
       public:
         /// Class constructor
-        VerticalKicker( const std::string& name ) : Kicker( ElementBase::VerticalKicker, name ) {}
+        VerticalKicker( const std::string& name, float spos, float length, float mag_str ) :
+          Kicker( aVerticalKicker, name, spos, length, mag_str ) {}
 
         VerticalKicker* clone() const { return new VerticalKicker( *this ); }
         /** \note \f$

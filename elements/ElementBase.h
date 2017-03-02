@@ -16,44 +16,47 @@ namespace Hector
   /// Collection of beamline elements
   namespace Element
   {
+    /// List of types allowed for an element
+    typedef enum {
+      anInvalidElement = -1, ///< Invalid element
+      aMarker, ///< Simple s-marker
+      aDrift, ///< Drift element
+      aMonitor, ///< Monitoring element
+      aRectangularDipole, ///< Rectangular-type dipole
+      aSectorDipole, ///< Sector-type dipole
+      aGenericQuadrupole, ///< Generic (vertical or horizontal) quadrupole
+      aVerticalQuadrupole, ///< Vertical-type quadrupole
+      anHorizontalQuadrupole, ///< Horizontal-type quadrupole
+      aSextupole, ///< Generic sextupole
+      aMultipole, ///< Generic multipole
+      aVerticalKicker, ///< Vertical-type kicker
+      anHorizontalKicker, ///< Horizontal-type kicker
+      aRectangularCollimator, ///< Rectangular-type collimator
+      anEllipticalCollimator, ///< Rectangular-type collimator
+      aCircularCollimator, ///< Circular-type collimator
+      //RomanPot, InteractionPoint,
+      aPlaceholder, ///< A placeholder element
+      anInstrument ///< A measurement apparatus
+    } Type;
+    /// Human-readable printout of a element type
+    std::ostream& operator<<( std::ostream&, const Type& );
     /// A generic beamline element object
     class ElementBase
     {
       public:
-        /// List of types allowed for an element
-        typedef enum {
-          Invalid = -1, ///< Invalid element
-          Marker, ///< Simple s-marker
-          Drift, ///< Drift element
-          Monitor, ///< Monitoring element
-          RectangularDipole, ///< Rectangular-type dipole
-          SectorDipole, ///< Sector-type dipole
-          Quadrupole, ///< Generic (vertical or horizontal) quadrupole
-          Sextupole, ///< Generic sextupole
-          Multipole, ///< Generic multipole
-          VerticalKicker, ///< Vertical-type kicker
-          HorizontalKicker, ///< Horizontal-type kicker
-          RectangularCollimator, ///< Rectangular-type collimator
-          EllipticalCollimator, ///< Rectangular-type collimator
-          CircularCollimator, ///< Circular-type collimator
-          //RomanPot, InteractionPoint,
-          Placeholder, ///< A placeholder element
-          Instrument ///< A measurement apparatus
-        } Type;
-        /// Human-readable printout of a element type
-        friend std::ostream& operator<<( std::ostream&, const Type& );
-
-      public:
         /// Build a new element
         /// \param[in] type Element type (see Element::ElementBase::Type)
         /// \param[in] name Element name
-        ElementBase( const Type& type, const std::string& name="invalid element" );
+        ElementBase( const Type& type, const std::string& name="invalid element", float spos=0., float length=0. );
         /// Copy constructor (cloning the associated aperture if any)
         ElementBase( const ElementBase& elem );
         virtual ~ElementBase();
 
         /// Return a pointer to a clone of the current element
         virtual ElementBase* clone() const = 0;
+        bool operator==( const ElementBase& ) const;
+        bool operator!=( const ElementBase& rhs ) const { return !( *this==rhs ); }
+
         /// Compute the propagation matrix
         /// \param[in] eloss Particle energy loss in the element (GeV)
         /// \param[in] mp Particle mass (GeV)
@@ -65,6 +68,8 @@ namespace Hector
         /// Human-readable printout of the properties of an element
         friend std::ostream& operator<<( std::ostream&, const ElementBase* );
 
+        /// Set the name of the element
+        void setName( const std::string& name ) { name_ = name; }
         /// Element name
         const std::string& name() const { return name_; }
         /// Element type
@@ -138,7 +143,7 @@ namespace Hector
         /// Element type
         Type type_;
         /// Element name
-        const std::string name_;
+        std::string name_;
         /// Pointer to the associated aperture object (if any)
         Aperture::ApertureBase* aperture_;
 
@@ -166,9 +171,15 @@ namespace Hector
     struct ElementsSorter
     {
       /// Compare the references to two elements
-      inline bool operator()( const ElementBase& lhs, const ElementBase& rhs ) { return ( lhs.s()<rhs.s() ); }
+      inline bool operator()( const ElementBase& lhs, const ElementBase& rhs ) const {
+        //return ( ( lhs.s()<rhs.s() ) or ( lhs.length()<rhs.length() ) );
+        return ( lhs.s()<rhs.s() );
+      }
       /// Compare the pointers to two elements
-      inline bool operator()( const ElementBase* lhs, const ElementBase* rhs ) { return ( lhs->s()<rhs->s() ); }
+      inline bool operator()( const ElementBase* lhs, const ElementBase* rhs ) const {
+        //return ( ( lhs and rhs ) and ( ( lhs->s()<rhs->s() ) or ( lhs->length()<rhs->length() ) ) );
+        return ( lhs and rhs and lhs->s()<rhs->s() );
+      }
     };
 
   }

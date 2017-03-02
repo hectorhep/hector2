@@ -4,9 +4,9 @@ namespace Hector
 {
   namespace Element
   {
-    ElementBase::ElementBase( const Type& type, const std::string& name ) :
+    ElementBase::ElementBase( const Type& type, const std::string& name, float spos, float length ) :
       type_( type ), name_( name ), aperture_( 0 ),
-      length_( 0. ), magnetic_strength_( 0. ), s_( 0. )
+      length_( length ), magnetic_strength_( 0. ), s_( spos )
     {}
 
     ElementBase::ElementBase( const ElementBase& rhs ) :
@@ -22,6 +22,19 @@ namespace Hector
       if ( aperture_!=0 ) delete aperture_;
     }
 
+    bool
+    ElementBase::operator==( const ElementBase& rhs ) const
+    {
+      if ( type_!=rhs.type_ ) return false;
+      if ( s_!=rhs.s_ ) return false;
+      if ( pos_!=rhs.pos_ ) return false;
+      if ( magnetic_strength_!=rhs.magnetic_strength_ ) return false;
+      if ( length_!=rhs.length_ ) return false;
+      if ( name_!=rhs.name_ ) return false;
+      if ( aperture_ and rhs.aperture_ and *aperture_!=*rhs.aperture_ ) return false;
+      return true;
+    }
+
     float
     ElementBase::fieldStrength( float eloss, float mp, int qp ) const
     {
@@ -33,31 +46,6 @@ namespace Hector
       const float p0 = sqrt( ( eini-mp0 )*( eini+mp0 ) ), // e_ini^2 - p_0^2 = mp0^2
                   p = sqrt( ( e-mp )*( e+mp ) ); // e^2 - p^2 = mp^2
       return magnetic_strength_*( p0/p )*( qp/Constants::beam_particles_charge );
-    }
-
-    /// Human-readable printout of a beamline element type
-    std::ostream&
-    operator<<( std::ostream& os, const ElementBase::Type& type )
-    {
-      switch ( type ) {
-        case ElementBase::Invalid: os << "invalid"; break;
-        case ElementBase::Marker: os << "marker"; break;
-        case ElementBase::Drift: os << "drift"; break;
-        case ElementBase::Monitor: os << "monitor"; break;
-        case ElementBase::RectangularDipole: os << "rect.dipole"; break;
-        case ElementBase::SectorDipole: os << "sector dipole"; break;
-        case ElementBase::Quadrupole: os << "quadrupole"; break;
-        case ElementBase::Sextupole: os << "sextupole"; break;
-        case ElementBase::Multipole: os << "multipole"; break;
-        case ElementBase::VerticalKicker: os << "vertical kicker"; break;
-        case ElementBase::HorizontalKicker: os << "horiz.kicker"; break;
-        case ElementBase::RectangularCollimator: os << "rect.collimator"; break;
-        case ElementBase::EllipticalCollimator: os << "ellip.collimator"; break;
-        case ElementBase::CircularCollimator: os << "circular collimator"; break;
-        case ElementBase::Placeholder: os << "placeholder"; break;
-        case ElementBase::Instrument: os << "instrument"; break;
-      }
-      return os;
     }
 
     /// Human-readable printout of a beamline element object
@@ -77,6 +65,32 @@ namespace Hector
     operator<<( std::ostream& os, const ElementBase* elem )
     {
       os << *( elem );
+      return os;
+    }
+    /// Human-readable printout of a beamline element type
+    std::ostream&
+    operator<<( std::ostream& os, const Type& type )
+    {
+      switch ( type ) {
+        case anInvalidElement: os << "invalid"; break;
+        case aMarker: os << "marker"; break;
+        case aDrift: os << "drift"; break;
+        case aMonitor: os << "monitor"; break;
+        case aRectangularDipole: os << "rect.dipole"; break;
+        case aSectorDipole: os << "sector dipole"; break;
+        case aGenericQuadrupole: os << "quadrupole"; break;
+        case anHorizontalQuadrupole: os << "hor.quadrupole"; break;
+        case aVerticalQuadrupole: os << "vert.quadrupole"; break;
+        case aSextupole: os << "sextupole"; break;
+        case aMultipole: os << "multipole"; break;
+        case aVerticalKicker: os << "vertic.kicker"; break;
+        case anHorizontalKicker: os << "horiz.kicker"; break;
+        case aRectangularCollimator: os << "rect.collimator"; break;
+        case anEllipticalCollimator: os << "ellip.collimator"; break;
+        case aCircularCollimator: os << "circular collimator"; break;
+        case aPlaceholder: os << "placeholder"; break;
+        case anInstrument: os << "instrument"; break;
+      }
       return os;
     }
   }

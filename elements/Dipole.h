@@ -14,7 +14,10 @@ namespace Hector
     {
       public:
         /// (virtual) class constructor
-        Dipole( const ElementBase::Type& type, const std::string& name ) : ElementBase( type, name ) {}
+        Dipole( const Type& type, const std::string& name, float spos, float length, float mag_str ) :
+          ElementBase( type, name, spos, length ) {
+          setMagneticStrength( mag_str );
+        }
 
         virtual Dipole* clone() const = 0;
         virtual CLHEP::HepMatrix matrix( float, float, int ) const = 0;
@@ -27,7 +30,8 @@ namespace Hector
     {
       public:
         /// Class constructo
-        RectangularDipole( const std::string& name ) : Dipole( ElementBase::RectangularDipole, name ) {}
+        RectangularDipole( const std::string& name, float spos, float length, float mag_str ) :
+          Dipole( aRectangularDipole, name, spos, length, mag_str ) {}
 
         RectangularDipole* clone() const { return new RectangularDipole( *this ); }
         /** \note \f$
@@ -56,7 +60,8 @@ namespace Hector
     {
       public:
         /// Class constructor
-        SectorDipole( const std::string& name ) : Dipole( ElementBase::SectorDipole, name ) {}
+        SectorDipole( const std::string& name, float spos, float length, float mag_str ) :
+          Dipole( aSectorDipole, name, spos, length, mag_str ) {}
 
         SectorDipole* clone() const { return new SectorDipole( *this ); }
 

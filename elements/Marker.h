@@ -12,7 +12,7 @@ namespace Hector
     {
       public:
         /// Class constructor
-        Marker( const std::string& name );
+        Marker( const std::string& name, float spos, float length );
 
         Marker* clone() const { return new Marker( *this ); }
         /** \note \f$ \mathbf{M} = \mathbf{I}_6 \f$

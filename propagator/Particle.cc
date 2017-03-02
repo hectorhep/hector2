@@ -113,10 +113,10 @@ namespace Hector
   // ----- State vector methods -----
 
   void
-  Particle::StateVector::setPosition( const CLHEP::Hep2Vector& pos )
+  Particle::StateVector::setPosition( const float& x, const float& y )
   {
-    ( *this )[X] = pos.x();
-    ( *this )[Y] = pos.y();
+    ( *this )[X] = x;
+    ( *this )[Y] = y;
   }
 
   CLHEP::Hep2Vector
@@ -126,10 +126,10 @@ namespace Hector
   }
 
   void
-  Particle::StateVector::setAngles( const CLHEP::Hep2Vector& ang )
+  Particle::StateVector::setAngles( const float& tx, const float& ty )
   {
-    ( *this )[TX] = ang.x();
-    ( *this )[TY] = ang.y();
+    ( *this )[TX] = tx;
+    ( *this )[TY] = ty;
   }
 
   CLHEP::Hep2Vector

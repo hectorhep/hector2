@@ -34,6 +34,9 @@ namespace Hector
     class MADX
     {
       public:
+        typedef std::vector<std::string> ValuesCollection;
+
+      public:
         /// Class constructor
         MADX( const char*, const char*, int, float max_s=-1. );
         ~MADX();
@@ -53,6 +56,7 @@ namespace Hector
         void parseHeader();
         void parseElementsFields();
         void parseElements();
+        void parseElement( const ValuesCollection& );
 
         ParametersMap::Ordered<std::string> header_str_;
         ParametersMap::Ordered<float> header_float_;
@@ -65,6 +69,10 @@ namespace Hector
         std::string ip_name_;
         int dir_;
         Beamline* beamline_;
+        float s_offset_;
+        bool found_interaction_point_;
+        // quantities needed whenever direction == 1 (FIXME)
+        CLHEP::Hep2Vector previous_relpos_, previous_disp_, previous_beta_;
 
         static std::regex rgx_typ_, rgx_hdr_, rgx_elm_hdr_;
 

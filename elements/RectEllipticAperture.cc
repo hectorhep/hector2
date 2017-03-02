@@ -5,7 +5,7 @@ namespace Hector
   namespace Aperture
   {
     RectEllipticAperture::RectEllipticAperture( float rect_length, float rect_height, float ell_length, float ell_height, const CLHEP::Hep2Vector& pos ) :
-      ApertureBase( ApertureBase::RectElliptic, pos, std::vector<float>({ rect_length, rect_height, ell_length, ell_height }) )
+      ApertureBase( aRectEllipticAperture, pos, std::vector<float>({ rect_length, rect_height, ell_length, ell_height }) )
     {}
 
     RectEllipticAperture::~RectEllipticAperture()

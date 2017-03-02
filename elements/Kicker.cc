@@ -10,7 +10,8 @@ namespace Hector
       const float ke = -fieldStrength( eloss, mp, qp );
 
       CLHEP::HepMatrix mat = CLHEP::HepDiagMatrix( 6, 1 );
-      if ( ke==0. ) return mat; // FIXME identity or drift matrix?
+      //if ( ke==0. ) return mat; // FIXME identity or drift matrix?
+      if ( ke==0 ) return Drift::genericMatrix( length_ );
 
       mat( 2, 1 ) = length_;
       mat( 4, 3 ) = length_;
@@ -25,7 +26,8 @@ namespace Hector
       const float ke = -fieldStrength( eloss, mp, qp );
 
       CLHEP::HepMatrix mat = CLHEP::HepDiagMatrix( 6, 1 );
-      if ( ke==0. ) return mat; // FIXME identity or drift matrix?
+      //if ( ke==0. ) return mat; // FIXME identity or drift matrix?
+      if ( ke==0 ) return Drift::genericMatrix( length_ );
 
       mat( 2, 1 ) = length_;
       mat( 4, 3 ) = length_;
