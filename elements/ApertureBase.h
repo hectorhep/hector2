@@ -38,7 +38,9 @@ namespace Hector
 
         /// Return a pointer to a clone of the current aperture
         virtual ApertureBase* clone() const = 0;
+        /// Check if two apertures (and their properties) are identical
         bool operator==( const ApertureBase& ) const;
+        /// Check if two apertures (and their properties) are different
         bool operator!=( const ApertureBase& rhs ) const { return !( *this==rhs ); }
 
         /// Check if a position is contained in the aperture
@@ -52,7 +54,6 @@ namespace Hector
         /// Type of aperture (rectangular, elliptic, rect-elliptic, circular)
         Type type() const { return type_; }
 
-        const Parameters parameters() const { return param_; }
         /// Retrieve a shape parameter of the aperture
         float p( const size_t& i ) const { return ( i<param_.size() ) ? param_.at( i ) : -1.0; }
 

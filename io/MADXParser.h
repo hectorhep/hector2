@@ -34,6 +34,7 @@ namespace Hector
     class MADX
     {
       public:
+        /// A collection of values to be propagated through this parser
         typedef std::vector<std::string> ValuesCollection;
 
       public:

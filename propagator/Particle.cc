@@ -20,7 +20,7 @@ namespace Hector
   Particle
   Particle::fromMassCharge( float mass, float charge )
   {
-    Particle::StateVector vec;
+    StateVector vec;
     vec.setM( mass );
     Particle p( vec );
     p.setCharge( charge );
@@ -35,8 +35,35 @@ namespace Hector
                                                   "Previous mass was %.3f GeV, new mass is %.3f GeV",
                                                   lastStateVector().m(), pos.stateVector().m() ), Fatal );
     }
-    positions_.insert( pos.pair() );
+    positions_.push_back( pos.pair() );
     stopped_ = stopped;
+  }
+
+  StateVector
+  Particle::stateVectorAt( float s )
+  {
+    for ( PositionsMap::const_iterator it=positions_.begin()+1; it!=positions_.end(); it++ ) {
+      const float s_before = ( it-1 )->first,
+                  s_after = it->first;
+      if ( s_before>s or s_after<s ) continue;
+
+      const StateVector sv_before = ( it-1 )->second,
+                        sv_after = it->second;
+      const CLHEP::Hep2Vector in = sv_before.position(),
+                              out = sv_after.position();
+
+      const float elem_length = s_after-s_before;
+      if ( elem_length==0 ) {
+        throw Exception( __PRETTY_FUNCTION__, Form( "No luck in choosing position (s=%.3f m)\n\tInterpolation is impossible!", s ), JustWarning );
+      }
+
+      const CLHEP::Hep2Vector s_pos = in + ( ( s-s_before )/elem_length )*( out-in );
+
+      StateVector out_stvec( sv_before );
+      out_stvec.setPosition( s_pos );
+      return out_stvec;
+    }
+    return StateVector();
   }
 
   void
@@ -46,7 +73,7 @@ namespace Hector
        << " initial position: " << firstStateVector() << "\n";
     if ( positions_.size()==1 ) return;
     os << " list of associated state vectors:\n";
-    for ( std::map<float, StateVector>::const_iterator it=positions_.begin(); it!=positions_.end(); it++ ) {
+    for ( PositionsMap::const_iterator it=positions_.begin(); it!=positions_.end(); it++ ) {
       std::cout << Form( "   s = %8.3f m:", it->first ) << " " << it->second << std::endl;
     }
   }
@@ -55,7 +82,7 @@ namespace Hector
   Particle::emitGamma( float e_gamma, float q2_gamma, float phi_min, float phi_max )
   {
     const float pos_ini = firstS();
-    Particle::StateVector sv_ini = firstStateVector();
+    StateVector sv_ini = firstStateVector();
 
     if ( q2_gamma==0. ) {
       PrintInfo( "Virtuality is null: only energy has changed" );
@@ -108,77 +135,5 @@ namespace Hector
     // caution: emitting a photon erases all known positions !
     positions_.clear();
     addPosition( pos_ini, sv_ini );
-  }
-
-  // ----- State vector methods -----
-
-  void
-  Particle::StateVector::setPosition( const float& x, const float& y )
-  {
-    ( *this )[X] = x;
-    ( *this )[Y] = y;
-  }
-
-  CLHEP::Hep2Vector
-  Particle::StateVector::position() const
-  {
-    return CLHEP::Hep2Vector( ( *this )[X], ( *this )[Y] );
-  }
-
-  void
-  Particle::StateVector::setAngles( const float& tx, const float& ty )
-  {
-    ( *this )[TX] = tx;
-    ( *this )[TY] = ty;
-  }
-
-  CLHEP::Hep2Vector
-  Particle::StateVector::angles() const
-  {
-    return CLHEP::Hep2Vector( ( *this )[TX], ( *this )[TY] );
-  }
-
-  void
-  Particle::StateVector::setMomentum( const CLHEP::HepLorentzVector& mom )
-  {
-    const CLHEP::Hep2Vector angles(
-      atan2( mom.px(), mom.pz() ),
-      atan2( mom.py(), mom.pz() )
-    );
-    setAngles( angles );
-    ( *this )[E] = mom.e();
-  }
-
-  CLHEP::HepLorentzVector
-  Particle::StateVector::momentum() const
-  {
-    const float pz = sqrt( ( energy()*energy()-m_*m_ )/( 1.+pow( tan( Tx() ), 2 )+pow( tan( Ty() ), 2 ) ) ),
-                px = pz*tan( Tx() ),
-                py = pz*tan( Ty() );
-    return CLHEP::HepLorentzVector( px, py, pz, energy() );
-  }
-
-  void
-  Particle::StateVector::setM( float mass )
-  {
-    if ( mass!=momentum().m() ) {
-      m_ = mass;
-      if ( momentum().mag2()!=0. )
-        ( *this )[E] = sqrt( momentum().mag2()+m_*m_ ); // match the energy accordingly
-      else {
-        const int sign = 1; //FIXME
-        setMomentum( CLHEP::HepLorentzVector( 0., 0., sign*sqrt( energy()*energy()-m_*m_ ), energy() ) ); // longitudinal momentum only
-      }
-      return;
-    }
-    m_ = mass;
-  }
-
-  /// Human-readable printout of a state vector
-  std::ostream&
-  operator<<( std::ostream& os, const Particle::StateVector& vec )
-  {
-    return os << Form( "{ x = % 6.4e m, x' = % 6.3e rad, y = % 6.4e m, y' = % 6.3e rad, k = % 3.1f, E = %6.3e GeV }",
-                       vec.position().x(), vec.angles().x(), vec.position().y(), vec.angles().y(), vec.kick(), vec.energy() );
   }
 }

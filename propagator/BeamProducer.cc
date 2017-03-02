@@ -27,7 +27,7 @@ namespace Hector
     const CLHEP::Hep2Vector pos_ini( x, y );
     const CLHEP::HepLorentzVector mom_ini( 0., 0., 0., Constants::beam_energy );
 
-    return Particle( Particle::StateVector( mom_ini, pos_ini ), s_.first );
+    return Particle( StateVector( mom_ini, pos_ini ), s_.first );
   }
 
   Particle
@@ -39,7 +39,7 @@ namespace Hector
     const CLHEP::Hep2Vector pos_ini( x, y );
     const CLHEP::HepLorentzVector mom_ini( 0., 0., 0., Constants::beam_energy );
 
-    return Particle( Particle::StateVector( mom_ini, pos_ini ), s_.first );
+    return Particle( StateVector( mom_ini, pos_ini ), s_.first );
   }
 
   Particle
@@ -47,11 +47,8 @@ namespace Hector
   {
     const float tx = p1_.first + LinearScanner::next()*( p1_.second-p1_.first )/( num_part_-1 ),
                 ty = p2_.first;
-    Particle::StateVector vec;
-    vec.setAngles( CLHEP::Hep2Vector( tx, ty ) );
-    vec.setEnergy( e_ini_ );
 
-    return Particle( vec, s_.first );
+    return Particle( StateVector( CLHEP::Hep2Vector(), CLHEP::Hep2Vector( tx, ty ), e_ini_ ), s_.first );
   }
 
   Particle
@@ -59,11 +56,8 @@ namespace Hector
   {
     const float tx = p2_.first,
                 ty = p1_.first + LinearScanner::next()*( p1_.second-p1_.first )/( num_part_-1 );
-    Particle::StateVector vec;
-    vec.setAngles( CLHEP::Hep2Vector( tx, ty ) );
-    vec.setEnergy( e_ini_ );
 
-    return Particle( vec, s_.first );
+    return Particle( StateVector( CLHEP::Hep2Vector(), CLHEP::Hep2Vector( tx, ty ), e_ini_ ), s_.first );
   }
 
   template<>

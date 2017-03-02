@@ -47,6 +47,8 @@ namespace Hector
         /// Build a new element
         /// \param[in] type Element type (see Element::ElementBase::Type)
         /// \param[in] name Element name
+        /// \param[in] spos s-position of the element in the beamline
+        /// \param[in] length Element length (in m)
         ElementBase( const Type& type, const std::string& name="invalid element", float spos=0., float length=0. );
         /// Copy constructor (cloning the associated aperture if any)
         ElementBase( const ElementBase& elem );
@@ -54,10 +56,12 @@ namespace Hector
 
         /// Return a pointer to a clone of the current element
         virtual ElementBase* clone() const = 0;
+        /// Check if two elements (and their properties) are identical
         bool operator==( const ElementBase& ) const;
+        /// Check if two elements (and their properties) are different
         bool operator!=( const ElementBase& rhs ) const { return !( *this==rhs ); }
 
-        /// Compute the propagation matrix
+        /// Compute the propagation matrix for this element
         /// \param[in] eloss Particle energy loss in the element (GeV)
         /// \param[in] mp Particle mass (GeV)
         /// \param[in] qp Particle charge (e)

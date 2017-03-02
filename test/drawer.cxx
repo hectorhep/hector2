@@ -22,6 +22,7 @@ main( int argc, char* argv[] )
   // general plotting parameters
   const float max_s = ( argc>3 ) ? atof( argv[3] ) : 500.;
   const unsigned int num_particles = 100;
+  const unsigned short num_iter = 100;
 
   Hector::Parser::MADX parser_beam1( argv[1], "IP5", +1, max_s ),
                        parser_beam2( argv[2], "IP5", +1, max_s );
@@ -54,11 +55,12 @@ main( int argc, char* argv[] )
       //std::cout << p.firstStateVector().Tx() << std::endl;
       try { prop1.propagate( p, max_s ); } catch ( Hector::Exception& e ) { e.dump(); }
       TGraph gr_x, gr_y;
-      unsigned short j = 0;
-      for ( Hector::Particle::PositionsMap::const_iterator it=p.begin(); it!=p.end(); it++, j++ ) {
-        gr_x.SetPoint( j, it->first, it->second.position().x()*100 );
-        gr_y.SetPoint( j, it->first, it->second.position().y()*100 );
-        //std::cout << "--> " << it->second.position() << std::endl;
+      for ( size_t j=0; j<num_iter; j++ ) {
+        float s_pos = 0.+j*( max_s-0. )/( num_iter-1 );
+        const CLHEP::Hep2Vector pos( p.stateVectorAt( s_pos ).position() );
+        std::cout << s_pos << pos << std::endl;
+        gr_x.SetPoint( j, s_pos, pos.x() );
+        gr_y.SetPoint( j, s_pos, pos.y() );
       }
       gr_x.SetLineColor( kBlack );
       gr_y.SetLineColor( kBlack );
@@ -70,10 +72,11 @@ main( int argc, char* argv[] )
       try { prop2.propagate( p, max_s ); } catch ( Hector::Exception& e ) { e.dump(); }
 
       TGraph gr_x, gr_y;
-      unsigned short j = 0;
-      for ( Hector::Particle::PositionsMap::const_iterator it=p.begin(); it!=p.end(); it++, j++ ) {
-        gr_x.SetPoint( j, it->first, it->second.position().x() );
-        gr_y.SetPoint( j, it->first, it->second.position().y() );
+      for ( size_t j=0; j<num_iter; j++ ) {
+        float s_pos = 0.+j*( max_s-0. )/( num_iter-1 );
+        const CLHEP::Hep2Vector pos( p.stateVectorAt( s_pos ).position() );
+        gr_x.SetPoint( j, s_pos, pos.x() );
+        gr_y.SetPoint( j, s_pos, pos.y() );
       }
       gr_x.SetLineColor( kRed );
       gr_y.SetLineColor( kRed );

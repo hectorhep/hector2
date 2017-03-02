@@ -28,7 +28,7 @@ main( int argc, char* argv[] )
 
   Hector::Propagator prop( parser.beamline() );
 
-  TH2D hitmap( "hitmap", "x (m)\\y (m)", 200, -2e-3, 2e-3, 200, -2e-3, 2e-3 );
+  TH2D hitmap( "hitmap", "x (m)\\y (m)", 200, -20e-3, 20e-3, 200, -20e-3, 20e-3 );
 
   const unsigned int num_particles = 10000;
   const float beam_lateral_width_ip = 16.63e-6, // in meters
@@ -46,9 +46,10 @@ main( int argc, char* argv[] )
     { // propagation through the beamline
       Hector::Particle p = gun.shoot();
       try { prop.propagate( p, s_pos ); } catch ( Hector::Exception& e ) { /*e.dump();*/ continue; }
+      if ( prop.stopped( p, s_pos ) ) continue;
 
-      const Hector::Particle::Position last_pos = p.lastPosition();
-      hitmap.Fill( last_pos.stateVector().position().x(), last_pos.stateVector().position().y() );
+      const CLHEP::Hep2Vector pos( p.stateVectorAt( s_pos ).position() );
+      hitmap.Fill( pos.x(), pos.y() );
     }
   }
 

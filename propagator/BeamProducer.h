@@ -129,7 +129,7 @@ namespace Hector
 
         /// Generate one particle according to the templated distribution
         Particle shoot() const {
-          Particle::StateVector vec;
+          StateVector vec;
           const float s = T::shoot( s_.first, s_.second ),
                       x = T::shoot( x_.first, x_.second ),
                       y = T::shoot( y_.first, y_.second ),
