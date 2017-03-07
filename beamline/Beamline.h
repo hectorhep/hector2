@@ -23,7 +23,7 @@ namespace Hector
     public:
       Beamline();
       /// Copy constructor
-      Beamline( const Beamline& );
+      Beamline( const Beamline&, bool copy_elements=true );
       /// Build a beamline from a longitudinal size and a interaction point position
       /// \param[in] length Longitudinal length of the beamline
       /// \param[in] ip Position of the interaction point
@@ -57,6 +57,10 @@ namespace Hector
       /// Number of elements in the beamline
       unsigned short numElements() const { return elements_.size(); }
 
+      /// Iterator to the first element in the beamline
+      ElementsMap::iterator begin() { return elements_.begin(); }
+      /// Iterator to the last element in the beamline
+      ElementsMap::iterator end() { return elements_.end(); }
       /// Constant iterator to the first element in the beamline
       const ElementsMap::const_iterator begin() const { return elements_.begin(); }
       /// Constant iterator to the last element in the beamline
@@ -79,7 +83,8 @@ namespace Hector
       void computeSequence();
 
     private:
-      void setElements( const ElementsMap& elem_map );
+      /// Copy the list of elements from one beamline to this one
+      void setElements( const Beamline& moth_bl, bool delete_after=false );
       /// Beamline maximal length (in m)
       float max_length_;
       /// Position of the interaction point

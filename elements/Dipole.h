@@ -37,18 +37,18 @@ namespace Hector
         /** \note \f$
          * \mathbf{M} = \left(
          * \begin{array}{cccccc}
-         * \cos{\frac{l}{r}} & \frac{-1}{r} \sin{\frac{l}{r}} & 0 & 0 & 0 & 0\\
-         * r \sin{\frac{l}{r}} & \cos{\frac{l}{r}} & 0 & 0 & 0 & 0\\
+         * \cos{\frac{L}{r}} & \frac{-1}{r} \sin{\frac{L}{r}} & 0 & 0 & 0 & 0\\
+         * r \sin{\frac{L}{r}} & \cos{\frac{L}{r}} & 0 & 0 & 0 & 0\\
          * 0 & 0 & 1 & 0 & 0 & 0\\
-         * 0 & 0 & l & 1 & 0 & 0\\
-         * \frac{2r}{E_{\mathrm{b}}} \sin^2{\frac{l}{2r}} & \frac{1}{E_{\mathrm{b}}}\sin{\frac{l}{r}} & 0 & 0 & 1 &0\\
+         * 0 & 0 & L & 1 & 0 & 0\\
+         * \frac{2r}{E_{\mathrm{b}}} \sin^2{\frac{L}{2r}} & \frac{1}{E_{\mathrm{b}}}\sin{\frac{L}{r}} & 0 & 0 & 1 &0\\
          * 0 & 0 & 0 & 0 & 0 & 1\\
          * \end{array}
          * \right)
          * \f$
          * assuming \f$ 1/r \equiv k = k_{0} \cdot \frac{p_{0}}{p_{0} - \mathrm{d}p} \cdot \frac{q_{\mathrm{part}}}{q_{\mathrm{b}}} \f$ and \f$ E_{\mathrm{b}}=7000\f$ GeV.
          */
-        /// \warning Numerical sensitivity expected with \f$ \frac{r}{E_{\mathrm{b}}} \left(1-\cos{\frac{l}{r}}\right)\f$.
+        /// \warning Numerical sensitivity expected with \f$ \frac{r}{E_{\mathrm{b}}} \left(1-\cos{\frac{L}{r}}\right)\f$.
         ///  Using \f$ \cos{2x} = 1-2\sin^{2}{x} \f$ to transform this term (see the variable called "simp")
         CLHEP::HepMatrix matrix( float, float, int ) const;
 
@@ -67,24 +67,24 @@ namespace Hector
 
         /// \note Matrix depends if the bending is on or off.
         /** \note \f$
-         * \mathbf{M}_{\mathrm{bending-off}} = \left(
+         * \mathbf{M}_{\mathrm{no~bend.}} = \left(
          * \begin{array}{cccccc}
-         * \cos{\frac{l}{r}} & \frac{-1}{r} \sin{\frac{l}{r}} & 0 & 0 & 0 & 0\\
-         * r \sin{\frac{l}{r}} & \cos{\frac{l}{r}} & 0 & 0 & 0 & 0\\
+         * \cos{\frac{L}{r}} & \frac{-1}{r} \sin{\frac{L}{r}} & 0 & 0 & 0 & 0\\
+         * r \sin{\frac{L}{r}} & \cos{\frac{L}{r}} & 0 & 0 & 0 & 0\\
          * 0 & 0 & 1 & 0 & 0 & 0\\
-         * 0 & 0 & l & 1 & 0 & 0\\
+         * 0 & 0 & L & 1 & 0 & 0\\
          * 0 & 0 & 0 & 0 & 1 & 0\\
          * 0 & 0 & 0 & 0 & 0 & 1\\
          * \end{array}
          * \right),
          * \f$\f$
-         * \mathbf{M}_{\mathrm{bending-on}} = \left(
+         * \mathbf{M}_{\mathrm{bend.}} = \left(
          * \begin{array}{cccccc}
-         * \cos{\frac{l}{r}} & \frac{-1}{r} \sin{\frac{l}{r}} & 0 & 0 & 0 & 0\\
-         * r \sin{\frac{l}{r}} & \cos{\frac{l}{r}} & 0 & 0 & 0 & 0\\
+         * \cos{\frac{L}{r}} & \frac{-1}{r} \sin{\frac{L}{r}} & 0 & 0 & 0 & 0\\
+         * r \sin{\frac{L}{r}} & \cos{\frac{L}{r}} & 0 & 0 & 0 & 0\\
          * 0 & 0 & 1 & 0 & 0 &0\\
-         * 0 & 0 & l & 1 & 0 &0\\
-         * \frac{2r}{E_{\mathrm{b}}} \sin^2{\frac{l}{2r}} & \frac{1}{E_{\mathrm{b}}} \sin{\frac{l}{r}} & 0 & 0 & 1 & 0\\
+         * 0 & 0 & L & 1 & 0 &0\\
+         * \frac{2r}{E_{\mathrm{b}}} \sin^2{\frac{L}{2r}} & \frac{1}{E_{\mathrm{b}}} \sin{\frac{L}{r}} & 0 & 0 & 1 & 0\\
          * 0 & 0 & 0 & 0 & 0 & 1\\
          * \end{array}
          * \right)

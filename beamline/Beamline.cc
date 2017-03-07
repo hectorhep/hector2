@@ -7,12 +7,12 @@ namespace Hector
   {
   }
 
-  Beamline::Beamline( const Beamline& rhs ) :
+  Beamline::Beamline( const Beamline& rhs, bool copy_elements ) :
     max_length_( rhs.max_length_ ), ip_( rhs.ip_ ),
     has_next_element_( rhs.has_next_element_ ), drifts_added_( rhs.drifts_added_ )
   {
     clear();
-    setElements( rhs.elements() );
+    if ( copy_elements ) setElements( rhs, false );
   }
 
   Beamline::Beamline( float length, const CLHEP::Hep3Vector& ip ) :
@@ -31,7 +31,7 @@ namespace Hector
   Beamline::clear()
   {
     for ( ElementsMap::iterator elem=elements_.begin(); elem!=elements_.end(); elem++ ) {
-      if ( *elem ) delete *( elem );
+      if ( *elem ) delete ( *elem );
     }
     elements_.clear();
   }
@@ -47,6 +47,7 @@ namespace Hector
                                                       "\tBeamline length: %.3f m, this element: %.3f m",
                                                       elem->name().c_str(), max_length_, new_size ), Fatal );
         }
+        if ( delete_after ) delete elem;
         return;
       }
       has_next_element_ = true;
@@ -61,7 +62,7 @@ namespace Hector
 
         if ( *prev_elem==*elem ) return;
         if ( elem->s()<prev_elem->s() ) continue;
-        if ( elem->s()>prev_elem->s()+prev_elem->length() ) continue;
+        if ( elem->s()>prev_elem->s()+prev_elem->length() ) break;
         if ( elem->s()==prev_elem->s() ) continue;
         //if ( elem->s()+elem->length()>max_length_ ) return;
 
@@ -95,11 +96,11 @@ namespace Hector
     if ( !already_added ) {
       elements_.push_back( elem->clone() );
     }
-    // sort all beamline elements according to their s-position
-    std::sort( elements_.begin(), elements_.end(), Element::ElementsSorter() );
-
     // clean the memory if needed
     if ( delete_after ) delete elem;
+
+    // sort all beamline elements according to their s-position
+    std::sort( elements_.begin(), elements_.end(), Element::ElementsSorter() );
 
     // enable a new computing of the drift elements
     drifts_added_ = false;
@@ -189,7 +190,7 @@ namespace Hector
     // add the drifts between optical elements
     float pos = 0.;
     // brand new beamline to populate
-    Beamline tmp( *this ); tmp.clear();
+    Beamline tmp( *this, false );
 
     // convert all empty spaces into drifts
     for ( ElementsMap::const_iterator it=elements_.begin(); it!=elements_.end(); it++ ) {
@@ -200,7 +201,7 @@ namespace Hector
       const float drift_length = elem->s()-pos;
       if ( drift_length>0. ) {
         try {
-          tmp.addElement( new Element::Drift( Form( "drift:%.4E", pos ).c_str(), pos, drift_length ) );
+          tmp.addElement( new Element::Drift( Form( "drift:%.4E", pos ).c_str(), pos, drift_length ), true );
         } catch ( Exception& e ) { e.dump(); }
       }
       try { tmp.addElement( elem ); } catch ( Exception& e ) { e.dump(); }
@@ -209,15 +210,14 @@ namespace Hector
     // add the last drift
     const float drift_length = tmp.length()-pos;
     if ( drift_length>0 ) {
-        Element::Drift drift( Form( "drift:%.4E", pos ).c_str() );
-        drift.setS( pos );
-        drift.setLength( drift_length );
-        try { tmp.addElement( &drift ); } catch ( Exception& e ) { e.dump(); }
+      try {
+        tmp.addElement( new Element::Drift( Form( "drift:%.4E", pos ).c_str(), pos, drift_length ), true );
+      } catch ( Exception& e ) { e.dump(); }
     }
 
     // replace the current beamline content with the sequenced one
     clear();
-    setElements( tmp.elements() );
+    setElements( tmp, true );
     tmp.dump();
 
     // make sure that the sequence cannot be computed again
@@ -225,10 +225,10 @@ namespace Hector
   }
 
   void
-  Beamline::setElements( const ElementsMap& elem_map )
+  Beamline::setElements( const Beamline& moth_bl, bool delete_after )
   {
-    for ( ElementsMap::const_iterator it=elem_map.begin(); it!=elem_map.end(); it++ ) {
-      addElement( ( *( it ) )->clone() );
+    for ( ElementsMap::const_iterator it=moth_bl.begin(); it!=moth_bl.end(); it++ ) {
+      addElement( ( *( it ) )->clone(), delete_after );
     }
   }
 }

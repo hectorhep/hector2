@@ -16,7 +16,6 @@ namespace Hector
           Drift( name, aRectangularCollimator, spos, length ) {}
 
         RectangularCollimator* clone() const { return new RectangularCollimator( *this ); }
-        //void computeMatrix( float, float, int );
 
       private:
 

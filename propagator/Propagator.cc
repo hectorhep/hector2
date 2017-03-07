@@ -63,6 +63,7 @@ namespace Hector
 
       part.addPosition( out_pos );
     }
+    part.sortPositions();
   }
 
   bool
@@ -77,7 +78,7 @@ namespace Hector
       const StateVector sv_prev_elem_in = part.stateVectorAt( prev_elem->s() ),
                         sv_prev_elem_out = part.stateVectorAt( prev_elem->s()+prev_elem->length() );
 
-      std::cout << "---> " << sv_prev_elem_in << std::endl;
+      //std::cout << "---> " << sv_prev_elem_in << std::endl;
       const Aperture::ApertureBase* aper = prev_elem->aperture();
       if ( aper and aper->type()!=Aperture::anInvalidType ) {
         const bool has_passed_entrance = aper->contains( sv_prev_elem_in.position() ),
@@ -101,7 +102,7 @@ namespace Hector
   Particle::Position
   Propagator::propagateThrough( const Particle::Position& ini_pos, const Element::ElementBase* ele, float eloss, int qp ) const
   {
-    StateVector shift( ele->position(), tan2( ele->angles() ), 0. );
+    StateVector shift( ele->position(), math::tan2( ele->angles() ), 0. );
     //shift.setAngles( ele->angles() );
 
     // perform the propagation (assuming that mass is conserved...)
@@ -110,7 +111,7 @@ namespace Hector
 
     // convert the angles -> tan-1( angle )
     const CLHEP::Hep2Vector ang_old = vec.angles();
-    vec.setAngles( atan( ang_old.x() ), atan( ang_old.y() ) );
+    vec.setAngles( math::atan2( ang_old ) );
 
     return Particle::Position( ele->s()+ele->length(), vec );
   }
@@ -136,7 +137,7 @@ namespace Hector
     for ( size_t i=0; i<niter; i++ ) {
 
       ele_tmp->setLength( max_pos );
-      StateVector shift( ele_tmp->position(), CLHEP::Hep2Vector( tan( ele_tmp->Tx() ), tan( ele_tmp->Ty() ) ) );
+      StateVector shift( ele_tmp->position(), math::tan2( ele_tmp->angles() ) );
 
       const StateVector max = StateVector( ele_tmp->matrix( eloss, mp, qp ) * ( vec.vector()-shift.vector() ) + shift.vector(), vec.m() );
 

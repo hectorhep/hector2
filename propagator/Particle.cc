@@ -35,29 +35,39 @@ namespace Hector
                                                   "Previous mass was %.3f GeV, new mass is %.3f GeV",
                                                   lastStateVector().m(), pos.stateVector().m() ), Fatal );
     }
-    positions_.push_back( pos.pair() );
+    positions_.push_back( pos );
     stopped_ = stopped;
+  }
+
+  void
+  Particle::sortPositions()
+  {
+    // sort all positions according to their s-component
+    std::sort( positions_.begin(), positions_.end(), Particle::PositionsSorter() );
   }
 
   StateVector
   Particle::stateVectorAt( float s )
   {
     for ( PositionsMap::const_iterator it=positions_.begin()+1; it!=positions_.end(); it++ ) {
-      const float s_before = ( it-1 )->first,
-                  s_after = it->first;
-      if ( s_before>s or s_after<s ) continue;
+      const float s_before = ( it-1 )->s(), s_after = it->s();
+      if ( s>s_after ) break;
+      if ( s<s_before ) continue;
 
-      const StateVector sv_before = ( it-1 )->second,
-                        sv_after = it->second;
+      const StateVector sv_before = ( it-1 )->stateVector(),
+                        sv_after = it->stateVector();
       const CLHEP::Hep2Vector in = sv_before.position(),
                               out = sv_after.position();
 
-      const float elem_length = s_after-s_before;
-      if ( elem_length==0 ) {
-        throw Exception( __PRETTY_FUNCTION__, Form( "No luck in choosing position (s=%.3f m)\n\tInterpolation is impossible!", s ), JustWarning );
+      const float drift_length = s_after-s_before;
+      if ( drift_length==0 ) {
+        throw Exception( __PRETTY_FUNCTION__, Form( "No luck in choosing position (s=%.3f m)\n\t"
+                                                    "Interpolation is impossible!",
+                                                    s ), JustWarning );
       }
 
-      const CLHEP::Hep2Vector s_pos = in + ( ( s-s_before )/elem_length )*( out-in );
+      const CLHEP::Hep2Vector s_pos = in + ( ( s-s_before )/drift_length )*( out-in );
+      std::cout << s_pos << std::endl;
 
       StateVector out_stvec( sv_before );
       out_stvec.setPosition( s_pos );
@@ -74,7 +84,7 @@ namespace Hector
     if ( positions_.size()==1 ) return;
     os << " list of associated state vectors:\n";
     for ( PositionsMap::const_iterator it=positions_.begin(); it!=positions_.end(); it++ ) {
-      std::cout << Form( "   s = %8.3f m:", it->first ) << " " << it->second << std::endl;
+      std::cout << Form( "   s = %8.3f m:", it->s() ) << " " << it->stateVector() << std::endl;
     }
   }
 

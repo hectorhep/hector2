@@ -48,10 +48,19 @@ namespace Hector
     return s;
   }
 
-  /// Compute the tangent of both the components of a 2-vector
-  inline CLHEP::Hep2Vector tan2( const CLHEP::Hep2Vector& ang ) {
-    const double x = ang.x(), y = ang.y();
-    return CLHEP::Hep2Vector( x, y );
+  namespace math
+  {
+    /// Compute the tangent of both the components of a 2-vector
+    inline CLHEP::Hep2Vector tan2( const CLHEP::Hep2Vector& ang ) {
+      const double x = ang.x(), y = ang.y();
+      return CLHEP::Hep2Vector( tan( x ), tan( y ) );
+    }
+
+    /// Compute the arc-tangent of both the components of a 2-vector
+    inline CLHEP::Hep2Vector atan2( const CLHEP::Hep2Vector& ang ) {
+      const double x = ang.x(), y = ang.y();
+      return CLHEP::Hep2Vector( atan( x ), atan( y ) );
+    }
   }
 }
 

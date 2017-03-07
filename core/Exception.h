@@ -8,8 +8,8 @@
 #include <string>
 #include <cstdlib> // exit()
 
-#define PrintInfo(m) Exception( __PRETTY_FUNCTION__, m, Info ).dump();
-#define PrintWarning(m) Exception( __PRETTY_FUNCTION__, m, JustWarning ).dump();
+#define PrintInfo(m) Hector::Exception( __PRETTY_FUNCTION__, m, Hector::Info ).dump();
+#define PrintWarning(m) Hector::Exception( __PRETTY_FUNCTION__, m, Hector::JustWarning ).dump();
 
 using std::cerr;
 

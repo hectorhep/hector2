@@ -45,7 +45,7 @@ namespace Hector
          * \end{array}
          * \right)
          * \f$
-         * assuming \f$ k =  k_{0} \cdot \frac{p_{0}}{p_{0} - \mathrm{d}p} \cdot \frac{q_{\mathrm{part}}}{q_{\mathrm{b}}} \f$ and \f$ \omega \equiv \omega(k,l) = l \sqrt{|k|} \f$
+         * assuming \f$ k =  k_{0} \cdot \frac{p_{0}}{p_{0} - \mathrm{d}p} \cdot \frac{q_{\mathrm{part}}}{q_{\mathrm{b}}} \f$ and \f$ \omega \equiv \omega(k,L) = L \sqrt{|k|} \f$
          */
         CLHEP::HepMatrix matrix( float, float, int ) const;
 
@@ -73,7 +73,7 @@ namespace Hector
          * \end{array}
          * \right)
          * \f$
-         * assuming \f$ k =  k_{0} \cdot \frac{p_{0}}{p_{0} - \mathrm{d}p} \cdot \frac{q_{\mathrm{part}}}{q_{\mathrm{b}}} \f$ and \f$ \omega \equiv \omega(k,l) = l \sqrt{|k|} \f$
+         * assuming \f$ k =  k_{0} \cdot \frac{p_{0}}{p_{0} - \mathrm{d}p} \cdot \frac{q_{\mathrm{part}}}{q_{\mathrm{b}}} \f$ and \f$ \omega \equiv \omega(k,l) = L \sqrt{|k|} \f$
          */
         CLHEP::HepMatrix matrix( float, float, int ) const;
 

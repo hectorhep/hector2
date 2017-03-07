@@ -52,16 +52,18 @@ main( int argc, char* argv[] )
     Hector::Particle p = gun.shoot();
     { // beamline 1 propagation
       p.clear();
-      //std::cout << p.firstStateVector().Tx() << std::endl;
-      try { prop1.propagate( p, max_s ); } catch ( Hector::Exception& e ) { e.dump(); }
       TGraph gr_x, gr_y;
-      for ( size_t j=0; j<num_iter; j++ ) {
-        float s_pos = 0.+j*( max_s-0. )/( num_iter-1 );
-        const CLHEP::Hep2Vector pos( p.stateVectorAt( s_pos ).position() );
-        std::cout << s_pos << pos << std::endl;
-        gr_x.SetPoint( j, s_pos, pos.x() );
-        gr_y.SetPoint( j, s_pos, pos.y() );
-      }
+      //std::cout << p.firstStateVector().Tx() << std::endl;
+      try {
+        prop1.propagate( p, max_s );
+        for ( size_t j=0; j<num_iter; j++ ) {
+          float s_pos = 0.+j*( max_s-0. )/( num_iter-1 );
+          const CLHEP::Hep2Vector pos( p.stateVectorAt( s_pos ).position() );
+          std::cout << s_pos << pos << std::endl;
+          gr_x.SetPoint( j, s_pos, pos.x() );
+          gr_y.SetPoint( j, s_pos, pos.y() );
+        }
+      } catch ( Hector::Exception& e ) { e.dump(); }
       gr_x.SetLineColor( kBlack );
       gr_y.SetLineColor( kBlack );
       mg1_x.Add( dynamic_cast<TGraph*>( gr_x.Clone() ) );
@@ -69,15 +71,16 @@ main( int argc, char* argv[] )
     }
     { // beamline 2 propagation
       p.clear();
-      try { prop2.propagate( p, max_s ); } catch ( Hector::Exception& e ) { e.dump(); }
-
       TGraph gr_x, gr_y;
-      for ( size_t j=0; j<num_iter; j++ ) {
-        float s_pos = 0.+j*( max_s-0. )/( num_iter-1 );
-        const CLHEP::Hep2Vector pos( p.stateVectorAt( s_pos ).position() );
-        gr_x.SetPoint( j, s_pos, pos.x() );
-        gr_y.SetPoint( j, s_pos, pos.y() );
-      }
+      try {
+        prop2.propagate( p, max_s );
+        for ( size_t j=0; j<num_iter; j++ ) {
+          float s_pos = 0.+j*( max_s-0. )/( num_iter-1 );
+          const CLHEP::Hep2Vector pos( p.stateVectorAt( s_pos ).position() );
+          gr_x.SetPoint( j, s_pos, pos.x() );
+          gr_y.SetPoint( j, s_pos, pos.y() );
+        }
+      } catch ( Hector::Exception& e ) { e.dump(); }
       gr_x.SetLineColor( kRed );
       gr_y.SetLineColor( kRed );
       mg2_x.Add( dynamic_cast<TGraph*>( gr_x.Clone() ) );

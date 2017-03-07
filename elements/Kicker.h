@@ -36,11 +36,11 @@ namespace Hector
          * \mathbf{M} = \left(
          * \begin{array}{cccccc}
          * 1 & 0 & 0 & 0 & 0 & 0\\
-         * l & 1 & 0 & 0 & 0 & 0\\
+         * L & 1 & 0 & 0 & 0 & 0\\
          * 0 & 0 & 1 & 0 & 0 & 0\\
-         * 0 & 0 & l & 1 & 0 & 0\\
+         * 0 & 0 & L & 1 & 0 & 0\\
          * 0 & 0 & 0 & 0 & 1 & 0\\
-         * \frac{l}{2} \tan{k} & k & 0 & 0 & 0 & 1\\
+         * \frac{L}{2} \tan{k} & k & 0 & 0 & 0 & 1\\
          * \end{array}
          * \right)
          * \f$
@@ -62,11 +62,11 @@ namespace Hector
          * \mathbf{M} = \left(
          * \begin{array}{cccccc}
          * 1 & 0 & 0 & 0 & 0 & 0\\
-         * l & 1 & 0 & 0 & 0 & 0\\
+         * L & 1 & 0 & 0 & 0 & 0\\
          * 0 & 0 & 1 & 0 & 0 & 0\\
-         * 0 & 0 & l & 1 & 0 & 0\\
+         * 0 & 0 & L & 1 & 0 & 0\\
          * 0 & 0 & 0 & 0 & 1 & 0\\
-         * 0 & 0 & \frac{l}{2} \tan{k} & k & 0 & 1\\
+         * 0 & 0 & \frac{L}{2} \tan{k} & k & 0 & 1\\
          * \end{array}
          * \right)
          * \f$

@@ -30,7 +30,7 @@ main( int argc, char* argv[] )
 
   TH2D hitmap( "hitmap", "x (m)\\y (m)", 200, -20e-3, 20e-3, 200, -20e-3, 20e-3 );
 
-  const unsigned int num_particles = 10000;
+  const unsigned int num_particles = 100;
   const float beam_lateral_width_ip = 16.63e-6, // in meters
               beam_angular_divergence_ip = 30.23e-6, // in radians
               particles_energy = 6000.; // in GeV
@@ -41,17 +41,22 @@ main( int argc, char* argv[] )
   gun.setTXparams( Hector::Constants::crossing_angle, beam_angular_divergence_ip );
   gun.setTYparams( 0., beam_angular_divergence_ip );
   //Hector::BeamProducer::Xscanner gun( num_particles, Hector::Constants::beam_energy, 0., 0.1 );
+
+  unsigned short num_stopped = 0;
   for ( size_t i=0; i!=num_particles; i++ ) {
 
     { // propagation through the beamline
       Hector::Particle p = gun.shoot();
-      try { prop.propagate( p, s_pos ); } catch ( Hector::Exception& e ) { /*e.dump();*/ continue; }
-      if ( prop.stopped( p, s_pos ) ) continue;
-
-      const CLHEP::Hep2Vector pos( p.stateVectorAt( s_pos ).position() );
-      hitmap.Fill( pos.x(), pos.y() );
+      try {
+        prop.propagate( p, s_pos );
+        if ( prop.stopped( p, s_pos ) ) { std::cout << "prout" << std::endl; num_stopped++; continue; }
+        const CLHEP::Hep2Vector pos( p.stateVectorAt( s_pos ).position() );
+        std::cout << s_pos << " -> " << pos << std::endl;
+        hitmap.Fill( pos.x(), pos.y() );
+      } catch ( Hector::Exception& e ) { /*e.dump();*/ continue; }
     }
   }
+  PrintInfo( Form( "%.1f%% of particles (%d/%d) stopped before s = %.2f", 100. * num_stopped/num_particles, num_stopped, num_particles, s_pos ) );
 
   {
     Hector::Canvas c( "hitmap", Form( "Hector v2 simulation, s = %.2f m", s_pos ) );

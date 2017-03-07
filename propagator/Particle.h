@@ -19,8 +19,35 @@ namespace Hector
   class Particle
   {
     public:
+      /// A s-position/state vector couple providing the full particle position
+      class Position : private std::pair<float,StateVector>
+      {
+        public:
+          /// Construct a couple between a longitudinal position and a state vector
+          Position( const float& s, const StateVector& sv ) : std::pair<float,StateVector>( s, sv ) {}
+          /// Longitudinal position
+          const float s() const { return this->first; }
+          /// State vector components
+          StateVector& stateVector() { return this->second; }
+          /// State vector components
+          const StateVector stateVector() const { return this->second; }
+          /// A pair of longitudinal position/state vector
+          const std::pair<float,StateVector>& pair() const { return ( *this ); }
+      };
       /// Particle trajectory holder ; map of state vectors indexed to the s-position
-      typedef std::vector< std::pair<float,StateVector> > PositionsMap;
+      typedef std::vector<Position> PositionsMap;
+      /// Sorting methods for the positions map construction (using the s position of each positions)
+      struct PositionsSorter
+      {
+        /// Compare the references to two elements
+        inline bool operator()( const Particle::Position& lhs, const Particle::Position& rhs ) const {
+          return ( lhs.s()<rhs.s() );
+        }
+        /// Compare the pointers to two elements
+        inline bool operator()( const Particle::Position* lhs, const Particle::Position* rhs ) const {
+          return ( lhs and rhs and lhs->s()<rhs->s() );
+        }
+      };
 
     public:
       Particle();
@@ -30,26 +57,17 @@ namespace Hector
       Particle( const StateVector&, float s0=0. );
       ~Particle();
 
-    public:
-      /// A s-position/state vector couple providing the full particle position
-      class Position : private std::pair<float,StateVector>
-      {
-        public:
-          /// Construct a couple between a longitudinal position and a state vector
-          Position( const float& s, const StateVector& sv ) : std::pair<float,StateVector>( s, sv ) {}
-          /// Longitudinal position
-          const float& s() const { return this->first; }
-          /// State vector components
-          const StateVector stateVector() const { return this->second; }
-          /// A pair of longitudinal position/state vector
-          const std::pair<float,StateVector>& pair() const { return ( *this ); }
-      };
-
       /// Build a Particle object from a mass and electric charge
       static Particle fromMassCharge( float mass, float charge );
 
       /// Clear all state vectors (but the initial one)
       void clear() { positions_.erase( ++begin(), end() ); }
+      /// Add a new s-position/state vector couple to the particle's trajectory
+      void addPosition( const Position&, bool stopped=false );
+      /// Add a new s-position/state vector couple to the particle's trajectory
+      void addPosition( float s, const StateVector& sv, bool stopped=false ) { addPosition( Position( s, sv ), stopped ); }
+      /// Sort all positions according to their s-coordinate
+      void sortPositions();
 
       /// Set the electric charge (in e)
       void setCharge( int ch ) { charge_ = ch; }
@@ -68,23 +86,23 @@ namespace Hector
       void dump( std::ostream& os=std::cout ) const;
 
       /// First s position-state vector couple recorded
-      Position firstPosition() { return Position( positions_.begin()->first, positions_.begin()->second ); }
+      Position firstPosition() { return *( positions_.begin() ); }
       /// Last s position-state vector couple recorded
-      Position lastPosition() { return Position( positions_.rbegin()->first, positions_.rbegin()->second ); }
+      Position lastPosition() { return *( positions_.rbegin() ); }
 
       /// First position associated to the particle along s
-      const float firstS() const { return positions_.begin()->first; }
+      const float firstS() const { return positions_.begin()->s(); }
       /// Last position associated to the particle along s
-      const float lastS() const { return positions_.rbegin()->first; }
+      const float lastS() const { return positions_.rbegin()->s(); }
 
       /// First state vector associated to the particle
-      StateVector& firstStateVector() { return positions_.begin()->second; }
+      StateVector& firstStateVector() { return positions_.begin()->stateVector(); }
       /// Last state vector associated to the particle
-      StateVector& lastStateVector() { return positions_.rbegin()->second; }
+      StateVector& lastStateVector() { return positions_.rbegin()->stateVector(); }
       /// First state vector associated to the particle
-      const StateVector& firstStateVector() const { return positions_.begin()->second; }
+      const StateVector firstStateVector() const { return positions_.begin()->stateVector(); }
       /// Last state vector associated to the particle
-      const StateVector& lastStateVector() const { return positions_.rbegin()->second; }
+      const StateVector lastStateVector() const { return positions_.rbegin()->stateVector(); }
 
       /// Iterator to the first s-position/state vector couple of the particle's trajectory
       PositionsMap::iterator begin() { return positions_.begin(); }
@@ -95,10 +113,6 @@ namespace Hector
       /// Iterator to the last s-position/state vector couple of the particle's trajectory
       const PositionsMap::const_iterator end() const { return positions_.end(); }
 
-      /// Add a new s-position/state vector couple to the particle's trajectory
-      void addPosition( const Position&, bool stopped=false );
-      /// Add a new s-position/state vector couple to the particle's trajectory
-      void addPosition( float s, const StateVector& sv, bool stopped=false ) { addPosition( Position( s, sv ), stopped ); }
       /// Compute the value of the state vector at a given s-position
       StateVector stateVectorAt( float s );
 
