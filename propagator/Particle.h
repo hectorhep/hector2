@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "core/Exception.h"
-#include "core/Constants.h"
 
 using std::cout;
 

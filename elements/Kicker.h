@@ -3,7 +3,6 @@
 
 #include "ElementBase.h"
 #include "Drift.h"
-#include "core/Constants.h"
 
 namespace Hector
 {

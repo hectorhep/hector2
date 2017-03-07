@@ -117,11 +117,11 @@ namespace Hector
     {
       public:
         /// Class constructor
-        ParticleGun( float e_min=Constants::beam_energy, float e_max=Constants::beam_energy,
+        ParticleGun( float e_min=Parameters::beam_energy, float e_max=Parameters::beam_energy,
                      float s_min=0., float s_max=0.,
                      float x_min=0., float x_max=0., float y_min=0., float y_max=0.,
                      float tx_min=-CLHEP::pi/2., float tx_max=CLHEP::pi/2., float ty_min=-CLHEP::pi/2., float ty_max=CLHEP::pi/2.,
-                     float mass=Constants::beam_particles_mass, float charge=Constants::beam_particles_charge ) :
+                     float mass=Parameters::beam_particles_mass, float charge=Parameters::beam_particles_charge ) :
           e_( parameters( e_min, e_max ) ), s_( parameters( s_min, s_max ) ),
           x_( parameters( x_min, x_max ) ), y_( parameters( y_min, y_max ) ),
           tx_( parameters( tx_min, tx_max ) ), ty_( parameters( ty_min, ty_max ) ),

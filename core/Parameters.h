@@ -6,8 +6,9 @@
 /// \date Nov 2016
 namespace Hector
 {
-  /// List of constants to be left untouched once the run is started
-  struct Constants
+  /// List of user-parameterisable constants for the run
+  /// \note All parameters are to be left untouched once the run is started
+  struct Parameters
   {
     /// Energy of the primary particles in the beam (in GeV)
     static float beam_energy;

@@ -32,8 +32,8 @@ main( int argc, char* argv[] )
   Hector::Propagator prop1( parser_beam1.beamline() ),
                      prop2( parser_beam2.beamline() );
 
-  const double mass = Hector::Constants::beam_particles_mass,
-               energy = Hector::Constants::beam_energy;
+  const double mass = Hector::Parameters::beam_particles_mass,
+               energy = Hector::Parameters::beam_energy;
   const CLHEP::Hep3Vector mom0( 0, 0., sqrt( energy*energy-mass*mass ) );
 
   TMultiGraph mg1_x, mg2_x,
@@ -44,9 +44,9 @@ main( int argc, char* argv[] )
   Hector::BeamProducer::gaussianParticleGun gun;
   gun.setXparams( 0., beam_lateral_width_ip );
   gun.setYparams( 0., beam_lateral_width_ip );
-  gun.setTXparams( Hector::Constants::crossing_angle, beam_angular_divergence_ip );
+  gun.setTXparams( Hector::Parameters::crossing_angle, beam_angular_divergence_ip );
   gun.setTYparams( 0., beam_angular_divergence_ip );
-  //Hector::BeamProducer::TYscanner gun( num_particles, Hector::Constants::beam_energy, -1, 1, max_s );
+  //Hector::BeamProducer::TYscanner gun( num_particles, Hector::Parameters::beam_energy, -1, 1, max_s );
 
   for ( size_t i=0; i<num_particles; i++ ) {
     Hector::Particle p = gun.shoot();
@@ -91,7 +91,7 @@ main( int argc, char* argv[] )
   // drawing part
 
   {
-    Hector::Canvas c( "beamline", Form( "Hector_{2} simulation, E_{beam} = %.1f TeV", Hector::Constants::beam_energy*CLHEP::GeV/CLHEP::TeV ), true );
+    Hector::Canvas c( "beamline", Form( "Hector_{2} simulation, E_{beam} = %.1f TeV", Hector::Parameters::beam_energy*CLHEP::GeV/CLHEP::TeV ), true );
 
     c.cd( 1 ); // x-axis
     mg1_x.SetTitle( ".\\x (m)" );

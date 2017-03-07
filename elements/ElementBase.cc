@@ -40,12 +40,12 @@ namespace Hector
     {
       if ( qp==0 ) return 0.;
 
-      const float eini = Constants::beam_energy,
-                  mp0 = Constants::beam_particles_mass,
+      const float eini = Parameters::beam_energy,
+                  mp0 = Parameters::beam_particles_mass,
                   e = eini-eloss;
       const float p0 = sqrt( ( eini-mp0 )*( eini+mp0 ) ), // e_ini^2 - p_0^2 = mp0^2
                   p = sqrt( ( e-mp )*( e+mp ) ); // e^2 - p^2 = mp^2
-      return magnetic_strength_*( p0/p )*( qp/Constants::beam_particles_charge );
+      return magnetic_strength_*( p0/p )*( qp/Parameters::beam_particles_charge );
     }
 
     /// Human-readable printout of a beamline element object

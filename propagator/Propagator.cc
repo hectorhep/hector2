@@ -17,7 +17,7 @@ namespace Hector
     /*const double energy_loss = ( Constants::use_relative_energy )
       ? Constants::beam_energy-part.lastStateVector().energy()
       : part.lastStateVector().energy();*/
-    const double energy_loss = Constants::beam_energy-part.lastStateVector().energy();
+    const double energy_loss = Parameters::beam_energy-part.lastStateVector().energy();
 
     for ( Beamline::ElementsMap::const_iterator it=beamline_->begin()+1; it!=beamline_->end(); it++ ) {
       // extract the previous and the current element in the beamline

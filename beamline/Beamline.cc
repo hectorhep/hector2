@@ -56,7 +56,7 @@ namespace Hector
     bool already_added = false;
 
     // check the overlaps before adding
-    if ( Constants::correct_beamline_overlaps ) {
+    if ( Parameters::correct_beamline_overlaps ) {
       for ( ElementsMap::iterator it=elements_.begin(); it!=elements_.end(); it++ ) {
         Element::ElementBase* prev_elem = *( it );
 
