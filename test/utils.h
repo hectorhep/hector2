@@ -37,7 +37,9 @@ drawBeamline( const char axis, const Hector::Beamline* bl, const unsigned short 
               scale_y = 3.; // element x/y displacement magnification factor
 
   TLatex txt;
-  txt.SetTextSize( 0.03 );
+  txt.SetTextSize( 0.035 );
+  txt.SetTextFont( 132 );
+  txt.SetTextAlign( 22 );
   txt.SetTextAngle( 45. );
 
   for ( Hector::Beamline::ElementsMap::const_iterator it=bl->begin(); it!=bl->end(); it++ ) {
@@ -53,12 +55,19 @@ drawBeamline( const char axis, const Hector::Beamline* bl, const unsigned short 
     }
     const float pos_x_ini = elem->s(),
                 pos_x_end = pos_x_ini + elem->length(),
-                pos_y_low = ( ( axis=='x' ) ? elem->x()*scale_y-size_y/2.+offset*size_y : elem->y()*scale_y-size_y/2.+offset*size_y ),
+                pos_y_low = ( ( axis=='x' ) ? elem->x() : elem->y() )*scale_y-size_y/2.+offset*size_y,
                 pos_y_high = pos_y_low+size_y;
 
     if ( elem->type()==Hector::Element::aMarker and elem->name()==ip ) {
-      TMarker* arr = new TMarker( pos_x_ini, 0., 24 );
+      TMarker* arr = new TMarker( pos_x_ini, 0., 20 ),
+              *arr2 = dynamic_cast<TMarker*>( arr->Clone() );
+      arr->SetMarkerColor( kWhite );
+      arr->SetMarkerSize( 2. );
+      arr2->SetMarkerSize( 2. );
+      arr2->SetMarkerStyle( 4 );
       arr->Draw();
+      arr2->Draw();
+      txt.DrawLatex( pos_x_ini, 0., elem->name().c_str() );
     }
     /*if ( elem->type()==Hector::Element::ElementBase::Marker ) {
 g      txt.DrawLatex( elem->s(), pos_y_low, elem->name().c_str() );

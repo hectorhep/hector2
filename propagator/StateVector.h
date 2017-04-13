@@ -36,6 +36,7 @@ namespace Hector
         ( *this )[K] = 1.;
         ( *this )[E] = Parameters::beam_energy;
       }
+      //StateVector( const StateVector& sv ) : CLHEP::HepVector( sv.vector() ), m_( sv.m_ ) {}
       /// Build a state using a 6-component vector and a particle mass
       /// \param[in] vec A 6-component vector
       /// \param[in] mass Particle mass (GeV)

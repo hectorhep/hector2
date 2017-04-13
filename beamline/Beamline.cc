@@ -3,13 +3,13 @@
 namespace Hector
 {
   Beamline::Beamline() :
-    max_length_( 0. ), has_next_element_( false ), drifts_added_( false )
+    max_length_( 0. ), drifts_added_( false )
   {
   }
 
   Beamline::Beamline( const Beamline& rhs, bool copy_elements ) :
     max_length_( rhs.max_length_ ), ip_( rhs.ip_ ),
-    has_next_element_( rhs.has_next_element_ ), drifts_added_( rhs.drifts_added_ )
+    drifts_added_( rhs.drifts_added_ )
   {
     clear();
     if ( copy_elements ) setElements( rhs, false );
@@ -17,7 +17,7 @@ namespace Hector
 
   Beamline::Beamline( float length, const CLHEP::Hep3Vector& ip ) :
     max_length_( length+5. ), // artificially increase the size to include next elements
-    ip_( ip ), has_next_element_( false ), drifts_added_( false )
+    ip_( ip ), drifts_added_( false )
   {
   }
 
@@ -40,17 +40,11 @@ namespace Hector
   Beamline::addElement( const Element::ElementBase* elem, bool delete_after )
   {
     const float new_size = elem->s()+elem->length();
-    if ( new_size>max_length_ ) {
-      if ( has_next_element_ ) {
-        if ( max_length_<0. ) {
-          throw Exception( __PRETTY_FUNCTION__, Form( "Element %s is too far away for this beamline!\n"
-                                                      "\tBeamline length: %.3f m, this element: %.3f m",
-                                                      elem->name().c_str(), max_length_, new_size ), Fatal );
-        }
-        if ( delete_after ) delete elem;
-        return;
-      }
-      has_next_element_ = true;
+    if ( new_size>max_length_ and max_length_<0. ) {
+      if ( delete_after ) delete elem;
+      throw Exception( __PRETTY_FUNCTION__, Form( "Element %s is too far away for this beamline!\n"
+                                                  "\tBeamline length: %.3f m, this element: %.3f m",
+                                                  elem->name().c_str(), max_length_, new_size ), Fatal );
     }
 
     bool already_added = false;
@@ -144,14 +138,14 @@ namespace Hector
   Beamline::length() const
   {
     if ( elements_.size()==0 ) return 0.;
-    Element::ElementBase* elem = *( --elements_.end() );
-    return elem->s()+elem->length();
+    Element::ElementBase* elem = *elements_.rbegin();
+    return ( elem->s() + elem->length() );
   }
 
   void
   Beamline::dump( std::ostream& os )
   {
-    os << "========== Beamline dump ==========\n"
+    os << "=============== Beamline dump ===============\n"
        << " interaction point: " << interactionPoint() << "\n"
        << " length: " << length() << " m\n"
        << " elements list: ";

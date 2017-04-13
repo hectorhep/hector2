@@ -70,6 +70,8 @@ namespace Hector
       void setLength( float length ) { max_length_ = length; }
       /// Longitudinal length of the beamline (in m)
       float length() const;
+      /// Maximal length of the beamline (in m)
+      float maxLength() const { return max_length_; }
 
       /// Offset all elements after a given s-coordinate
       void offsetElementsAfter( float s, const CLHEP::Hep2Vector& offset );
@@ -92,7 +94,6 @@ namespace Hector
 
       /// List of elements defining the beamline
       ElementsMap elements_;
-      bool has_next_element_;
       bool drifts_added_;
   };
 }

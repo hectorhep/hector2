@@ -45,15 +45,17 @@ main( int argc, char* argv[] )
   unsigned short num_stopped = 0;
   for ( size_t i=0; i!=num_particles; i++ ) {
 
-    { // propagation through the beamline
-      Hector::Particle p = gun.shoot();
-      try {
-        prop.propagate( p, s_pos );
-        if ( prop.stopped( p, s_pos ) ) { std::cout << "prout" << std::endl; num_stopped++; continue; }
-        const CLHEP::Hep2Vector pos( p.stateVectorAt( s_pos ).position() );
-        std::cout << s_pos << " -> " << pos << std::endl;
-        hitmap.Fill( pos.x(), pos.y() );
-      } catch ( Hector::Exception& e ) { /*e.dump();*/ continue; }
+    // propagation through the beamline
+    Hector::Particle p = gun.shoot();
+    try {
+      prop.propagate( p, s_pos );
+      if ( prop.stopped( p, s_pos ) ) { std::cout << "prout" << std::endl; num_stopped++; continue; }
+      const CLHEP::Hep2Vector pos( p.stateVectorAt( s_pos ).position() );
+      std::cout << s_pos << " -> " << pos << std::endl;
+      hitmap.Fill( pos.x(), pos.y() );
+    } catch ( Hector::Exception& e ) {
+      e.dump();
+      continue;
     }
   }
   PrintInfo( Form( "%.1f%% of particles (%d/%d) stopped before s = %.2f", 100. * num_stopped/num_particles, num_stopped, num_particles, s_pos ) );
@@ -61,11 +63,10 @@ main( int argc, char* argv[] )
   {
     Hector::Canvas c( "hitmap", Form( "Hector v2 simulation, s = %.2f m", s_pos ) );
     hitmap.Draw( "colz" );
+    c.Prettify( &hitmap );
 
     const std::string file( argv[1] );
-    Hector::Canvas::PaveText( 0.0, 0., 0.0015, 0.0015, Form( "#scale[0.3]{Beamline: %s}", file.substr( file.find_last_of( "/\\" )+1 ).c_str() ) ).Draw();
-
-    c.Prettify( &hitmap );
+    Hector::Canvas::PaveText( 0.01, 0., 0.05, 0.05, Form( "#scale[0.3]{Beamline: %s}", file.substr( file.find_last_of( "/\\" )+1 ).c_str() ) ).Draw();
 
     c.Save( "pdf" );
   }

@@ -21,8 +21,7 @@ main( int argc, char* argv[] )
   }
   // general plotting parameters
   const float max_s = ( argc>3 ) ? atof( argv[3] ) : 500.;
-  const unsigned int num_particles = 100;
-  const unsigned short num_iter = 100;
+  const unsigned int num_particles = 10;
 
   Hector::Parser::MADX parser_beam1( argv[1], "IP5", +1, max_s ),
                        parser_beam2( argv[2], "IP5", +1, max_s );
@@ -56,20 +55,18 @@ main( int argc, char* argv[] )
       //std::cout << p.firstStateVector().Tx() << std::endl;
       try {
         prop1.propagate( p, max_s );
-        for ( size_t j=0; j<num_iter; j++ ) {
-          float s_pos = 0.+j*( max_s-0. )/( num_iter-1 );
-          const CLHEP::Hep2Vector pos( p.stateVectorAt( s_pos ).position() );
-          std::cout << s_pos << pos << std::endl;
-          gr_x.SetPoint( j, s_pos, pos.x() );
-          gr_y.SetPoint( j, s_pos, pos.y() );
-        }
       } catch ( Hector::Exception& e ) { e.dump(); }
+      unsigned short j = 0;
+      for ( Hector::Particle::PositionsMap::const_iterator it=p.begin(); it!=p.end(); it++, j++ ) {
+        gr_x.SetPoint( j, it->s(), it->stateVector().position().x() );
+        gr_y.SetPoint( j, it->s(), it->stateVector().position().y() );
+      }
       gr_x.SetLineColor( kBlack );
       gr_y.SetLineColor( kBlack );
       mg1_x.Add( dynamic_cast<TGraph*>( gr_x.Clone() ) );
       mg1_y.Add( dynamic_cast<TGraph*>( gr_y.Clone() ) );
     }
-    { // beamline 2 propagation
+    /*{ // beamline 2 propagation
       p.clear();
       TGraph gr_x, gr_y;
       try {
@@ -81,11 +78,16 @@ main( int argc, char* argv[] )
           gr_y.SetPoint( j, s_pos, pos.y() );
         }
       } catch ( Hector::Exception& e ) { e.dump(); }
+      unsigned short j = 0;
+      for ( Hector::Particle::PositionsMap::const_iterator it=p.begin(); it!=p.end(); it++, j++ ) {
+        gr_x.SetPoint( j, it->s(), it->stateVector().position().x() );
+        gr_y.SetPoint( j, it->s(), it->stateVector().position().y() );
+      }
       gr_x.SetLineColor( kRed );
       gr_y.SetLineColor( kRed );
       mg2_x.Add( dynamic_cast<TGraph*>( gr_x.Clone() ) );
       mg2_y.Add( dynamic_cast<TGraph*>( gr_y.Clone() ) );
-    }
+    }*/
   }
 
   // drawing part

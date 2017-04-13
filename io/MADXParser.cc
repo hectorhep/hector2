@@ -10,14 +10,13 @@ namespace Hector
 
     MADX::MADX( const char* filename, const char* ip_name, int direction, float max_s ) :
       ip_name_( ip_name ), dir_( direction/abs( direction ) ), beamline_( 0 ),
-      s_offset_( 0. ), found_interaction_point_( false )
+      s_offset_( 0. ), found_interaction_point_( false ),
+      has_next_element_( false )
     {
       in_file_ = std::ifstream( filename );
 
       try {
         parseHeader();
-
-        //header_float_.dump();
 
         beamline_ = new Beamline( max_s );
         if ( max_s<0. and header_float_.hasKey( "length" ) ) beamline_->setLength( header_float_.get( "length" ) );
@@ -40,8 +39,6 @@ namespace Hector
         beamline_->computeSequence();
 
       } catch ( Exception& e ) { e.dump(); }
-
-      //header_str_.dump();
     }
 
     MADX::~MADX()
@@ -138,7 +135,10 @@ namespace Hector
         std::string buffer;
         ValuesCollection values;
         while ( str.good() ) { str >> buffer; values.push_back( buffer ); }
-        parseElement( values );
+        try { parseElement( values ); } catch ( Exception& e ) {
+          if ( e.type()!=Info ) { e.dump(); }
+          else { break; } // finished to parse
+        }
       }
     }
 
@@ -154,8 +154,8 @@ namespace Hector
       ParametersMap::Ordered<float> elem_map_floats;
       ParametersMap::Ordered<std::string> elem_map_str;
       for ( unsigned short i=0; i<values.size(); i++ ) {
-        const std::string value = values.at( i ),
-                          key = elements_fields_.key( i );
+        const std::string key = elements_fields_.key( i ),
+                          value = values.at( i );
         const ValueType type = elements_fields_.value( i );
         switch ( type ) {
           case String: elem_map_str.add( key, value ); break;
@@ -166,26 +166,30 @@ namespace Hector
         }
       }
 
+      const std::string name = trim( elem_map_str.get( "name" ) );
+      const float s_bl = elem_map_floats.get( "s" ),
+                  length = elem_map_floats.get( "l" );
+
+      // start filling the beamline from the declared interaction point
+      if ( !found_interaction_point_ ) {
+        if ( name!=ip_name_ ) return;
+
+        found_interaction_point_ = true;
+        s_offset_ = s_bl+length;
+      }
+
+      const float s = s_bl-s_offset_;
+
+      if ( s>beamline_->maxLength() ) {
+        if ( has_next_element_ ) throw Exception( __PRETTY_FUNCTION__, "Finished to parse the beamline", Info );
+        has_next_element_ = true;
+      }
+
+      // convert the element type from string to object
+      const std::string elem_type = lowercase( trim( elem_map_str.get( "keyword" ) ) );
+      const Element::Type elemtype = ElementDictionary::get().elementType( elem_type );
+
       try {
-
-        const std::string name = trim( elem_map_str.get( "name" ) );
-        const float s_bl = elem_map_floats.get( "s" ),
-                    length = elem_map_floats.get( "l" );
-
-        // start filling the beamline from the declared interaction point
-        if ( !found_interaction_point_ ) {
-          if ( name!=ip_name_ ) return;
-
-          found_interaction_point_ = true;
-          s_offset_ = s_bl+length;
-        }
-
-        const float s = s_bl-s_offset_;
-
-        // convert the element type from string to object
-        const std::string elem_type = lowercase( trim( elem_map_str.get( "keyword" ) ) );
-        const Element::Type elemtype = ElementDictionary::get().elementType( elem_type );
-
         // create the element
         switch ( elemtype ) {
           case Element::aGenericQuadrupole: {
@@ -231,9 +235,10 @@ namespace Hector
             previous_relpos_ = CLHEP::Hep2Vector( elem_map_floats.get( "x" ), elem_map_floats.get( "y" ) );
             previous_disp_ = CLHEP::Hep2Vector( elem_map_floats.get( "dx" ), elem_map_floats.get( "dy" ) );
             previous_beta_ = CLHEP::Hep2Vector( elem_map_floats.get( "betx" ), elem_map_floats.get( "bety" ) );
+            //has_next_element_ = false;
             return;
           } break;
-          default: break;
+          default: { has_next_element_ = false; } break;
         }
 
         // retrieve the pointer to the newly created beamline element
@@ -241,9 +246,12 @@ namespace Hector
         if ( !elem ) { return; } // beamline element was not inserted
 
         if ( dir_<0 ) {
-          elem->setRelativePosition( CLHEP::Hep2Vector( elem_map_floats.get( "x" ), elem_map_floats.get( "y" ) ) );
-          elem->setDispersion( CLHEP::Hep2Vector( elem_map_floats.get( "dx" ), elem_map_floats.get( "dy" ) ) );
-          elem->setBeta( CLHEP::Hep2Vector( elem_map_floats.get( "betx" ), elem_map_floats.get( "bety" ) ) );
+          const CLHEP::Hep2Vector relpos( elem_map_floats.get( "x" ), elem_map_floats.get( "y" ) ),
+                                  disp( elem_map_floats.get( "dx" ), elem_map_floats.get( "dy" ) ),
+                                  beta( elem_map_floats.get( "betx" ), elem_map_floats.get( "bety" ) );
+          elem->setRelativePosition( relpos );
+          elem->setDispersion( disp );
+          elem->setBeta( beta );
         }
         else {
           elem->setRelativePosition( previous_relpos_ );
@@ -254,26 +262,23 @@ namespace Hector
         { // associate the aperture type to the element
           const std::string aper_type = lowercase( trim( elem_map_str.get( "apertype" ) ) );
           const Aperture::Type apertype = ElementDictionary::get().apertureType( aper_type );
-          Aperture::ApertureBase* aperture = 0;
           const float aper_1 = elem_map_floats.get( "aper_1" ),
                       aper_2 = elem_map_floats.get( "aper_2" ),
                       aper_3 = elem_map_floats.get( "aper_3" ),
                       aper_4 = elem_map_floats.get( "aper_4" ); // MAD-X provides it in m
-          //std::cout << elem->type() << "\t" << apertype << "\t" << aper_1 << "\t" << aper_2 << "\t" << aper_3 << "\t" << aper_4 << std::endl;
           switch ( apertype ) {
-            case Aperture::aRectEllipticAperture: aperture = new Aperture::RectEllipticAperture( aper_1, aper_2, aper_3, aper_4 ); break;
-            case Aperture::aCircularAperture:     aperture = new Aperture::CircularAperture( aper_1 ); break;
-            case Aperture::aRectangularAperture:  aperture = new Aperture::RectangularAperture( aper_1, aper_2 ); break;
-            case Aperture::anEllipticAperture:    aperture = new Aperture::EllipticAperture( aper_1, aper_2 ); break;
+            case Aperture::aRectEllipticAperture: { elem->setAperture( new Aperture::RectEllipticAperture( aper_1, aper_2, aper_3, aper_4 ), true ); } break;
+            case Aperture::aCircularAperture:     { elem->setAperture( new Aperture::CircularAperture( aper_1 ), true ); } break;
+            case Aperture::aRectangularAperture:  { elem->setAperture( new Aperture::RectangularAperture( aper_1, aper_2 ), true ); } break;
+            case Aperture::anEllipticAperture:    { elem->setAperture( new Aperture::EllipticAperture( aper_1, aper_2 ), true ); } break;
             case Aperture::anInvalidType: break;
-          }
-          if ( aperture ) {
-            elem->setAperture( aperture );
-            delete aperture;
           }
         }
 
-      } catch ( Exception& e ) {}
+      } catch ( Exception& e ) {
+        e.dump();
+        has_next_element_ = false;
+      }
     }
 
     std::ostream&

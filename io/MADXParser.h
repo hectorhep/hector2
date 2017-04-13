@@ -77,6 +77,7 @@ namespace Hector
 
         static std::regex rgx_typ_, rgx_hdr_, rgx_elm_hdr_;
 
+        bool has_next_element_;
     };
   }
 }

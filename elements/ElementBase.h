@@ -133,8 +133,9 @@ namespace Hector
         CLHEP::Hep2Vector relativePosition() const { return rel_pos_; }
 
         /// Set the aperture for this element
-        void setAperture( const Aperture::ApertureBase* apert ) {
+        void setAperture( const Aperture::ApertureBase* apert, bool delete_after=false ) {
           aperture_ = apert->clone();
+          if ( delete_after ) delete apert;
         }
         /// Aperture
         Aperture::ApertureBase* aperture() const { return aperture_; }
@@ -177,12 +178,15 @@ namespace Hector
       /// Compare the references to two elements
       inline bool operator()( const ElementBase& lhs, const ElementBase& rhs ) const {
         //return ( ( lhs.s()<rhs.s() ) or ( lhs.length()<rhs.length() ) );
-        return ( lhs.s()<rhs.s() );
+        return ( &lhs < &rhs );
       }
       /// Compare the pointers to two elements
       inline bool operator()( const ElementBase* lhs, const ElementBase* rhs ) const {
         //return ( ( lhs and rhs ) and ( ( lhs->s()<rhs->s() ) or ( lhs->length()<rhs->length() ) ) );
-        return ( lhs and rhs and lhs->s()<rhs->s() );
+        if ( lhs->s()<rhs->s() ) return true;
+        if ( lhs->s()>rhs->s() ) return false;
+        if ( lhs->s()+lhs->length()<rhs->s()+rhs->length() ) return true;
+        return false;
       }
     };
 

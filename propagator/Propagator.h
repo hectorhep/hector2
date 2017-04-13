@@ -17,11 +17,10 @@ namespace Hector
 
       /// Propagate a particle up to a given position ; maps all state vectors to the intermediate s-coordinates
       void propagate( Particle&, float ) const;
+      /// Check whether the particle has stopped inside a part of the beamline
       bool stopped( Particle&, float max_s=-1. ) const;
-      /// Get the s-coordinate/state vector for the particle at the level of a beamline element
-      Particle::Position hitPosition( const StateVector& ini_pos, const Element::ElementBase* ele, float eloss, float mp, int qp ) const;
 
-      /// Propagate a list particle up to a given position ; maps all state vectors to the intermediate s-coordinates
+      /// Propagate a list of particle up to a given position ; maps all state vectors to the intermediate s-coordinates
       void propagate( Particles& ) const;
 
     private:
