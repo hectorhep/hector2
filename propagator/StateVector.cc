@@ -42,15 +42,18 @@ namespace Hector
   StateVector::setAngles( const float& tx, const float& ty )
   {
     // store in rad
-    ( *this )[TX] = tx;
-    ( *this )[TY] = ty;
+    /*( *this )[TX] = tx;
+    ( *this )[TY] = ty;*/
+    ( *this )[TX] = tan( tx );
+    ( *this )[TY] = tan( ty );
   }
 
   CLHEP::Hep2Vector
   StateVector::angles() const
   {
     // return in rad
-    return CLHEP::Hep2Vector( ( *this )[TX], ( *this )[TY] );
+    //return CLHEP::Hep2Vector( ( *this )[TX]), ( *this )[TY] );
+    return math::atan2( CLHEP::Hep2Vector( ( *this )[TX], ( *this )[TY] ) );
   }
 
   void

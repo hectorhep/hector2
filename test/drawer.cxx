@@ -84,6 +84,7 @@ main( int argc, char* argv[] )
 
   {
     Hector::Canvas c( "beamline", Form( "Hector 2 simulation, E_{beam} = %.1f TeV", Hector::Parameters::beam_energy*CLHEP::GeV/CLHEP::TeV ), true );
+    //c.SetGrayscale();
 
     c.cd( 1 ); // x-axis
     mg1_x.SetTitle( ".\\x (m)" );
@@ -91,8 +92,8 @@ main( int argc, char* argv[] )
     mg2_x.Draw( "l" );
     mg1_x.GetXaxis()->SetLimits( 0., max_s );
     mg1_x.GetYaxis()->SetRangeUser( -0.2, 0.2 );
-    drawBeamline( 'x', parser_beam1.beamline(), 0, max_s, "IP5", max_s );
-    drawBeamline( 'x', parser_beam2.beamline(), 1, max_s, "IP5", max_s );
+    drawBeamline( 'x', parser_beam1.beamline(), 0, "IP5", 0., max_s );
+    drawBeamline( 'x', parser_beam2.beamline(), 1, "IP5", 0., max_s );
     mg1_x.Draw( "l" );
     mg2_x.Draw( "l" );
     c.Prettify( mg1_x.GetHistogram() );
@@ -104,8 +105,8 @@ main( int argc, char* argv[] )
     mg2_y.Draw( "l" );
     mg1_y.GetXaxis()->SetLimits( 0., max_s );
     mg1_y.GetYaxis()->SetRangeUser( -0.2, 0.2 );
-    drawBeamline( 'y', parser_beam1.beamline(), 0, max_s, "IP5", max_s );
-    drawBeamline( 'y', parser_beam2.beamline(), 1, max_s, "IP5", max_s );
+    drawBeamline( 'y', parser_beam1.beamline(), 0, "IP5", 0., max_s );
+    drawBeamline( 'y', parser_beam2.beamline(), 1, "IP5", 0., max_s );
     mg1_y.Draw( "l" );
     mg2_y.Draw( "l" );
     c.Prettify( mg1_y.GetHistogram() );

@@ -8,5 +8,5 @@ namespace Hector
   //float Parameters::crossing_angle = .0e-6; // in rad
   int Parameters::beam_particles_charge = +1;
   bool Parameters::use_relative_energy = false;
-  bool Parameters::correct_beamline_overlaps = true;
+  bool Parameters::correct_beamline_overlaps = false;
 }

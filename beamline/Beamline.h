@@ -20,6 +20,7 @@ namespace Hector
     public:
       /// List of elements in the beamline
       typedef std::vector<Element::ElementBase*> ElementsMap;
+      /// List of markers in the beamline
       typedef std::map<float,Element::Marker> MarkersMap;
 
     public:
@@ -68,8 +69,11 @@ namespace Hector
       /// Constant iterator to the last element in the beamline
       const ElementsMap::const_iterator end() const { return elements_.end(); }
 
+      /// Add a new marker element to the collection
       void addMarker( const Element::Marker& marker );
+      /// Constant iterator to the first marker in the beamline
       const MarkersMap::const_iterator markers_begin() const { return markers_.begin(); }
+      /// Constant iterator to the last marker in the beamline
       const MarkersMap::const_iterator markers_end() const { return markers_.end(); }
 
       /// Set the longitudinal length of the beamline (in m)

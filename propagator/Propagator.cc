@@ -59,8 +59,10 @@ namespace Hector
 
         const Aperture::ApertureBase* aper = prev_elem->aperture();
         if ( aper and aper->type()!=Aperture::anInvalidType ) {
-          if ( !aper->contains( part.stateVectorAt( prev_elem->s() ).position() ) ) {
-            throw Exception( __PRETTY_FUNCTION__, Form( "Particle stopped at the entrance of %s", prev_elem->name().c_str() ), JustWarning );
+          const CLHEP::Hep2Vector pos_prev_elem( part.stateVectorAt( prev_elem->s() ).position() );
+          if ( !aper->contains( pos_prev_elem ) ) {
+            std::ostringstream os; os << pos_prev_elem;
+            throw Exception( __PRETTY_FUNCTION__, Form( "Particle stopped at the entrance of %s.\n\tEntering at %s", prev_elem->name().c_str(), os.str().c_str() ), JustWarning );
           }
           // has passed through the element?
           if ( !aper->contains( part.stateVectorAt( prev_elem->s()+prev_elem->length() ).position() ) ) {
@@ -104,15 +106,14 @@ namespace Hector
   Propagator::propagateThrough( const Particle::Position& ini_pos, const Element::ElementBase* elem, float eloss, int qp ) const
   {
     const StateVector shift( elem->position(), math::tan2( elem->angles() ), 0., 0. );
-    //shift.setAngles( ele->angles() );
-//std::cout << "-----> propagating through " << elem << " with matrix = " << elem->matrix( eloss, ini_pos.stateVector().m(), qp ) << std::endl;
-//std::cout << "before: " << ini_pos.stateVector() << std::endl;
+
+    /*std::ostringstream os1, os2;
+    os1 << elem->type(); os2 << elem->matrix( eloss, ini_pos.stateVector().m(), qp );
+    PrintInfo( Form( "Propagating through %s element \"%s\" with transfer matrix\n%s", os1.str().c_str(), elem->name().c_str(), os2.str().c_str() ) );*/
+
     CLHEP::HepVector prop = elem->matrix( eloss, ini_pos.stateVector().m(), qp ).T() * ( ini_pos.stateVector().vector()-shift.vector() ) + shift.vector();
-//std::cout << "mid: " << elem->matrix( eloss, ini_pos.stateVector().m(), qp ) * ini_pos.stateVector().vector() << std::endl;
-//std::cout << "mid: " << prop.T() << std::endl;
     // perform the propagation (assuming that mass is conserved...)
     StateVector vec( prop, ini_pos.stateVector().m() );
-//std::cout << "after: " << vec << std::endl;
 
     // convert the angles -> tan-1( angle )
     const CLHEP::Hep2Vector ang_old = vec.angles();

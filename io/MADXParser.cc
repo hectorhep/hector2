@@ -8,7 +8,7 @@ namespace Hector
     std::regex MADX::rgx_hdr_( "^\\@ (\\w+) +\\%([0-9]+s|le) +\\\"?([^\"\\n]+)" );
     std::regex MADX::rgx_elm_hdr_( "^\\s{0,}([\\*\\$])(.+)" );
 
-    MADX::MADX( const char* filename, const char* ip_name, int direction, float max_s ) :
+    MADX::MADX( const char* filename, const char* ip_name, int direction, float max_s, bool compute_sequence ) :
       ip_name_( ip_name ), dir_( direction/abs( direction ) ), beamline_( 0 ),
       s_offset_( 0. ), found_interaction_point_( false ),
       has_next_element_( false )
@@ -34,9 +34,14 @@ namespace Hector
         }
 
         parseElementsFields();
+
+        // start by identifying the interaction point
+        findInteractionPoint();
+
+        // then parse all elements
         parseElements();
 
-        beamline_->computeSequence();
+        if ( compute_sequence ) beamline_->computeSequence();
 
       } catch ( Exception& e ) { e.dump(); }
     }
@@ -119,6 +124,40 @@ namespace Hector
     }
 
     void
+    MADX::findInteractionPoint()
+    {
+      std::string line;
+      in_file_.seekg( in_file_lastline_ );
+
+      while ( !in_file_.eof() ) {
+        std::getline( in_file_, line );
+        std::stringstream str( trim( line ) );
+        if ( str.str().length()==0 ) continue;
+        std::string buffer;
+        ValuesCollection values;
+        while ( str.good() ) { str >> buffer; values.push_back( buffer ); }
+        // first check if the "correct" number of element properties is parsed
+        if ( values.size()!=elements_fields_.size() ) {
+          throw Exception( __PRETTY_FUNCTION__, Form( "MAD-X output seems corrupted!\n\tElement %s has %d fields when %d are expected.", trim( values.at( 0 ) ).c_str(), values.size(), elements_fields_.size() ), Fatal );
+        }
+        try {
+          Element::ElementBase* elem = parseElement( values );
+          if ( elem==0 ) continue;
+          if ( elem->name()==ip_name_ ) {
+            found_interaction_point_ = true;
+            s_offset_ = elem->s();
+            beamline_->addElement( elem, true );
+            return;
+          }
+          delete elem;
+        } catch ( Exception& e ) {
+          e.dump();
+          throw Exception( __PRETTY_FUNCTION__, Form( "Failed to retrieve the interaction point with name=\"%s\"", ip_name_.c_str() ), Fatal );
+        }
+      }
+    }
+
+    void
     MADX::parseElements()
     {
       // parse the optics elements and their characteristics
@@ -135,16 +174,27 @@ namespace Hector
         std::string buffer;
         ValuesCollection values;
         while ( str.good() ) { str >> buffer; values.push_back( buffer ); }
-        try { parseElement( values ); } catch ( Exception& e ) {
+        Element::ElementBase* elem = 0;
+        try {
+          elem = parseElement( values );
+          if ( !elem ) continue;
+          if ( fabs( elem->s() )>beamline_->maxLength() ) {
+            if ( has_next_element_ ) throw Exception( __PRETTY_FUNCTION__, "Finished to parse the beamline", Info );
+            has_next_element_ = true;
+          }
+          beamline_->addElement( elem, true );
+        } catch ( Exception& e ) {
           if ( e.type()==Info ) break; // finished to parse
           e.dump();
         }
       }
     }
 
-    void
+    Element::ElementBase*
     MADX::parseElement( const ValuesCollection& values )
     {
+      Element::ElementBase* elem = 0;
+
       // first check if the "correct" number of element properties is parsed
       if ( values.size()!=elements_fields_.size() ) {
         throw Exception( __PRETTY_FUNCTION__, Form( "MAD-X output seems corrupted!\n\tElement %s has %d fields when %d are expected.", trim( values.at( 0 ) ).c_str(), values.size(), elements_fields_.size() ), Fatal );
@@ -167,23 +217,12 @@ namespace Hector
       }
 
       const std::string name = trim( elem_map_str.get( "name" ) );
-      const float s_bl = elem_map_floats.get( "s" ),
+      const float s_abs = elem_map_floats.get( "s" ),
                   length = elem_map_floats.get( "l" );
 
-      // start filling the beamline from the declared interaction point
-      if ( !found_interaction_point_ ) {
-        if ( name!=ip_name_ ) return;
 
-        found_interaction_point_ = true;
-        s_offset_ = s_bl;
-      }
-
-      const float s = s_bl-s_offset_-length;
-
-      if ( s>beamline_->maxLength() ) {
-        if ( has_next_element_ ) throw Exception( __PRETTY_FUNCTION__, "Finished to parse the beamline", Info );
-        has_next_element_ = true;
-      }
+      const float s = s_abs-s_offset_-length;
+      std::cout << "name: " << name << " at s=" << s << " :: " << s_abs << std::endl;
 
       // convert the element type from string to object
       const std::string elem_type = lowercase( trim( elem_map_str.get( "keyword" ) ) );
@@ -196,62 +235,58 @@ namespace Hector
 
             const float k1l = elem_map_floats.get( "k1l" ),
                         mag_str_k = -k1l/length;
-            if ( k1l>0 ) { beamline_->addElement( new Element::HorizontalQuadrupole( name, s, length, mag_str_k ), true ); }
-            else         { beamline_->addElement( new Element::VerticalQuadrupole( name, s, length, mag_str_k ), true ); }
+            if ( k1l>0 ) { elem = new Element::HorizontalQuadrupole( name, s, length, mag_str_k ); }
+            else         { elem = new Element::VerticalQuadrupole( name, s, length, mag_str_k ); }
           } break;
           case Element::aRectangularDipole: {
             const float k0l = elem_map_floats.get( "k0l" );
             if ( k0l==0. ) throw Exception( __PRETTY_FUNCTION__, Form( "Trying to add a rectangular dipole (%s) with k0l=%.2e", name.c_str(), k0l ), JustWarning );
 
             const float mag_strength = dir_*k0l/length;
-            beamline_->addElement( new Element::RectangularDipole( name, s, length, mag_strength ), true );
+            elem = new Element::RectangularDipole( name, s, length, mag_strength );
           } break;
           case Element::aSectorDipole: {
             const float k0l = elem_map_floats.get( "k0l" );
             if ( k0l==0. ) throw Exception( __PRETTY_FUNCTION__, Form( "Trying to add a sector dipole (%s) with k0l=%.2e", name.c_str(), k0l ), JustWarning );
 
             const float mag_strength = dir_*k0l/length;
-            beamline_->addElement( new Element::SectorDipole( name, s, length, mag_strength ), true );
+            elem = new Element::SectorDipole( name, s, length, mag_strength );
           } break;
           case Element::anHorizontalKicker: {
             const float hkick = elem_map_floats.get( "hkick" );
             if ( hkick==0. ) throw Exception( __PRETTY_FUNCTION__, Form( "Trying to add a horizontal kicker (%s) with kick=%.2e", name.c_str(), hkick ), JustWarning );
 
-            beamline_->addElement( new Element::HorizontalKicker( name, s, length, hkick ), true );
+            elem = new Element::HorizontalKicker( name, s, length, hkick );
           } break;
           case Element::aVerticalKicker: {
             const float vkick = elem_map_floats.get( "vkick" );
             if ( vkick==0. ) throw Exception( __PRETTY_FUNCTION__, Form( "Trying to add a vertical kicker (%s) with kick=%.2e", name.c_str(), vkick ), JustWarning );
 
-            beamline_->addElement( new Element::VerticalKicker( name, s, length, vkick ), true );
+            elem = new Element::VerticalKicker( name, s, length, vkick );
           } break;
-          case Element::aRectangularCollimator: { beamline_->addElement( new Element::RectangularCollimator( name, s, length ), true ); } break;
-          case Element::aMarker: {
-            const Element::Marker marker( name, s, length );
-            if ( name==ip_name_ ) { beamline_->addElement( &marker ); }
-            //beamline_->addMarker( marker );
-          } break;
+          case Element::aRectangularCollimator: { elem = new Element::RectangularCollimator( name, s, length ); } break;
+          case Element::aMarker: { elem = new Element::Marker( name, s, length ); } break;
           case Element::aMonitor:
           case Element::anInstrument: {
             beamline_->addMarker( Element::Marker( name, s, length ) );
+            has_next_element_ = false;
+            return 0;
           } break;
           case Element::aDrift: {
             previous_relpos_ = CLHEP::Hep2Vector( elem_map_floats.get( "x" ), elem_map_floats.get( "y" ) );
             previous_disp_ = CLHEP::Hep2Vector( elem_map_floats.get( "dx" ), elem_map_floats.get( "dy" ) );
             previous_beta_ = CLHEP::Hep2Vector( elem_map_floats.get( "betx" ), elem_map_floats.get( "bety" ) );
             has_next_element_ = false;
-            return;
+            return 0;
           } break;
-          default: { has_next_element_ = false; } break;
+          default: break;
         }
 
-        // retrieve the pointer to the newly created beamline element
-        Element::ElementBase* elem = beamline_->getElement( name );
-        // check if beamline element was properly inserted
-        if ( !elem ) return;
+        // did not successfully create and populate a new element
+        if ( !elem ) return 0;
 
         const CLHEP::Hep2Vector relpos( elem_map_floats.get( "x" ), elem_map_floats.get( "y" ) );
-        const int direction = +1; //FIXME
+        const int direction = 1; //FIXME
         if ( direction<0 ) {
           const CLHEP::Hep2Vector disp( elem_map_floats.get( "dx" ), elem_map_floats.get( "dy" ) ),
                                   beta( elem_map_floats.get( "betx" ), elem_map_floats.get( "bety" ) );
@@ -265,26 +300,23 @@ namespace Hector
           elem->setBeta( previous_beta_ );
         }
 
-        { // associate the aperture type to the element
-          const std::string aper_type = lowercase( trim( elem_map_str.get( "apertype" ) ) );
-          const Aperture::Type apertype = ElementDictionary::get().apertureType( aper_type );
-          const float aper_1 = elem_map_floats.get( "aper_1" ),
-                      aper_2 = elem_map_floats.get( "aper_2" ),
-                      aper_3 = elem_map_floats.get( "aper_3" ),
-                      aper_4 = elem_map_floats.get( "aper_4" ); // MAD-X provides it in m
-          switch ( apertype ) {
-            case Aperture::aRectEllipticAperture: { elem->setAperture( new Aperture::RectEllipticAperture( aper_1, aper_2, aper_3, aper_4, relpos ), true ); } break;
-            case Aperture::aCircularAperture:     { elem->setAperture( new Aperture::CircularAperture( aper_1, relpos ), true ); } break;
-            case Aperture::aRectangularAperture:  { elem->setAperture( new Aperture::RectangularAperture( aper_1, aper_2, relpos ), true ); } break;
-            case Aperture::anEllipticAperture:    { elem->setAperture( new Aperture::EllipticAperture( aper_1, aper_2, relpos ), true ); } break;
-            case Aperture::anInvalidType: break;
-          }
+        // associate the aperture type to the element
+        const std::string aper_type = lowercase( trim( elem_map_str.get( "apertype" ) ) );
+        const Aperture::Type apertype = ElementDictionary::get().apertureType( aper_type );
+        const float aper_1 = elem_map_floats.get( "aper_1" ),
+                    aper_2 = elem_map_floats.get( "aper_2" ),
+                    aper_3 = elem_map_floats.get( "aper_3" ),
+                    aper_4 = elem_map_floats.get( "aper_4" ); // MAD-X provides it in m
+        switch ( apertype ) {
+          case Aperture::aRectEllipticAperture: { elem->setAperture( new Aperture::RectEllipticAperture( aper_1, aper_2, aper_3, aper_4, relpos ), true ); } break;
+          case Aperture::aCircularAperture:     { elem->setAperture( new Aperture::CircularAperture( aper_1, relpos ), true ); } break;
+          case Aperture::aRectangularAperture:  { elem->setAperture( new Aperture::RectangularAperture( aper_1, aper_2, relpos ), true ); } break;
+          case Aperture::anEllipticAperture:    { elem->setAperture( new Aperture::EllipticAperture( aper_1, aper_2, relpos ), true ); } break;
+          case Aperture::anInvalidType: break;
         }
 
-      } catch ( Exception& e ) {
-        e.dump();
-        has_next_element_ = false;
-      }
+      } catch ( Exception& e ) { e.dump(); }
+      return elem;
     }
 
     std::ostream&

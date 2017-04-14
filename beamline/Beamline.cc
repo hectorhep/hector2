@@ -58,44 +58,47 @@ namespace Hector
     bool already_added = false;
 
     // check the overlaps before adding
-    if ( Parameters::correct_beamline_overlaps ) {
-      for ( ElementsMap::iterator it=elements_.begin(); it!=elements_.end(); it++ ) {
-        Element::ElementBase* prev_elem = *( it );
+    for ( ElementsMap::iterator it=elements_.begin(); it!=elements_.end(); it++ ) {
+      Element::ElementBase* prev_elem = *( it );
 
-        // first check if the element is already present in the beamline
-        if ( *prev_elem==*elem ) { already_added = true; break; }
+      // first check if the element is already present in the beamline
+      if ( *prev_elem==*elem ) { already_added = true; break; }
 
-        if ( prev_elem->s()>elem->s() ) break;
-        if ( prev_elem->s()+prev_elem->length()<=elem->s() ) continue;
-        if ( prev_elem->length()==0 ) continue;
+      if ( prev_elem->s()>elem->s() ) break;
+      if ( prev_elem->s()+prev_elem->length()<=elem->s() ) continue;
+      if ( prev_elem->length()==0 ) continue;
 
-        // from that point on, an overlap is detected
-        // reduce or separate that element in two sub-parts
-
-        std::ostringstream os_elem; os_elem << elem->type();
-        std::ostringstream os_prevelem; os_prevelem << prev_elem->type();
-
-        PrintWarning( Form( "%s (%s) is inside %s (%s)\n\tHector will fix the overlap by splitting the earlier.",
-                            elem->name().c_str(), os_elem.str().c_str(), prev_elem->name().c_str(), os_prevelem.str().c_str() ) );
-        const float prev_length = prev_elem->length();
-        elements_.push_back( elem->clone() );
-        already_added = true;
-
-        // check if one needs to add an extra piece to the previous element
-        if ( elem->s()+elem->length()<prev_elem->s()+prev_elem->length() ) {
-          const std::string prev_name = prev_elem->name();
-          // add an extra sub-part (leftover from the previous element)
-          prev_elem->setName( Form( "%s.part1", prev_name.c_str() ) );
-          Element::ElementBase* next_elem = prev_elem->clone();
-          next_elem->setName( Form( "%s.part2", prev_name.c_str() ) );
-          next_elem->setS( elem->s()+elem->length() );
-          next_elem->setLength( prev_length-elem->length() );
-          elements_.push_back( next_elem );
-        }
-        prev_elem->setLength( elem->s()-prev_elem->s() );
-        break;
+      if ( !Parameters::correct_beamline_overlaps ) {
+        throw Exception( __PRETTY_FUNCTION__, Form( "Elements overlap with \"%s\" detected while adding \"%s\"!", prev_elem->name().c_str(), elem->name().c_str() ), Fatal );
       }
+
+      // from that point on, an overlap is detected
+      // reduce or separate that element in two sub-parts
+
+      std::ostringstream os_elem; os_elem << elem->type();
+      std::ostringstream os_prevelem; os_prevelem << prev_elem->type();
+
+      PrintWarning( Form( "%s (%s) is inside %s (%s)\n\tHector will fix the overlap by splitting the earlier.",
+                          elem->name().c_str(), os_elem.str().c_str(), prev_elem->name().c_str(), os_prevelem.str().c_str() ) );
+      const float prev_length = prev_elem->length();
+      elements_.push_back( elem->clone() );
+      already_added = true;
+
+      // check if one needs to add an extra piece to the previous element
+      if ( elem->s()+elem->length()<prev_elem->s()+prev_elem->length() ) {
+        const std::string prev_name = prev_elem->name();
+        // add an extra sub-part (leftover from the previous element)
+        prev_elem->setName( Form( "%s.part1", prev_name.c_str() ) );
+        Element::ElementBase* next_elem = prev_elem->clone();
+        next_elem->setName( Form( "%s.part2", prev_name.c_str() ) );
+        next_elem->setS( elem->s()+elem->length() );
+        next_elem->setLength( prev_length-elem->length() );
+        elements_.push_back( next_elem );
+      }
+      prev_elem->setLength( elem->s()-prev_elem->s() );
+      break;
     }
+
     if ( !already_added ) {
       elements_.push_back( elem->clone() );
     }
@@ -199,7 +202,7 @@ namespace Hector
     for ( ElementsMap::const_iterator it=elements_.begin(); it!=elements_.end(); it++ ) {
       const Element::ElementBase* elem = *( it );
       // skip the markers
-      if ( it!=elements_.begin() and elem->type()==Element::aMarker ) continue;
+      if ( it!=elements_.begin() and elem->type()==Element::aMarker and elem->s()!=ip_.z() ) continue;
       // add a drift whenever there is a gap in s
       const float drift_length = elem->s()-pos;
       if ( drift_length>0. ) {

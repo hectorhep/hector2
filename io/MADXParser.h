@@ -39,7 +39,7 @@ namespace Hector
 
       public:
         /// Class constructor
-        MADX( const char*, const char*, int, float max_s=-1. );
+        MADX( const char*, const char*, int, float max_s=-1., bool compute_sequence=true );
         ~MADX();
 
         /// Retrieve the beamline parsed from the MAD-X output file
@@ -57,7 +57,8 @@ namespace Hector
         void parseHeader();
         void parseElementsFields();
         void parseElements();
-        void parseElement( const ValuesCollection& );
+        void findInteractionPoint();
+        Element::ElementBase* parseElement( const ValuesCollection& );
 
         ParametersMap::Ordered<std::string> header_str_;
         ParametersMap::Ordered<float> header_float_;

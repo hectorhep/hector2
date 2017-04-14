@@ -20,6 +20,7 @@ drawBothGraphs( const char* name, const char* title, const char* axes, TGraph* g
   mg.Draw( "al" );
   mg.SetTitle( axes );
   c.Prettify( mg.GetHistogram() );
+  c.SetLegendX1( 0.65 );
   c.AddLegendEntry( gr_x, gr_x->GetTitle(), "l" );
   c.AddLegendEntry( gr_y, gr_y->GetTitle(), "l" );
   c.SetGrid();
@@ -34,7 +35,7 @@ main( int argc, char* argv[] )
     exit( 0 );
   }
 
-  Hector::Parser::MADX madx( argv[1], "IP5", +1, 440. );
+  Hector::Parser::MADX madx( argv[1], "IP5", +1, 440., false );
   const Hector::Beamline* beamline = madx.beamline();
 
   TGraph gr_betax, gr_betay,
@@ -44,6 +45,7 @@ main( int argc, char* argv[] )
   for ( Hector::Beamline::ElementsMap::const_iterator e=beamline->begin(); e!=beamline->end(); ++e ) {
     const Hector::Element::ElementBase* elem = *e;
     if ( elem->type()==Hector::Element::aDrift ) continue;
+    std::cout << elem << "::" << elem->dispersion().x() << std::endl;
     gr_betax.SetPoint( gr_betax.GetN(), elem->s(), elem->beta().x() );
     gr_betay.SetPoint( gr_betay.GetN(), elem->s(), elem->beta().y() );
     gr_dispx.SetPoint( gr_dispx.GetN(), elem->s(), elem->dispersion().x() );

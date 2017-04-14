@@ -33,10 +33,10 @@ elementColour( const Hector::Element::ElementBase* elem )
 #include "TLatex.h"
 #include "TMarker.h"
 
-static const float alpha = 0.55;
+static const float alpha = 0.8;
 
 void
-drawBeamline( const char axis, const Hector::Beamline* bl, const unsigned short beam, float size_x, const char* ip="IP5", float max_s=-1 )
+drawBeamline( const char axis, const Hector::Beamline* bl, const unsigned short beam, const char* ip="IP5", float min_s=-999., float max_s=999. )
 {
   const float size_y = 0.1, // general scale of the element x/y position
               scale_y = 3., // element x/y displacement magnification factor
@@ -48,7 +48,8 @@ drawBeamline( const char axis, const Hector::Beamline* bl, const unsigned short 
   for ( Hector::Beamline::ElementsMap::const_iterator it=bl->begin(); it!=bl->end(); it++ ) {
     Hector::Element::ElementBase* elem = *it;
     if ( elem->type()==Hector::Element::aDrift ) continue; //FIXME
-    if ( max_s>0. and elem->s()>max_s ) continue;
+    if ( min_s!=-999. and elem->s()<min_s ) continue;
+    if ( max_s!=+999. and elem->s()>max_s ) continue;
     //if ( elem->type()==Hector::Element::ElementBase::Marker and elem->name()!=ip ) continue;
 
     // introduce a x- and y-offset for drawing purposes
@@ -62,6 +63,13 @@ drawBeamline( const char axis, const Hector::Beamline* bl, const unsigned short 
                 pos_y_low = ( ( axis=='x' ) ? elem->x() : elem->y() )*scale_y-size_y/2.+offset*size_y,
                 pos_y_high = pos_y_low+size_y;
 
+    // ROOT and its brilliant memory management...
+    TPave* elem_box = new TPave( pos_x_ini, pos_y_low, pos_x_end, pos_y_high, 0 );
+    //elem_box->SetLineColor( kGray );
+    //elem_box->SetFillStyle( 1001 );
+    elem_box->SetFillColorAlpha( elementColour( elem ), alpha );
+    elem_box->Draw();
+
     if ( elem->type()==Hector::Element::aMarker and elem->name()==ip ) {
       txt.SetTextSize( 0.035 );
       txt.SetTextAlign( 12 );
@@ -69,17 +77,11 @@ drawBeamline( const char axis, const Hector::Beamline* bl, const unsigned short 
       txt.DrawLatex( pos_x_ini, 0., elem->name().c_str() );
     }
     else {
-      txt.SetTextSize( 0.01 );
+      txt.SetTextSize( 0.015 );
       txt.SetTextAngle( 90. );
-      txt.DrawLatex( elem->s()+elem->length()/2., -2*size_y, elem->name().c_str() );
+      txt.DrawLatex( elem->s()+elem->length()/2., pos_y_low, elem->name().c_str() );
     }
 
-    // ROOT and its brilliant memory management...
-    TPave* elem_box = new TPave( pos_x_ini, pos_y_low, pos_x_end, pos_y_high, 0 );
-    //elem_box->SetLineColor( kGray );
-    //elem_box->SetFillStyle( 1001 );
-    elem_box->SetFillColorAlpha( elementColour( elem ), alpha );
-    elem_box->Draw();
   }
   /*for ( Hector::Beamline::MarkersMap::const_iterator it=bl->markers_begin(); it!=bl->markers_end(); it++ ) {
     txt.SetTextSize( 0.01 );

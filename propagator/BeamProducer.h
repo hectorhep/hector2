@@ -118,6 +118,8 @@ namespace Hector
         /// \param[in] num_part number of particles to generate for a full scan
         /// \param[in] xi_min minimal parameter value
         /// \param[in] xi_max maximal parameter value
+        /// \param[in] x horizontal particle position
+        /// \param[in] y vertical particle position
         /// \param[in] s_ini initial s position
         Xiscanner( const unsigned short& num_part, float xi_min, float xi_max, float x=0., float y=0., float s_ini=0. ) :
           LinearScanner( num_part, x, x, y, y, Parameters::beam_energy*( 1.-xi_min ), Parameters::beam_energy*( 1.-xi_max ), s_ini ) {}
