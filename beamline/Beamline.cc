@@ -42,7 +42,6 @@ namespace Hector
   Beamline::addMarker( const Element::Marker& marker )
   {
     markers_.insert( std::pair<float,Element::Marker>( marker.s(), marker ) );
-    std::cout << "new marker inserted: " << marker.name() << std::endl;
   }
 
   void
@@ -78,7 +77,6 @@ namespace Hector
 
         PrintWarning( Form( "%s (%s) is inside %s (%s)\n\tHector will fix the overlap by splitting the earlier.",
                             elem->name().c_str(), os_elem.str().c_str(), prev_elem->name().c_str(), os_prevelem.str().c_str() ) );
-        std::cout << elem << std::endl << prev_elem << std::endl;
         const float prev_length = prev_elem->length();
         elements_.push_back( elem->clone() );
         already_added = true;

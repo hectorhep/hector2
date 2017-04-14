@@ -22,6 +22,7 @@ drawBothGraphs( const char* name, const char* title, const char* axes, TGraph* g
   c.Prettify( mg.GetHistogram() );
   c.AddLegendEntry( gr_x, gr_x->GetTitle(), "l" );
   c.AddLegendEntry( gr_y, gr_y->GetTitle(), "l" );
+  c.SetGrid();
   c.Save( "pdf" );
 }
 
@@ -33,7 +34,7 @@ main( int argc, char* argv[] )
     exit( 0 );
   }
 
-  Hector::Parser::MADX madx( argv[1], "IP5", +1, 250. );
+  Hector::Parser::MADX madx( argv[1], "IP5", +1, 440. );
   const Hector::Beamline* beamline = madx.beamline();
 
   TGraph gr_betax, gr_betay,

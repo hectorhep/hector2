@@ -46,6 +46,8 @@ namespace Hector
                   theta = length_/radius,
                   simp = 2.*radius*pow( sin( length_/( 2.*radius ) ), 2 ) / Parameters::beam_energy;
 
+      std::cout << "---> " << ke << ", " << radius << ", " << theta << ", " << simp << ", " << radius/Parameters::beam_energy*(1.-cos(theta)) << std::endl;
+
       CLHEP::HepMatrix mat = CLHEP::HepDiagMatrix( 6, 1 );
 
       mat( 1, 1 ) = cos( theta );
@@ -58,6 +60,7 @@ namespace Hector
 
       if ( Parameters::use_relative_energy ) {
         const float psy = ke*length_/2.;
+        std::cout << "aaa " << tan(psy) << std::endl;
 
         CLHEP::HepMatrix ef_matrix = CLHEP::HepDiagMatrix( 6, 1 );
         ef_matrix( 1, 2 ) =  tan( psy ) * ke;

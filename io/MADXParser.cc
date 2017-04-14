@@ -175,10 +175,10 @@ namespace Hector
         if ( name!=ip_name_ ) return;
 
         found_interaction_point_ = true;
-        s_offset_ = s_bl+length;
+        s_offset_ = s_bl;
       }
 
-      const float s = s_bl-s_offset_;
+      const float s = s_bl-s_offset_-length;
 
       if ( s>beamline_->maxLength() ) {
         if ( has_next_element_ ) throw Exception( __PRETTY_FUNCTION__, "Finished to parse the beamline", Info );
@@ -250,19 +250,20 @@ namespace Hector
         // check if beamline element was properly inserted
         if ( !elem ) return;
 
-        const CLHEP::Hep2Vector relpos( elem_map_floats.get( "x" ), elem_map_floats.get( "y" ) ),
-                                disp( elem_map_floats.get( "dx" ), elem_map_floats.get( "dy" ) ),
-                                beta( elem_map_floats.get( "betx" ), elem_map_floats.get( "bety" ) );
-        //if ( dir_<0 ) {
+        const CLHEP::Hep2Vector relpos( elem_map_floats.get( "x" ), elem_map_floats.get( "y" ) );
+        const int direction = +1; //FIXME
+        if ( direction<0 ) {
+          const CLHEP::Hep2Vector disp( elem_map_floats.get( "dx" ), elem_map_floats.get( "dy" ) ),
+                                  beta( elem_map_floats.get( "betx" ), elem_map_floats.get( "bety" ) );
           elem->setRelativePosition( relpos );
           elem->setDispersion( disp );
           elem->setBeta( beta );
-        /*}
+        }
         else {
           elem->setRelativePosition( previous_relpos_ );
           elem->setDispersion( previous_disp_ );
           elem->setBeta( previous_beta_ );
-        }*/
+        }
 
         { // associate the aperture type to the element
           const std::string aper_type = lowercase( trim( elem_map_str.get( "apertype" ) ) );
