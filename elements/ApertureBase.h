@@ -1,5 +1,5 @@
-#ifndef Elements_Aperture_h
-#define Elements_Aperture_h
+#ifndef Hector_Elements_Aperture_h
+#define Hector_Elements_Aperture_h
 
 #include "core/Utils.h"
 #include <CLHEP/Vector/TwoVector.h>

@@ -1,5 +1,5 @@
-#ifndef Core_UnorderedParametersMap_h
-#define Core_UnorderedParametersMap_h
+#ifndef Hector_Core_UnorderedParametersMap_h
+#define Hector_Core_UnorderedParametersMap_h
 
 #include <vector>
 #include <string>

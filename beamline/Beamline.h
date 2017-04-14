@@ -1,9 +1,10 @@
-#ifndef Beamline_Beamline_h
-#define Beamline_Beamline_h
+#ifndef Hector_Beamline_Beamline_h
+#define Hector_Beamline_Beamline_h
 
 #include "core/Exception.h"
 #include "elements/ElementBase.h"
 #include "elements/Drift.h"
+#include "elements/Marker.h"
 #include "propagator/Particle.h"
 
 #include <CLHEP/Vector/ThreeVector.h>
@@ -19,6 +20,7 @@ namespace Hector
     public:
       /// List of elements in the beamline
       typedef std::vector<Element::ElementBase*> ElementsMap;
+      typedef std::map<float,Element::Marker> MarkersMap;
 
     public:
       Beamline();
@@ -66,6 +68,10 @@ namespace Hector
       /// Constant iterator to the last element in the beamline
       const ElementsMap::const_iterator end() const { return elements_.end(); }
 
+      void addMarker( const Element::Marker& marker );
+      const MarkersMap::const_iterator markers_begin() const { return markers_.begin(); }
+      const MarkersMap::const_iterator markers_end() const { return markers_.end(); }
+
       /// Set the longitudinal length of the beamline (in m)
       void setLength( float length ) { max_length_ = length; }
       /// Longitudinal length of the beamline (in m)
@@ -94,6 +100,8 @@ namespace Hector
 
       /// List of elements defining the beamline
       ElementsMap elements_;
+      /// List of markers in the beamline
+      MarkersMap markers_;
       bool drifts_added_;
   };
 }

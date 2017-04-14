@@ -1,5 +1,5 @@
-#ifndef Elements_Dipole_h
-#define Elements_Dipole_h
+#ifndef Hector_Elements_Dipole_h
+#define Hector_Elements_Dipole_h
 
 #include "ElementBase.h"
 #include "Drift.h"

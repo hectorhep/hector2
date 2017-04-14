@@ -1,3 +1,6 @@
+#ifndef Hector_test_utils_h
+#define Hector_test_utils_h
+
 #include "elements/ElementBase.h"
 
 #include "TColor.h"
@@ -30,26 +33,27 @@ elementColour( const Hector::Element::ElementBase* elem )
 #include "TLatex.h"
 #include "TMarker.h"
 
+static const float alpha = 0.55;
+
 void
-drawBeamline( const char axis, const Hector::Beamline* bl, const unsigned short beam, float size_x, const char* ip )
+drawBeamline( const char axis, const Hector::Beamline* bl, const unsigned short beam, float size_x, const char* ip="IP5", float max_s=-1 )
 {
-  const float size_y = 0.05, // general scale of the element x/y position
-              scale_y = 3.; // element x/y displacement magnification factor
+  const float size_y = 0.1, // general scale of the element x/y position
+              scale_y = 3., // element x/y displacement magnification factor
+              offset_at_s = 120.;
 
   TLatex txt;
-  txt.SetTextSize( 0.035 );
-  txt.SetTextFont( 132 );
-  txt.SetTextAlign( 22 );
-  txt.SetTextAngle( 45. );
+  txt.SetTextFont( 130+2 );
 
   for ( Hector::Beamline::ElementsMap::const_iterator it=bl->begin(); it!=bl->end(); it++ ) {
     Hector::Element::ElementBase* elem = *it;
     if ( elem->type()==Hector::Element::aDrift ) continue; //FIXME
+    if ( max_s>0. and elem->s()>max_s ) continue;
     //if ( elem->type()==Hector::Element::ElementBase::Marker and elem->name()!=ip ) continue;
 
     // introduce a x- and y-offset for drawing purposes
     int offset = 0;
-    if ( elem->s()>120. ) {
+    if ( elem->s()>offset_at_s ) {
       if ( beam==0 ) offset = +1;
       if ( beam==1 ) offset = -1;
     }
@@ -59,26 +63,29 @@ drawBeamline( const char axis, const Hector::Beamline* bl, const unsigned short 
                 pos_y_high = pos_y_low+size_y;
 
     if ( elem->type()==Hector::Element::aMarker and elem->name()==ip ) {
-      TMarker* arr = new TMarker( pos_x_ini, 0., 20 ),
-              *arr2 = dynamic_cast<TMarker*>( arr->Clone() );
-      arr->SetMarkerColor( kWhite );
-      arr->SetMarkerSize( 2. );
-      arr2->SetMarkerSize( 2. );
-      arr2->SetMarkerStyle( 4 );
-      arr->Draw();
-      arr2->Draw();
+      txt.SetTextSize( 0.035 );
+      txt.SetTextAlign( 12 );
+      txt.SetTextAngle( 45. );
       txt.DrawLatex( pos_x_ini, 0., elem->name().c_str() );
     }
-    /*if ( elem->type()==Hector::Element::ElementBase::Marker ) {
-g      txt.DrawLatex( elem->s(), pos_y_low, elem->name().c_str() );
-    }*/
+    else {
+      txt.SetTextSize( 0.01 );
+      txt.SetTextAngle( 90. );
+      txt.DrawLatex( elem->s()+elem->length()/2., -2*size_y, elem->name().c_str() );
+    }
 
     // ROOT and its brilliant memory management...
     TPave* elem_box = new TPave( pos_x_ini, pos_y_low, pos_x_end, pos_y_high, 0 );
+    //elem_box->SetLineColor( kGray );
     //elem_box->SetFillStyle( 1001 );
-    elem_box->SetFillColorAlpha( elementColour( elem ), 1.0 );
+    elem_box->SetFillColorAlpha( elementColour( elem ), alpha );
     elem_box->Draw();
   }
+  /*for ( Hector::Beamline::MarkersMap::const_iterator it=bl->markers_begin(); it!=bl->markers_end(); it++ ) {
+    txt.SetTextSize( 0.01 );
+    txt.SetTextAngle( 90. );
+    txt.DrawLatex( it->first, -2*size_y, it->second.name().c_str() );
+  }*/
 }
 
 #include "TLegend.h"
@@ -114,7 +121,7 @@ class elementsLegend : public TLegend
         if ( already_in_.find( type )!=already_in_.end() ) continue;
 
         TPave* pv = new TPave( 0., 0., 0., 0., 0 );
-        pv->SetFillColorAlpha( elementColour( ( *it ) ), 1.0 );
+        pv->SetFillColorAlpha( elementColour( ( *it ) ), alpha );
         pv->SetLineColor( kWhite );
         std::ostringstream os; os << type;
         TLegend::AddEntry( pv, os.str().c_str(), "f" );
@@ -126,3 +133,5 @@ class elementsLegend : public TLegend
   private:
     std::map<Hector::Element::Type, TPave*> already_in_;
 };
+
+#endif

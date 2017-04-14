@@ -1,5 +1,5 @@
-#ifndef Elements_RectEllipticAperture
-#define Elements_RectEllipticAperture
+#ifndef Hector_Elements_RectEllipticAperture
+#define Hector_Elements_RectEllipticAperture
 
 #include "ApertureBase.h"
 

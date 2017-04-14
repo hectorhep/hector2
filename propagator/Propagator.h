@@ -1,5 +1,5 @@
-#ifndef Propagator_Propagator_h
-#define Propagator_Propagator_h
+#ifndef Hector_Propagator_Propagator_h
+#define Hector_Propagator_Propagator_h
 
 #include "beamline/Beamline.h"
 #include "BeamProducer.h"
@@ -18,10 +18,10 @@ namespace Hector
       /// Propagate a particle up to a given position ; maps all state vectors to the intermediate s-coordinates
       void propagate( Particle&, float ) const;
       /// Check whether the particle has stopped inside a part of the beamline
-      bool stopped( Particle&, float max_s=-1. ) const;
+      bool stopped( Particle&, float s_max=-1. ) const;
 
       /// Propagate a list of particle up to a given position ; maps all state vectors to the intermediate s-coordinates
-      void propagate( Particles& ) const;
+      void propagate( Particles&, float s_max=-1. ) const;
 
     private:
       /// Extract a particle position at the exit of an element once it enters it

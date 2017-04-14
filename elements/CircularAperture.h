@@ -1,5 +1,5 @@
-#ifndef Elements_CircularAperture_h
-#define Elements_CircularAperture_h
+#ifndef Hector_Elements_CircularAperture_h
+#define Hector_Elements_CircularAperture_h
 
 #include "EllipticAperture.h"
 

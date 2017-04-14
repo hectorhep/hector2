@@ -21,7 +21,7 @@ main( int argc, char* argv[] )
   }
   // general plotting parameters
   const float max_s = ( argc>3 ) ? atof( argv[3] ) : 500.;
-  const unsigned int num_particles = 10;
+  const unsigned int num_particles = 50;
 
   Hector::Parser::MADX parser_beam1( argv[1], "IP5", +1, max_s ),
                        parser_beam2( argv[2], "IP5", +1, max_s );
@@ -48,15 +48,13 @@ main( int argc, char* argv[] )
   //Hector::BeamProducer::TYscanner gun( num_particles, Hector::Parameters::beam_energy, -1, 1, max_s );
 
   for ( size_t i=0; i<num_particles; i++ ) {
+    unsigned short j;
     Hector::Particle p = gun.shoot();
     { // beamline 1 propagation
       p.clear();
       TGraph gr_x, gr_y;
-      //std::cout << p.firstStateVector().Tx() << std::endl;
-      try {
-        prop1.propagate( p, max_s );
-      } catch ( Hector::Exception& e ) { e.dump(); }
-      unsigned short j = 0;
+      try { prop1.propagate( p, max_s ); } catch ( Hector::Exception& e ) { e.dump(); }
+      j = 0;
       for ( Hector::Particle::PositionsMap::const_iterator it=p.begin(); it!=p.end(); it++, j++ ) {
         gr_x.SetPoint( j, it->s(), it->stateVector().position().x() );
         gr_y.SetPoint( j, it->s(), it->stateVector().position().y() );
@@ -66,19 +64,11 @@ main( int argc, char* argv[] )
       mg1_x.Add( dynamic_cast<TGraph*>( gr_x.Clone() ) );
       mg1_y.Add( dynamic_cast<TGraph*>( gr_y.Clone() ) );
     }
-    /*{ // beamline 2 propagation
+    { // beamline 2 propagation
       p.clear();
       TGraph gr_x, gr_y;
-      try {
-        prop2.propagate( p, max_s );
-        for ( size_t j=0; j<num_iter; j++ ) {
-          float s_pos = 0.+j*( max_s-0. )/( num_iter-1 );
-          const CLHEP::Hep2Vector pos( p.stateVectorAt( s_pos ).position() );
-          gr_x.SetPoint( j, s_pos, pos.x() );
-          gr_y.SetPoint( j, s_pos, pos.y() );
-        }
-      } catch ( Hector::Exception& e ) { e.dump(); }
-      unsigned short j = 0;
+      try { prop2.propagate( p, max_s ); } catch ( Hector::Exception& e ) { e.dump(); }
+      j = 0;
       for ( Hector::Particle::PositionsMap::const_iterator it=p.begin(); it!=p.end(); it++, j++ ) {
         gr_x.SetPoint( j, it->s(), it->stateVector().position().x() );
         gr_y.SetPoint( j, it->s(), it->stateVector().position().y() );
@@ -87,24 +77,24 @@ main( int argc, char* argv[] )
       gr_y.SetLineColor( kRed );
       mg2_x.Add( dynamic_cast<TGraph*>( gr_x.Clone() ) );
       mg2_y.Add( dynamic_cast<TGraph*>( gr_y.Clone() ) );
-    }*/
+    }
   }
 
   // drawing part
 
   {
-    Hector::Canvas c( "beamline", Form( "Hector_{2} simulation, E_{beam} = %.1f TeV", Hector::Parameters::beam_energy*CLHEP::GeV/CLHEP::TeV ), true );
+    Hector::Canvas c( "beamline", Form( "Hector 2 simulation, E_{beam} = %.1f TeV", Hector::Parameters::beam_energy*CLHEP::GeV/CLHEP::TeV ), true );
 
     c.cd( 1 ); // x-axis
     mg1_x.SetTitle( ".\\x (m)" );
     mg1_x.Draw( "al" );
     mg2_x.Draw( "l" );
     mg1_x.GetXaxis()->SetLimits( 0., max_s );
-    mg1_x.GetYaxis()->SetRangeUser( -0.1, 0.1 );
-    drawBeamline( 'x', parser_beam1.beamline(), 0, max_s, "IP5" );
-    drawBeamline( 'x', parser_beam2.beamline(), 1, max_s, "IP5" );
-    mg1_x.Draw( "lp" );
-    mg2_x.Draw( "lp" );
+    mg1_x.GetYaxis()->SetRangeUser( -0.2, 0.2 );
+    drawBeamline( 'x', parser_beam1.beamline(), 0, max_s, "IP5", max_s );
+    drawBeamline( 'x', parser_beam2.beamline(), 1, max_s, "IP5", max_s );
+    mg1_x.Draw( "l" );
+    mg2_x.Draw( "l" );
     c.Prettify( mg1_x.GetHistogram() );
     mg1_x.GetXaxis()->SetTitle( "" );
 
@@ -113,11 +103,11 @@ main( int argc, char* argv[] )
     mg1_y.Draw( "al" );
     mg2_y.Draw( "l" );
     mg1_y.GetXaxis()->SetLimits( 0., max_s );
-    mg1_y.GetYaxis()->SetRangeUser( -0.1, 0.1 );
-    drawBeamline( 'y', parser_beam1.beamline(), 0, max_s, "IP5" );
-    drawBeamline( 'y', parser_beam2.beamline(), 1, max_s, "IP5" );
-    mg1_y.Draw( "lp" );
-    mg2_y.Draw( "lp" );
+    mg1_y.GetYaxis()->SetRangeUser( -0.2, 0.2 );
+    drawBeamline( 'y', parser_beam1.beamline(), 0, max_s, "IP5", max_s );
+    drawBeamline( 'y', parser_beam2.beamline(), 1, max_s, "IP5", max_s );
+    mg1_y.Draw( "l" );
+    mg2_y.Draw( "l" );
     c.Prettify( mg1_y.GetHistogram() );
 
     //c.SetMargin( 5., 5., 5., 5. );

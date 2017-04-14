@@ -136,8 +136,8 @@ namespace Hector
         ValuesCollection values;
         while ( str.good() ) { str >> buffer; values.push_back( buffer ); }
         try { parseElement( values ); } catch ( Exception& e ) {
-          if ( e.type()!=Info ) { e.dump(); }
-          else { break; } // finished to parse
+          if ( e.type()==Info ) break; // finished to parse
+          e.dump();
         }
       }
     }
@@ -201,7 +201,6 @@ namespace Hector
           } break;
           case Element::aRectangularDipole: {
             const float k0l = elem_map_floats.get( "k0l" );
-            //if ( k0l==0. ) PrintWarning( Form( "Trying to add a rectangular dipole (%s) with k0l=%.2e", name.c_str(), k0l ) );
             if ( k0l==0. ) throw Exception( __PRETTY_FUNCTION__, Form( "Trying to add a rectangular dipole (%s) with k0l=%.2e", name.c_str(), k0l ), JustWarning );
 
             const float mag_strength = dir_*k0l/length;
@@ -209,7 +208,6 @@ namespace Hector
           } break;
           case Element::aSectorDipole: {
             const float k0l = elem_map_floats.get( "k0l" );
-            //if ( k0l==0. ) PrintWarning( Form( "Trying to add a sector dipole (%s) with k0l=%.2e", name.c_str(), k0l ) );
             if ( k0l==0. ) throw Exception( __PRETTY_FUNCTION__, Form( "Trying to add a sector dipole (%s) with k0l=%.2e", name.c_str(), k0l ), JustWarning );
 
             const float mag_strength = dir_*k0l/length;
@@ -217,25 +215,31 @@ namespace Hector
           } break;
           case Element::anHorizontalKicker: {
             const float hkick = elem_map_floats.get( "hkick" );
-            //if ( hkick==0. ) PrintWarning( Form( "Trying to add a horizontal kicker (%s) with kick=%.2e", name.c_str(), hkick ) );
             if ( hkick==0. ) throw Exception( __PRETTY_FUNCTION__, Form( "Trying to add a horizontal kicker (%s) with kick=%.2e", name.c_str(), hkick ), JustWarning );
 
             beamline_->addElement( new Element::HorizontalKicker( name, s, length, hkick ), true );
           } break;
           case Element::aVerticalKicker: {
             const float vkick = elem_map_floats.get( "vkick" );
-            //if ( vkick==0. ) PrintWarning( Form( "Trying to add a vertical kicker (%s) with kick=%.2e", name.c_str(), vkick ) );
             if ( vkick==0. ) throw Exception( __PRETTY_FUNCTION__, Form( "Trying to add a vertical kicker (%s) with kick=%.2e", name.c_str(), vkick ), JustWarning );
 
             beamline_->addElement( new Element::VerticalKicker( name, s, length, vkick ), true );
           } break;
           case Element::aRectangularCollimator: { beamline_->addElement( new Element::RectangularCollimator( name, s, length ), true ); } break;
-          case Element::aMarker: { beamline_->addElement( new Element::Marker( name, s, length ), true ); } break;
+          case Element::aMarker: {
+            const Element::Marker marker( name, s, length );
+            if ( name==ip_name_ ) { beamline_->addElement( &marker ); }
+            //beamline_->addMarker( marker );
+          } break;
+          case Element::aMonitor:
+          case Element::anInstrument: {
+            beamline_->addMarker( Element::Marker( name, s, length ) );
+          } break;
           case Element::aDrift: {
             previous_relpos_ = CLHEP::Hep2Vector( elem_map_floats.get( "x" ), elem_map_floats.get( "y" ) );
             previous_disp_ = CLHEP::Hep2Vector( elem_map_floats.get( "dx" ), elem_map_floats.get( "dy" ) );
             previous_beta_ = CLHEP::Hep2Vector( elem_map_floats.get( "betx" ), elem_map_floats.get( "bety" ) );
-            //has_next_element_ = false;
+            has_next_element_ = false;
             return;
           } break;
           default: { has_next_element_ = false; } break;
@@ -243,21 +247,22 @@ namespace Hector
 
         // retrieve the pointer to the newly created beamline element
         Element::ElementBase* elem = beamline_->getElement( name );
-        if ( !elem ) { return; } // beamline element was not inserted
+        // check if beamline element was properly inserted
+        if ( !elem ) return;
 
-        if ( dir_<0 ) {
-          const CLHEP::Hep2Vector relpos( elem_map_floats.get( "x" ), elem_map_floats.get( "y" ) ),
-                                  disp( elem_map_floats.get( "dx" ), elem_map_floats.get( "dy" ) ),
-                                  beta( elem_map_floats.get( "betx" ), elem_map_floats.get( "bety" ) );
+        const CLHEP::Hep2Vector relpos( elem_map_floats.get( "x" ), elem_map_floats.get( "y" ) ),
+                                disp( elem_map_floats.get( "dx" ), elem_map_floats.get( "dy" ) ),
+                                beta( elem_map_floats.get( "betx" ), elem_map_floats.get( "bety" ) );
+        //if ( dir_<0 ) {
           elem->setRelativePosition( relpos );
           elem->setDispersion( disp );
           elem->setBeta( beta );
-        }
+        /*}
         else {
           elem->setRelativePosition( previous_relpos_ );
           elem->setDispersion( previous_disp_ );
           elem->setBeta( previous_beta_ );
-        }
+        }*/
 
         { // associate the aperture type to the element
           const std::string aper_type = lowercase( trim( elem_map_str.get( "apertype" ) ) );
@@ -267,10 +272,10 @@ namespace Hector
                       aper_3 = elem_map_floats.get( "aper_3" ),
                       aper_4 = elem_map_floats.get( "aper_4" ); // MAD-X provides it in m
           switch ( apertype ) {
-            case Aperture::aRectEllipticAperture: { elem->setAperture( new Aperture::RectEllipticAperture( aper_1, aper_2, aper_3, aper_4 ), true ); } break;
-            case Aperture::aCircularAperture:     { elem->setAperture( new Aperture::CircularAperture( aper_1 ), true ); } break;
-            case Aperture::aRectangularAperture:  { elem->setAperture( new Aperture::RectangularAperture( aper_1, aper_2 ), true ); } break;
-            case Aperture::anEllipticAperture:    { elem->setAperture( new Aperture::EllipticAperture( aper_1, aper_2 ), true ); } break;
+            case Aperture::aRectEllipticAperture: { elem->setAperture( new Aperture::RectEllipticAperture( aper_1, aper_2, aper_3, aper_4, relpos ), true ); } break;
+            case Aperture::aCircularAperture:     { elem->setAperture( new Aperture::CircularAperture( aper_1, relpos ), true ); } break;
+            case Aperture::aRectangularAperture:  { elem->setAperture( new Aperture::RectangularAperture( aper_1, aper_2, relpos ), true ); } break;
+            case Aperture::anEllipticAperture:    { elem->setAperture( new Aperture::EllipticAperture( aper_1, aper_2, relpos ), true ); } break;
             case Aperture::anInvalidType: break;
           }
         }

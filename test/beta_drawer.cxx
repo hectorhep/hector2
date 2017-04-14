@@ -40,8 +40,9 @@ main( int argc, char* argv[] )
          gr_dispx, gr_dispy,
          gr_relx, gr_rely;
 
-  for ( Hector::Beamline::ElementsMap::const_iterator e=beamline->begin(); e!=beamline->end(); e++ ) {
+  for ( Hector::Beamline::ElementsMap::const_iterator e=beamline->begin(); e!=beamline->end(); ++e ) {
     const Hector::Element::ElementBase* elem = *e;
+    if ( elem->type()==Hector::Element::aDrift ) continue;
     gr_betax.SetPoint( gr_betax.GetN(), elem->s(), elem->beta().x() );
     gr_betay.SetPoint( gr_betay.GetN(), elem->s(), elem->beta().y() );
     gr_dispx.SetPoint( gr_dispx.GetN(), elem->s(), elem->dispersion().x() );

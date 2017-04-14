@@ -1,5 +1,5 @@
-#ifndef Canvas_h
-#define Canvas_h
+#ifndef Hector_test_Canvas_h
+#define Hector_test_Canvas_h
 
 #include "TCanvas.h"
 #include "TLegend.h"

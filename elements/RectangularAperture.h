@@ -1,5 +1,5 @@
-#ifndef Elements_RectangularAperture
-#define Elements_RectangularAperture
+#ifndef Hector_Elements_RectangularAperture
+#define Hector_Elements_RectangularAperture
 
 #include "ApertureBase.h"
 

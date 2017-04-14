@@ -12,7 +12,8 @@ namespace Hector
     ElementBase::ElementBase( const ElementBase& rhs ) :
       type_( rhs.type_ ), name_( rhs.name_ ), aperture_( 0 ),
       length_( rhs.length_ ), magnetic_strength_( rhs.magnetic_strength_ ),
-      s_( rhs.s_ )
+      pos_( rhs.pos_ ), angles_( rhs.angles_ ), s_( rhs.s_ ),
+      beta_( rhs.beta_ ), disp_( rhs.disp_ ), rel_pos_( rhs.rel_pos_ )
     {
       if ( rhs.aperture_ ) aperture_ = rhs.aperture_->clone();
     }
@@ -53,9 +54,9 @@ namespace Hector
     operator<<( std::ostream& os, const ElementBase& elem )
     {
       std::ostringstream oss; oss << elem.type();
-      os << Form( "{%15s} %17s (length = %5.2f m) at %6.2f < s < %6.2f m.", oss.str().c_str(), elem.name().c_str(), elem.length(), elem.s(), elem.s()+elem.length() );
+      os << Form( "{%15s} %17s (length = %5.2f m) at %6.2f < s < %6.2f m", oss.str().c_str(), elem.name().c_str(), elem.length(), elem.s(), elem.s()+elem.length() );
       if ( elem.aperture() ) {
-        os << "\tAperture: " << elem.aperture();
+        os << "\twith aperture: " << elem.aperture();
       }
       return os;
     }

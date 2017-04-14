@@ -1,5 +1,5 @@
-#ifndef Core_Utils_h
-#define Core_Utils_h
+#ifndef Hector_Core_Utils_h
+#define Hector_Core_Utils_h
 
 #include <stdarg.h>  // For va_start, etc.
 #include <string>

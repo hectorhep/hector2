@@ -9,6 +9,7 @@ namespace Hector
 
   Beamline::Beamline( const Beamline& rhs, bool copy_elements ) :
     max_length_( rhs.max_length_ ), ip_( rhs.ip_ ),
+    markers_( rhs.markers_ ),
     drifts_added_( rhs.drifts_added_ )
   {
     clear();
@@ -25,6 +26,7 @@ namespace Hector
   Beamline::~Beamline()
   {
     clear();
+    markers_.clear();
   }
 
   void
@@ -34,6 +36,13 @@ namespace Hector
       if ( *elem ) delete ( *elem );
     }
     elements_.clear();
+  }
+
+  void
+  Beamline::addMarker( const Element::Marker& marker )
+  {
+    markers_.insert( std::pair<float,Element::Marker>( marker.s(), marker ) );
+    std::cout << "new marker inserted: " << marker.name() << std::endl;
   }
 
   void
@@ -54,11 +63,12 @@ namespace Hector
       for ( ElementsMap::iterator it=elements_.begin(); it!=elements_.end(); it++ ) {
         Element::ElementBase* prev_elem = *( it );
 
-        if ( *prev_elem==*elem ) return;
-        if ( elem->s()<prev_elem->s() ) continue;
-        if ( elem->s()>prev_elem->s()+prev_elem->length() ) break;
-        if ( elem->s()==prev_elem->s() ) continue;
-        //if ( elem->s()+elem->length()>max_length_ ) return;
+        // first check if the element is already present in the beamline
+        if ( *prev_elem==*elem ) { already_added = true; break; }
+
+        if ( prev_elem->s()>elem->s() ) break;
+        if ( prev_elem->s()+prev_elem->length()<=elem->s() ) continue;
+        if ( prev_elem->length()==0 ) continue;
 
         // from that point on, an overlap is detected
         // reduce or separate that element in two sub-parts
@@ -70,7 +80,6 @@ namespace Hector
                             elem->name().c_str(), os_elem.str().c_str(), prev_elem->name().c_str(), os_prevelem.str().c_str() ) );
         std::cout << elem << std::endl << prev_elem << std::endl;
         const float prev_length = prev_elem->length();
-        prev_elem->setLength( elem->s()-prev_elem->s() );
         elements_.push_back( elem->clone() );
         already_added = true;
 
@@ -85,6 +94,8 @@ namespace Hector
           next_elem->setLength( prev_length-elem->length() );
           elements_.push_back( next_elem );
         }
+        prev_elem->setLength( elem->s()-prev_elem->s() );
+        break;
       }
     }
     if ( !already_added ) {

@@ -6,11 +6,13 @@
 int
 main( int argc, char* argv[] )
 {
-  Hector::BeamProducer::gaussianParticleGun gun( 6000., 6500. );
-  for ( unsigned short i=0; i<10; i++ ) {
+  const unsigned short num_particles = 101;
+  //Hector::BeamProducer::gaussianParticleGun gun( 6000., 6500. );
+  Hector::BeamProducer::Xiscanner gun( num_particles, 0., 0.1 );
+  for ( unsigned short i=0; i<num_particles; i++ ) {
     Hector::Particle p = gun.shoot();
-    //std::cout << "--> " << p->firstStateVector().energy() << " ---> " << p->firstStateVector().m() << " | " << p->firstStateVector().momentum() << std::endl;
-    p.dump();
+    //p.dump();
+    std::cout << p.firstStateVector().xi() << std::endl;
   }
 
   return 0;

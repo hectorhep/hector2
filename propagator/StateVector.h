@@ -1,5 +1,5 @@
-#ifndef core_StateVector_h
-#define core_StateVector_h
+#ifndef Hector_Propagator_StateVector_h
+#define Hector_Propagator_StateVector_h
 
 #include <CLHEP/Matrix/Vector.h>
 #include <CLHEP/Matrix/Matrix.h>
@@ -23,12 +23,9 @@ namespace Hector
     private:
       /// Human-readable enumeration of the 6 state vector coordinates
       enum Components {
-        X  = 0,
-        TX = 1,
-        Y  = 2,
-        TY = 3,
-        E  = 4,
-        K  = 5
+        X  = 0, TX = 1,
+        Y  = 2, TY = 3,
+        E  = 4, K  = 5
       };
     public:
       /// Build a blank state
@@ -46,7 +43,7 @@ namespace Hector
       /// \param[in] pos x-y position of the particle (m)
       StateVector( const CLHEP::HepLorentzVector& mom, const CLHEP::Hep2Vector& pos=CLHEP::Hep2Vector() );
       /// Build a state vector using the particle's position and its angle
-      StateVector( const CLHEP::Hep2Vector& pos, const CLHEP::Hep2Vector& ang, float energy=Parameters::beam_energy );
+      StateVector( const CLHEP::Hep2Vector& pos, const CLHEP::Hep2Vector& ang, float energy=Parameters::beam_energy, float kick=1. );
       ~StateVector() {}
 
       /// Human-readable printout of the state vector
@@ -63,6 +60,8 @@ namespace Hector
       void setXi( float xi ) { setEnergy( Parameters::beam_energy*( 1.-xi ) ); }
       /// Energy loss \f$ \xi \f$
       float xi() const { return 1.-energy()/Parameters::beam_energy; }
+      /// Set the particle kick
+      void setKick( float kick ) { ( *this )[K] = kick; }
       /// Particle kick
       float kick() const { return ( *this )[K]; }
 

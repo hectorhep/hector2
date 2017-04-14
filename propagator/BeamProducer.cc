@@ -48,7 +48,7 @@ namespace Hector
     const float tx = p1_.first + LinearScanner::next()*( p1_.second-p1_.first )/( num_part_-1 ),
                 ty = p2_.first;
 
-    return Particle( StateVector( CLHEP::Hep2Vector(), CLHEP::Hep2Vector( tx, ty ), e_ini_ ), s_.first );
+    return Particle( StateVector( CLHEP::Hep2Vector(), CLHEP::Hep2Vector( tx, ty ), e_.first ), s_.first );
   }
 
   Particle
@@ -57,7 +57,15 @@ namespace Hector
     const float tx = p2_.first,
                 ty = p1_.first + LinearScanner::next()*( p1_.second-p1_.first )/( num_part_-1 );
 
-    return Particle( StateVector( CLHEP::Hep2Vector(), CLHEP::Hep2Vector( tx, ty ), e_ini_ ), s_.first );
+    return Particle( StateVector( CLHEP::Hep2Vector(), CLHEP::Hep2Vector( tx, ty ), e_.first ), s_.first );
+  }
+
+  Particle
+  BeamProducer::Xiscanner::shoot()
+  {
+    const float energy = e_.first + LinearScanner::next()*( e_.second-e_.first )/( num_part_-1 ),
+                mom = sqrt( energy*energy-pow( Parameters::beam_particles_mass, 2 ) );
+    return Particle( StateVector( CLHEP::HepLorentzVector( 0., 0., mom, energy ), CLHEP::Hep2Vector( p1_.first, p2_.first ) ), s_.first );
   }
 
   template<>

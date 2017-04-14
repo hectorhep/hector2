@@ -13,13 +13,14 @@ namespace Hector
   Propagator::propagate( Particle& part, float s_max ) const
   {
     part.clear();
-    if ( Parameters::use_relative_energy ) {
+    /*if ( Parameters::use_relative_energy ) {
       part.firstStateVector().setEnergy( part.firstStateVector().energy()-Parameters::beam_energy );
-    }
+    }*/
     const double energy_loss = ( true )
       ? Parameters::beam_energy-part.lastStateVector().energy()
       : part.lastStateVector().energy();
     //const double energy_loss = Parameters::beam_energy-part.lastStateVector().energy();
+    //part.firstStateVector().setEnergy( energy_loss );
     const float first_s = part.firstS();
 
     for ( Beamline::ElementsMap::const_iterator it=beamline_->begin()+1; it!=beamline_->end(); it++ ) {
@@ -51,51 +52,44 @@ namespace Hector
       }
       if ( out_pos.s()<0. ) continue; // no new point to add to the particle's trajectory
 
-      std::cout << ">>> " << out_pos.s() << " / " << s_max << std::endl;
-      std::cout << prev_elem << "\n" << elem << std::endl;
-      /*if ( s_max<=out_pos.s() ) { // we are in the next element (-> interpolate to get the state vector at the requested s)
-        const float drift_length = out_pos.s()-in_pos.s();
-        if ( drift_length==0 ) {
-          throw Exception( __PRETTY_FUNCTION__, Form( "No luck in choosing position (s=%.3f m)\n\tPropagation is impossible!", s ), JustWarning );
-        }
-        const CLHEP::Hep2Vector in = in_pos.stateVector().position(),
-                                out = out_pos.stateVector().position();
-        const CLHEP::Hep2Vector s_pos = in + ( ( s_max-in_pos.s() )/drift_length )*( out-in );
-        StateVector out_stvec( in_pos.stateVector() );
-        out_stvec.setPosition( s_pos );
-        out_pos = out_stvec;
-        //return;
-      }*/
-
       part.addPosition( out_pos );
+
+      const Aperture::ApertureBase* aper = prev_elem->aperture();
+      if ( aper and aper->type()!=Aperture::anInvalidType ) {
+        if ( !aper->contains( part.stateVectorAt( prev_elem->s() ).position() ) ) {
+          PrintInfo( Form( "Particle stopped at the entrance of %s", prev_elem->name().c_str() ) );
+          break;
+        }
+        // has passed through the element?
+        if ( !aper->contains( part.stateVectorAt( prev_elem->s()+prev_elem->length() ).position() ) ) {
+          PrintInfo( Form( "Particle stopped inside %s", prev_elem->name().c_str() ) );
+          break;
+        }
+      }
     }
     part.sortPositions();
     //part.dump();
   }
 
   bool
-  Propagator::stopped( Particle& part, float max_s ) const
+  Propagator::stopped( Particle& part, float s_max ) const
   {
     for ( Beamline::ElementsMap::const_iterator it=beamline_->begin()+1; it!=beamline_->end(); it++ ) {
       // extract the previous and the current element in the beamline
       const Element::ElementBase *prev_elem = *( it-1 ), *elem = *( it );
-      if ( max_s>0 and elem->s()>max_s ) return false;
+      if ( s_max>0 and elem->s()>s_max ) return false;
 
-      const StateVector sv_prev_elem_in = part.stateVectorAt( prev_elem->s() ),
-                        sv_prev_elem_out = part.stateVectorAt( prev_elem->s()+prev_elem->length() );
-
-      //std::cout << "---> " << sv_prev_elem_in << std::endl;
       const Aperture::ApertureBase* aper = prev_elem->aperture();
       if ( aper and aper->type()!=Aperture::anInvalidType ) {
-        const bool has_passed_entrance = aper->contains( sv_prev_elem_in.position() ),
-                   has_passed_exit = aper->contains( sv_prev_elem_out.position() );
 
-        if ( !has_passed_entrance ) {
-          PrintInfo( Form( "Particle stopped at the entrance of %s", prev_elem->name().c_str() ) );
+        // has passed the element entrance?
+        if ( !aper->contains( part.stateVectorAt( prev_elem->s() ).position() ) ) {
+          //PrintInfo( Form( "Particle stopped at the entrance of %s", prev_elem->name().c_str() ) );
           return true;
         }
-        if ( !has_passed_exit ) {
-          PrintInfo( Form( "Particle stopped inside %s", prev_elem->name().c_str() ) );
+        // has passed through the element?
+        if ( !aper->contains( part.stateVectorAt( prev_elem->s()+prev_elem->length() ).position() ) ) {
+          //PrintInfo( Form( "Particle stopped inside %s", prev_elem->name().c_str() ) );
           return true;
         }
       }
@@ -104,27 +98,31 @@ namespace Hector
   }
 
   Particle::Position
-  Propagator::propagateThrough( const Particle::Position& ini_pos, const Element::ElementBase* ele, float eloss, int qp ) const
+  Propagator::propagateThrough( const Particle::Position& ini_pos, const Element::ElementBase* elem, float eloss, int qp ) const
   {
-    StateVector shift( ele->position(), math::tan2( ele->angles() ), 0. );
+    const StateVector shift( elem->position(), math::tan2( elem->angles() ), 0., 0. );
     //shift.setAngles( ele->angles() );
-
+//std::cout << "-----> propagating through " << elem << " with matrix = " << elem->matrix( eloss, ini_pos.stateVector().m(), qp ) << std::endl;
+//std::cout << "before: " << ini_pos.stateVector() << std::endl;
+    CLHEP::HepVector prop = elem->matrix( eloss, ini_pos.stateVector().m(), qp ).T() * ( ini_pos.stateVector().vector()-shift.vector() ) + shift.vector();
+//std::cout << "mid: " << elem->matrix( eloss, ini_pos.stateVector().m(), qp ) * ini_pos.stateVector().vector() << std::endl;
+//std::cout << "mid: " << prop.T() << std::endl;
     // perform the propagation (assuming that mass is conserved...)
-    StateVector vec( ele->matrix( eloss, ini_pos.stateVector().m(), qp ) * ( ini_pos.stateVector().vector()-shift.vector() ) + shift.vector(),
-                     ini_pos.stateVector().m() );
+    StateVector vec( prop, ini_pos.stateVector().m() );
+//std::cout << "after: " << vec << std::endl;
 
     // convert the angles -> tan-1( angle )
     const CLHEP::Hep2Vector ang_old = vec.angles();
     vec.setAngles( math::atan2( ang_old ) );
 
-    return Particle::Position( ele->s()+ele->length(), vec );
+    return Particle::Position( elem->s()+elem->length(), vec );
   }
 
   void
-  Propagator::propagate( Particles& beam ) const
+  Propagator::propagate( Particles& beam, float s_max ) const
   {
     for ( Particles::iterator it=beam.begin(); it!=beam.end(); it++ ) {
-      propagate( *it, it->firstS() );
+      propagate( *it, s_max );
     }
   }
 }

@@ -1,5 +1,5 @@
-#ifndef IO_LHEParser_h
-#define IO_LHEParser_h
+#ifndef Hector_IO_LHEParser_h
+#define Hector_IO_LHEParser_h
 
 #include "propagator/Particle.h"
 

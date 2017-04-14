@@ -1,5 +1,5 @@
-#ifndef Core_ParametersMap_h
-#define Core_ParametersMap_h
+#ifndef Hector_Core_ParametersMap_h
+#define Hector_Core_ParametersMap_h
 
 #include <map>
 #include <string>

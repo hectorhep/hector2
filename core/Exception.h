@@ -1,5 +1,5 @@
-#ifndef Exception_h
-#define Exception_h
+#ifndef Hector_Core_Exception_h
+#define Hector_Core_Exception_h
 
 #include "Utils.h"
 

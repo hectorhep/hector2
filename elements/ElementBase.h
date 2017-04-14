@@ -1,5 +1,5 @@
-#ifndef Elements_ElementBase_h
-#define Elements_ElementBase_h
+#ifndef Hector_Elements_ElementBase_h
+#define Hector_Elements_ElementBase_h
 
 #include "ApertureBase.h"
 #include "core/Utils.h"

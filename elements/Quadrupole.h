@@ -1,5 +1,5 @@
-#ifndef Elements_Quadrupole_h
-#define Elements_Quadrupole_h
+#ifndef Hector_Elements_Quadrupole_h
+#define Hector_Elements_Quadrupole_h
 
 #include "ElementBase.h"
 #include "Drift.h"

@@ -1,5 +1,5 @@
-#ifndef core_Particle_h
-#define core_Particle_h
+#ifndef Hector_Propagator_Particle_h
+#define Hector_Propagator_Particle_h
 
 #include <CLHEP/Vector/TwoVector.h>
 #include <CLHEP/Vector/LorentzVector.h>
@@ -39,11 +39,11 @@ namespace Hector
       struct PositionsSorter
       {
         /// Compare the references to two elements
-        inline bool operator()( const Particle::Position& lhs, const Particle::Position& rhs ) const {
+        inline bool operator()( const Position& lhs, const Position& rhs ) const {
           return ( lhs.s()<rhs.s() );
         }
         /// Compare the pointers to two elements
-        inline bool operator()( const Particle::Position* lhs, const Particle::Position* rhs ) const {
+        inline bool operator()( const Position* lhs, const Position* rhs ) const {
           return ( lhs and rhs and lhs->s()<rhs->s() );
         }
       };
@@ -113,7 +113,9 @@ namespace Hector
       const PositionsMap::const_iterator end() const { return positions_.end(); }
 
       /// Compute the value of the state vector at a given s-position
-      StateVector stateVectorAt( float s );
+      StateVector stateVectorAt( float s ) const;
+      /// Get the particle's momentum at a given s-position
+      const CLHEP::HepLorentzVector momentumAt( float s ) const { return stateVectorAt( s ).momentum(); }
 
       /// Let the particle emit a photon
       void emitGamma( float e_gamma, float q2, float phi_min=0., float phi_max=2*CLHEP::pi );

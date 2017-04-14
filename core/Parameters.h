@@ -1,5 +1,5 @@
-#ifndef Core_Constants_h
-#define Core_Constants_h
+#ifndef Hector_Core_Parameters_h
+#define Hector_Core_Parameters_h
 
 /// Mother of all namespaces/objects in Hector
 /// \author Laurent Forthomme <laurent.forthomme@cernSPAMNOT.ch>

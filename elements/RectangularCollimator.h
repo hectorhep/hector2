@@ -1,5 +1,5 @@
-#ifndef Elements_RectangularCollimator_h
-#define Elements_RectangularCollimator_h
+#ifndef Hector_Elements_RectangularCollimator_h
+#define Hector_Elements_RectangularCollimator_h
 
 #include "Drift.h"
 

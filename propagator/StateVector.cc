@@ -14,42 +14,43 @@ namespace Hector
     ( *this )[K] = 1.;
   }
 
-  StateVector::StateVector( const CLHEP::Hep2Vector& pos, const CLHEP::Hep2Vector& ang, float energy ) :
+  StateVector::StateVector( const CLHEP::Hep2Vector& pos, const CLHEP::Hep2Vector& ang, float energy, float kick ) :
     CLHEP::HepVector( 6, 1 ), m_( 0. )
   {
     setPosition( pos );
     setAngles( ang );
     setEnergy( energy );
+    setKick( kick );
   }
 
   void
   StateVector::setPosition( const float& x, const float& y )
   {
-    // store in um
-    ( *this )[X] = x * 1.e3;
-    ( *this )[Y] = y * 1.e3;
+    // store in m
+    ( *this )[X] = x;
+    ( *this )[Y] = y;
   }
 
   CLHEP::Hep2Vector
   StateVector::position() const
   {
     // return in m
-    return CLHEP::Hep2Vector( ( *this )[X] * 1.e-3, ( *this )[Y] * 1.e-3 );
+    return CLHEP::Hep2Vector( ( *this )[X], ( *this )[Y] );
   }
 
   void
   StateVector::setAngles( const float& tx, const float& ty )
   {
-    // store in urad
-    ( *this )[TX] = tx * 1.e6;
-    ( *this )[TY] = ty * 1.e6;
+    // store in rad
+    ( *this )[TX] = tx;
+    ( *this )[TY] = ty;
   }
 
   CLHEP::Hep2Vector
   StateVector::angles() const
   {
     // return in rad
-    return CLHEP::Hep2Vector( ( *this )[TX] * 1.e-6, ( *this )[TY] * 1.e-6 );
+    return CLHEP::Hep2Vector( ( *this )[TX], ( *this )[TY] );
   }
 
   void
@@ -62,10 +63,10 @@ namespace Hector
   CLHEP::HepLorentzVector
   StateVector::momentum() const
   {
-    const CLHEP::Hep2Vector ang( angles() );
-    const float pz = sqrt( ( energy()*energy()-m_*m_ )/( 1.+pow( tan( ang.x() ), 2 )+pow( tan( ang.y() ), 2 ) ) ),
-                px = pz*tan( ang.x() ),
-                py = pz*tan( ang.y() );
+    const CLHEP::Hep2Vector tan_ang( math::tan2( angles() ) );
+    const float pz = sqrt( ( energy()*energy()-m_*m_ )/( 1.+tan_ang.mag2() ) ),
+                px = pz*tan_ang.x(),
+                py = pz*tan_ang.y();
     return CLHEP::HepLorentzVector( px, py, pz, energy() );
   }
 

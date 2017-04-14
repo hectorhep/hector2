@@ -1,5 +1,5 @@
-#ifndef Beamline_BeamProducer
-#define Beamline_BeamProducer
+#ifndef Hector_Propagator_BeamProducer
+#define Hector_Propagator_BeamProducer
 
 #include "propagator/Particle.h"
 
@@ -18,10 +18,10 @@ namespace Hector
     {
       public:
         /// Class constructor
-        LinearScanner( const unsigned short& num_part, float p1_ini, float p1_end, float p2_ini, float p2_end=999., float s_ini=0., float e_ini=0. ) :
+        LinearScanner( const unsigned short& num_part, float p1_ini, float p1_end, float p2_ini, float p2_end=999., float e_ini=0., float e_end=0., float s_ini=0. ) :
           num_part_( num_part ), num_gen_( 0 ),
-          p1_( p1_ini, p1_end ), p2_( p2_ini, p2_end ), s_( s_ini, s_ini ),
-          e_ini_( e_ini )
+          p1_( p1_ini, p1_end ), p2_( p2_ini, p2_end ),
+          e_( e_ini, e_end ), s_( s_ini, s_ini )
         {
           if ( p2_.second==999. ) { p2_.second = p2_.first; }
         }
@@ -41,10 +41,10 @@ namespace Hector
         params p1_;
         /// Lower and upper limits for the second scan parameter
         params p2_;
+        /// Lower and upper limits on the beam energy
+        params e_;
         /// Lower and upper limits for the s coordinate to generate
         params s_;
-        /// Initial beam energy
-        float e_ini_;
     };
 
     /// Beam of particles to scan the optics following the x axis
@@ -59,7 +59,7 @@ namespace Hector
         /// \param[in] y fixed parameter value
         /// \param[in] s_ini initial s position
         Xscanner( const unsigned short& num_part, float e_ini, float x_min, float x_max, float y=0., float s_ini=0. ) :
-          LinearScanner( num_part, x_min, x_max, y, y, s_ini, e_ini ) {}
+          LinearScanner( num_part, x_min, x_max, y, y, e_ini, e_ini, s_ini ) {}
         Particle shoot();
     };
 
@@ -75,7 +75,7 @@ namespace Hector
         /// \param[in] y_max maximal parameter value
         /// \param[in] s_ini initial s position
         Yscanner( const unsigned short& num_part, float e_ini, float y_min, float y_max, float x=0., float s_ini=0. ) :
-          LinearScanner( num_part, y_min, y_max, x, x, s_ini, e_ini ) {}
+          LinearScanner( num_part, y_min, y_max, x, x, e_ini, e_ini, s_ini ) {}
         Particle shoot();
     };
 
@@ -91,7 +91,7 @@ namespace Hector
         /// \param[in] ty fixed parameter value
         /// \param[in] s_ini initial s position
         TXscanner( const unsigned short& num_part, float e_ini, float tx_min, float tx_max, float ty=0., float s_ini=0. ) :
-          LinearScanner( num_part, tx_min, tx_max, ty, ty, s_ini, e_ini ) {}
+          LinearScanner( num_part, tx_min, tx_max, ty, ty, e_ini, e_ini, s_ini ) {}
         Particle shoot();
     };
 
@@ -107,7 +107,20 @@ namespace Hector
         /// \param[in] ty_max maximal parameter value
         /// \param[in] s_ini initial s position
         TYscanner( const unsigned short& num_part, float e_ini, float ty_min, float ty_max, float tx=0., float s_ini=0. ) :
-          LinearScanner( num_part, ty_min, ty_max, tx, tx, s_ini, e_ini ) {}
+          LinearScanner( num_part, ty_min, ty_max, tx, tx, e_ini, e_ini, s_ini ) {}
+        Particle shoot();
+    };
+    /// Beam of particles to scan the optics with respect to the longitudinal momentum loss
+    class Xiscanner : public LinearScanner
+    {
+      public:
+        /// Class constructor
+        /// \param[in] num_part number of particles to generate for a full scan
+        /// \param[in] xi_min minimal parameter value
+        /// \param[in] xi_max maximal parameter value
+        /// \param[in] s_ini initial s position
+        Xiscanner( const unsigned short& num_part, float xi_min, float xi_max, float x=0., float y=0., float s_ini=0. ) :
+          LinearScanner( num_part, x, x, y, y, Parameters::beam_energy*( 1.-xi_min ), Parameters::beam_energy*( 1.-xi_max ), s_ini ) {}
         Particle shoot();
     };
 

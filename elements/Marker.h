@@ -1,5 +1,5 @@
-#ifndef Elements_Marker_h
-#define Elements_Marker_h
+#ifndef Hector_Elements_Marker_h
+#define Hector_Elements_Marker_h
 
 #include "ElementBase.h"
 

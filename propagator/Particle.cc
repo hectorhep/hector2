@@ -4,8 +4,7 @@ namespace Hector
 {
   Particle::Particle() :
     charge_( 0 ), pdgId_( 0 ), stopped_( false )
-  {
-  }
+  {}
 
   Particle::Particle( const StateVector& sv0, float s0 ) :
     charge_( 0 ), pdgId_( 0 ), stopped_( false )
@@ -20,9 +19,7 @@ namespace Hector
   Particle
   Particle::fromMassCharge( float mass, float charge )
   {
-    StateVector vec;
-    vec.setM( mass );
-    Particle p( vec );
+    Particle p( StateVector( CLHEP::HepVector( 6, 0 ), mass ) );
     p.setCharge( charge );
     return p;
   }
@@ -47,12 +44,18 @@ namespace Hector
   }
 
   StateVector
-  Particle::stateVectorAt( float s )
+  Particle::stateVectorAt( float s ) const
   {
     for ( PositionsMap::const_iterator it=positions_.begin()+1; it!=positions_.end(); it++ ) {
       const float s_before = ( it-1 )->s(), s_after = it->s();
-      if ( s>s_after ) break;
-      if ( s<s_before ) continue;
+      // first check if the requested version was already recorded
+      if ( s==s_before ) return ( it-1 )->stateVector();
+      if ( s==s_after ) return it->stateVector();
+
+      // if not already there, interpolate
+      if ( s<s_before or s>s_after ) continue;
+
+std::cout << s_before << " < " << s << " < " << s_after << std::endl;
 
       const StateVector sv_before = ( it-1 )->stateVector(),
                         sv_after = it->stateVector();
@@ -62,12 +65,10 @@ namespace Hector
       const float drift_length = s_after-s_before;
       if ( drift_length==0 ) {
         throw Exception( __PRETTY_FUNCTION__, Form( "No luck in choosing position (s=%.3f m)\n\t"
-                                                    "Interpolation is impossible!",
-                                                    s ), JustWarning );
+                                                    "Interpolation is impossible!", s ), JustWarning );
       }
 
       const CLHEP::Hep2Vector s_pos = in + ( ( s-s_before )/drift_length )*( out-in );
-      std::cout << s_pos << std::endl;
 
       StateVector out_stvec( sv_before );
       out_stvec.setPosition( s_pos );

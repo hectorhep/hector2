@@ -1,5 +1,5 @@
-#ifndef MADXParser_h
-#define MADXParser_h
+#ifndef Hector_IO_MADXParser_h
+#define Hector_IO_MADXParser_h
 
 #include "beamline/Beamline.h"
 

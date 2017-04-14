@@ -28,28 +28,32 @@ main( int argc, char* argv[] )
 
   Hector::Propagator prop( parser.beamline() );
 
-  TH2D hitmap( "hitmap", "x (m)\\y (m)", 200, -20e-3, 20e-3, 200, -20e-3, 20e-3 );
+  TH2D hitmap( "hitmap", "x (m)\\y (m)", 200, -0.15, 0.15, 200, -0.15, 0.15 );
 
-  const unsigned int num_particles = 100;
+  const unsigned int num_particles = 50000;
   const float beam_lateral_width_ip = 16.63e-6, // in meters
               beam_angular_divergence_ip = 30.23e-6, // in radians
-              particles_energy = 6000.; // in GeV
+              particles_energy = 6500.; // in GeV
   Hector::BeamProducer::gaussianParticleGun gun;
+  //gun.setElimits( particles_energy*0.95, particles_energy );
   gun.setElimits( particles_energy );
   gun.setXparams( 0., beam_lateral_width_ip );
   gun.setYparams( 0., beam_lateral_width_ip );
   gun.setTXparams( Hector::Parameters::crossing_angle, beam_angular_divergence_ip );
   gun.setTYparams( 0., beam_angular_divergence_ip );
-  //Hector::BeamProducer::Xscanner gun( num_particles, Hector::Parameters::beam_energy, 0., 0.1 );
+  //Hector::BeamProducer::Xscanner gun( num_particles, Hector::Parameters::beam_energy, 0., 0.01 );
 
   unsigned short num_stopped = 0;
   for ( size_t i=0; i!=num_particles; i++ ) {
+
+    if ( (int)(i*(double)num_particles/num_particles)%1000==0 ) std::cout << ">>> Generating particle " << i << " / " << num_particles << std::endl;
 
     // propagation through the beamline
     Hector::Particle p = gun.shoot();
     try {
       prop.propagate( p, s_pos );
-      if ( prop.stopped( p, s_pos ) ) { std::cout << "prout" << std::endl; num_stopped++; continue; }
+      //p.dump();
+      if ( prop.stopped( p, s_pos ) ) { /*std::cout << "prout" << std::endl;*/ num_stopped++; continue; }
       const CLHEP::Hep2Vector pos( p.stateVectorAt( s_pos ).position() );
       std::cout << s_pos << " -> " << pos << std::endl;
       hitmap.Fill( pos.x(), pos.y() );
@@ -61,7 +65,7 @@ main( int argc, char* argv[] )
   PrintInfo( Form( "%.1f%% of particles (%d/%d) stopped before s = %.2f", 100. * num_stopped/num_particles, num_stopped, num_particles, s_pos ) );
 
   {
-    Hector::Canvas c( "hitmap", Form( "Hector v2 simulation, s = %.2f m", s_pos ) );
+    Hector::Canvas c( "hitmap", Form( "Hector 2 simulation, s = %.2f m", s_pos ) );
     hitmap.Draw( "colz" );
     c.Prettify( &hitmap );
 

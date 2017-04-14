@@ -1,5 +1,5 @@
-#ifndef Elements_Drift_h
-#define Elements_Drift_h
+#ifndef Hector_Elements_Drift_h
+#define Hector_Elements_Drift_h
 
 #include "ElementBase.h"
 
