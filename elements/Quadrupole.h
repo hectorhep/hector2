@@ -36,10 +36,10 @@ namespace Hector
         /** \note \f$
          * \mathbf{M} = \left(
          * \begin{array}{cccccc}
-         * \cos{\omega} & -\sqrt{k}\sin{\omega} & 0 & 0 & 0 & 0\\
-         * \frac{1}{\sqrt{k}}\sin{\omega} & \cos{\omega} & 0 & 0 & 0 & 0\\
-         * 0 & 0 & \cosh{\omega} & \sqrt{k}\sinh{\omega} & 0 & 0\\
-         * 0 & 0 & \frac{1}{\sqrt{k}}\sinh{\omega} & \cosh{\omega} & 0 & 0\\
+         * \cos{\omega} & \frac{1}{\sqrt{k}}\sin{\omega} & 0 & 0 & 0 & 0\\
+         * -\sqrt{k}\sin{\omega} & \cos{\omega} & 0 & 0 & 0 & 0\\
+         * 0 & 0 & \cosh{\omega} & \frac{1}{\sqrt{k}}\sinh{\omega} & 0 & 0\\
+         * 0 & 0 & \sqrt{k}\sinh{\omega} & \cosh{\omega} & 0 & 0\\
          * 0 & 0 & 0 & 0 & 1 & 0\\
          * 0 & 0 & 0 & 0 & 0 & 1\\
          * \end{array}
@@ -64,10 +64,10 @@ namespace Hector
         /** \note \f$
          * \mathbf{M} = \left(
          * \begin{array}{cccccc}
-         * \cosh{\omega} & \sqrt{k}\sinh{\omega} & 0 & 0 & 0 & 0\\
-         * \frac{1}{\sqrt{k}}\sinh{\omega} & \cosh{\omega} & 0 & 0 & 0 & 0\\
-         * 0 & 0 & \cos{\omega} & -\sqrt{k}\sin{\omega} & 0 & 0\\
-         * 0 & 0 & \frac{1}{\sqrt{k}}\sin{\omega} & \cos{\omega} & 0 & 0\\
+         * \cosh{\omega} & \frac{1}{\sqrt{k}}\sinh{\omega} & 0 & 0 & 0 & 0\\
+         * \sqrt{k}\sinh{\omega} & \cosh{\omega} & 0 & 0 & 0 & 0\\
+         * 0 & 0 & \cos{\omega} & \frac{1}{\sqrt{k}}\sin{\omega} & 0 & 0\\
+         * 0 & 0 & -\sqrt{k}\sin{\omega} & \cos{\omega} & 0 & 0\\
          * 0 & 0 & 0 & 0 & 1 & 0\\
          * 0 & 0 & 0 & 0 & 0 & 1\\
          * \end{array}

@@ -20,14 +20,14 @@ namespace Hector
       CLHEP::HepMatrix mat = CLHEP::HepDiagMatrix( 6, 1 );
 
       mat( 1, 1 ) = cos( theta );
-      mat( 1, 2 ) = sin( theta ) * ( -1./radius );
-      mat( 2, 1 ) = sin( theta ) * radius;
+      mat( 2, 1 ) = sin( theta ) * ( -1./radius );
+      mat( 1, 2 ) = sin( theta ) * radius;
       mat( 2, 2 ) = cos( theta );
-      mat( 4, 3 ) = length_;
+      mat( 3, 4 ) = length_;
       if ( Parameters::use_relative_energy ) {
         const float simp = 2.*radius*pow( sin( length_/( 2.*radius ) ), 2 ) / Parameters::beam_energy;
-        mat( 5, 1 ) = simp;
-        mat( 5, 2 ) = sin( theta ) / Parameters::beam_energy;
+        mat( 1, 5 ) = simp;
+        mat( 2, 5 ) = sin( theta ) / Parameters::beam_energy;
       }
       return mat;
     }
@@ -51,20 +51,20 @@ namespace Hector
       CLHEP::HepMatrix mat = CLHEP::HepDiagMatrix( 6, 1 );
 
       mat( 1, 1 ) = cos( theta );
-      mat( 1, 2 ) = sin( theta ) * ( -1./radius );
-      mat( 2, 1 ) = sin( theta ) * radius;
+      mat( 2, 1 ) = sin( theta ) * ( -1./radius );
+      mat( 1, 2 ) = sin( theta ) * radius;
       mat( 2, 2 ) = cos( theta );
-      mat( 4, 3 ) = length_;
-      mat( 5, 1 ) = simp;
-      mat( 5, 2 ) = sin( theta ) / Parameters::beam_energy;
+      mat( 3, 4 ) = length_;
+      mat( 1, 5 ) = simp;
+      mat( 2, 5 ) = sin( theta ) / Parameters::beam_energy;
 
       if ( Parameters::use_relative_energy ) {
         const float psy = ke*length_/2.;
         std::cout << "aaa " << tan(psy) << std::endl;
 
         CLHEP::HepMatrix ef_matrix = CLHEP::HepDiagMatrix( 6, 1 );
-        ef_matrix( 1, 2 ) =  tan( psy ) * ke;
-        ef_matrix( 3, 4 ) = -tan( psy ) * ke;
+        ef_matrix( 2, 1 ) =  tan( psy ) * ke;
+        ef_matrix( 4, 3 ) = -tan( psy ) * ke;
 
         return ef_matrix * mat * ef_matrix;
       }

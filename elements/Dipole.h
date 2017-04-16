@@ -37,11 +37,11 @@ namespace Hector
         /** \note \f$
          * \mathbf{M} = \left(
          * \begin{array}{cccccc}
-         * \cos{\frac{L}{r}} & \frac{-1}{r} \sin{\frac{L}{r}} & 0 & 0 & 0 & 0\\
-         * r \sin{\frac{L}{r}} & \cos{\frac{L}{r}} & 0 & 0 & 0 & 0\\
-         * 0 & 0 & 1 & 0 & 0 & 0\\
-         * 0 & 0 & L & 1 & 0 & 0\\
-         * \frac{2r}{E_{\mathrm{b}}} \sin^2{\frac{L}{2r}} & \frac{1}{E_{\mathrm{b}}}\sin{\frac{L}{r}} & 0 & 0 & 1 &0\\
+         * \cos{\frac{L}{r}} & r \sin{\frac{L}{r}} & 0 & 0 & \frac{2r}{E_{\mathrm{b}}} \sin^2{\frac{L}{2r}} & 0\\
+         * \frac{-1}{r} \sin{\frac{L}{r}} & \cos{\frac{L}{r}} & 0 & 0 & \frac{1}{E_{\mathrm{b}}}\sin{\frac{L}{r}} & 0\\
+         * 0 & 0 & 1 & L & 0 & 0\\
+         * 0 & 0 & 0 & 1 & 0 & 0\\
+         * 0 & 0 & 0 & 0 & 1 &0\\
          * 0 & 0 & 0 & 0 & 0 & 1\\
          * \end{array}
          * \right)
@@ -69,10 +69,10 @@ namespace Hector
         /** \note \f$
          * \mathbf{M}_{\mathrm{no~bend.}} = \left(
          * \begin{array}{cccccc}
-         * \cos{\frac{L}{r}} & \frac{-1}{r} \sin{\frac{L}{r}} & 0 & 0 & 0 & 0\\
-         * r \sin{\frac{L}{r}} & \cos{\frac{L}{r}} & 0 & 0 & 0 & 0\\
-         * 0 & 0 & 1 & 0 & 0 & 0\\
-         * 0 & 0 & L & 1 & 0 & 0\\
+         * \cos{\frac{L}{r}} & r \sin{\frac{L}{r}} & 0 & 0 & 0 & 0\\
+         * \frac{-1}{r} \sin{\frac{L}{r}} & \cos{\frac{L}{r}} & 0 & 0 & 0 & 0\\
+         * 0 & 0 & 1 & L & 0 & 0\\
+         * 0 & 0 & 0 & 1 & 0 & 0\\
          * 0 & 0 & 0 & 0 & 1 & 0\\
          * 0 & 0 & 0 & 0 & 0 & 1\\
          * \end{array}
@@ -80,11 +80,11 @@ namespace Hector
          * \f$\f$
          * \mathbf{M}_{\mathrm{bend.}} = \left(
          * \begin{array}{cccccc}
-         * \cos{\frac{L}{r}} & \frac{-1}{r} \sin{\frac{L}{r}} & 0 & 0 & 0 & 0\\
-         * r \sin{\frac{L}{r}} & \cos{\frac{L}{r}} & 0 & 0 & 0 & 0\\
-         * 0 & 0 & 1 & 0 & 0 &0\\
-         * 0 & 0 & L & 1 & 0 &0\\
-         * \frac{2r}{E_{\mathrm{b}}} \sin^2{\frac{L}{2r}} & \frac{1}{E_{\mathrm{b}}} \sin{\frac{L}{r}} & 0 & 0 & 1 & 0\\
+         * \cos{\frac{L}{r}} & r \sin{\frac{L}{r}} & 0 & 0 & \frac{2r}{E_{\mathrm{b}}} \sin^2{\frac{L}{2r}} & 0\\
+         * \frac{-1}{r} \sin{\frac{L}{r}} & \cos{\frac{L}{r}} & 0 & 0 & \frac{1}{E_{\mathrm{b}}} \sin{\frac{L}{r}} & 0\\
+         * 0 & 0 & 1 & L & 0 &0\\
+         * 0 & 0 & 0 & 1 & 0 &0\\
+         * 0 & 0 & 0 & 0 & 1 & 0\\
          * 0 & 0 & 0 & 0 & 0 & 1\\
          * \end{array}
          * \right)

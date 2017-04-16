@@ -13,10 +13,10 @@ namespace Hector
       //if ( ke==0. ) return mat; // FIXME identity or drift matrix?
       if ( ke==0 ) return Drift::genericMatrix( length_ );
 
-      mat( 2, 1 ) = length_;
-      mat( 4, 3 ) = length_;
-      mat( 6, 1 ) = length_*tan( ke ) / 2.;
-      mat( 6, 2 ) = ke;
+      mat( 1, 2 ) = length_;
+      mat( 3, 4 ) = length_;
+      mat( 1, 6 ) = length_*tan( ke ) / 2.;
+      mat( 2, 6 ) = ke;
       return mat;
     }
 
@@ -29,10 +29,10 @@ namespace Hector
       //if ( ke==0. ) return mat; // FIXME identity or drift matrix?
       if ( ke==0 ) return Drift::genericMatrix( length_ );
 
-      mat( 2, 1 ) = length_;
-      mat( 4, 3 ) = length_;
-      mat( 6, 3 ) = length_*tan( ke ) / 2.;
-      mat( 6, 4 ) = ke;
+      mat( 1, 2 ) = length_;
+      mat( 3, 4 ) = length_;
+      mat( 3, 6 ) = length_*tan( ke ) / 2.;
+      mat( 4, 6 ) = ke;
       return mat;
     }
   }

@@ -22,8 +22,8 @@ namespace Hector
     Drift::genericMatrix( float length )
     {
       CLHEP::HepMatrix mat = CLHEP::HepDiagMatrix( 6, 1 );
-      mat( 2, 1 ) = length;
-      mat( 4, 3 ) = length;
+      mat( 1, 2 ) = length;
+      mat( 3, 4 ) = length;
       return mat;
     }
   }
