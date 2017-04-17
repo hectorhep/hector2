@@ -36,20 +36,29 @@ namespace Hector
       public:
         /// A collection of values to be propagated through this parser
         typedef std::vector<std::string> ValuesCollection;
+        /// Type of content stored in the parameters map
+        enum ValueType { Unknown = -1, String, Float, Integer };
+        /// Human-readable printout of a value type
+        friend std::ostream& operator<<( std::ostream&, const ValueType& );
 
       public:
         /// Class constructor
         MADX( const char*, const char*, int, float max_s=-1., bool compute_sequence=true );
         ~MADX();
 
-        /// Retrieve the beamline parsed from the MAD-X output file
-        Beamline* beamline() const { return beamline_; }
+        /// Retrieve the sequenced beamline parsed from the MAD-X output file
+        Beamline* beamline() const {
+          if ( !beamline_ ) {
+            PrintWarning( "Sequenced beamline not computed from the MAD-X output file. Retrieving the raw version. You may encounter some numerical issues." );
+            return raw_beamline_;
+          }
+          return beamline_;
+        }
+        /// Retrieve the raw beamline parsed from the MAD-X output file
+        Beamline* rawBeamline() const { return raw_beamline_; }
 
-      public:
-        /// Type of content stored in the parameters map
-        enum ValueType { Unknown = -1, String, Float, Integer };
-        /// Human-readable printout of a value type
-        friend std::ostream& operator<<( std::ostream&, const ValueType& );
+        Elements romanPots() const;
+
         /// Print all useful information parsed from the MAD-X output file
         void printInfo() const;
 
@@ -68,15 +77,17 @@ namespace Hector
         std::ifstream in_file_;
         std::streampos in_file_lastline_;
 
+        Beamline* beamline_;
+        Beamline* raw_beamline_;
+
         std::string ip_name_;
         int dir_;
-        Beamline* beamline_;
         float s_offset_;
         bool found_interaction_point_;
         // quantities needed whenever direction == 1 (FIXME)
         CLHEP::Hep2Vector previous_relpos_, previous_disp_, previous_beta_;
 
-        static std::regex rgx_typ_, rgx_hdr_, rgx_elm_hdr_;
+        static std::regex rgx_typ_, rgx_hdr_, rgx_elm_hdr_, rgx_rp_name_;
 
         bool has_next_element_;
     };

@@ -3,14 +3,13 @@
 namespace Hector
 {
   Beamline::Beamline() :
-    max_length_( 0. ), drifts_added_( false )
+    max_length_( 0. )
   {
   }
 
   Beamline::Beamline( const Beamline& rhs, bool copy_elements ) :
     max_length_( rhs.max_length_ ), ip_( rhs.ip_ ),
-    markers_( rhs.markers_ ),
-    drifts_added_( rhs.drifts_added_ )
+    markers_( rhs.markers_ )
   {
     clear();
     if ( copy_elements ) setElements( rhs, false );
@@ -18,7 +17,7 @@ namespace Hector
 
   Beamline::Beamline( float length, const CLHEP::Hep3Vector& ip ) :
     max_length_( length+5. ), // artificially increase the size to include next elements
-    ip_( ip ), drifts_added_( false )
+    ip_( ip )
   {
   }
 
@@ -32,7 +31,7 @@ namespace Hector
   void
   Beamline::clear()
   {
-    for ( ElementsMap::iterator elem=elements_.begin(); elem!=elements_.end(); elem++ ) {
+    for ( Elements::iterator elem=elements_.begin(); elem!=elements_.end(); elem++ ) {
       if ( *elem ) delete ( *elem );
     }
     elements_.clear();
@@ -58,8 +57,8 @@ namespace Hector
     bool already_added = false;
 
     // check the overlaps before adding
-    for ( ElementsMap::iterator it=elements_.begin(); it!=elements_.end(); it++ ) {
-      Element::ElementBase* prev_elem = *( it );
+    for ( Elements::iterator it=elements_.begin(); it!=elements_.end(); it++ ) {
+      const Element::ElementBase* prev_elem = *( it );
 
       // first check if the element is already present in the beamline
       if ( *prev_elem==*elem ) { already_added = true; break; }
@@ -84,18 +83,21 @@ namespace Hector
       elements_.push_back( elem->clone() );
       already_added = true;
 
+      const std::string prev_name = prev_elem->name();
+      // add an extra sub-part (leftover from the previous element)
+      Element::ElementBase* prev_elem_toedit = prev_elem->clone();
+      prev_elem_toedit->setLength( elem->s()-prev_elem->s() );
+      delete prev_elem;
       // check if one needs to add an extra piece to the previous element
       if ( elem->s()+elem->length()<prev_elem->s()+prev_elem->length() ) {
-        const std::string prev_name = prev_elem->name();
-        // add an extra sub-part (leftover from the previous element)
-        prev_elem->setName( Form( "%s.part1", prev_name.c_str() ) );
+        prev_elem_toedit->setName( Form( "%s.part1", prev_name.c_str() ) );
         Element::ElementBase* next_elem = prev_elem->clone();
         next_elem->setName( Form( "%s.part2", prev_name.c_str() ) );
         next_elem->setS( elem->s()+elem->length() );
         next_elem->setLength( prev_length-elem->length() );
         elements_.push_back( next_elem );
       }
-      prev_elem->setLength( elem->s()-prev_elem->s() );
+      elements_.push_back( prev_elem_toedit );
       break;
     }
 
@@ -107,26 +109,23 @@ namespace Hector
 
     // sort all beamline elements according to their s-position
     std::sort( elements_.begin(), elements_.end(), Element::ElementsSorter() );
-
-    // enable a new computing of the drift elements
-    drifts_added_ = false;
   }
 
-  Element::ElementBase*
-  Beamline::getElement( const std::string& name )
+  const Element::ElementBase*
+  Beamline::getElement( const std::string& name ) const
   {
     for ( size_t i=0; i<elements_.size(); i++ ) {
-      Element::ElementBase* elem = elements_.at( i );
+      const Element::ElementBase* elem = elements_.at( i );
       if ( elem->name().find( name )!=std::string::npos ) return elem;
     }
     return 0;
   }
 
-  Element::ElementBase*
-  Beamline::getElement( float s )
+  const Element::ElementBase*
+  Beamline::getElement( float s ) const
   {
     for ( size_t i=0; i<elements_.size(); i++ ) {
-      Element::ElementBase* elem = elements_.at( i );
+      const Element::ElementBase* elem = elements_.at( i );
       if ( elem->s()>s ) continue;
       if ( elem->s()<=s and elem->s()+elem->length()>=s ) return elem;
     }
@@ -139,7 +138,7 @@ namespace Hector
     CLHEP::HepMatrix out = CLHEP::HepDiagMatrix( 6, 1 );
 
     for ( size_t i=0; i<elements_.size(); i++ ) {
-      Element::ElementBase* elem = elements_.at( i );
+      const Element::ElementBase* elem = elements_.at( i );
       out = out * elem->matrix( eloss, mp, qp );
     }
 
@@ -150,7 +149,7 @@ namespace Hector
   Beamline::length() const
   {
     if ( elements_.size()==0 ) return 0.;
-    Element::ElementBase* elem = *elements_.rbegin();
+    const Element::ElementBase* elem = *elements_.rbegin();
     return ( elem->s() + elem->length() );
   }
 
@@ -161,7 +160,7 @@ namespace Hector
        << " interaction point: " << interactionPoint() << "\n"
        << " length: " << length() << " m\n"
        << " elements list: ";
-    for ( ElementsMap::const_iterator it=elements_.begin(); it!=elements_.end(); it++ ) {
+    for ( Elements::const_iterator it=elements_.begin(); it!=elements_.end(); it++ ) {
       os << "\n  * " << *it;
     }
     os << "\n";
@@ -170,7 +169,7 @@ namespace Hector
   void
   Beamline::offsetElementsAfter( float s, const CLHEP::Hep2Vector& offset )
   {
-    for ( ElementsMap::iterator it=elements_.begin(); it!=elements_.end(); it++ ) {
+    for ( Elements::iterator it=elements_.begin(); it!=elements_.end(); it++ ) {
       Element::ElementBase* elem = *( it );
       if ( elem->s()<s ) continue;
       elem->offset( offset );
@@ -180,60 +179,51 @@ namespace Hector
   void
   Beamline::tiltElementsAfter( float s, const CLHEP::Hep2Vector& tilt )
   {
-    for ( ElementsMap::iterator it=elements_.begin(); it!=elements_.end(); it++ ) {
+    for ( Elements::iterator it=elements_.begin(); it!=elements_.end(); it++ ) {
       Element::ElementBase* elem = *( it );
       if ( elem->s()<s ) continue;
       elem->tilt( tilt );
     }
   }
 
-  void
-  Beamline::computeSequence()
+  Beamline*
+  Beamline::sequencedBeamline( const Beamline* beamline )
   {
-    // only compute the sequence once
-    if ( drifts_added_ ) return;
-
     // add the drifts between optical elements
     float pos = 0.;
     // brand new beamline to populate
-    Beamline tmp( *this, false );
+    Beamline* tmp = new Beamline( *beamline, false );
 
     // convert all empty spaces into drifts
-    for ( ElementsMap::const_iterator it=elements_.begin(); it!=elements_.end(); it++ ) {
+    for ( Elements::const_iterator it=beamline->begin(); it!=beamline->end(); it++ ) {
       const Element::ElementBase* elem = *( it );
       // skip the markers
-      if ( it!=elements_.begin() and elem->type()==Element::aMarker and elem->s()!=ip_.z() ) continue;
+      if ( it!=beamline->begin() and elem->type()==Element::aMarker and elem->s()!=beamline->interactionPoint().z() ) continue;
       // add a drift whenever there is a gap in s
       const float drift_length = elem->s()-pos;
       if ( drift_length>0. ) {
         try {
-          tmp.addElement( new Element::Drift( Form( "drift:%.4E", pos ).c_str(), pos, drift_length ), true );
+          tmp->addElement( new Element::Drift( Form( "drift:%.4E", pos ).c_str(), pos, drift_length ), true );
         } catch ( Exception& e ) { e.dump(); }
       }
-      try { tmp.addElement( elem ); } catch ( Exception& e ) { e.dump(); }
+      try { tmp->addElement( elem ); } catch ( Exception& e ) { e.dump(); }
       pos = elem->s()+elem->length();
     }
     // add the last drift
-    const float drift_length = tmp.length()-pos;
+    const float drift_length = tmp->length()-pos;
     if ( drift_length>0 ) {
       try {
-        tmp.addElement( new Element::Drift( Form( "drift:%.4E", pos ).c_str(), pos, drift_length ), true );
+        tmp->addElement( new Element::Drift( Form( "drift:%.4E", pos ).c_str(), pos, drift_length ), true );
       } catch ( Exception& e ) { e.dump(); }
     }
 
-    // replace the current beamline content with the sequenced one
-    clear();
-    setElements( tmp, true );
-    tmp.dump();
-
-    // make sure that the sequence cannot be computed again
-    drifts_added_ = true;
+    return tmp;
   }
 
   void
   Beamline::setElements( const Beamline& moth_bl, bool delete_after )
   {
-    for ( ElementsMap::const_iterator it=moth_bl.begin(); it!=moth_bl.end(); it++ ) {
+    for ( Elements::const_iterator it=moth_bl.begin(); it!=moth_bl.end(); it++ ) {
       addElement( ( *( it ) )->clone(), delete_after );
     }
   }

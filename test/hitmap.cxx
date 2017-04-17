@@ -30,7 +30,7 @@ main( int argc, char* argv[] )
 
   TH2D hitmap( "hitmap", "x (m)\\y (m)", 200, -0.15, 0.15, 200, -0.15, 0.15 );
 
-  const unsigned int num_particles = 50000;
+  const unsigned int num_particles = 5000;
   const float beam_lateral_width_ip = 16.63e-6, // in meters
               beam_angular_divergence_ip = 30.23e-6, // in radians
               particles_energy = 6500.; // in GeV
@@ -39,7 +39,7 @@ main( int argc, char* argv[] )
   gun.setElimits( particles_energy );
   gun.setXparams( 0., beam_lateral_width_ip );
   gun.setYparams( 0., beam_lateral_width_ip );
-  gun.setTXparams( Hector::Parameters::crossing_angle, beam_angular_divergence_ip );
+  gun.setTXparams( Hector::Parameters::crossing_angle/2., beam_angular_divergence_ip );
   gun.setTYparams( 0., beam_angular_divergence_ip );
   //Hector::BeamProducer::Xscanner gun( num_particles, Hector::Parameters::beam_energy, 0., 0.01 );
 
@@ -55,7 +55,7 @@ main( int argc, char* argv[] )
       //p.dump();
       if ( prop.stopped( p, s_pos ) ) { /*std::cout << "prout" << std::endl;*/ num_stopped++; continue; }
       const CLHEP::Hep2Vector pos( p.stateVectorAt( s_pos ).position() );
-      std::cout << s_pos << " -> " << pos << std::endl;
+      //std::cout << s_pos << " -> " << pos << std::endl;
       hitmap.Fill( pos.x(), pos.y() );
     } catch ( Hector::Exception& e ) {
       e.dump();

@@ -37,8 +37,8 @@ namespace Hector
         /** \note \f$
          * \mathbf{M} = \left(
          * \begin{array}{cccccc}
-         * \cos{\frac{L}{r}} & r \sin{\frac{L}{r}} & 0 & 0 & \frac{2r}{E_{\mathrm{b}}} \sin^2{\frac{L}{2r}} & 0\\
-         * \frac{-1}{r} \sin{\frac{L}{r}} & \cos{\frac{L}{r}} & 0 & 0 & \frac{1}{E_{\mathrm{b}}}\sin{\frac{L}{r}} & 0\\
+         * \cos{\theta} & r \sin{\theta} & 0 & 0 & \frac{2r}{E_{\mathrm{b}}} \sin^2{\frac{\theta}{2}} & 0\\
+         * \frac{-1}{r} \sin{\theta} & \cos{\theta} & 0 & 0 & \frac{1}{E_{\mathrm{b}}}\sin{\theta} & 0\\
          * 0 & 0 & 1 & L & 0 & 0\\
          * 0 & 0 & 0 & 1 & 0 & 0\\
          * 0 & 0 & 0 & 0 & 1 &0\\
@@ -46,9 +46,9 @@ namespace Hector
          * \end{array}
          * \right)
          * \f$
-         * assuming \f$ 1/r \equiv k = k_{0} \cdot \frac{p_{0}}{p_{0} - \mathrm{d}p} \cdot \frac{q_{\mathrm{part}}}{q_{\mathrm{b}}} \f$ and \f$ E_{\mathrm{b}}=7000\f$ GeV.
+         * assuming \f$\theta = L/r\f$, \f$ 1/r \equiv k = k_{0} \cdot \frac{p_{0}}{p_{0} - \mathrm{d}p} \cdot \frac{q_{\mathrm{part}}}{q_{\mathrm{b}}} \f$, and \f$ E_{\mathrm{b}}\f$ = 7000 GeV.
          */
-        /// \warning Numerical sensitivity expected with \f$ \frac{r}{E_{\mathrm{b}}} \left(1-\cos{\frac{L}{r}}\right)\f$.
+        /// \note Numerical sensitivity (~\f$10^{-8}\f$ relative precision on a 64-bit Intel machine) expected with \f$ \frac{r}{E_{\mathrm{b}}} \left(1-\cos{\theta}\right)\f$.
         ///  Using \f$ \cos{2x} = 1-2\sin^{2}{x} \f$ to transform this term (see the variable called "simp")
         CLHEP::HepMatrix matrix( float, float, int ) const;
 
@@ -69,8 +69,8 @@ namespace Hector
         /** \note \f$
          * \mathbf{M}_{\mathrm{no~bend.}} = \left(
          * \begin{array}{cccccc}
-         * \cos{\frac{L}{r}} & r \sin{\frac{L}{r}} & 0 & 0 & 0 & 0\\
-         * \frac{-1}{r} \sin{\frac{L}{r}} & \cos{\frac{L}{r}} & 0 & 0 & 0 & 0\\
+         * \cos{\theta} & r \sin{\theta} & 0 & 0 & 0 & 0\\
+         * \frac{-1}{r} \sin{\theta} & \cos{\theta} & 0 & 0 & 0 & 0\\
          * 0 & 0 & 1 & L & 0 & 0\\
          * 0 & 0 & 0 & 1 & 0 & 0\\
          * 0 & 0 & 0 & 0 & 1 & 0\\
@@ -80,8 +80,8 @@ namespace Hector
          * \f$\f$
          * \mathbf{M}_{\mathrm{bend.}} = \left(
          * \begin{array}{cccccc}
-         * \cos{\frac{L}{r}} & r \sin{\frac{L}{r}} & 0 & 0 & \frac{2r}{E_{\mathrm{b}}} \sin^2{\frac{L}{2r}} & 0\\
-         * \frac{-1}{r} \sin{\frac{L}{r}} & \cos{\frac{L}{r}} & 0 & 0 & \frac{1}{E_{\mathrm{b}}} \sin{\frac{L}{r}} & 0\\
+         * \cos{\theta} & r \sin{\theta} & 0 & 0 & \frac{2r}{E_{\mathrm{b}}} \sin^2{\frac{\theta}{2}} & 0\\
+         * \frac{-1}{r} \sin{\theta} & \cos{\theta} & 0 & 0 & \frac{1}{E_{\mathrm{b}}} \sin{\theta} & 0\\
          * 0 & 0 & 1 & L & 0 &0\\
          * 0 & 0 & 0 & 1 & 0 &0\\
          * 0 & 0 & 0 & 0 & 1 & 0\\
@@ -89,7 +89,7 @@ namespace Hector
          * \end{array}
          * \right)
          * \f$
-         * assuming \f$ \frac{1}{r} \equiv k =  k_{0} \cdot \frac{p_{0}}{p_{0} - \mathrm{d}p} \cdot \frac{q_{\mathrm{part}}}{q_{\mathrm{b}}} \f$
+         * assuming \f$\theta = L/r\f$, \f$ \frac{1}{r} \equiv k =  k_{0} \cdot \frac{p_{0}}{p_{0} - \mathrm{d}p} \cdot \frac{q_{\mathrm{part}}}{q_{\mathrm{b}}} \f$
          */
         CLHEP::HepMatrix matrix( float, float, int ) const;
 

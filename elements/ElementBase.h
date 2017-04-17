@@ -187,8 +187,9 @@ namespace Hector
         return false;
       }
     };
-
   }
+  /// List of elements
+  typedef std::vector<Element::ElementBase*> Elements;
 }
 
 #endif

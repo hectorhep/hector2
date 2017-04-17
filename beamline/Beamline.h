@@ -18,8 +18,6 @@ namespace Hector
   class Beamline
   {
     public:
-      /// List of elements in the beamline
-      typedef std::vector<Element::ElementBase*> ElementsMap;
       /// List of markers in the beamline
       typedef std::map<float,Element::Marker> MarkersMap;
 
@@ -32,6 +30,9 @@ namespace Hector
       /// \param[in] ip Position of the interaction point
       Beamline( float length, const CLHEP::Hep3Vector& ip=CLHEP::Hep3Vector() );
       ~Beamline();
+
+      /// Compute all drifts between each element in the beamline
+      static Beamline* sequencedBeamline( const Beamline* );
 
       /// Remove and clean all elements in the beamline
       void clear();
@@ -47,27 +48,27 @@ namespace Hector
       /// \param[in] delete_after Is the parent element to be deleted afterwards?
       void addElement( const Element::ElementBase* elem, bool delete_after=false );
       /// Get the full beamline content (vector of elements)
-      const ElementsMap& elements() const { return elements_; }
+      const Elements& elements() const { return elements_; }
       /// Retrieve a beamline element given its name
       /// \param[in] name Name of the element to be retrieved
-      Element::ElementBase* getElement( const std::string& name );
+      const Element::ElementBase* getElement( const std::string& name ) const;
       /// Retrieve a beamline element given its name
       /// \param[in] name Name of the element to be retrieved
-      Element::ElementBase* getElement( const char* name ) { return getElement( std::string( name ) ); }
+      const Element::ElementBase* getElement( const char* name ) const { return getElement( std::string( name ) ); }
       /// Retrieve a beamline element given its s-position
       /// \param[in] s s-position of the element (computed wrt the interaction point)
-      Element::ElementBase* getElement( float s );
+      const Element::ElementBase* getElement( float s ) const;
       /// Number of elements in the beamline
       unsigned short numElements() const { return elements_.size(); }
 
       /// Iterator to the first element in the beamline
-      ElementsMap::iterator begin() { return elements_.begin(); }
+      Elements::iterator begin() { return elements_.begin(); }
       /// Iterator to the last element in the beamline
-      ElementsMap::iterator end() { return elements_.end(); }
+      Elements::iterator end() { return elements_.end(); }
       /// Constant iterator to the first element in the beamline
-      const ElementsMap::const_iterator begin() const { return elements_.begin(); }
+      const Elements::const_iterator begin() const { return elements_.begin(); }
       /// Constant iterator to the last element in the beamline
-      const ElementsMap::const_iterator end() const { return elements_.end(); }
+      const Elements::const_iterator end() const { return elements_.end(); }
 
       /// Add a new marker element to the collection
       void addMarker( const Element::Marker& marker );
@@ -91,9 +92,6 @@ namespace Hector
       /// Total propagation matrix of all combined beamline elements
       CLHEP::HepMatrix matrix( float, float, int );
 
-      /// Compute all drifts between each element in the beamline
-      void computeSequence();
-
     private:
       /// Copy the list of elements from one beamline to this one
       void setElements( const Beamline& moth_bl, bool delete_after=false );
@@ -103,10 +101,9 @@ namespace Hector
       CLHEP::Hep3Vector ip_;
 
       /// List of elements defining the beamline
-      ElementsMap elements_;
+      Elements elements_;
       /// List of markers in the beamline
       MarkersMap markers_;
-      bool drifts_added_;
   };
 }
 

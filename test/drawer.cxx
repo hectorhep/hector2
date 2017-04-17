@@ -21,12 +21,21 @@ main( int argc, char* argv[] )
   }
   // general plotting parameters
   const float max_s = ( argc>3 ) ? atof( argv[3] ) : 500.;
-  const unsigned int num_particles = 50;
+  const unsigned int num_particles = 1;
 
   Hector::Parser::MADX parser_beam1( argv[1], "IP5", +1, max_s ),
                        parser_beam2( argv[2], "IP5", +1, max_s );
 
   // look at both the beamlines
+
+  const Hector::Elements rps = parser_beam1.romanPots();
+  std::cout << "---> beamline 1 has " << rps.size() << " roman pots!" << std::endl;
+  for ( unsigned short i=0; i<rps.size(); i++ ) {
+    std::cout << " >> Roman pot " << rps[i]->name() << " at s=" << rps[i]->s() << " m" << std::endl;
+  }
+
+  //parser_beam1.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( +0.022, 0. ) );
+  //parser_beam2.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( -0.022, 0. ) );
 
   Hector::Propagator prop1( parser_beam1.beamline() ),
                      prop2( parser_beam2.beamline() );
@@ -43,7 +52,7 @@ main( int argc, char* argv[] )
   Hector::BeamProducer::gaussianParticleGun gun;
   gun.setXparams( 0., beam_lateral_width_ip );
   gun.setYparams( 0., beam_lateral_width_ip );
-  gun.setTXparams( Hector::Parameters::crossing_angle, beam_angular_divergence_ip );
+  gun.setTXparams( Hector::Parameters::crossing_angle/2., beam_angular_divergence_ip );
   gun.setTYparams( 0., beam_angular_divergence_ip );
   //Hector::BeamProducer::TYscanner gun( num_particles, Hector::Parameters::beam_energy, -1, 1, max_s );
 
@@ -74,7 +83,9 @@ main( int argc, char* argv[] )
         gr_y.SetPoint( j, it->s(), it->stateVector().position().y() );
       }
       gr_x.SetLineColor( kRed );
+      gr_x.SetLineStyle( 2 );
       gr_y.SetLineColor( kRed );
+      gr_y.SetLineStyle( 2 );
       mg2_x.Add( dynamic_cast<TGraph*>( gr_x.Clone() ) );
       mg2_y.Add( dynamic_cast<TGraph*>( gr_y.Clone() ) );
     }

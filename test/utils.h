@@ -38,15 +38,15 @@ static const float alpha = 0.8;
 void
 drawBeamline( const char axis, const Hector::Beamline* bl, const unsigned short beam, const char* ip="IP5", float min_s=-999., float max_s=999. )
 {
-  const float size_y = 0.1, // general scale of the element x/y position
-              scale_y = 3., // element x/y displacement magnification factor
+  const float size_y = 0.05, // general scale of the element x/y position
+              scale_y = 5., // element x/y displacement magnification factor
               offset_at_s = 120.;
 
   TLatex txt;
   txt.SetTextFont( 130+2 );
 
-  for ( Hector::Beamline::ElementsMap::const_iterator it=bl->begin(); it!=bl->end(); it++ ) {
-    Hector::Element::ElementBase* elem = *it;
+  for ( Hector::Elements::const_iterator it=bl->begin(); it!=bl->end(); it++ ) {
+    const Hector::Element::ElementBase* elem = *it;
     if ( elem->type()==Hector::Element::aDrift ) continue; //FIXME
     if ( min_s!=-999. and elem->s()<min_s ) continue;
     if ( max_s!=+999. and elem->s()>max_s ) continue;
@@ -55,31 +55,33 @@ drawBeamline( const char axis, const Hector::Beamline* bl, const unsigned short 
     // introduce a x- and y-offset for drawing purposes
     int offset = 0;
     if ( elem->s()>offset_at_s ) {
-      if ( beam==0 ) offset = +1;
-      if ( beam==1 ) offset = -1;
+      if ( beam==0 ) offset = -1;
+      if ( beam==1 ) offset = +1;
     }
-    const float pos_x_ini = elem->s(),
+    const float pos_rel = ( axis=='x' ) ? elem->x() : elem->y(),
+                pos_x_ini = elem->s(),
                 pos_x_end = pos_x_ini + elem->length(),
-                pos_y_low = ( ( axis=='x' ) ? elem->x() : elem->y() )*scale_y-size_y/2.+offset*size_y,
+                pos_y_low = ( ( beam==0 ) ? -1 : 0 ) * ( size_y ) + pos_rel*scale_y + offset*size_y,
                 pos_y_high = pos_y_low+size_y;
 
     // ROOT and its brilliant memory management...
-    TPave* elem_box = new TPave( pos_x_ini, pos_y_low, pos_x_end, pos_y_high, 0 );
-    //elem_box->SetLineColor( kGray );
+    TPave* elem_box = new TPave( pos_x_ini, pos_y_low, pos_x_end, pos_y_high, 1 );
+    elem_box->SetLineColor( kGray );
     //elem_box->SetFillStyle( 1001 );
     elem_box->SetFillColorAlpha( elementColour( elem ), alpha );
     elem_box->Draw();
 
-    if ( elem->type()==Hector::Element::aMarker and elem->name()==ip ) {
+    if ( elem->type()!=Hector::Element::aMarker or elem->name()!=ip ) {
+      txt.SetTextSize( 0.015 );
+      txt.SetTextAngle( 90. );
+      txt.SetTextAlign( 22 );
+      txt.DrawLatex( elem->s()+elem->length()/2., 3.* ( ( beam==0 ) ? -1 : +1 ) * ( size_y ), elem->name().c_str() );
+    }
+    else {
       txt.SetTextSize( 0.035 );
       txt.SetTextAlign( 12 );
       txt.SetTextAngle( 45. );
       txt.DrawLatex( pos_x_ini, 0., elem->name().c_str() );
-    }
-    else {
-      txt.SetTextSize( 0.015 );
-      txt.SetTextAngle( 90. );
-      txt.DrawLatex( elem->s()+elem->length()/2., pos_y_low, elem->name().c_str() );
     }
 
   }
@@ -114,7 +116,7 @@ class elementsLegend : public TLegend
 
     void feedBeamline( const Hector::Beamline* bl )
     {
-      for ( Hector::Beamline::ElementsMap::const_iterator it=bl->begin(); it!=bl->end(); it++ ) {
+      for ( Hector::Elements::const_iterator it=bl->begin(); it!=bl->end(); it++ ) {
         const Hector::Element::Type type = ( *it )->type();
         // skip the markers and drifts
         if ( type==Hector::Element::aMarker ) continue;
@@ -124,7 +126,8 @@ class elementsLegend : public TLegend
 
         TPave* pv = new TPave( 0., 0., 0., 0., 0 );
         pv->SetFillColorAlpha( elementColour( ( *it ) ), alpha );
-        pv->SetLineColor( kWhite );
+        pv->SetLineColor( kGray );
+        pv->SetLineWidth( 4 );
         std::ostringstream os; os << type;
         TLegend::AddEntry( pv, os.str().c_str(), "f" );
         already_in_.insert( std::pair<Hector::Element::Type, TPave*>( type, pv ) );

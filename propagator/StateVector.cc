@@ -29,6 +29,8 @@ namespace Hector
     // store in m
     ( *this )[X] = x;
     ( *this )[Y] = y;
+    /*( *this )[X] = x*1e6;
+    ( *this )[Y] = y*1e6;*/
   }
 
   CLHEP::Hep2Vector
@@ -36,24 +38,28 @@ namespace Hector
   {
     // return in m
     return CLHEP::Hep2Vector( ( *this )[X], ( *this )[Y] );
+    //return CLHEP::Hep2Vector( ( *this )[X]*1e-6, ( *this )[Y]*1e-6 );
   }
 
   void
   StateVector::setAngles( const float& tx, const float& ty )
   {
     // store in rad
-    /*( *this )[TX] = tx;
-    ( *this )[TY] = ty;*/
-    ( *this )[TX] = tan( tx );
-    ( *this )[TY] = tan( ty );
+    ( *this )[TX] = tx;
+    ( *this )[TY] = ty;
+    /*( *this )[TX] = tx*1e6;
+    ( *this )[TY] = ty*1e6;*/
+    /*( *this )[TX] = tan( tx );
+    ( *this )[TY] = tan( ty );*/
   }
 
   CLHEP::Hep2Vector
   StateVector::angles() const
   {
     // return in rad
-    //return CLHEP::Hep2Vector( ( *this )[TX]), ( *this )[TY] );
-    return math::atan2( CLHEP::Hep2Vector( ( *this )[TX], ( *this )[TY] ) );
+    return CLHEP::Hep2Vector( ( *this )[TX], ( *this )[TY] );
+    //return CLHEP::Hep2Vector( ( *this )[TX]*1e-6, ( *this )[TY]*1e-6 );
+    //return math::atan2( CLHEP::Hep2Vector( ( *this )[TX], ( *this )[TY] ) );
   }
 
   void

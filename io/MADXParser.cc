@@ -7,10 +7,11 @@ namespace Hector
     std::regex MADX::rgx_typ_( "^\\%[0-9]{0,}(s|le)$" );
     std::regex MADX::rgx_hdr_( "^\\@ (\\w+) +\\%([0-9]+s|le) +\\\"?([^\"\\n]+)" );
     std::regex MADX::rgx_elm_hdr_( "^\\s{0,}([\\*\\$])(.+)" );
+    std::regex MADX::rgx_rp_name_( "XRP[V,H]\\.[0-9a-zA-Z]{4}\\.B[1,2]" );
 
     MADX::MADX( const char* filename, const char* ip_name, int direction, float max_s, bool compute_sequence ) :
-      ip_name_( ip_name ), dir_( direction/abs( direction ) ), beamline_( 0 ),
-      s_offset_( 0. ), found_interaction_point_( false ),
+      beamline_( 0 ), raw_beamline_( 0 ),
+      ip_name_( ip_name ), dir_( direction/abs( direction ) ), s_offset_( 0. ), found_interaction_point_( false ),
       has_next_element_( false )
     {
       in_file_ = std::ifstream( filename );
@@ -18,8 +19,8 @@ namespace Hector
       try {
         parseHeader();
 
-        beamline_ = new Beamline( max_s );
-        if ( max_s<0. and header_float_.hasKey( "length" ) ) beamline_->setLength( header_float_.get( "length" ) );
+        raw_beamline_ = new Beamline( max_s );
+        if ( max_s<0. and header_float_.hasKey( "length" ) ) raw_beamline_->setLength( header_float_.get( "length" ) );
         if ( header_float_.hasKey( "energy" ) and Parameters::beam_energy!=header_float_.get( "energy" ) ) {
           Parameters::beam_energy = header_float_.get( "energy" );
           PrintWarning( Form( "Beam energy changed to %.1f GeV to match the MAD-X optics parameters", Parameters::beam_energy ) );
@@ -41,7 +42,9 @@ namespace Hector
         // then parse all elements
         parseElements();
 
-        if ( compute_sequence ) beamline_->computeSequence();
+        if ( !compute_sequence ) return;
+
+        beamline_ = Beamline::sequencedBeamline( raw_beamline_ );
 
       } catch ( Exception& e ) { e.dump(); }
     }
@@ -50,6 +53,7 @@ namespace Hector
     {
       if ( in_file_.is_open() ) in_file_.close();
       if ( beamline_ ) delete beamline_;
+      if ( raw_beamline_ ) delete raw_beamline_;
     }
 
     void
@@ -65,6 +69,22 @@ namespace Hector
       if ( header_str_.hasKey( "particle" ) ) os << "\n\t Beam particles: " << header_str_.get( "particle" );
       if ( header_float_.hasKey( "length" ) ) os << "\n\t Maximal beamline length: " << header_float_.get( "length" ) << " m";
       PrintInfo( os.str().c_str() );
+    }
+
+    Elements
+    MADX::romanPots() const
+    {
+      Elements out;
+      if ( !raw_beamline_ ) {
+        PrintWarning( "Beamline not yet parsed! returning an empty list" );
+        return out;
+      }
+      for ( Elements::const_iterator it=raw_beamline_->begin(); it!=raw_beamline_->end(); it++ ) {
+        Element::ElementBase* elem = *( it );
+        if ( !std::regex_match( elem->name(), rgx_rp_name_ ) ) continue;
+        out.push_back( elem );
+      }
+      return out;
     }
 
     void
@@ -146,7 +166,7 @@ namespace Hector
           if ( elem->name()==ip_name_ ) {
             found_interaction_point_ = true;
             s_offset_ = elem->s();
-            beamline_->addElement( elem, true );
+            raw_beamline_->addElement( elem, true );
             return;
           }
           delete elem;
@@ -178,11 +198,11 @@ namespace Hector
         try {
           elem = parseElement( values );
           if ( !elem ) continue;
-          if ( fabs( elem->s() )>beamline_->maxLength() ) {
+          if ( fabs( elem->s() )>raw_beamline_->maxLength() ) {
             if ( has_next_element_ ) throw Exception( __PRETTY_FUNCTION__, "Finished to parse the beamline", Info );
             has_next_element_ = true;
           }
-          beamline_->addElement( elem, true );
+          raw_beamline_->addElement( elem, true );
         } catch ( Exception& e ) {
           if ( e.type()==Info ) break; // finished to parse
           e.dump();
@@ -222,7 +242,6 @@ namespace Hector
 
 
       const float s = s_abs-s_offset_-length;
-      std::cout << "name: " << name << " at s=" << s << " :: " << s_abs << std::endl;
 
       // convert the element type from string to object
       const std::string elem_type = lowercase( trim( elem_map_str.get( "keyword" ) ) );
@@ -260,15 +279,18 @@ namespace Hector
           } break;
           case Element::aVerticalKicker: {
             const float vkick = elem_map_floats.get( "vkick" );
-            if ( vkick==0. ) throw Exception( __PRETTY_FUNCTION__, Form( "Trying to add a vertical kicker (%s) with kick=%.2e", name.c_str(), vkick ), JustWarning );
+            //if ( vkick==0. ) throw Exception( __PRETTY_FUNCTION__, Form( "Trying to add a vertical kicker (%s) with kick=%.2e", name.c_str(), vkick ), JustWarning );
+            if ( vkick==0. ) return 0;
 
             elem = new Element::VerticalKicker( name, s, length, vkick );
           } break;
-          case Element::aRectangularCollimator: { elem = new Element::RectangularCollimator( name, s, length ); } break;
+          case Element::aRectangularCollimator: {
+            elem = new Element::RectangularCollimator( name, s, length );
+          } break;
           case Element::aMarker: { elem = new Element::Marker( name, s, length ); } break;
           case Element::aMonitor:
           case Element::anInstrument: {
-            beamline_->addMarker( Element::Marker( name, s, length ) );
+            raw_beamline_->addMarker( Element::Marker( name, s, length ) );
             has_next_element_ = false;
             return 0;
           } break;

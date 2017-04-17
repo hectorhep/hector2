@@ -20,13 +20,12 @@ namespace Hector
     const double energy_loss = ( non_linear )
       ? Parameters::beam_energy-part.lastStateVector().energy()
       : 0.;
-    //const double energy_loss = Parameters::beam_energy-part.lastStateVector().energy();
     //part.firstStateVector().setEnergy( energy_loss );
     const float first_s = part.firstS();
 
     try {
 
-      for ( Beamline::ElementsMap::const_iterator it=beamline_->begin()+1; it!=beamline_->end(); it++ ) {
+      for ( Elements::const_iterator it=beamline_->begin()+1; it!=beamline_->end(); it++ ) {
         // extract the previous and the current element in the beamline
         const Element::ElementBase *prev_elem = *( it-1 ), *elem = *( it );
 
@@ -79,7 +78,7 @@ namespace Hector
   bool
   Propagator::stopped( Particle& part, float s_max ) const
   {
-    for ( Beamline::ElementsMap::const_iterator it=beamline_->begin()+1; it!=beamline_->end(); it++ ) {
+    for ( Elements::const_iterator it=beamline_->begin()+1; it!=beamline_->end(); it++ ) {
       // extract the previous and the current element in the beamline
       const Element::ElementBase *prev_elem = *( it-1 ), *elem = *( it );
       if ( s_max>0 and elem->s()>s_max ) return false;
@@ -116,6 +115,9 @@ namespace Hector
     CLHEP::HepVector prop = elem->matrix( eloss, ini_pos.stateVector().m(), qp ) * ( ini_pos.stateVector().vector()-shift.vector() ) + shift.vector();
     // perform the propagation (assuming that mass is conserved...)
     StateVector vec( prop, ini_pos.stateVector().m() );
+    std::cout << "type: " << elem->type() << std::endl;
+std::cout << "before: " << ini_pos.stateVector() << std::endl;
+std::cout << "after: " << prop << std::endl;
 
     // convert the angles -> tan-1( angle )
     const CLHEP::Hep2Vector ang_old = vec.angles();
