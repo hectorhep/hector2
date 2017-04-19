@@ -28,8 +28,10 @@ namespace Hector
       for ( Elements::const_iterator it=beamline_->begin()+1; it!=beamline_->end(); it++ ) {
         // extract the previous and the current element in the beamline
         const Element::ElementBase *prev_elem = *( it-1 ), *elem = *( it );
+        //if ( it!=beamline_->end()-1 and ( elem+1 )->s()>s_max ) break;
+        if ( elem->s()>s_max ) break;
 
-        const Particle::Position in_pos = part.lastPosition();
+        const Particle::Position in_pos( *part.rbegin() );
 
         // initialise the outwards position
         Particle::Position out_pos( -1., StateVector() );
@@ -54,16 +56,21 @@ namespace Hector
         }
         if ( out_pos.s()<0. ) continue; // no new point to add to the particle's trajectory
 
-        part.addPosition( out_pos );
+        part.addPosition( out_pos.s(), out_pos.stateVector() );
 
         const Aperture::ApertureBase* aper = prev_elem->aperture();
         if ( aper and aper->type()!=Aperture::anInvalidType ) {
           const CLHEP::Hep2Vector pos_prev_elem( part.stateVectorAt( prev_elem->s() ).position() );
           if ( !aper->contains( pos_prev_elem ) ) {
-            std::ostringstream os; os << pos_prev_elem;
-            throw Exception( __PRETTY_FUNCTION__, Form( "Particle stopped at the entrance of %s.\n\tEntering at %s", prev_elem->name().c_str(), os.str().c_str() ), JustWarning );
+            std::ostringstream os1, os2, os3;
+            os1 << prev_elem->type(); os2 << pos_prev_elem; os3 << aper->position();
+            throw Exception( __PRETTY_FUNCTION__,
+                             Form( "Particle stopped at the entrance of %s %s.\n\tEntering at %s\n\tAperture centre at %s\n\tDistance to aperture centre: %.2f cm",
+                                   prev_elem->name().c_str(), os1.str().c_str(), os2.str().c_str(), os3.str().c_str(), ( aper->position()-pos_prev_elem ).mag()*1.e2 ),
+                             Info );
           }
           // has passed through the element?
+          //std::cout << prev_elem->s()+prev_elem->length() << "\t" << part.stateVectorAt( prev_elem->s()+prev_elem->length() ).position() << std::endl;
           if ( !aper->contains( part.stateVectorAt( prev_elem->s()+prev_elem->length() ).position() ) ) {
             throw Exception( __PRETTY_FUNCTION__, Form( "Particle stopped inside %s", prev_elem->name().c_str() ), JustWarning );
           }
@@ -72,7 +79,7 @@ namespace Hector
     } catch ( Exception& e ) { e.dump(); }
 
     // finish by sorting all positions according to their s-coordinate
-    part.sortPositions();
+    //part.sortPositions();
   }
 
   bool
@@ -115,9 +122,9 @@ namespace Hector
     CLHEP::HepVector prop = elem->matrix( eloss, ini_pos.stateVector().m(), qp ) * ( ini_pos.stateVector().vector()-shift.vector() ) + shift.vector();
     // perform the propagation (assuming that mass is conserved...)
     StateVector vec( prop, ini_pos.stateVector().m() );
-    std::cout << "type: " << elem->type() << std::endl;
+    /*std::cout << "type: " << elem->type() << std::endl;
 std::cout << "before: " << ini_pos.stateVector() << std::endl;
-std::cout << "after: " << prop << std::endl;
+std::cout << "after: " << prop << std::endl;*/
 
     // convert the angles -> tan-1( angle )
     const CLHEP::Hep2Vector ang_old = vec.angles();

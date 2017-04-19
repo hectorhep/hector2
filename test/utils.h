@@ -36,10 +36,10 @@ elementColour( const Hector::Element::ElementBase* elem )
 static const float alpha = 0.8;
 
 void
-drawBeamline( const char axis, const Hector::Beamline* bl, const unsigned short beam, const char* ip="IP5", float min_s=-999., float max_s=999. )
+drawBeamline( const char axis, const Hector::Beamline* bl, const unsigned short beam, const char* ip="IP5", float scale=0.2, float min_s=-999., float max_s=999. )
 {
-  const float size_y = 0.05, // general scale of the element x/y position
-              scale_y = 5., // element x/y displacement magnification factor
+  const float size_y = scale/4., // general scale of the element x/y position
+              scale_y = 0.8, // element x/y displacement magnification factor
               offset_at_s = 120.;
 
   TLatex txt;
@@ -54,14 +54,14 @@ drawBeamline( const char axis, const Hector::Beamline* bl, const unsigned short 
 
     // introduce a x- and y-offset for drawing purposes
     int offset = 0;
-    if ( elem->s()>offset_at_s ) {
+    /*if ( elem->s()>offset_at_s ) {
       if ( beam==0 ) offset = -1;
       if ( beam==1 ) offset = +1;
-    }
+    }*/
     const float pos_rel = ( axis=='x' ) ? elem->x() : elem->y(),
                 pos_x_ini = elem->s(),
                 pos_x_end = pos_x_ini + elem->length(),
-                pos_y_low = ( ( beam==0 ) ? -1 : 0 ) * ( size_y ) + pos_rel*scale_y + offset*size_y,
+                pos_y_low = ( ( beam==0 ) ? -1 : 0 ) * ( size_y ) + pos_rel*scale_y /*+ offset*size_y*/,
                 pos_y_high = pos_y_low+size_y;
 
     // ROOT and its brilliant memory management...

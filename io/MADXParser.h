@@ -43,7 +43,8 @@ namespace Hector
 
       public:
         /// Class constructor
-        MADX( const char*, const char*, int, float max_s=-1., bool compute_sequence=true );
+        /// \param[in] max_s Maximal s-coordinate at which the Twiss file must be parsed
+        MADX( const char*, const char*, int, float max_s=-1. );
         ~MADX();
 
         /// Retrieve the sequenced beamline parsed from the MAD-X output file
@@ -80,8 +81,8 @@ namespace Hector
         Beamline* beamline_;
         Beamline* raw_beamline_;
 
-        std::string ip_name_;
         int dir_;
+        std::string ip_name_;
         float s_offset_;
         bool found_interaction_point_;
         // quantities needed whenever direction == 1 (FIXME)

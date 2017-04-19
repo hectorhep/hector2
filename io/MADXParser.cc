@@ -9,9 +9,9 @@ namespace Hector
     std::regex MADX::rgx_elm_hdr_( "^\\s{0,}([\\*\\$])(.+)" );
     std::regex MADX::rgx_rp_name_( "XRP[V,H]\\.[0-9a-zA-Z]{4}\\.B[1,2]" );
 
-    MADX::MADX( const char* filename, const char* ip_name, int direction, float max_s, bool compute_sequence ) :
-      beamline_( 0 ), raw_beamline_( 0 ),
-      ip_name_( ip_name ), dir_( direction/abs( direction ) ), s_offset_( 0. ), found_interaction_point_( false ),
+    MADX::MADX( const char* filename, const char* ip_name, int direction, float max_s ) :
+      beamline_( 0 ), raw_beamline_( 0 ), dir_( direction/abs( direction ) ),
+      ip_name_( ip_name ), s_offset_( 0. ), found_interaction_point_( false ),
       has_next_element_( false )
     {
       in_file_ = std::ifstream( filename );
@@ -41,8 +41,6 @@ namespace Hector
 
         // then parse all elements
         parseElements();
-
-        if ( !compute_sequence ) return;
 
         beamline_ = Beamline::sequencedBeamline( raw_beamline_ );
 
@@ -273,7 +271,8 @@ namespace Hector
           } break;
           case Element::anHorizontalKicker: {
             const float hkick = elem_map_floats.get( "hkick" );
-            if ( hkick==0. ) throw Exception( __PRETTY_FUNCTION__, Form( "Trying to add a horizontal kicker (%s) with kick=%.2e", name.c_str(), hkick ), JustWarning );
+            //if ( hkick==0. ) throw Exception( __PRETTY_FUNCTION__, Form( "Trying to add a horizontal kicker (%s) with kick=%.2e", name.c_str(), hkick ), JustWarning );
+            if ( hkick==0. ) return 0;
 
             elem = new Element::HorizontalKicker( name, s, length, hkick );
           } break;
@@ -308,6 +307,7 @@ namespace Hector
         if ( !elem ) return 0;
 
         const CLHEP::Hep2Vector relpos( elem_map_floats.get( "x" ), elem_map_floats.get( "y" ) );
+        //const CLHEP::Hep2Vector relpos;
         const int direction = 1; //FIXME
         if ( direction<0 ) {
           const CLHEP::Hep2Vector disp( elem_map_floats.get( "dx" ), elem_map_floats.get( "dy" ) ),

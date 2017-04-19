@@ -24,11 +24,14 @@ main( int argc, char* argv[] )
   Hector::Parser::MADX parser( argv[1], ip, +1, s_pos );
   parser.printInfo();
 
-  // look at both the beamlines
+  parser.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( -0.097, 0. ) );
+  //parser.romanPots()
 
   Hector::Propagator prop( parser.beamline() );
 
-  TH2D hitmap( "hitmap", "x (m)\\y (m)", 200, -0.15, 0.15, 200, -0.15, 0.15 );
+  TH2D hitmap( "hitmap", "x (m)\\y (m)", 200, -0.1, 0.1, 200, -0.1, 0.1 );
+  //TH2D hitmap( "hitmap", "x (m)\\y (m)", 200, -0.005, 0.005, 200, -0.005, 0.005 );
+  //TH2D hitmap( "hitmap", "x (m)\\y (m)", 200, -0.099, -0.09, 200, -0.05, 0.05 );
 
   const unsigned int num_particles = 5000;
   const float beam_lateral_width_ip = 16.63e-6, // in meters

@@ -32,49 +32,39 @@ namespace Hector
                                                   "Previous mass was %.3f GeV, new mass is %.3f GeV",
                                                   lastStateVector().m(), pos.stateVector().m() ), Fatal );
     }
-    positions_.push_back( pos );
+    positions_.insert( pos.pair() );
     stopped_ = stopped;
-  }
-
-  void
-  Particle::sortPositions()
-  {
-    // sort all positions according to their s-component
-    std::sort( positions_.begin(), positions_.end(), Particle::PositionsSorter() );
   }
 
   StateVector
   Particle::stateVectorAt( float s ) const
   {
-    for ( PositionsMap::const_iterator it=positions_.begin()+1; it!=positions_.end(); it++ ) {
-      const float s_before = ( it-1 )->s(), s_after = it->s();
-      // first check if the requested version was already recorded
-      if ( s==s_before ) return ( it-1 )->stateVector();
-      if ( s==s_after ) return it->stateVector();
+    PositionsMap::const_iterator it = positions_.find( s );
+    if ( it!=positions_.end() ) return it->second;
 
-      // if not already there, interpolate
-      if ( s<s_before or s>s_after ) continue;
+    PositionsMap::const_iterator lower_it = --positions_.upper_bound( s ),
+                                 upper_it = positions_.upper_bound( s );
 
-std::cout << s_before << " < " << s << " < " << s_after << std::endl;
+    if ( lower_it==positions_.end() ) return StateVector();
 
-      const StateVector sv_before = ( it-1 )->stateVector(),
-                        sv_after = it->stateVector();
-      const CLHEP::Hep2Vector in = sv_before.position(),
-                              out = sv_after.position();
+    //PrintInfo( Form( "Interpolating for s = %.2f between %.2f and %.2f", s, lower_it->first, upper_it->first ) );
 
-      const float drift_length = s_after-s_before;
-      if ( drift_length==0 ) {
-        throw Exception( __PRETTY_FUNCTION__, Form( "No luck in choosing position (s=%.3f m)\n\t"
-                                                    "Interpolation is impossible!", s ), JustWarning );
-      }
+    const StateVector sv_before = lower_it->second,
+                      sv_after = upper_it->second;
+    const CLHEP::Hep2Vector in = sv_before.position(),
+                            out = sv_after.position();
 
-      const CLHEP::Hep2Vector s_pos = in + ( ( s-s_before )/drift_length )*( out-in );
-
-      StateVector out_stvec( sv_before );
-      out_stvec.setPosition( s_pos );
-      return out_stvec;
+    const float drift_length = upper_it->first-lower_it->first;
+    if ( drift_length==0 ) {
+      throw Exception( __PRETTY_FUNCTION__, Form( "No luck in choosing position (s=%.3f m)\n\t"
+                                                  "Interpolation is impossible!", s ), JustWarning );
     }
-    return StateVector();
+
+    const CLHEP::Hep2Vector s_pos = in + ( ( s-lower_it->first )/drift_length )*( out-in );
+
+    StateVector out_stvec( lower_it->second );
+    out_stvec.setPosition( s_pos );
+    return out_stvec;
   }
 
   void
@@ -85,7 +75,7 @@ std::cout << s_before << " < " << s << " < " << s_after << std::endl;
     if ( positions_.size()==1 ) return;
     os << " list of associated state vectors:\n";
     for ( PositionsMap::const_iterator it=positions_.begin(); it!=positions_.end(); it++ ) {
-      std::cout << Form( "   s = %8.3f m:", it->s() ) << " " << it->stateVector() << std::endl;
+      os << Form( "   s = %8.3f m:", it->first ) << " " << it->second << std::endl;
     }
   }
 

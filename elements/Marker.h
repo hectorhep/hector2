@@ -2,6 +2,7 @@
 #define Hector_Elements_Marker_h
 
 #include "ElementBase.h"
+#include "Drift.h"
 
 namespace Hector
 {

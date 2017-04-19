@@ -14,8 +14,10 @@ namespace Hector
     static float beam_energy;
     /// Mass of the primary particles in the beam (in GeV/c2)
     static float beam_particles_mass;
-    /// Crossing angle of the particles beams (in rad)
-    static float crossing_angle;
+    /// Horizontal crossing angle of the particles beams (in rad)
+    static float crossing_angle_x;
+    /// Vertical crossing angle of the particles beams (in rad)
+    static float crossing_angle_y;
     /// Electric charge of the primary particles in the beam (in e)
     static int beam_particles_charge;
     /// Do we use the relative energy loss in the path computation through elements?

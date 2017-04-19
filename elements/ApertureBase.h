@@ -61,6 +61,8 @@ namespace Hector
         void setPosition( const CLHEP::Hep2Vector& pos ) { pos_ = pos; }
         /// Set the transverse position of the aperture
         void setPosition( float x, float y ) { setPosition( CLHEP::Hep2Vector( x, y ) ); }
+        /// Change the x-y position of the aperture
+        void offset( const CLHEP::Hep2Vector& offs ) { pos_ += offs; }
 
         /// Get the transverse position of the aperture
         CLHEP::Hep2Vector position() const { return pos_; }

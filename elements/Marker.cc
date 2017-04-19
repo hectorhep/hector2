@@ -11,7 +11,7 @@ namespace Hector
     CLHEP::HepMatrix
     Marker::matrix( float, float, int ) const
     {
-      return CLHEP::HepDiagMatrix( 6, 1 );
+      return Drift::genericMatrix( length_ );
     }
   }
 }

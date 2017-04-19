@@ -87,7 +87,10 @@ namespace Hector
         /// Set the x-y position of the centre of the element
         void setPosition( const CLHEP::Hep2Vector& pos ) { pos_ = pos; }
         /// Change the x-y position of the element
-        void offset( const CLHEP::Hep2Vector& offset ) { pos_ += offset; }
+        void offset( const CLHEP::Hep2Vector& offset ) {
+          pos_ += offset;
+          if ( aperture_ ) aperture_->offset( offset );
+        }
         /// x-y position of the element at a given s
         CLHEP::Hep2Vector position() const { return pos_; }
         /// Horizontal position
