@@ -6,8 +6,7 @@ namespace Hector
   {
     EllipticAperture::EllipticAperture( float ell_length, float ell_height, const CLHEP::Hep2Vector& pos ) :
       ApertureBase( anEllipticAperture, pos, std::vector<float>({ ell_length, ell_height, 0.f, 0.f }) )
-    {
-    }
+    {}
 
     EllipticAperture::~EllipticAperture()
     {}

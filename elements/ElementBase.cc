@@ -39,8 +39,10 @@ namespace Hector
     float
     ElementBase::fieldStrength( float eloss, float mp, int qp ) const
     {
+      // only act on charged particles
       if ( qp==0 ) return 0.;
 
+      // reweight the field strength by the particle charge and momentum
       const float eini = Parameters::beam_energy,
                   mp0 = Parameters::beam_particles_mass,
                   e = eini-eloss;

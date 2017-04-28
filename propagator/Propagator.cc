@@ -111,20 +111,15 @@ namespace Hector
   Particle::Position
   Propagator::propagateThrough( const Particle::Position& ini_pos, const Element::ElementBase* elem, float eloss, int qp ) const
   {
-    const StateVector shift( elem->position(), math::tan2( elem->angles() ), 0., 0. );
+    const StateVector shift( elem->position(), elem->angles(), 0., 0. );
 
     /*std::ostringstream os1, os2;
     os1 << elem->type(); os2 << elem->matrix( eloss, ini_pos.stateVector().m(), qp );
     PrintInfo( Form( "Propagating through %s element \"%s\" with transfer matrix\n%s", os1.str().c_str(), elem->name().c_str(), os2.str().c_str() ) );*/
 
-//std::cout << "matrix for " << elem->type() << ": " << elem->matrix( eloss, ini_pos.stateVector().m(), qp ) << ", " << elem->matrix( eloss, ini_pos.stateVector().m(), qp ).T()*elem->matrix( eloss, ini_pos.stateVector().m(), qp ) << " ; " << elem->matrix( eloss, ini_pos.stateVector().m(), qp ) * elem->matrix( eloss, ini_pos.stateVector().m(), qp ).T() << std::endl;
-
     CLHEP::HepVector prop = elem->matrix( eloss, ini_pos.stateVector().m(), qp ) * ( ini_pos.stateVector().vector()-shift.vector() ) + shift.vector();
     // perform the propagation (assuming that mass is conserved...)
     StateVector vec( prop, ini_pos.stateVector().m() );
-    /*std::cout << "type: " << elem->type() << std::endl;
-std::cout << "before: " << ini_pos.stateVector() << std::endl;
-std::cout << "after: " << prop << std::endl;*/
 
     // convert the angles -> tan-1( angle )
     const CLHEP::Hep2Vector ang_old = vec.angles();

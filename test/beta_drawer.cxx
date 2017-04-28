@@ -46,11 +46,11 @@ int
 main( int argc, char* argv[] )
 {
   if ( argc<2 ) {
-    std::cerr << "Usage: " << argv[0] << " <MAD-X output>" << std::endl;
+    std::cerr << "Usage: " << argv[0] << " <MAD-X output> [maximum s]" << std::endl;
     exit( 0 );
   }
 
-  const float max_s = 500.;
+  const float max_s = ( argc>2 ) ? atof( argv[2] ) : 500.;
 
   Hector::Parser::MADX madx( argv[1], "IP5", +1, max_s );
   const Hector::Beamline* beamline = madx.rawBeamline();
@@ -85,7 +85,7 @@ main( int argc, char* argv[] )
       if ( fabs( elem->s() )<fabs( min_rp ) ) min_rp = elem->s();
       if ( fabs( elem->s()+elem->length() )>fabs( max_rp ) ) max_rp = elem->s();
     }
-    
+
     gr_betax.SetPoint( gr_betax.GetN(), elem->s(), elem->beta().x() );
     gr_betay.SetPoint( gr_betay.GetN(), elem->s(), elem->beta().y() );
     gr_dispx.SetPoint( gr_dispx.GetN(), elem->s(), elem->dispersion().x() );

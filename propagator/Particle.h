@@ -23,6 +23,9 @@ namespace Hector
       class Position : private std::pair<float,StateVector>
       {
         public:
+          /// Construct from a positions map iterator
+          Position( PositionsMap::const_iterator it ) : std::pair<float,StateVector>( *it ) {}
+          /// Construct from a pair s-state vector
           Position( std::pair<float,StateVector> pair ) : std::pair<float,StateVector>( pair ) {}
           /// Construct a couple between a longitudinal position and a state vector
           Position( const float& s, const StateVector& sv ) : std::pair<float,StateVector>( s, sv ) {}

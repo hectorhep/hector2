@@ -42,8 +42,8 @@ main( int argc, char* argv[] )
   gun.setElimits( particles_energy );
   gun.setXparams( 0., beam_lateral_width_ip );
   gun.setYparams( 0., beam_lateral_width_ip );
-  gun.setTXparams( Hector::Parameters::crossing_angle/2., beam_angular_divergence_ip );
-  gun.setTYparams( 0., beam_angular_divergence_ip );
+  gun.setTXparams( Hector::Parameters::crossing_angle_x/2., beam_angular_divergence_ip );
+  gun.setTYparams( Hector::Parameters::crossing_angle_y/2., beam_angular_divergence_ip );
   //Hector::BeamProducer::Xscanner gun( num_particles, Hector::Parameters::beam_energy, 0., 0.01 );
 
   unsigned short num_stopped = 0;

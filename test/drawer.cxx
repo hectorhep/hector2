@@ -21,7 +21,7 @@ main( int argc, char* argv[] )
   }
   // general plotting parameters
   const float max_s = ( argc>3 ) ? atof( argv[3] ) : 500.;
-  const unsigned int num_particles = 1;
+  const unsigned int num_particles = 50;
 
   Hector::Parser::MADX parser_beam1( argv[1], "IP5", +1, max_s ),
                        parser_beam2( argv[2], "IP5", +1, max_s );
@@ -34,8 +34,8 @@ main( int argc, char* argv[] )
     std::cout << " >> Roman pot " << rps[i]->name() << " at s=" << rps[i]->s() << " m" << std::endl;
   }
 
-  //parser_beam1.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( -0.097, 0. ) );
-  //parser_beam2.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( +0.097, 0. ) );
+  parser_beam1.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( -0.097, 0. ) );
+  parser_beam2.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( +0.097, 0. ) );
 
   Hector::Propagator prop1( parser_beam1.beamline() ),
                      prop2( parser_beam2.beamline() );
@@ -52,21 +52,21 @@ main( int argc, char* argv[] )
   Hector::BeamProducer::gaussianParticleGun gun;
   gun.setXparams( 0., beam_lateral_width_ip );
   gun.setYparams( 0., beam_lateral_width_ip );
-  gun.setTXparams( Hector::Parameters::crossing_angle_x/2., beam_angular_divergence_ip );
   gun.setTYparams( Hector::Parameters::crossing_angle_y/2., beam_angular_divergence_ip );
   //Hector::BeamProducer::TYscanner gun( num_particles, Hector::Parameters::beam_energy, -1, 1, max_s );
 
   for ( size_t i=0; i<num_particles; i++ ) {
     unsigned short j;
-    Hector::Particle p = gun.shoot();
     { // beamline 1 propagation
-      p.clear();
+      Hector::Particle p = gun.shoot();
+      gun.setTXparams( +Hector::Parameters::crossing_angle_x/2., beam_angular_divergence_ip );
       TGraph gr_x, gr_y;
       try { prop1.propagate( p, max_s ); } catch ( Hector::Exception& e ) { e.dump(); }
       j = 0;
       for ( Hector::Particle::PositionsMap::const_iterator it=p.begin(); it!=p.end(); it++, j++ ) {
-        gr_x.SetPoint( j, it->first, it->second.position().x() );
-        gr_y.SetPoint( j, it->first, it->second.position().y() );
+        Hector::Particle::Position pos( it );
+        gr_x.SetPoint( j, pos.s(), pos.stateVector().position().x() );
+        gr_y.SetPoint( j, pos.s(), pos.stateVector().position().y() );
       }
       gr_x.SetLineColor( kBlack );
       gr_y.SetLineColor( kBlack );
@@ -74,13 +74,15 @@ main( int argc, char* argv[] )
       mg1_y.Add( dynamic_cast<TGraph*>( gr_y.Clone() ) );
     }
     { // beamline 2 propagation
-      p.clear();
+      Hector::Particle p = gun.shoot();
+      gun.setTXparams( -Hector::Parameters::crossing_angle_x/2., beam_angular_divergence_ip );
       TGraph gr_x, gr_y;
       try { prop2.propagate( p, max_s ); } catch ( Hector::Exception& e ) { e.dump(); }
       j = 0;
       for ( Hector::Particle::PositionsMap::const_iterator it=p.begin(); it!=p.end(); it++, j++ ) {
-        gr_x.SetPoint( j, it->first, it->second.position().x() );
-        gr_y.SetPoint( j, it->first, it->second.position().y() );
+        Hector::Particle::Position pos( it );
+        gr_x.SetPoint( j, pos.s(), pos.stateVector().position().x() );
+        gr_y.SetPoint( j, pos.s(), pos.stateVector().position().y() );
       }
       gr_x.SetLineColor( kRed );
       gr_x.SetLineStyle( 2 );
@@ -115,9 +117,9 @@ main( int argc, char* argv[] )
     mg1_y.Draw( "al" );
     mg2_y.Draw( "l" );
     mg1_y.GetXaxis()->SetLimits( 0., max_s );
-    mg1_y.GetYaxis()->SetRangeUser( -0.002, 0.002 );
-    drawBeamline( 'y', parser_beam1.beamline(), 0, "IP5", 0.002, 0., max_s );
-    drawBeamline( 'y', parser_beam2.beamline(), 1, "IP5", 0.002, 0., max_s );
+    mg1_y.GetYaxis()->SetRangeUser( -0.005, 0.005 );
+    drawBeamline( 'y', parser_beam1.beamline(), 0, "IP5", 0.005, 0., max_s );
+    drawBeamline( 'y', parser_beam2.beamline(), 1, "IP5", 0.005, 0., max_s );
     mg1_y.Draw( "l" );
     mg2_y.Draw( "l" );
     c.Prettify( mg1_y.GetHistogram() );

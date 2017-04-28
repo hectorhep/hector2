@@ -198,7 +198,7 @@ namespace Hector
     for ( Elements::const_iterator it=beamline->begin(); it!=beamline->end(); it++ ) {
       const Element::ElementBase* elem = *( it );
       // skip the markers
-      if ( it!=beamline->begin() and elem->type()==Element::aMarker and elem->s()!=beamline->interactionPoint().z() ) continue;
+      if ( elem->type()==Element::aMarker and elem->s()!=beamline->interactionPoint().z() ) continue;
       // add a drift whenever there is a gap in s
       const float drift_length = elem->s()-pos;
       if ( drift_length>0. ) {

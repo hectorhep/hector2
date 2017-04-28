@@ -17,6 +17,7 @@ namespace Hector
       in_file_ = std::ifstream( filename );
 
       try {
+        if ( !in_file_.is_open() ) throw Exception( __PRETTY_FUNCTION__, Form( "Failed to open Twiss file \"%s\"\n\tCheck the path!", filename ), Fatal );
         parseHeader();
 
         raw_beamline_ = new Beamline( max_s );
