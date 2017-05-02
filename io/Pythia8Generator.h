@@ -8,9 +8,11 @@
 #include <Pythia8/Pythia.h>
 #include <Pythia8/Event.h>
 
+#include <memory>
+
 namespace Hector
 {
-  class Pythia8Generator : public Pythia8::Pythia
+  class Pythia8Generator
   {
     public:
       Pythia8Generator();
@@ -19,6 +21,7 @@ namespace Hector
       Particles generate();
 
     private:
+      std::unique_ptr<Pythia8::Pythia> pythia_;
   };
 }
 

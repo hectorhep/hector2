@@ -2,16 +2,13 @@
 
 namespace Hector
 {
-  Pythia8Generator::Pythia8Generator() :
-    Pythia8::Pythia()
+  Pythia8Generator::Pythia8Generator()
   {
-    Pythia8::Pythia::readString( "SoftQCD:singleDiffractive = on" );
+    pythia_ = std::make_unique<Pythia8::Pythia>();
+    pythia_->readString( "SoftQCD:singleDiffractive = on" );
     // disable the hadronisation
     //Pythia8::Pythia::readString( "HadronLevel:all = off" );
     std::string config[] = {
-      Form( "Beams::idA = %d", 2212 ), //FIXME consider the asymmetric energies too!
-      Form( "Beams::idB = %d", 2212 ),
-      Form( "Beams::eCM = %f", 2.*Parameters::beam_energy ),
       "Tune:preferLHAPDF = 2",
       "Main:timesAllowErrors = 10000",
       "Check:epTolErr = 0.01",
@@ -29,22 +26,26 @@ namespace Hector
       "MultipartonInteractions:expPow=1.6"
     };
     for ( unsigned short i=0; i<sizeof(config)/sizeof(config[0]); i++ ) {
-      Pythia8::Pythia::readString( config[i].c_str() );
+      pythia_->readString( config[i].c_str() );
     }
+     pythia_->settings.mode( "Beams::idA", 2212 ); //FIXME consider the asymmetric energies too!
+     pythia_->settings.mode( "Beams::idB", 2212 );
+     pythia_->settings.mode( "Beams::eCM", 2.*Parameters::beam_energy );
+
   }
 
   Pythia8Generator::~Pythia8Generator()
   {
-    Pythia8::Pythia::stat();
+    pythia_->stat();
   }
 
   Particles
   Pythia8Generator::generate()
   {
-    Pythia8::Pythia::next();
+    pythia_->next();
     Particles pout;
 
-    const Pythia8::Event evt = Pythia8::Pythia::event;
+    const Pythia8::Event evt = pythia_->event;
     evt.list();
 
     return pout;
