@@ -24,12 +24,13 @@ main( int argc, char* argv[] )
   Hector::Parser::MADX parser( argv[1], ip, +1, s_pos );
   parser.printInfo();
 
-  parser.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( -0.097, 0. ) );
+  const CLHEP::Hep2Vector offset( -0.097, 0. );
+  parser.beamline()->offsetElementsAfter( 120., offset );
   //parser.romanPots()
 
   Hector::Propagator prop( parser.beamline() );
 
-  TH2D hitmap( "hitmap", "x (m)\\y (m)", 200, -0.1, 0.1, 200, -0.1, 0.1 );
+  TH2D hitmap( "hitmap", "x (m)\\y (m)", 200, -0.01, 0.01, 200, -0.01, 0.01 );
   //TH2D hitmap( "hitmap", "x (m)\\y (m)", 200, -0.005, 0.005, 200, -0.005, 0.005 );
   //TH2D hitmap( "hitmap", "x (m)\\y (m)", 200, -0.099, -0.09, 200, -0.05, 0.05 );
 
@@ -57,7 +58,7 @@ main( int argc, char* argv[] )
       prop.propagate( p, s_pos );
       //p.dump();
       if ( prop.stopped( p, s_pos ) ) { /*std::cout << "prout" << std::endl;*/ num_stopped++; continue; }
-      const CLHEP::Hep2Vector pos( p.stateVectorAt( s_pos ).position() );
+      const CLHEP::Hep2Vector pos( p.stateVectorAt( s_pos ).position()-offset );
       //std::cout << s_pos << " -> " << pos << std::endl;
       hitmap.Fill( pos.x(), pos.y() );
     } catch ( Hector::Exception& e ) {

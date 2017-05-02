@@ -73,9 +73,9 @@ namespace Hector
   StateVector::momentum() const
   {
     const CLHEP::Hep2Vector tan_ang( math::tan2( angles() ) );
-    const float pz = sqrt( ( energy()*energy()-m_*m_ )/( 1.+tan_ang.mag2() ) ),
-                px = pz*tan_ang.x(),
-                py = pz*tan_ang.y();
+    const double pz = sqrt( ( energy()*energy()-m_*m_ )/( 1.+tan_ang.mag2() ) ),
+                 px = pz*tan_ang.x(),
+                 py = pz*tan_ang.y();
     return CLHEP::HepLorentzVector( px, py, pz, energy() );
   }
 

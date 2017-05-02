@@ -139,7 +139,7 @@ main( int argc, char* argv[] )
     const std::string file1( argv[1] ), file2( argv[2] );
     Hector::Canvas::PaveText( 0.01, 0., 0.05, 0.05, Form( "#scale[0.3]{Beam 1: %s - Beam 2: %s}", file1.substr( file1.find_last_of( "/\\" )+1 ).c_str(), file2.substr( file2.find_last_of( "/\\")+1 ).c_str() ) ).Draw();
 
-    c.Save( "pdf" );
+    c.Save( "png" );
   }
   { // draw the legend
     Hector::Canvas c( "beamline_legend" );

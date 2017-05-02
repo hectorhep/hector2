@@ -17,7 +17,7 @@ namespace Hector
   {}
 
   Particle
-  Particle::fromMassCharge( float mass, float charge )
+  Particle::fromMassCharge( double mass, float charge )
   {
     Particle p( StateVector( CLHEP::HepVector( 6, 0 ), mass ) );
     p.setCharge( charge );

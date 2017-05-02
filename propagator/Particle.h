@@ -48,7 +48,7 @@ namespace Hector
       ~Particle();
 
       /// Build a Particle object from a mass and electric charge
-      static Particle fromMassCharge( float mass, float charge );
+      static Particle fromMassCharge( double mass, float charge );
 
       /// Clear all state vectors (but the initial one)
       void clear() { positions_.erase( ++begin(), end() ); }
@@ -68,7 +68,7 @@ namespace Hector
       int pdgId() const { return pdgId_; }
 
       /// Mass (in GeV/c2)
-      float mass() const { return firstStateVector().m(); }
+      double mass() const { return firstStateVector().m(); }
 
       /// Print all useful information about a particle
       void dump( std::ostream& os=std::cout ) const;

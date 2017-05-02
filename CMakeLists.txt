@@ -3,6 +3,7 @@ project(Hector)
 set(PROJECT_VERSION 2)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-long-long -pedantic -g -fPIC")
+set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/cmake)
 
 #----- define all individual modules to be built beforehand
 
@@ -40,7 +41,14 @@ add_library(Hector SHARED $<TARGET_OBJECTS:HectorCore>
                           $<TARGET_OBJECTS:HectorBeamline>
                           $<TARGET_OBJECTS:HectorPropagator>)
 set_target_properties(Hector PROPERTIES LINKER_LANGUAGE CXX)
-target_link_libraries(Hector CLHEP)
+
+find_package(Pythia8 QUIET)
+if(DEFINED PYTHIA8_FOUND)
+  target_link_libraries(Hector CLHEP ${PYTHIA8_LIBRARY})
+else()
+  target_link_libraries(Hector CLHEP)
+endif()
+
 install(TARGETS Hector DESTINATION lib)
 install(DIRECTORY ${MODULES} DESTINATION include/Hector FILES_MATCHING PATTERN "*.h")
 
