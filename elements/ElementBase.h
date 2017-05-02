@@ -36,7 +36,8 @@ namespace Hector
       aCircularCollimator, ///< Circular-type collimator
       //RomanPot, InteractionPoint,
       aPlaceholder, ///< A placeholder element
-      anInstrument ///< A measurement apparatus
+      anInstrument, ///< A measurement apparatus
+      aSolenoid ///< Solenoid
     } Type;
     /// Human-readable printout of a element type
     std::ostream& operator<<( std::ostream&, const Type& );

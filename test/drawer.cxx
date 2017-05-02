@@ -1,6 +1,7 @@
 #include "beamline/Beamline.h"
 #include "io/MADXParser.h"
 #include "propagator/Propagator.h"
+#include "core/Timer.h"
 
 #include "utils.h"
 #include "Canvas.h"
@@ -21,7 +22,7 @@ main( int argc, char* argv[] )
   }
   // general plotting parameters
   const float max_s = ( argc>3 ) ? atof( argv[3] ) : 500.;
-  const unsigned int num_particles = 50;
+  const unsigned int num_particles = 5000;
 
   Hector::Parser::MADX parser_beam1( argv[1], "IP5", +1, max_s ),
                        parser_beam2( argv[2], "IP5", +1, max_s );
@@ -55,13 +56,21 @@ main( int argc, char* argv[] )
   gun.setTYparams( Hector::Parameters::crossing_angle_y/2., beam_angular_divergence_ip );
   //Hector::BeamProducer::TYscanner gun( num_particles, Hector::Parameters::beam_energy, -1, 1, max_s );
 
+  Hector::Timer tmr;
+  TH1D h_timing( "timing", "Propagation time\\Event\\ms?.2f", 100, 0., 2. );
+
   for ( size_t i=0; i<num_particles; i++ ) {
     unsigned short j;
     { // beamline 1 propagation
       Hector::Particle p = gun.shoot();
       gun.setTXparams( +Hector::Parameters::crossing_angle_x/2., beam_angular_divergence_ip );
       TGraph gr_x, gr_y;
-      try { prop1.propagate( p, max_s ); } catch ( Hector::Exception& e ) { e.dump(); }
+      try {
+        tmr.reset();
+        prop1.propagate( p, max_s );
+        const float prop_time = tmr.elapsed()*1.e3;
+        h_timing.Fill( prop_time ); // in ms
+      } catch ( Hector::Exception& e ) { e.dump(); }
       j = 0;
       for ( Hector::Particle::PositionsMap::const_iterator it=p.begin(); it!=p.end(); it++, j++ ) {
         Hector::Particle::Position pos( it );
@@ -139,6 +148,13 @@ main( int argc, char* argv[] )
     leg.feedBeamline( parser_beam1.beamline() );
     leg.feedBeamline( parser_beam2.beamline() );
     leg.Draw();
+    c.Save( "pdf" );
+  }
+  {
+    Hector::Canvas c( "propagation_time", Form( "Hector 2 simulation, %d events, s_{max} = %.1f m", num_particles, max_s ) );
+    gStyle->SetOptStat( 1111 );
+    h_timing.Draw();
+    c.Prettify( &h_timing );
     c.Save( "pdf" );
   }
 

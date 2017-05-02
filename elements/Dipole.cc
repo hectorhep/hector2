@@ -58,7 +58,8 @@ namespace Hector
       mat( 2, 5 ) = sin( theta ) / Parameters::beam_energy;
 
       if ( Parameters::use_relative_energy ) {
-        throw Exception( __PRETTY_FUNCTION__, "Relative energy mode not yet supported! Please contact the developers for more information.", Fatal );
+        throw Exception( __PRETTY_FUNCTION__, "Relative energy mode not yet supported in this version of Hector!\n\t"
+                                              "Please contact the developers for more information.", Fatal );
         const float psy = ke*length_/2.;
 
         CLHEP::HepMatrix ef_matrix = CLHEP::HepDiagMatrix( 6, 1 );

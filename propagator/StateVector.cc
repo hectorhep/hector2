@@ -2,7 +2,7 @@
 
 namespace Hector
 {
-  StateVector::StateVector( const CLHEP::HepVector& vec, float mass ) :
+  StateVector::StateVector( const CLHEP::HepVector& vec, double mass ) :
     CLHEP::HepVector( vec ), m_( mass )
   {}
 
@@ -14,7 +14,7 @@ namespace Hector
     ( *this )[K] = 1.;
   }
 
-  StateVector::StateVector( const CLHEP::Hep2Vector& pos, const CLHEP::Hep2Vector& ang, float energy, float kick ) :
+  StateVector::StateVector( const CLHEP::Hep2Vector& pos, const CLHEP::Hep2Vector& ang, double energy, double kick ) :
     CLHEP::HepVector( 6, 1 ), m_( 0. )
   {
     setPosition( pos );
@@ -24,7 +24,7 @@ namespace Hector
   }
 
   void
-  StateVector::setPosition( const float& x, const float& y )
+  StateVector::setPosition( double x, double y )
   {
     // store in m
     ( *this )[X] = x;
@@ -42,7 +42,7 @@ namespace Hector
   }
 
   void
-  StateVector::setAngles( const float& tx, const float& ty )
+  StateVector::setAngles( double tx, double ty )
   {
     // store in rad
     /*( *this )[TX] = tx;
@@ -80,7 +80,7 @@ namespace Hector
   }
 
   void
-  StateVector::setM( float mass )
+  StateVector::setM( double mass )
   {
     if ( mass!=momentum().m() ) {
       m_ = mass;

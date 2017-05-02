@@ -34,5 +34,6 @@ namespace Hector
     elemtype_map_.insert( std::pair<std::string,Element::Type>( "ccollimator", Element::aCircularCollimator ) );
     elemtype_map_.insert( std::pair<std::string,Element::Type>( "placeholder", Element::aPlaceholder ) );
     elemtype_map_.insert( std::pair<std::string,Element::Type>( "instrument", Element::anInstrument ) );
+    elemtype_map_.insert( std::pair<std::string,Element::Type>( "solenoid", Element::aSolenoid ) );
   }
 }

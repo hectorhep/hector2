@@ -57,9 +57,7 @@ namespace Hector
     {
       std::ostringstream oss; oss << elem.type();
       os << Form( "{%15s} %17s (length = %5.2f m) at %6.2f < s < %6.2f m", oss.str().c_str(), elem.name().c_str(), elem.length(), elem.s(), elem.s()+elem.length() );
-      if ( elem.aperture() ) {
-        os << "\twith aperture: " << elem.aperture();
-      }
+      if ( elem.aperture() ) { os << "\twith aperture: " << elem.aperture(); }
       return os;
     }
 
@@ -67,8 +65,7 @@ namespace Hector
     std::ostream&
     operator<<( std::ostream& os, const ElementBase* elem )
     {
-      os << *( elem );
-      return os;
+      return os << *( elem );
     }
     /// Human-readable printout of a beamline element type
     std::ostream&
@@ -93,6 +90,7 @@ namespace Hector
         case aCircularCollimator: os << "circular collimator"; break;
         case aPlaceholder: os << "placeholder"; break;
         case anInstrument: os << "instrument"; break;
+        case aSolenoid: os << "solenoid"; break;
       }
       return os;
     }
