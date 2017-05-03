@@ -45,9 +45,11 @@ namespace Hector
     PositionsMap::const_iterator lower_it = --positions_.upper_bound( s ),
                                  upper_it = positions_.upper_bound( s );
 
-    if ( lower_it==positions_.end() ) return StateVector();
+    if ( lower_it==positions_.end() or  upper_it->first<lower_it->first ) {
+      throw Exception( __PRETTY_FUNCTION__, Form( "Impossible to interpolate the position at s = %.2f m", s ), JustWarning );
+    }
 
-    //PrintInfo( Form( "Interpolating for s = %.2f between %.2f and %.2f", s, lower_it->first, upper_it->first ) );
+    PrintInfo( Form( "Interpolating for s = %.2f between %.2f and %.2f", s, lower_it->first, upper_it->first ) );
 
     const StateVector sv_before = lower_it->second,
                       sv_after = upper_it->second;

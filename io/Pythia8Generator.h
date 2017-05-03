@@ -16,6 +16,7 @@ namespace Hector
   {
     public:
       Pythia8Generator();
+      Pythia8Generator( const char* xml_input );
       ~Pythia8Generator();
 
       Particles generate();
