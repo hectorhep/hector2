@@ -65,8 +65,11 @@ namespace Hector
             std::ostringstream os1, os2, os3;
             os1 << prev_elem->type(); os2 << pos_prev_elem; os3 << aper->position();
             throw Exception( __PRETTY_FUNCTION__,
-                             Form( "Particle stopped at the entrance of %s %s.\n\tEntering at %s\n\tAperture centre at %s\n\tDistance to aperture centre: %.2f cm",
-                                   prev_elem->name().c_str(), os1.str().c_str(), os2.str().c_str(), os3.str().c_str(), ( aper->position()-pos_prev_elem ).mag()*1.e2 ),
+                             Form( "Particle stopped at the entrance of %s %s.\n\t"
+                                   "Entering at %s, s = %.2f m\n\t"
+                                   "Aperture centre at %s\n\t"
+                                   "Distance to aperture centre: %.2f cm",
+                                   prev_elem->name().c_str(), os1.str().c_str(), os2.str().c_str(), prev_elem->s(), os3.str().c_str(), ( aper->position()-pos_prev_elem ).mag()*1.e2 ),
                              Info );
           }
           // has passed through the element?

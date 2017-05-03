@@ -10,19 +10,22 @@ namespace Hector
       const float ke = fabs( fieldStrength( eloss, mp, qp ) );
       if ( ke==0. ) { return Drift::genericMatrix( length_ ); } // simple drift matrix
 
-      const float omega = sqrt( fabs( ke ) )*length_;
+      const float sq_k = sqrt( ke ), inv_sq_k = 1./sq_k,
+                  omega = sqrt( fabs( ke ) )*length_,
+                  s_omega = sin( omega ), c_omega = cos( omega ),
+                  sh_omega = sinh( omega ), ch_omega = cosh( omega );
 
       CLHEP::HepMatrix mat = CLHEP::HepDiagMatrix( 6, 1 );
       // Focussing Twiss matrix
-      mat( 1, 1 ) = cos( omega );
-      mat( 1, 2 ) = sin( omega ) * ( 1./sqrt( ke ) );
-      mat( 2, 1 ) = sin( omega ) * ( -sqrt( ke ) );
-      mat( 2, 2 ) = cos( omega );
+      mat( 1, 1 ) = c_omega;
+      mat( 1, 2 ) = s_omega * inv_sq_k;
+      mat( 2, 1 ) = s_omega * ( -sq_k );
+      mat( 2, 2 ) = c_omega;
       // Defocussing Twiss matrix
-      mat( 3, 3 ) = cosh( omega );
-      mat( 3, 4 ) = sinh( omega ) * ( 1./sqrt( ke ) );
-      mat( 4, 3 ) = sinh( omega ) * sqrt( ke );
-      mat( 4, 4 ) = cosh( omega );
+      mat( 3, 3 ) = ch_omega;
+      mat( 3, 4 ) = sh_omega * inv_sq_k;
+      mat( 4, 3 ) = sh_omega * sq_k;
+      mat( 4, 4 ) = ch_omega;
       return mat;
     }
 
@@ -32,19 +35,22 @@ namespace Hector
       const float ke = fieldStrength( eloss, mp, qp );
       if ( ke==0. ) { return Drift::genericMatrix( length_ ); } // simple drift matrix
 
-      const float omega = sqrt( fabs( ke ) )*length_;
+      const float sq_k = sqrt( ke ), inv_sq_k = 1./sq_k,
+                  omega = sqrt( fabs( ke ) )*length_,
+                  s_omega = sin( omega ), c_omega = cos( omega ),
+                  sh_omega = sinh( omega ), ch_omega = cosh( omega );
 
       CLHEP::HepMatrix mat = CLHEP::HepDiagMatrix( 6, 1 );
       // Defocussing Twiss matrix
-      mat( 1, 1 ) = cosh( omega );
-      mat( 1, 2 ) = sinh( omega ) * ( 1./sqrt( ke ) );
-      mat( 2, 1 ) = sinh( omega ) * sqrt( ke );
-      mat( 2, 2 ) = cosh( omega );
+      mat( 1, 1 ) = ch_omega;
+      mat( 1, 2 ) = sh_omega * inv_sq_k;
+      mat( 2, 1 ) = sh_omega * sq_k;
+      mat( 2, 2 ) = ch_omega;
       // Focussing Twiss matrix
-      mat( 3, 3 ) = cos( omega );
-      mat( 3, 4 ) = sin( omega ) * ( 1./sqrt( ke ) );
-      mat( 4, 3 ) = sin( omega ) * ( -sqrt( ke ) );
-      mat( 4, 4 ) = cos( omega );
+      mat( 3, 3 ) = c_omega;
+      mat( 3, 4 ) = s_omega * inv_sq_k;
+      mat( 4, 3 ) = s_omega * ( -sq_k );
+      mat( 4, 4 ) = c_omega;
       return mat;
     }
   }

@@ -15,20 +15,21 @@ namespace Hector
       }
 
       const float radius = 1./ke,
-                  theta = length_/radius;
+                  theta = length_*ke,
+                  c_theta = cos( theta ), s_theta = sin( theta );
 
       CLHEP::HepMatrix mat = CLHEP::HepDiagMatrix( 6, 1 );
 
-      mat( 1, 1 ) = cos( theta );
-      mat( 1, 2 ) = sin( theta ) * radius;
-      mat( 2, 1 ) = sin( theta ) * ( -1./radius );
-      mat( 2, 2 ) = cos( theta );
+      mat( 1, 1 ) = c_theta;
+      mat( 1, 2 ) = s_theta * radius;
+      mat( 2, 1 ) = s_theta * ( -ke );
+      mat( 2, 2 ) = c_theta;
       mat( 3, 4 ) = length_;
       if ( Parameters::use_relative_energy ) {
-        const float simp = 2.*radius*pow( sin( theta/2. ), 2 ) / Parameters::beam_energy;
+        const float simp = 2.*radius*pow( sin( theta*0.5 ), 2 ) / Parameters::beam_energy;
         // numerically stable version of ( r/E₀ )*( 1-cos θ )
         mat( 1, 5 ) = simp;
-        mat( 2, 5 ) = sin( theta ) / Parameters::beam_energy;
+        mat( 2, 5 ) = s_theta / Parameters::beam_energy;
       }
       return mat;
     }
@@ -44,27 +45,27 @@ namespace Hector
       }
 
       const float radius = 1./ke,
-                  theta = length_/radius,
-                  simp = 2.*radius*pow( sin( theta/2. ), 2 ) / Parameters::beam_energy;
+                  theta = length_*ke,
+                  s_theta = sin( theta ), c_theta = cos( theta ),
+                  simp = 2.*radius*pow( sin( theta*0.5 ), 2 ) / Parameters::beam_energy;
 
       CLHEP::HepMatrix mat = CLHEP::HepDiagMatrix( 6, 1 );
 
-      mat( 1, 1 ) = cos( theta );
-      mat( 1, 2 ) = sin( theta ) * radius;
-      mat( 2, 1 ) = sin( theta ) * ( -1./radius );
-      mat( 2, 2 ) = cos( theta );
+      mat( 1, 1 ) = c_theta;
+      mat( 1, 2 ) = s_theta * radius;
+      mat( 2, 1 ) = s_theta * ( -ke );
+      mat( 2, 2 ) = c_theta;
       mat( 3, 4 ) = length_;
       mat( 1, 5 ) = simp;
-      mat( 2, 5 ) = sin( theta ) / Parameters::beam_energy;
+      mat( 2, 5 ) = s_theta / Parameters::beam_energy;
 
       if ( Parameters::use_relative_energy ) {
         throw Exception( __PRETTY_FUNCTION__, "Relative energy mode not yet supported in this version of Hector!\n\t"
                                               "Please contact the developers for more information.", Fatal );
-        const float psy = ke*length_/2.;
-
         CLHEP::HepMatrix ef_matrix = CLHEP::HepDiagMatrix( 6, 1 );
-        ef_matrix( 2, 1 ) =  tan( psy ) * ke;
-        ef_matrix( 4, 3 ) = -tan( psy ) * ke;
+        const float t_theta_half_ke = tan( theta*0.5 ) * ke;
+        ef_matrix( 2, 1 ) =  t_theta_half_ke;
+        ef_matrix( 4, 3 ) = -t_theta_half_ke;
 
         return ef_matrix * mat * ef_matrix;
       }

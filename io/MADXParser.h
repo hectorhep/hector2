@@ -58,7 +58,8 @@ namespace Hector
         /// Retrieve the raw beamline parsed from the MAD-X output file
         Beamline* rawBeamline() const { return raw_beamline_; }
 
-        Elements romanPots() const;
+        typedef enum { allPots, horizontalPots, verticalPots } RPType;
+        Elements romanPots( const RPType& type=allPots ) const;
 
         /// Print all useful information parsed from the MAD-X output file
         void printInfo() const;
@@ -88,7 +89,8 @@ namespace Hector
         // quantities needed whenever direction == 1 (FIXME)
         CLHEP::Hep2Vector previous_relpos_, previous_disp_, previous_beta_;
 
-        static std::regex rgx_typ_, rgx_hdr_, rgx_elm_hdr_, rgx_rp_name_;
+        static std::regex rgx_typ_, rgx_hdr_, rgx_elm_hdr_;
+        static std::regex rgx_rp_horiz_name_, rgx_rp_vert_name_;
 
         bool has_next_element_;
     };

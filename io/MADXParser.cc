@@ -7,7 +7,8 @@ namespace Hector
     std::regex MADX::rgx_typ_( "^\\%[0-9]{0,}(s|le)$" );
     std::regex MADX::rgx_hdr_( "^\\@ (\\w+) +\\%([0-9]+s|le) +\\\"?([^\"\\n]+)" );
     std::regex MADX::rgx_elm_hdr_( "^\\s{0,}([\\*\\$])(.+)" );
-    std::regex MADX::rgx_rp_name_( "XRP[V,H]\\.[0-9a-zA-Z]{4}\\.B[1,2]" );
+    std::regex MADX::rgx_rp_vert_name_( "XRPV\\.[0-9a-zA-Z]{4}\\.B[1,2]" );
+    std::regex MADX::rgx_rp_horiz_name_( "XRPH\\.[0-9a-zA-Z]{4}\\.B[1,2]" );
 
     MADX::MADX( const char* filename, const char* ip_name, int direction, float max_s ) :
       beamline_( 0 ), raw_beamline_( 0 ), dir_( direction/abs( direction ) ),
@@ -71,7 +72,7 @@ namespace Hector
     }
 
     Elements
-    MADX::romanPots() const
+    MADX::romanPots( const RPType& type ) const
     {
       Elements out;
       if ( !raw_beamline_ ) {
@@ -80,8 +81,12 @@ namespace Hector
       }
       for ( Elements::const_iterator it=raw_beamline_->begin(); it!=raw_beamline_->end(); it++ ) {
         Element::ElementBase* elem = *( it );
-        if ( !std::regex_match( elem->name(), rgx_rp_name_ ) ) continue;
-        out.push_back( elem );
+        if ( std::regex_match( elem->name(), rgx_rp_horiz_name_ ) ) {
+          if ( type==allPots or type==horizontalPots ) out.push_back( elem );
+        }
+        if ( std::regex_match( elem->name(), rgx_rp_vert_name_ ) ) {
+          if ( type==allPots or type==verticalPots ) out.push_back( elem );
+        }
       }
       return out;
     }

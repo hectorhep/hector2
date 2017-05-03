@@ -62,6 +62,7 @@ namespace Hector
     for ( unsigned short i=0; i<evt.size(); i++ ) {
       const Pythia8::Particle part = evt[i];
       if ( part.id()==9902210 ) { // diffractive proton
+        //std::cout << "::::: " << CLHEP::HepLorentzVector( part.px(), part.py(), part.pz(), part.e() ) << std::endl;
         pout.emplace_back( CLHEP::HepLorentzVector( part.px(), part.py(), part.pz(), part.e() ) );
       }
     }

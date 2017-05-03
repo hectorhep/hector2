@@ -67,6 +67,7 @@ namespace Hector
   {
     setAngles( atan2( mom.px(), mom.pz() ), atan2( mom.py(), mom.pz() ) );
     ( *this )[E] = mom.e();
+    m_ = mom.m();
   }
 
   CLHEP::HepLorentzVector
