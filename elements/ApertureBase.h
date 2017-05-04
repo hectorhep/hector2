@@ -12,7 +12,7 @@ namespace Hector
   {
     /// List of types allowed for an aperture
     typedef enum {
-      anInvalidType,
+      anInvalidAperture,
       aRectangularAperture,
       anEllipticAperture,
       aCircularAperture,

@@ -45,23 +45,28 @@ namespace Hector
         MADX( const char*, const char*, int, float max_s=-1. );
         ~MADX();
 
-        /// Retrieve the sequenced beamline parsed from the MAD-X output file
+        /// Retrieve the sequenced beamline parsed from the MAD-X Twiss file
         Beamline* beamline() const {
           if ( !beamline_ ) {
-            PrintWarning( "Sequenced beamline not computed from the MAD-X output file. Retrieving the raw version. You may encounter some numerical issues." );
+            PrintWarning( "Sequenced beamline not computed from the MAD-X Twiss file. Retrieving the raw version. You may encounter some numerical issues." );
             return raw_beamline_;
           }
           return beamline_;
         }
-        /// Retrieve the raw beamline parsed from the MAD-X output file
+        /// Retrieve the raw beamline parsed from the MAD-X Twiss file
         Beamline* rawBeamline() const { return raw_beamline_; }
 
-        static Element::Type findTypeByName( std::string name );
+        /// Get a Hector element type from a Twiss element name string
+        static Element::Type findElementTypeByName( std::string name );
+        /// Get a Hector element type from a Twiss element keyword string
+        static Element::Type findElementTypeByKeyword( std::string keyword );
+        /// Get a Hector element aperture type from a Twiss element apertype string
+        static Aperture::Type findApertureTypeByApertype( std::string apertype );
 
         typedef enum { allPots, horizontalPots, verticalPots } RPType;
         Elements romanPots( const RPType& type=allPots ) const;
 
-        /// Print all useful information parsed from the MAD-X output file
+        /// Print all useful information parsed from the MAD-X Twiss file
         void printInfo() const;
 
       private:
@@ -97,37 +102,6 @@ namespace Hector
         static std::regex rgx_rect_coll_name_;
 
         bool has_next_element_;
-
-      private:
-        /// Mapping tool between MAD-X nomenclature of beamline objects and Hector objects
-        class ElementDictionary
-        {
-          public:
-            /// Static getter for the dictionary
-            static ElementDictionary& get();
-
-            /// Get a Hector aperture type from a MAD-X aperture string
-            Aperture::Type apertureType( const std::string& str ) const;
-            /// Get a Hector aperture type from a MAD-X aperture string
-            Aperture::Type apertureType( const char* str ) const { return apertureType( std::string( str ) ); }
-            /// Get a MAD-X apertur string from a Hector aperture type
-            std::string apertureTypeStr( const Aperture::Type& type ) const;
-
-            /// Get a Hector element type from a MAD-X element string
-            Element::Type elementType( const std::string& str ) const;
-            /// Get a Hector element type from a MAD-X element string
-            Element::Type elementType( const char* str ) const { return elementType( std::string( str ) ); }
-            /// Get a MAD-X element string from a Hector element type
-            std::string elementTypeStr( const Element::Type& type ) const;
-
-          private:
-            ElementDictionary();
-            ElementDictionary( const ElementDictionary& );
-            void operator=( const ElementDictionary& );
-
-            std::map<std::string,Aperture::Type> apertype_map_;
-            std::map<std::string,Element::Type> elemtype_map_;
-        };
     };
   }
 }

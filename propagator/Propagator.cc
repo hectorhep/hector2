@@ -59,7 +59,7 @@ namespace Hector
         part.addPosition( out_pos.s(), out_pos.stateVector() );
 
         const Aperture::ApertureBase* aper = prev_elem->aperture();
-        if ( aper and aper->type()!=Aperture::anInvalidType ) {
+        if ( aper and aper->type()!=Aperture::anInvalidAperture ) {
           const CLHEP::Hep2Vector pos_prev_elem( part.stateVectorAt( prev_elem->s() ).position() );
           if ( !aper->contains( pos_prev_elem ) ) {
             std::ostringstream os1, os2, os3;
@@ -94,7 +94,7 @@ namespace Hector
       if ( s_max>0 and elem->s()>s_max ) return false;
 
       const Aperture::ApertureBase* aper = prev_elem->aperture();
-      if ( aper and aper->type()!=Aperture::anInvalidType ) {
+      if ( aper and aper->type()!=Aperture::anInvalidAperture ) {
 
         // has passed the element entrance?
         if ( !aper->contains( part.stateVectorAt( prev_elem->s() ).position() ) ) {
