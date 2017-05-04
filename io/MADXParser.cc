@@ -9,6 +9,13 @@ namespace Hector
     std::regex MADX::rgx_elm_hdr_( "^\\s{0,}([\\*\\$])(.+)" );
     std::regex MADX::rgx_rp_vert_name_( "XRPV\\.[0-9a-zA-Z]{4}\\.B[1,2]" );
     std::regex MADX::rgx_rp_horiz_name_( "XRPH\\.[0-9a-zA-Z]{4}\\.B[1,2]" );
+    std::regex MADX::rgx_drift_name_( "DRIFT\\_[0-9]+" );
+    std::regex MADX::rgx_quadrup_name_( "M[B,Q]\\w+\\d?\\.\\w?\\d[L,R]\\d(\\.B[1,2])?" );
+    std::regex MADX::rgx_sect_dipole_name_( "MB\\.[A-Z][0-9]{1,2}[L,R][0-9]\\.B[1,2]" );
+    std::regex MADX::rgx_rect_dipole_name_( "MB[A-Z0-9]{2,3}\\.*[B,R][0-9]" );
+    std::regex MADX::rgx_ip_name_( "IP[0-9]" );
+    std::regex MADX::rgx_monitor_name_( "BPM.+" );
+    std::regex MADX::rgx_rect_coll_name_( "T[C,A].*\\.\\d[L,R]\\d\\.?(B[1-9])?" );
 
     MADX::MADX( const char* filename, const char* ip_name, int direction, float max_s ) :
       beamline_( 0 ), raw_beamline_( 0 ), dir_( direction/abs( direction ) ),
@@ -248,8 +255,15 @@ namespace Hector
       const float s = s_abs-s_offset_-length;
 
       // convert the element type from string to object
-      const std::string elem_type = lowercase( trim( elem_map_str.get( "keyword" ) ) );
-      const Element::Type elemtype = ElementDictionary::get().elementType( elem_type );
+      Element::Type elemtype = Element::anInvalidElement;
+      if ( elem_map_str.hasKey( "keyword" ) ) {
+        const std::string elem_type = lowercase( trim( elem_map_str.get( "keyword" ) ) );
+        elemtype = ElementDictionary::get().elementType( elem_type );
+      }
+      else {
+        std::cout << name << std::endl;
+        elemtype = findTypeByName( name );
+      }
 
       try {
         // create the element
@@ -329,23 +343,41 @@ namespace Hector
         }
 
         // associate the aperture type to the element
-        const std::string aper_type = lowercase( trim( elem_map_str.get( "apertype" ) ) );
-        const Aperture::Type apertype = ElementDictionary::get().apertureType( aper_type );
-        const float aper_1 = elem_map_floats.get( "aper_1" ),
-                    aper_2 = elem_map_floats.get( "aper_2" ),
-                    aper_3 = elem_map_floats.get( "aper_3" ),
-                    aper_4 = elem_map_floats.get( "aper_4" ); // MAD-X provides it in m
-        switch ( apertype ) {
-          case Aperture::aRectEllipticAperture: { elem->setAperture( new Aperture::RectEllipticAperture( aper_1, aper_2, aper_3, aper_4, relpos ), true ); } break;
-          case Aperture::aCircularAperture:     { elem->setAperture( new Aperture::CircularAperture( aper_1, relpos ), true ); } break;
-          case Aperture::aRectangularAperture:  { elem->setAperture( new Aperture::RectangularAperture( aper_1, aper_2, relpos ), true ); } break;
-          case Aperture::anEllipticAperture:    { elem->setAperture( new Aperture::EllipticAperture( aper_1, aper_2, relpos ), true ); } break;
-          case Aperture::anInvalidType: break;
+        if ( elem_map_str.hasKey( "apertype" ) ) {
+          const std::string aper_type = lowercase( trim( elem_map_str.get( "apertype" ) ) );
+          const Aperture::Type apertype = ElementDictionary::get().apertureType( aper_type );
+          const float aper_1 = elem_map_floats.get( "aper_1" ),
+                      aper_2 = elem_map_floats.get( "aper_2" ),
+                      aper_3 = elem_map_floats.get( "aper_3" ),
+                      aper_4 = elem_map_floats.get( "aper_4" ); // MAD-X provides it in m
+          switch ( apertype ) {
+            case Aperture::aRectEllipticAperture: { elem->setAperture( new Aperture::RectEllipticAperture( aper_1, aper_2, aper_3, aper_4, relpos ), true ); } break;
+            case Aperture::aCircularAperture:     { elem->setAperture( new Aperture::CircularAperture( aper_1, relpos ), true ); } break;
+            case Aperture::aRectangularAperture:  { elem->setAperture( new Aperture::RectangularAperture( aper_1, aper_2, relpos ), true ); } break;
+            case Aperture::anEllipticAperture:    { elem->setAperture( new Aperture::EllipticAperture( aper_1, aper_2, relpos ), true ); } break;
+            case Aperture::anInvalidType: break;
+          }
         }
 
       } catch ( Exception& e ) { e.dump(); }
       return elem;
     }
+
+    Element::Type
+    MADX::findTypeByName( std::string name )
+    {
+      if ( std::regex_match( name, rgx_drift_name_ ) )       return Element::aDrift;
+      if ( std::regex_match( name, rgx_quadrup_name_ ) )     return Element::aVerticalQuadrupole; //FIXME
+      if ( std::regex_match( name, rgx_sect_dipole_name_ ) ) return Element::aSectorDipole;
+      if ( std::regex_match( name, rgx_rect_dipole_name_ ) ) return Element::aRectangularDipole;
+      if ( std::regex_match( name, rgx_ip_name_ ) )          return Element::aMarker;
+      if ( std::regex_match( name, rgx_monitor_name_ ) )     return Element::aMonitor;
+      if ( std::regex_match( name, rgx_rp_horiz_name_ ) )    return Element::aRectangularCollimator;
+      if ( std::regex_match( name, rgx_rp_vert_name_ ) )     return Element::aRectangularCollimator;
+      if ( std::regex_match( name, rgx_rect_coll_name_ ) )   return Element::aRectangularCollimator;
+      return Element::anInvalidElement;
+    }
+
 
     std::ostream&
     operator<<( std::ostream& os, const Parser::MADX::ValueType& type )

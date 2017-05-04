@@ -4,7 +4,8 @@
 
 int main( int argc, char* argv[] )
 {
-  Hector::Parser::MADX parser( "data/twiss/twiss_coll0p4m_ir5b1_6p5tev.tfs", "IP5", +1, 250. );
+  const char* twiss_file = ( argc>0 ) ? argv[1] : "data/twiss/twiss_coll0p4m_ir5b1_6p5tev.tfs";
+  Hector::Parser::MADX parser( twiss_file, "IP5", +1, 250. );
   parser.printInfo();
 
   std::cout << "beamline matrix at s = 250 m: " << parser.beamline()->matrix( 100., Hector::Parameters::beam_particles_mass, +1 ) << std::endl;

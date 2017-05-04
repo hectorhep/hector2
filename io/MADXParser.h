@@ -58,6 +58,8 @@ namespace Hector
         /// Retrieve the raw beamline parsed from the MAD-X output file
         Beamline* rawBeamline() const { return raw_beamline_; }
 
+        static Element::Type findTypeByName( std::string name );
+
         typedef enum { allPots, horizontalPots, verticalPots } RPType;
         Elements romanPots( const RPType& type=allPots ) const;
 
@@ -91,6 +93,10 @@ namespace Hector
 
         static std::regex rgx_typ_, rgx_hdr_, rgx_elm_hdr_;
         static std::regex rgx_rp_horiz_name_, rgx_rp_vert_name_;
+        static std::regex rgx_drift_name_, rgx_ip_name_, rgx_monitor_name_;
+        static std::regex rgx_quadrup_name_;
+        static std::regex rgx_sect_dipole_name_, rgx_rect_dipole_name_;
+        static std::regex rgx_rect_coll_name_;
 
         bool has_next_element_;
     };
