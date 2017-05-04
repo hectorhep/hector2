@@ -25,14 +25,15 @@ main( int argc, char* argv[] )
   parser.printInfo();
 
   const CLHEP::Hep2Vector offset( -0.097, 0. );
-  parser.beamline()->offsetElementsAfter( 120., offset );
+  //parser.beamline()->offsetElementsAfter( 120., offset );
   //parser.romanPots()
 
   Hector::Propagator prop( parser.beamline() );
 
-  TH2D hitmap( "hitmap", "x (m)\\y (m)", 200, -0.01, 0.01, 200, -0.01, 0.01 );
+  //TH2D hitmap( "hitmap", "x (m)\\y (m)", 200, -0.01, 0.01, 200, -0.01, 0.01 );
   //TH2D hitmap( "hitmap", "x (m)\\y (m)", 200, -0.005, 0.005, 200, -0.005, 0.005 );
-  //TH2D hitmap( "hitmap", "x (m)\\y (m)", 200, -0.099, -0.09, 200, -0.05, 0.05 );
+//  TH2D hitmap( "hitmap", "x (m)\\y (m)", 200, -0.25, 0.25, 200, -0.05, 0.05 );
+  TH2D hitmap( "hitmap", "x (m)\\y (m)", 200, 0.08, 0.12, 200, -0.05, 0.05 );
 
   const unsigned int num_particles = 5000;
   const float beam_lateral_width_ip = 16.63e-6, // in meters
@@ -59,7 +60,7 @@ main( int argc, char* argv[] )
       //p.dump();
       if ( prop.stopped( p, s_pos ) ) { /*std::cout << "prout" << std::endl;*/ num_stopped++; continue; }
       const CLHEP::Hep2Vector pos( p.stateVectorAt( s_pos ).position()-offset );
-      //std::cout << s_pos << " -> " << pos << std::endl;
+      std::cout << s_pos << " -> " << pos << std::endl;
       hitmap.Fill( pos.x(), pos.y() );
     } catch ( Hector::Exception& e ) {
       e.dump();

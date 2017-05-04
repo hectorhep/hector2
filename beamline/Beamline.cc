@@ -4,8 +4,7 @@ namespace Hector
 {
   Beamline::Beamline() :
     max_length_( 0. )
-  {
-  }
+  {}
 
   Beamline::Beamline( const Beamline& rhs, bool copy_elements ) :
     max_length_( rhs.max_length_ ), ip_( rhs.ip_ ),
@@ -18,9 +17,7 @@ namespace Hector
   Beamline::Beamline( float length, const CLHEP::Hep3Vector& ip ) :
     max_length_( length+5. ), // artificially increase the size to include next elements
     ip_( ip )
-  {
-  }
-
+  {}
 
   Beamline::~Beamline()
   {

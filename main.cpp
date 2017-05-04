@@ -7,6 +7,7 @@ int main( int argc, char* argv[] )
   const char* twiss_file = ( argc>0 ) ? argv[1] : "data/twiss/twiss_coll0p4m_ir5b1_6p5tev.tfs";
   Hector::Parser::MADX parser( twiss_file, "IP5", +1, 250. );
   parser.printInfo();
+  parser.beamline()->dump();
 
   std::cout << "beamline matrix at s = 250 m: " << parser.beamline()->matrix( 100., Hector::Parameters::beam_particles_mass, +1 ) << std::endl;
 
@@ -20,7 +21,7 @@ int main( int argc, char* argv[] )
     Hector::Particle p = gun.shoot();
     p.setCharge( +1 );
     try {
-      prop.propagate( p, 215.5 );
+      prop.propagate( p, 203.826 );
     } catch ( Hector::Exception& e ) { e.dump(); }
   }
 

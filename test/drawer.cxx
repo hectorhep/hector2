@@ -22,12 +22,13 @@ main( int argc, char* argv[] )
   }
   // general plotting parameters
   const float max_s = ( argc>3 ) ? atof( argv[3] ) : 500.;
-  const unsigned int num_particles = 5000;
+  const unsigned int num_particles = 1000;
 
   Hector::Parser::MADX parser_beam1( argv[1], "IP5", +1, max_s ),
                        parser_beam2( argv[2], "IP5", +1, max_s );
 
   // look at both the beamlines
+  parser_beam1.beamline()->dump();
 
   const Hector::Elements rps = parser_beam1.romanPots();
   std::cout << "---> beamline 1 has " << rps.size() << " roman pots!" << std::endl;
@@ -35,8 +36,8 @@ main( int argc, char* argv[] )
     std::cout << " >> Roman pot " << rps[i]->name() << " at s=" << rps[i]->s() << " m" << std::endl;
   }
 
-  parser_beam1.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( -0.097, 0. ) );
-  parser_beam2.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( +0.097, 0. ) );
+  //parser_beam1.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( -0.097, 0. ) );
+  //parser_beam2.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( +0.097, 0. ) );
 
   Hector::Propagator prop1( parser_beam1.beamline() ),
                      prop2( parser_beam2.beamline() );
@@ -57,7 +58,9 @@ main( int argc, char* argv[] )
   //Hector::BeamProducer::TYscanner gun( num_particles, Hector::Parameters::beam_energy, -1, 1, max_s );
 
   Hector::Timer tmr;
-  TH1D h_timing( "timing", "Propagation time\\Event\\ms?.2f", 100, 0., 2. );
+  TH1D h_timing( "timing", "Propagation time per element\\Event\\#mus?.2f", 100, 0., 10. );
+
+  const unsigned short num_beamline_elems = parser_beam1.beamline()->numElements();
 
   for ( size_t i=0; i<num_particles; i++ ) {
     unsigned short j;
@@ -68,8 +71,8 @@ main( int argc, char* argv[] )
       try {
         tmr.reset();
         prop1.propagate( p, max_s );
-        const float prop_time = tmr.elapsed()*1.e3;
-        h_timing.Fill( prop_time ); // in ms
+        const float prop_time = tmr.elapsed()*1.e6/num_beamline_elems;
+        h_timing.Fill( prop_time ); // in us
       } catch ( Hector::Exception& e ) { e.dump(); }
       j = 0;
       for ( Hector::Particle::PositionsMap::const_iterator it=p.begin(); it!=p.end(); it++, j++ ) {
@@ -139,7 +142,7 @@ main( int argc, char* argv[] )
     const std::string file1( argv[1] ), file2( argv[2] );
     Hector::Canvas::PaveText( 0.01, 0., 0.05, 0.05, Form( "#scale[0.3]{Beam 1: %s - Beam 2: %s}", file1.substr( file1.find_last_of( "/\\" )+1 ).c_str(), file2.substr( file2.find_last_of( "/\\")+1 ).c_str() ) ).Draw();
 
-    c.Save( "png" );
+    c.Save( "pdf" );
   }
   { // draw the legend
     Hector::Canvas c( "beamline_legend" );

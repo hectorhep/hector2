@@ -16,7 +16,9 @@ namespace Hector
       aRectangularAperture,
       anEllipticAperture,
       aCircularAperture,
-      aRectEllipticAperture
+      aRectEllipticAperture,
+      aRaceTrackAperture,
+      anOctagonalAperture
     } Type;
     /// Human-readable printout of an aperture type
     std::ostream& operator<<( std::ostream&, const Type& );

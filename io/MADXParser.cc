@@ -109,8 +109,10 @@ namespace Hector
         if ( !std::regex_search( line, match, rgx_hdr_ ) ) return;
 
         const std::string key = lowercase( match.str( 1 ) );
-        if ( match.str( 2 )=="le" ) header_float_.add( key, atof( match.str( 3 ).c_str() ) );
-        else header_str_.add( key, match.str( 3 ) );
+        if ( match.str( 2 )=="le" )
+          header_float_.add( key, atof( match.str( 3 ).c_str() ) );
+        else
+          header_str_.add( key, match.str( 3 ) );
 
         // keep track of the last line read in the file
         in_file_lastline_ = in_file_.tellg();
@@ -166,10 +168,12 @@ namespace Hector
         if ( str.str().length()==0 ) continue;
         std::string buffer;
         ValuesCollection values;
-        while ( str.good() ) { str >> buffer; values.push_back( buffer ); }
+        while ( str >> buffer ) { values.push_back( buffer ); }
         // first check if the "correct" number of element properties is parsed
         if ( values.size()!=elements_fields_.size() ) {
-          throw Exception( __PRETTY_FUNCTION__, Form( "MAD-X output seems corrupted!\n\tElement %s has %d fields when %d are expected.", trim( values.at( 0 ) ).c_str(), values.size(), elements_fields_.size() ), Fatal );
+          throw Exception( __PRETTY_FUNCTION__, Form( "MAD-X output seems corrupted!\n\t"
+                                                      "Element %s has %d fields when %d are expected.",
+                                                      trim( values.at( 0 ) ).c_str(), values.size(), elements_fields_.size() ), Fatal );
         }
         try {
           Element::ElementBase* elem = parseElement( values );
@@ -204,7 +208,7 @@ namespace Hector
         // extract the list of properties
         std::string buffer;
         ValuesCollection values;
-        while ( str.good() ) { str >> buffer; values.push_back( buffer ); }
+        while ( str >> buffer ) { values.push_back( buffer ); }
         Element::ElementBase* elem = 0;
         try {
           elem = parseElement( values );
@@ -228,7 +232,9 @@ namespace Hector
 
       // first check if the "correct" number of element properties is parsed
       if ( values.size()!=elements_fields_.size() ) {
-        throw Exception( __PRETTY_FUNCTION__, Form( "MAD-X output seems corrupted!\n\tElement %s has %d fields when %d are expected.", trim( values.at( 0 ) ).c_str(), values.size(), elements_fields_.size() ), Fatal );
+        throw Exception( __PRETTY_FUNCTION__, Form( "MAD-X output seems corrupted!\n\t"
+                                                    "Element %s has %d fields when %d are expected.",
+                                                    trim( values.at( 0 ) ).c_str(), values.size(), elements_fields_.size() ), Fatal );
       }
 
       // then perform the 3-fold matching key <-> value <-> value type
@@ -258,7 +264,6 @@ namespace Hector
       const Element::Type elemtype = ( elem_map_str.hasKey( "keyword" ) )
         ? findElementTypeByKeyword( lowercase( trim( elem_map_str.get( "keyword" ) ) ) )
         : findElementTypeByName( name );
-      std::cout << ">>> " << elemtype << std::endl;
 
       try {
         // create the element
@@ -350,7 +355,7 @@ namespace Hector
             case Aperture::aCircularAperture:     { elem->setAperture( new Aperture::CircularAperture( aper_1, relpos ), true ); } break;
             case Aperture::aRectangularAperture:  { elem->setAperture( new Aperture::RectangularAperture( aper_1, aper_2, relpos ), true ); } break;
             case Aperture::anEllipticAperture:    { elem->setAperture( new Aperture::EllipticAperture( aper_1, aper_2, relpos ), true ); } break;
-            case Aperture::anInvalidAperture: break;
+            default: break;
           }
         }
 
@@ -361,49 +366,50 @@ namespace Hector
     Element::Type
     MADX::findElementTypeByName( std::string name )
     {
-      if ( std::regex_match( name, rgx_drift_name_ ) )       return Element::aDrift;
-      if ( std::regex_match( name, rgx_quadrup_name_ ) )     return Element::aVerticalQuadrupole; //FIXME
+      if ( std::regex_match( name,       rgx_drift_name_ ) ) return Element::aDrift;
+      if ( std::regex_match( name,     rgx_quadrup_name_ ) ) return Element::aGenericQuadrupole; //FIXME
       if ( std::regex_match( name, rgx_sect_dipole_name_ ) ) return Element::aSectorDipole;
       if ( std::regex_match( name, rgx_rect_dipole_name_ ) ) return Element::aRectangularDipole;
-      if ( std::regex_match( name, rgx_ip_name_ ) )          return Element::aMarker;
-      if ( std::regex_match( name, rgx_monitor_name_ ) )     return Element::aMonitor;
-      if ( std::regex_match( name, rgx_rp_horiz_name_ ) )    return Element::aRectangularCollimator;
-      if ( std::regex_match( name, rgx_rp_vert_name_ ) )     return Element::aRectangularCollimator;
-      if ( std::regex_match( name, rgx_rect_coll_name_ ) )   return Element::aRectangularCollimator;
+      if ( std::regex_match( name,          rgx_ip_name_ ) ) return Element::aMarker;
+      if ( std::regex_match( name,     rgx_monitor_name_ ) ) return Element::aMonitor;
+      if ( std::regex_match( name,    rgx_rp_horiz_name_ ) ) return Element::aRectangularCollimator;
+      if ( std::regex_match( name,     rgx_rp_vert_name_ ) ) return Element::aRectangularCollimator;
+      if ( std::regex_match( name,   rgx_rect_coll_name_ ) ) return Element::aRectangularCollimator;
       return Element::anInvalidElement;
     }
 
     Element::Type
     MADX::findElementTypeByKeyword( std::string keyword )
     {
-      std::cout << "----> " << keyword << std::endl;
-      if ( keyword.compare( "marker" )==0 )      return Element::aMarker;
-      if ( keyword.compare( "drift" )==0 )       return Element::aDrift;
-      if ( keyword.compare( "monitor" )==0 )     return Element::aMonitor;
-      if ( keyword.compare( "quadrupole" )==0 )  return Element::aGenericQuadrupole;
-      if ( keyword.compare( "sextupole" )==0 )   return Element::aSextupole;
-      if ( keyword.compare( "multipole" )==0 )   return Element::aMultipole;
-      if ( keyword.compare( "sbend" )==0 )       return Element::aSectorDipole;
-      if ( keyword.compare( "rbend" )==0 )       return Element::aRectangularDipole;
-      if ( keyword.compare( "hkicker" )==0 )     return Element::anHorizontalKicker;
-      if ( keyword.compare( "vkicker" )==0 )     return Element::aVerticalKicker;
+      if ( keyword.compare(      "marker" )==0 ) return Element::aMarker;
+      if ( keyword.compare(       "drift" )==0 ) return Element::aDrift;
+      if ( keyword.compare(     "monitor" )==0 ) return Element::aMonitor;
+      if ( keyword.compare(  "quadrupole" )==0 ) return Element::aGenericQuadrupole;
+      if ( keyword.compare(   "sextupole" )==0 ) return Element::aSextupole;
+      if ( keyword.compare(   "multipole" )==0 ) return Element::aMultipole;
+      if ( keyword.compare(       "sbend" )==0 ) return Element::aSectorDipole;
+      if ( keyword.compare(       "rbend" )==0 ) return Element::aRectangularDipole;
+      if ( keyword.compare(     "hkicker" )==0 ) return Element::anHorizontalKicker;
+      if ( keyword.compare(     "vkicker" )==0 ) return Element::aVerticalKicker;
       if ( keyword.compare( "rcollimator" )==0 ) return Element::aRectangularCollimator;
       if ( keyword.compare( "ecollimator" )==0 ) return Element::anEllipticalCollimator;
       if ( keyword.compare( "ccollimator" )==0 ) return Element::aCircularCollimator;
       if ( keyword.compare( "placeholder" )==0 ) return Element::aPlaceholder;
-      if ( keyword.compare( "instrument" )==0 )  return Element::anInstrument;
-      if ( keyword.compare( "solenoid" )==0 )    return Element::aSolenoid;
+      if ( keyword.compare(  "instrument" )==0 ) return Element::anInstrument;
+      if ( keyword.compare(    "solenoid" )==0 ) return Element::aSolenoid;
       return Element::anInvalidElement;
     }
 
     Aperture::Type
     MADX::findApertureTypeByApertype( std::string apertype )
     {
-      if ( apertype.compare( "none" )==0 )        return Aperture::anInvalidAperture;
-      if ( apertype.compare( "rectangle" )==0 )   return Aperture::aRectangularAperture;
-      if ( apertype.compare( "ellipse" )==0 )     return Aperture::anEllipticAperture;
-      if ( apertype.compare( "circle" )==0 )      return Aperture::aCircularAperture;
+      if ( apertype.compare(        "none" )==0 ) return Aperture::anInvalidAperture;
+      if ( apertype.compare(   "rectangle" )==0 ) return Aperture::aRectangularAperture;
+      if ( apertype.compare(     "ellipse" )==0 ) return Aperture::anEllipticAperture;
+      if ( apertype.compare(      "circle" )==0 ) return Aperture::aCircularAperture;
       if ( apertype.compare( "rectellipse" )==0 ) return Aperture::aRectEllipticAperture;
+      if ( apertype.compare(   "racetrack" )==0 ) return Aperture::aRaceTrackAperture;
+      if ( apertype.compare(     "octagon" )==0 ) return Aperture::anOctagonalAperture;
       return Aperture::anInvalidAperture;
     }
 
@@ -412,8 +418,8 @@ namespace Hector
     {
       switch ( type ) {
         case Parser::MADX::Unknown: os << "unknown"; break;
-        case Parser::MADX::String:  os << "string";  break;
-        case Parser::MADX::Float:   os << "float";   break;
+        case Parser::MADX::String:  os <<  "string"; break;
+        case Parser::MADX::Float:   os <<   "float"; break;
         case Parser::MADX::Integer: os << "integer"; break;
       }
       return os;
