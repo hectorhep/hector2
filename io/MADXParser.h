@@ -3,8 +3,6 @@
 
 #include "beamline/Beamline.h"
 
-#include "elements/ElementDict.h"
-
 #include "elements/Quadrupole.h"
 #include "elements/Dipole.h"
 #include "elements/RectangularCollimator.h"
@@ -99,6 +97,37 @@ namespace Hector
         static std::regex rgx_rect_coll_name_;
 
         bool has_next_element_;
+
+      private:
+        /// Mapping tool between MAD-X nomenclature of beamline objects and Hector objects
+        class ElementDictionary
+        {
+          public:
+            /// Static getter for the dictionary
+            static ElementDictionary& get();
+
+            /// Get a Hector aperture type from a MAD-X aperture string
+            Aperture::Type apertureType( const std::string& str ) const;
+            /// Get a Hector aperture type from a MAD-X aperture string
+            Aperture::Type apertureType( const char* str ) const { return apertureType( std::string( str ) ); }
+            /// Get a MAD-X apertur string from a Hector aperture type
+            std::string apertureTypeStr( const Aperture::Type& type ) const;
+
+            /// Get a Hector element type from a MAD-X element string
+            Element::Type elementType( const std::string& str ) const;
+            /// Get a Hector element type from a MAD-X element string
+            Element::Type elementType( const char* str ) const { return elementType( std::string( str ) ); }
+            /// Get a MAD-X element string from a Hector element type
+            std::string elementTypeStr( const Element::Type& type ) const;
+
+          private:
+            ElementDictionary();
+            ElementDictionary( const ElementDictionary& );
+            void operator=( const ElementDictionary& );
+
+            std::map<std::string,Aperture::Type> apertype_map_;
+            std::map<std::string,Element::Type> elemtype_map_;
+        };
     };
   }
 }

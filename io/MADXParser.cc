@@ -390,6 +390,78 @@ namespace Hector
       }
       return os;
     }
-  }
-}
 
+    MADX::ElementDictionary&
+    MADX::ElementDictionary::get()
+    {
+      static MADX::ElementDictionary instance;
+      return instance;
+    }
+
+    MADX::ElementDictionary::ElementDictionary()
+    {
+      // first fill the aperture types map
+      apertype_map_.insert( std::pair<std::string,Aperture::Type>( "none", Aperture::anInvalidType ) );
+      apertype_map_.insert( std::pair<std::string,Aperture::Type>( "rectangle", Aperture::aRectangularAperture ) );
+      apertype_map_.insert( std::pair<std::string,Aperture::Type>( "ellipse", Aperture::anEllipticAperture ) );
+      apertype_map_.insert( std::pair<std::string,Aperture::Type>( "circle", Aperture::aCircularAperture ) );
+      apertype_map_.insert( std::pair<std::string,Aperture::Type>( "rectellipse", Aperture::aRectEllipticAperture ) );
+
+      // then fill the elements type map
+      elemtype_map_.insert( std::pair<std::string,Element::Type>( "marker", Element::aMarker ) );
+      elemtype_map_.insert( std::pair<std::string,Element::Type>( "drift", Element::aDrift ) );
+      elemtype_map_.insert( std::pair<std::string,Element::Type>( "monitor", Element::aMonitor ) );
+      elemtype_map_.insert( std::pair<std::string,Element::Type>( "quadrupole", Element::aGenericQuadrupole ) );
+      elemtype_map_.insert( std::pair<std::string,Element::Type>( "sextupole", Element::aSextupole ) );
+      elemtype_map_.insert( std::pair<std::string,Element::Type>( "multipole", Element::aMultipole ) );
+      elemtype_map_.insert( std::pair<std::string,Element::Type>( "sbend", Element::aSectorDipole ) );
+      elemtype_map_.insert( std::pair<std::string,Element::Type>( "rbend", Element::aRectangularDipole ) );
+      elemtype_map_.insert( std::pair<std::string,Element::Type>( "hkicker", Element::anHorizontalKicker ) );
+      elemtype_map_.insert( std::pair<std::string,Element::Type>( "vkicker", Element::aVerticalKicker ) );
+      elemtype_map_.insert( std::pair<std::string,Element::Type>( "rcollimator", Element::aRectangularCollimator ) );
+      elemtype_map_.insert( std::pair<std::string,Element::Type>( "ecollimator", Element::anEllipticalCollimator ) );
+      elemtype_map_.insert( std::pair<std::string,Element::Type>( "ccollimator", Element::aCircularCollimator ) );
+      elemtype_map_.insert( std::pair<std::string,Element::Type>( "placeholder", Element::aPlaceholder ) );
+      elemtype_map_.insert( std::pair<std::string,Element::Type>( "instrument", Element::anInstrument ) );
+      elemtype_map_.insert( std::pair<std::string,Element::Type>( "solenoid", Element::aSolenoid ) );
+    }
+
+    Aperture::Type
+    MADX::ElementDictionary::apertureType( const std::string& str ) const
+    {
+      std::map<std::string,Aperture::Type>::const_iterator it = apertype_map_.find( str );
+      if ( it!=apertype_map_.end() ) return it->second;
+      return Aperture::anInvalidType;
+    }
+
+    std::string
+    MADX::ElementDictionary::apertureTypeStr( const Aperture::Type& type ) const
+    {
+      std::map<std::string,Aperture::Type>::const_iterator it;
+      for ( it=apertype_map_.begin(); it!=apertype_map_.end(); it++ ) {
+        if ( it->second==type ) return it->first;
+      }
+      return "";
+    }
+
+    Element::Type
+    MADX::ElementDictionary::elementType( const std::string& str ) const
+    {
+      std::map<std::string,Element::Type>::const_iterator it = elemtype_map_.find( str );
+      if ( it!=elemtype_map_.end() ) return it->second;
+      return Element::anInvalidElement;
+    }
+
+    std::string
+    MADX::ElementDictionary::elementTypeStr( const Element::Type& type ) const
+    {
+      std::map<std::string,Element::Type>::const_iterator it;
+      for ( it=elemtype_map_.begin(); it!=elemtype_map_.end(); it++ ) {
+        if ( it->second==type ) return it->first;
+      }
+      return "";
+    }
+
+
+  } // namespace Parser
+} // namespace Hector
