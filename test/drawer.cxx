@@ -20,14 +20,14 @@ main( int argc, char* argv[] )
     std::cout << "Usage: " << argv[0] << " [MAD-X output file for beam 1] [MAD-X output file for beam 2]" << std::endl;
     return -1;
   }
-  Hector::Parameters::compute_aperture_acceptance = false; //FIXME
+  //Hector::Parameters::compute_aperture_acceptance = false; //FIXME
 
   // general plotting parameters
-  const float max_s = ( argc>3 ) ? atof( argv[3] ) : 500.;
+  const float max_s = ( argc>3 ) ? atof( argv[3] ) : 250.;
   const unsigned int num_particles = 1000;
 
-  Hector::Parser::MADX parser_beam1( argv[1], "IP5", +1, max_s ),
-                       parser_beam2( argv[2], "IP5", +1, max_s );
+  Hector::Parser::MADX parser_beam1( argv[1], "IP5", 1, max_s ),
+                       parser_beam2( argv[2], "IP5", 1, max_s );
 
   // look at both the beamlines
   parser_beam1.beamline()->dump();
@@ -38,8 +38,8 @@ main( int argc, char* argv[] )
     std::cout << " >> Roman pot " << rps[i]->name() << " at s=" << rps[i]->s() << " m" << std::endl;
   }
 
-  //parser_beam1.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( -0.097, 0. ) );
-  //parser_beam2.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( +0.097, 0. ) );
+  parser_beam1.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( -0.097, 0. ) );
+  parser_beam2.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( +0.097, 0. ) );
 
   Hector::Propagator prop1( parser_beam1.beamline() ),
                      prop2( parser_beam2.beamline() );
@@ -68,7 +68,7 @@ main( int argc, char* argv[] )
   for ( size_t i=0; i<num_particles; i++ ) {
     unsigned short j;
     { // beamline 1 propagation
-      gun.setTXparams( +Hector::Parameters::crossing_angle_x/2., beam_angular_divergence_ip );
+      gun.setTXparams( -Hector::Parameters::crossing_angle_x/2., beam_angular_divergence_ip );
       Hector::Particle p = gun.shoot();
       TGraph gr_x, gr_y;
       try {
@@ -89,7 +89,7 @@ main( int argc, char* argv[] )
       mg1_y.Add( dynamic_cast<TGraph*>( gr_y.Clone() ) );
     }
     { // beamline 2 propagation
-      gun.setTXparams( Hector::Parameters::crossing_angle_x/2., beam_angular_divergence_ip );
+      gun.setTXparams( -Hector::Parameters::crossing_angle_x/2., beam_angular_divergence_ip );
       Hector::Particle p = gun.shoot();
       TGraph gr_x, gr_y;
       try { prop2.propagate( p, max_s ); } catch ( Hector::Exception& e ) { e.dump(); }

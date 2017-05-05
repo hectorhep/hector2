@@ -67,10 +67,9 @@ drawBeamline( const char axis, const Hector::Beamline* bl, const unsigned short 
     if ( draw_apertures ) {
       const Hector::Aperture::ApertureBase* aper = elem->aperture();
       if ( aper ) {
-        float aper_lim_x, aper_lim_y;
-        aper->limits( aper_lim_x, aper_lim_y );
+        const CLHEP::Hep2Vector aper_lim = aper->limits();
         const float pos_aper = ( axis=='x' ) ? aper->x() : aper->y(),
-                    half_len_aper = ( axis=='x' ) ? aper_lim_x : aper_lim_y;
+                    half_len_aper = ( axis=='x' ) ? aper_lim.x() : aper_lim.y();
         TArrow* arr1 = new TArrow( elem->s(), ( pos_aper+half_len_aper )*0.95, elem->s(), pos_aper+half_len_aper, 0.01, "-|" ),
                *arr2 = new TArrow( elem->s(), pos_aper-half_len_aper, elem->s(), ( pos_aper-half_len_aper )*0.95, 0.01, "|-" );
         if ( fabs( pos_aper+half_len_aper )<scale ) arr1->Draw();

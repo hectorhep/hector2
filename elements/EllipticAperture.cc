@@ -18,11 +18,10 @@ namespace Hector
       return ( vec.mag2()<1. );
     }
 
-    void
-    EllipticAperture::limits( float& x, float& y ) const
+    CLHEP::Hep2Vector
+    EllipticAperture::limits() const
     {
-      x = p( 0 );
-      y = p( 1 );
+      return CLHEP::Hep2Vector( p( 0 ), p( 1 ) );
     }
   }
 }

@@ -20,11 +20,10 @@ namespace Hector
            and ( vec2.mag2()<1. ) ); // elliptic part
     }
 
-    void
-    RectEllipticAperture::limits( float& x, float& y ) const
+    CLHEP::Hep2Vector
+    RectEllipticAperture::limits() const
     { //FIXME
-      x = std::min( p( 0 ), p( 2 ) );
-      y = std::min( p( 1 ), p( 3 ) );
+      return CLHEP::Hep2Vector( std::min( p( 0 ), p( 2 ) ), std::min( p( 1 ), p( 3 ) ) );
     }
   }
 }

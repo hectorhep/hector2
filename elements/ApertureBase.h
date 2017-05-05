@@ -47,7 +47,8 @@ namespace Hector
 
         /// Check if a position is contained in the aperture
         virtual bool contains( const CLHEP::Hep2Vector& ) const = 0;
-        virtual void limits( float& lim_x, float& lim_y ) const = 0;
+        /// Get the outer boundaries of the aperture
+        virtual CLHEP::Hep2Vector limits() const = 0;
 
         /// Human-readable printout of the properties of an aperture
         friend std::ostream& operator<<( std::ostream&, const ApertureBase& );
@@ -60,18 +61,18 @@ namespace Hector
         /// Retrieve a shape parameter of the aperture
         float p( const size_t& i ) const { return ( i<param_.size() ) ? param_.at( i ) : -1.0; }
 
-        /// Set the transverse position of the aperture
+        /// Set the transverse position of the aperture barycentre
         void setPosition( const CLHEP::Hep2Vector& pos ) { pos_ = pos; }
-        /// Set the transverse position of the aperture
+        /// Set the transverse position of the aperture barycentre
         void setPosition( float x, float y ) { setPosition( CLHEP::Hep2Vector( x, y ) ); }
-        /// Change the x-y position of the aperture
+        /// Change the x-y position of the aperture barycentre
         void offset( const CLHEP::Hep2Vector& offs ) { pos_ += offs; }
 
-        /// Get the transverse position of the aperture
+        /// Get the transverse position of the aperture barycentre
         CLHEP::Hep2Vector position() const { return pos_; }
-        /// Get the horizontal position of the aperture
+        /// Get the horizontal position of the aperture barycentre
         float x() const { return pos_.x(); }
-        /// Get the vertical position of the aperture
+        /// Get the vertical position of the aperture barycentre
         float y() const { return pos_.y(); }
 
       protected:

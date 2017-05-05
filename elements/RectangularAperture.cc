@@ -18,11 +18,10 @@ namespace Hector
       return ( fabs( vec.x() )<p( 0 ) and fabs( vec.y() )<p( 1 ) );
     }
 
-    void
-    RectangularAperture::limits( float& x, float& y ) const
+    CLHEP::Hep2Vector
+    RectangularAperture::limits() const
     {
-      x = p( 0 );
-      y = p( 1 );
+      return CLHEP::Hep2Vector( p( 0 ), p( 1 ) );
     }
   }
 }
