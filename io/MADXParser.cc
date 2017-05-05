@@ -269,6 +269,7 @@ namespace Hector
         // create the element
         switch ( elemtype ) {
           case Element::aGenericQuadrupole: {
+            if ( length<=0. ) throw Exception( __PRETTY_FUNCTION__, Form( "Trying to add a quadrupole with invalid length (l=%.2e m)", length ), JustWarning );
 
             const float k1l = elem_map_floats.get( "k1l" ),
                         mag_str_k = -k1l/length;
@@ -277,6 +278,7 @@ namespace Hector
           } break;
           case Element::aRectangularDipole: {
             const float k0l = elem_map_floats.get( "k0l" );
+            if ( length<=0. ) throw Exception( __PRETTY_FUNCTION__, Form( "Trying to add a rectangular dipole with invalid length (l=%.2e m)", length ), JustWarning );
             if ( k0l==0. ) throw Exception( __PRETTY_FUNCTION__, Form( "Trying to add a rectangular dipole (%s) with k0l=%.2e", name.c_str(), k0l ), JustWarning );
 
             const float mag_strength = dir_*k0l/length;
@@ -284,6 +286,7 @@ namespace Hector
           } break;
           case Element::aSectorDipole: {
             const float k0l = elem_map_floats.get( "k0l" );
+            if ( length<=0. ) throw Exception( __PRETTY_FUNCTION__, Form( "Trying to add a sector dipole with invalid length (l=%.2e m)", length ), JustWarning );
             if ( k0l==0. ) throw Exception( __PRETTY_FUNCTION__, Form( "Trying to add a sector dipole (%s) with k0l=%.2e", name.c_str(), k0l ), JustWarning );
 
             const float mag_strength = dir_*k0l/length;

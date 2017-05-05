@@ -4,7 +4,7 @@
 
 int main( int argc, char* argv[] )
 {
-  const char* twiss_file = ( argc>0 ) ? argv[1] : "data/twiss/twiss_coll0p4m_ir5b1_6p5tev.tfs";
+  const char* twiss_file = ( argc>1 ) ? argv[1] : "data/twiss/twiss_coll0p4m_ir5b1_6p5tev.tfs";
   Hector::Parser::MADX parser( twiss_file, "IP5", +1, 250. );
   parser.printInfo();
   parser.beamline()->dump();
@@ -15,8 +15,8 @@ int main( int argc, char* argv[] )
   //parser.beamline()->dump();
 
   const unsigned short num_part = 100;
-  //Hector::BeamProducer::gaussianParticleGun gun( Hector::Parameters::beam_energy/1.25, Hector::Parameters::beam_energy );
-  Hector::BeamProducer::TXscanner gun( num_part, Hector::Parameters::beam_energy, 0., 1. );
+  Hector::BeamProducer::gaussianParticleGun gun( Hector::Parameters::beam_energy/1.25, Hector::Parameters::beam_energy );
+  //Hector::BeamProducer::TXscanner gun( num_part, Hector::Parameters::beam_energy, 0., 1. );
   for ( unsigned int i=0; i<num_part; i++ ) {
     Hector::Particle p = gun.shoot();
     p.setCharge( +1 );

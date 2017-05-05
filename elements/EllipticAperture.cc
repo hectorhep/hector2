@@ -17,5 +17,12 @@ namespace Hector
       const CLHEP::Hep2Vector vec( ( pos.x()-pos_.x() )/p( 0 ), ( pos.y()-pos_.y() )/p( 1 ) );
       return ( vec.mag2()<1. );
     }
+
+    void
+    EllipticAperture::limits( float& x, float& y ) const
+    {
+      x = p( 0 );
+      y = p( 1 );
+    }
   }
 }

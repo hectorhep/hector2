@@ -1,7 +1,8 @@
 #ifndef Hector_Core_Exception_h
 #define Hector_Core_Exception_h
 
-#include "Utils.h"
+#include "core/Utils.h"
+#include "core/Parameters.h"
 
 #include <iomanip>
 #include <iostream>
@@ -15,14 +16,6 @@ using std::cerr;
 
 namespace Hector
 {
-  /// Enumeration of exception severities
-  typedef enum {
-    Undefined=-1, ///< Invalid exception type
-    Info, ///< Simple log to interact with the end user
-    JustWarning, ///< Simple warning (proceeds with the execution)
-    Fatal ///< Fatal error (exits the program)
-  } ExceptionType;
-
   /// A simple exception handler
   class Exception
   {
@@ -63,6 +56,7 @@ namespace Hector
 
       /// Print all information about this exception
       inline void dump( std::ostream& os=std::cerr ) const {
+        if ( type()<Parameters::logging_threshold ) return;
         if ( type()==Info ) {
           os << "======================= \033[33;1mInformation\033[0m =======================" << std::endl
              << " From:        " << from() << std::endl;

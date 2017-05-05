@@ -32,11 +32,12 @@ elementColour( const Hector::Element::ElementBase* elem )
 #include "TPave.h"
 #include "TLatex.h"
 #include "TMarker.h"
+#include "TArrow.h"
 
 static const float alpha = 0.8;
 
 void
-drawBeamline( const char axis, const Hector::Beamline* bl, const unsigned short beam, const char* ip="IP5", float scale=0.2, float min_s=-999., float max_s=999. )
+drawBeamline( const char axis, const Hector::Beamline* bl, const unsigned short beam, const char* ip="IP5", float scale=0.2, float min_s=-999., float max_s=999., bool draw_apertures=false )
 {
   const float size_y = scale/4., // general scale of the element x/y position
               scale_y = 0.8, // element x/y displacement magnification factor
@@ -63,6 +64,19 @@ drawBeamline( const char axis, const Hector::Beamline* bl, const unsigned short 
                 pos_x_end = pos_x_ini + elem->length(),
                 pos_y_low = ( ( beam==0 ) ? -1 : 0 ) * ( size_y ) + pos_rel*scale_y /*+ offset*size_y*/,
                 pos_y_high = pos_y_low+size_y;
+    if ( draw_apertures ) {
+      const Hector::Aperture::ApertureBase* aper = elem->aperture();
+      if ( aper ) {
+        float aper_lim_x, aper_lim_y;
+        aper->limits( aper_lim_x, aper_lim_y );
+        const float pos_aper = ( axis=='x' ) ? aper->x() : aper->y(),
+                    half_len_aper = ( axis=='x' ) ? aper_lim_x : aper_lim_y;
+        TArrow* arr1 = new TArrow( elem->s(), ( pos_aper+half_len_aper )*0.95, elem->s(), pos_aper+half_len_aper, 0.01, "-|" ),
+               *arr2 = new TArrow( elem->s(), pos_aper-half_len_aper, elem->s(), ( pos_aper-half_len_aper )*0.95, 0.01, "|-" );
+        if ( fabs( pos_aper+half_len_aper )<scale ) arr1->Draw();
+        if ( fabs( pos_aper-half_len_aper )<scale ) arr2->Draw();
+      }
+    }
 
     // ROOT and its brilliant memory management...
     TPave* elem_box = new TPave( pos_x_ini, pos_y_low, pos_x_end, pos_y_high, 1 );

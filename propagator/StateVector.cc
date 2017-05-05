@@ -29,8 +29,6 @@ namespace Hector
     // store in m
     ( *this )[X] = x;
     ( *this )[Y] = y;
-    /*( *this )[X] = x*1e6;
-    ( *this )[Y] = y*1e6;*/
   }
 
   CLHEP::Hep2Vector
@@ -38,17 +36,12 @@ namespace Hector
   {
     // return in m
     return CLHEP::Hep2Vector( ( *this )[X], ( *this )[Y] );
-    //return CLHEP::Hep2Vector( ( *this )[X]*1e-6, ( *this )[Y]*1e-6 );
   }
 
   void
   StateVector::setAngles( double tx, double ty )
   {
-    // store in rad
-    /*( *this )[TX] = tx;
-    ( *this )[TY] = ty;*/
-    /*( *this )[TX] = tx*1e6;
-    ( *this )[TY] = ty*1e6;*/
+    // store the tangent of the angles
     ( *this )[TX] = tan( tx );
     ( *this )[TY] = tan( ty );
   }
@@ -57,8 +50,6 @@ namespace Hector
   StateVector::angles() const
   {
     // return in rad
-    //return CLHEP::Hep2Vector( ( *this )[TX], ( *this )[TY] );
-    //return CLHEP::Hep2Vector( ( *this )[TX]*1e-6, ( *this )[TY]*1e-6 );
     return math::atan2( CLHEP::Hep2Vector( ( *this )[TX], ( *this )[TY] ) );
   }
 
@@ -66,6 +57,14 @@ namespace Hector
   StateVector::setMomentum( const CLHEP::HepLorentzVector& mom )
   {
     setAngles( atan2( mom.px(), mom.pz() ), atan2( mom.py(), mom.pz() ) );
+    ( *this )[E] = mom.e();
+    m_ = mom.m();
+  }
+
+  void
+  StateVector::addMomentum( const CLHEP::HepLorentzVector& mom )
+  {
+    setAngles( angles()+math::atan2( CLHEP::Hep2Vector( atan2( mom.px(), mom.pz() ), atan2( mom.py(), mom.pz() ) ) ) );
     ( *this )[E] = mom.e();
     m_ = mom.m();
   }

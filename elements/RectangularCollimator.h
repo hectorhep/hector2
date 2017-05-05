@@ -8,6 +8,7 @@ namespace Hector
   namespace Element
   {
     /// Rectangular collimator object builder
+    /// \note Treated as a simple drift with a finite aperture opening
     class RectangularCollimator : public Drift
     {
       public:

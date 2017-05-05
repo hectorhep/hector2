@@ -80,6 +80,7 @@ namespace Hector
 
       /// Fill the components of a state according to the particle kinematics
       void setMomentum( const CLHEP::HepLorentzVector& mom );
+      void addMomentum( const CLHEP::HepLorentzVector& mom );
       /// Four-momentum of the particle (in GeV)
       CLHEP::HepLorentzVector momentum() const;
       /// Set the particle mass (in GeV)

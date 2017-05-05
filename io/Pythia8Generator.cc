@@ -5,6 +5,33 @@ namespace Hector
   Pythia8Generator::Pythia8Generator() :
     pythia_( std::make_unique<Pythia8::Pythia>() )
   {
+    // parameterise the generator
+    initialise();
+    // initialise the core
+    if ( !pythia_->init() ) {
+      throw Exception( __PRETTY_FUNCTION__, "Failed to initialise the Pythia8 core", JustWarning );
+    }
+  }
+
+  Pythia8Generator::Pythia8Generator( const char* xml_input ) :
+    pythia_( std::make_unique<Pythia8::Pythia>( xml_input ) )
+  {
+    // initialise the core
+    if ( !pythia_->init() ) {
+      throw Exception( __PRETTY_FUNCTION__, "Failed to initialise the Pythia8 core", JustWarning );
+    }
+  }
+
+  Pythia8Generator::~Pythia8Generator()
+  {
+    // dump some (useful?) generation statistics
+    pythia_->stat();
+  }
+
+  void
+  Pythia8Generator::initialise()
+  {
+    // configuration shamelessly stolen from CMSSW (9_1_X development cycle)
     std::string config[] = {
       "Tune:preferLHAPDF = 2",
       "Main:timesAllowErrors = 10000",
@@ -31,43 +58,60 @@ namespace Hector
         if ( !pythia_->readString( config[i].c_str() ) ) { throw Exception( __PRETTY_FUNCTION__, Form( "Failed to parse the command:\n\t  \"%s\"", config[i].c_str() ), JustWarning ); }
       }
       // initialise the single-diffraction
-      pythia_->readString( "SoftQCD:singleDiffractive = on" );
+      switchSingleDiffraction( true );
+      switchDoubleDiffraction( false );
       // disable the hadronisation
       pythia_->readString( "HadronLevel:all = off" );
-      // initialise the core
-      if ( !pythia_->init() ) { throw Exception( __PRETTY_FUNCTION__, "Failed to initialise the Pythia8 core", JustWarning ); }
     } catch ( Exception& e ) {
       e.dump();
     }
-  }
-
-  Pythia8Generator::Pythia8Generator( const char* xml_input ) :
-    pythia_( std::make_unique<Pythia8::Pythia>( xml_input ) )
-  {
-    if ( !pythia_->init() ) { throw Exception( __PRETTY_FUNCTION__, "Failed to initialise the Pythia8 core", JustWarning ); }
-  }
-
-  Pythia8Generator::~Pythia8Generator()
-  {
-    pythia_->stat();
   }
 
   Particles
   Pythia8Generator::generate()
   {
     pythia_->next();
+    const Pythia8::Event evt = pythia_->event;
+
     Particles pout;
+    for ( unsigned short i=0; i<evt.size(); i++ ) {
+      const Pythia8::Particle part = evt[i];
+      if ( part.id()==9902210 ) { // diffractive proton
+        pout.emplace_back( CLHEP::HepLorentzVector( part.px(), part.py(), part.pz(), part.e() ), part.charge() );
+      }
+    }
+    return pout;
+  }
+
+  Particle
+  Pythia8Generator::diffractiveProton()
+  {
+    pythia_->next();
 
     const Pythia8::Event evt = pythia_->event;
     for ( unsigned short i=0; i<evt.size(); i++ ) {
       const Pythia8::Particle part = evt[i];
       if ( part.id()==9902210 ) { // diffractive proton
-        //std::cout << "::::: " << CLHEP::HepLorentzVector( part.px(), part.py(), part.pz(), part.e() ) << std::endl;
-        pout.emplace_back( CLHEP::HepLorentzVector( part.px(), part.py(), part.pz(), part.e() ) );
+        return Particle( CLHEP::HepLorentzVector( part.px(), part.py(), part.pz(), part.e() ), part.charge() );
       }
     }
-    //evt.list();
+    throw Exception( __PRETTY_FUNCTION__, "Failed to generate the diffractive proton!", JustWarning );
+  }
 
-    return pout;
+  void
+  Pythia8Generator::generate( Particle& in_part )
+  {
+    pythia_->next();
+    in_part.clear();
+
+    const Pythia8::Event evt = pythia_->event;
+    for ( unsigned short i=0; i<evt.size(); i++ ) {
+      const Pythia8::Particle part = evt[i];
+      if ( part.id()==9902210 ) { // diffractive proton
+        in_part.firstStateVector().addMomentum( CLHEP::HepLorentzVector( part.px(), part.py(), part.pz(), part.e() ) );
+        return;
+      }
+    }
+    throw Exception( __PRETTY_FUNCTION__, "Failed to generate the modified kinematics for the particle template!", JustWarning );
   }
 }

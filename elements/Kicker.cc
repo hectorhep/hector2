@@ -7,6 +7,8 @@ namespace Hector
     CLHEP::HepMatrix
     HorizontalKicker::matrix( float eloss, float mp, int qp ) const
     {
+      if ( !Parameters::enable_kickers ) return Drift::genericMatrix( length_ );
+
       const float ke = -fieldStrength( eloss, mp, qp );
       if ( ke==0 ) return Drift::genericMatrix( length_ );
 
@@ -20,6 +22,8 @@ namespace Hector
     CLHEP::HepMatrix
     VerticalKicker::matrix( float eloss, float mp, int qp ) const
     {
+      if ( !Parameters::enable_kickers ) return Drift::genericMatrix( length_ );
+
       const float ke = -fieldStrength( eloss, mp, qp );
       if ( ke==0 ) return Drift::genericMatrix( length_ );
 

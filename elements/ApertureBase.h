@@ -47,6 +47,7 @@ namespace Hector
 
         /// Check if a position is contained in the aperture
         virtual bool contains( const CLHEP::Hep2Vector& ) const = 0;
+        virtual void limits( float& lim_x, float& lim_y ) const = 0;
 
         /// Human-readable printout of the properties of an aperture
         friend std::ostream& operator<<( std::ostream&, const ApertureBase& );

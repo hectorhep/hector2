@@ -1,6 +1,8 @@
 #ifndef Hector_Core_Parameters_h
 #define Hector_Core_Parameters_h
 
+#include "core/ExceptionType.h"
+
 /// Mother of all namespaces/objects in Hector
 /// \author Laurent Forthomme <laurent.forthomme@cernSPAMNOT.ch>
 /// \date Nov 2016
@@ -20,10 +22,13 @@ namespace Hector
     static float crossing_angle_y;
     /// Electric charge of the primary particles in the beam (in e)
     static int beam_particles_charge;
+    static ExceptionType logging_threshold;
     /// Do we use the relative energy loss in the path computation through elements?
     static bool use_relative_energy;
     /// Are the elements overlaps to be corrected inside a beamline
     static bool correct_beamline_overlaps;
+    static bool compute_aperture_acceptance;
+    static bool enable_kickers;
   };
 }
 

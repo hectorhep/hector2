@@ -41,7 +41,7 @@ namespace Hector
     operator<<( std::ostream& os, const ApertureBase& ap )
     {
       os << ap.type()
-         << Form( " (param. (%.4f, %.4f, %.4f, %.4f),", ap.p( 0 ), ap.p( 1 ), ap.p( 2 ), ap.p( 3 ) )
+         << Form( " (param. (%.3f, %.3f, %.3f, %.3f),", ap.p( 0 ), ap.p( 1 ), ap.p( 2 ), ap.p( 3 ) )
          << " center at " << ap.position() << ")";
       return os;
     }

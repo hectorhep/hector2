@@ -20,6 +20,8 @@ main( int argc, char* argv[] )
     std::cout << "Usage: " << argv[0] << " [MAD-X output file for beam 1] [MAD-X output file for beam 2]" << std::endl;
     return -1;
   }
+  Hector::Parameters::compute_aperture_acceptance = false; //FIXME
+
   // general plotting parameters
   const float max_s = ( argc>3 ) ? atof( argv[3] ) : 500.;
   const unsigned int num_particles = 1000;
@@ -54,6 +56,7 @@ main( int argc, char* argv[] )
   Hector::BeamProducer::gaussianParticleGun gun;
   gun.setXparams( 0., beam_lateral_width_ip );
   gun.setYparams( 0., beam_lateral_width_ip );
+  gun.setTXparams( Hector::Parameters::crossing_angle_x/2., beam_angular_divergence_ip );
   gun.setTYparams( Hector::Parameters::crossing_angle_y/2., beam_angular_divergence_ip );
   //Hector::BeamProducer::TYscanner gun( num_particles, Hector::Parameters::beam_energy, -1, 1, max_s );
 
@@ -65,8 +68,8 @@ main( int argc, char* argv[] )
   for ( size_t i=0; i<num_particles; i++ ) {
     unsigned short j;
     { // beamline 1 propagation
-      Hector::Particle p = gun.shoot();
       gun.setTXparams( +Hector::Parameters::crossing_angle_x/2., beam_angular_divergence_ip );
+      Hector::Particle p = gun.shoot();
       TGraph gr_x, gr_y;
       try {
         tmr.reset();
@@ -86,8 +89,8 @@ main( int argc, char* argv[] )
       mg1_y.Add( dynamic_cast<TGraph*>( gr_y.Clone() ) );
     }
     { // beamline 2 propagation
+      gun.setTXparams( Hector::Parameters::crossing_angle_x/2., beam_angular_divergence_ip );
       Hector::Particle p = gun.shoot();
-      gun.setTXparams( -Hector::Parameters::crossing_angle_x/2., beam_angular_divergence_ip );
       TGraph gr_x, gr_y;
       try { prop2.propagate( p, max_s ); } catch ( Hector::Exception& e ) { e.dump(); }
       j = 0;
@@ -111,14 +114,18 @@ main( int argc, char* argv[] )
     Hector::Canvas c( "beamline", Form( "Hector 2 simulation, E_{beam} = %.1f TeV", Hector::Parameters::beam_energy*CLHEP::GeV/CLHEP::TeV ), true );
     //c.SetGrayscale();
 
+    const float scale_x = 0.1,
+                scale_y = 0.005;
+    const bool draw_apertures = false;
+
     c.cd( 1 ); // x-axis
     mg1_x.SetTitle( ".\\x (m)" );
     mg1_x.Draw( "al" );
     mg2_x.Draw( "l" );
     mg1_x.GetXaxis()->SetLimits( 0., max_s );
-    mg1_x.GetYaxis()->SetRangeUser( -0.2, 0.2 );
-    drawBeamline( 'x', parser_beam1.beamline(), 0, "IP5", 0.2, 0., max_s );
-    drawBeamline( 'x', parser_beam2.beamline(), 1, "IP5", 0.2, 0., max_s );
+    mg1_x.GetYaxis()->SetRangeUser( -scale_x, scale_x );
+    drawBeamline( 'x', parser_beam1.beamline(), 0, "IP5", scale_x, 0., max_s, draw_apertures );
+    drawBeamline( 'x', parser_beam2.beamline(), 1, "IP5", scale_x, 0., max_s, draw_apertures );
     mg1_x.Draw( "l" );
     mg2_x.Draw( "l" );
     c.Prettify( mg1_x.GetHistogram() );
@@ -129,9 +136,9 @@ main( int argc, char* argv[] )
     mg1_y.Draw( "al" );
     mg2_y.Draw( "l" );
     mg1_y.GetXaxis()->SetLimits( 0., max_s );
-    mg1_y.GetYaxis()->SetRangeUser( -0.005, 0.005 );
-    drawBeamline( 'y', parser_beam1.beamline(), 0, "IP5", 0.005, 0., max_s );
-    drawBeamline( 'y', parser_beam2.beamline(), 1, "IP5", 0.005, 0., max_s );
+    mg1_y.GetYaxis()->SetRangeUser( -scale_y, scale_y );
+    drawBeamline( 'y', parser_beam1.beamline(), 0, "IP5", scale_y, 0., max_s, draw_apertures );
+    drawBeamline( 'y', parser_beam2.beamline(), 1, "IP5", scale_y, 0., max_s, draw_apertures );
     mg1_y.Draw( "l" );
     mg2_y.Draw( "l" );
     c.Prettify( mg1_y.GetHistogram() );

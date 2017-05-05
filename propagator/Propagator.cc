@@ -28,7 +28,6 @@ namespace Hector
       for ( Elements::const_iterator it=beamline_->begin()+1; it!=beamline_->end(); it++ ) {
         // extract the previous and the current element in the beamline
         const Element::ElementBase *prev_elem = *( it-1 ), *elem = *( it );
-        //if ( it!=beamline_->end()-1 and ( elem+1 )->s()>s_max ) break;
         if ( elem->s()>s_max ) break;
 
         const Particle::Position in_pos( *part.rbegin() );
@@ -58,24 +57,30 @@ namespace Hector
 
         part.addPosition( out_pos.s(), out_pos.stateVector() );
 
-        const Aperture::ApertureBase* aper = prev_elem->aperture();
-        if ( aper and aper->type()!=Aperture::anInvalidAperture ) {
-          const CLHEP::Hep2Vector pos_prev_elem( part.stateVectorAt( prev_elem->s() ).position() );
-          if ( !aper->contains( pos_prev_elem ) ) {
-            std::ostringstream os1, os2, os3;
-            os1 << prev_elem->type(); os2 << pos_prev_elem; os3 << aper->position();
-            throw Exception( __PRETTY_FUNCTION__,
-                             Form( "Particle stopped at the entrance of %s %s.\n\t"
-                                   "Entering at %s, s = %.2f m\n\t"
-                                   "Aperture centre at %s\n\t"
-                                   "Distance to aperture centre: %.2f cm",
-                                   prev_elem->name().c_str(), os1.str().c_str(), os2.str().c_str(), prev_elem->s(), os3.str().c_str(), ( aper->position()-pos_prev_elem ).mag()*1.e2 ),
-                             Info );
-          }
-          // has passed through the element?
-          //std::cout << prev_elem->s()+prev_elem->length() << "\t" << part.stateVectorAt( prev_elem->s()+prev_elem->length() ).position() << std::endl;
-          if ( !aper->contains( part.stateVectorAt( prev_elem->s()+prev_elem->length() ).position() ) ) {
-            throw Exception( __PRETTY_FUNCTION__, Form( "Particle stopped inside %s", prev_elem->name().c_str() ), JustWarning );
+        if ( Parameters::compute_aperture_acceptance ) {
+          const Aperture::ApertureBase* aper = prev_elem->aperture();
+          if ( aper and aper->type()!=Aperture::anInvalidAperture ) {
+            const CLHEP::Hep2Vector pos_prev_elem( part.stateVectorAt( prev_elem->s() ).position() );
+            if ( !aper->contains( pos_prev_elem ) ) {
+              std::ostringstream os1, os2, os3;
+              os1 << prev_elem->type();
+              os2 << pos_prev_elem;
+              os3 << aper->position();
+              throw Exception( __PRETTY_FUNCTION__,
+                               Form( "Particle stopped at the entrance of %s %s.\n\t"
+                                     "Entering at %s, s = %.2f m\n\t"
+                                     "Aperture centre at %s\n\t"
+                                     "Distance to aperture centre: %.2f cm",
+                                     prev_elem->name().c_str(), os1.str().c_str(), os2.str().c_str(), prev_elem->s(), os3.str().c_str(), ( aper->position()-pos_prev_elem ).mag()*1.e2 ),
+                               Info );
+            }
+            // has passed through the element?
+            //std::cout << prev_elem->s()+prev_elem->length() << "\t" << part.stateVectorAt( prev_elem->s()+prev_elem->length() ).position() << std::endl;
+            if ( !aper->contains( part.stateVectorAt( prev_elem->s()+prev_elem->length() ).position() ) ) {
+              throw Exception( __PRETTY_FUNCTION__,
+                               Form( "Particle stopped inside %s", prev_elem->name().c_str() ),
+                               JustWarning );
+            }
           }
         }
       }

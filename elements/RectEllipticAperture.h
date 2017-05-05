@@ -18,6 +18,7 @@ namespace Hector
         RectEllipticAperture* clone() const { return new RectEllipticAperture( *this ); }
 
         bool contains( const CLHEP::Hep2Vector& ) const;
+        void limits( float& lim_x, float& lim_y ) const;
 
     };
   }

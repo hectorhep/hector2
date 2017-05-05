@@ -56,8 +56,9 @@ namespace Hector
     operator<<( std::ostream& os, const ElementBase& elem )
     {
       std::ostringstream oss; oss << elem.type();
-      os << Form( "{%15s} %17s (length = %5.2f m) at %6.2f < s < %6.2f m", oss.str().c_str(), elem.name().c_str(), elem.length(), elem.s(), elem.s()+elem.length() );
-      if ( elem.aperture() ) { os << "\twith aperture: " << elem.aperture(); }
+      os << Form( "%15s %17s (length = %5.2f m) at %6.2f < s < %6.2f m", oss.str().c_str(), elem.name().c_str(), elem.length(), elem.s(), elem.s()+elem.length() );
+      if ( elem.aperture() ) { os << " with aperture: " << elem.aperture(); }
+      else { os << " with no aperture restriction"; }
       return os;
     }
 
@@ -72,25 +73,25 @@ namespace Hector
     operator<<( std::ostream& os, const Type& type )
     {
       switch ( type ) {
-        case anInvalidElement: os << "invalid"; break;
-        case aMarker: os << "marker"; break;
-        case aDrift: os << "drift"; break;
-        case aMonitor: os << "monitor"; break;
-        case aRectangularDipole: os << "rect.dipole"; break;
-        case aSectorDipole: os << "sector dipole"; break;
-        case aGenericQuadrupole: os << "quadrupole"; break;
-        case anHorizontalQuadrupole: os << "hor.quadrupole"; break;
-        case aVerticalQuadrupole: os << "vert.quadrupole"; break;
-        case aSextupole: os << "sextupole"; break;
-        case aMultipole: os << "multipole"; break;
-        case aVerticalKicker: os << "vertic.kicker"; break;
-        case anHorizontalKicker: os << "horiz.kicker"; break;
-        case aRectangularCollimator: os << "rect.collimator"; break;
-        case anEllipticalCollimator: os << "ellip.collimator"; break;
-        case aCircularCollimator: os << "circular collimator"; break;
-        case aPlaceholder: os << "placeholder"; break;
-        case anInstrument: os << "instrument"; break;
-        case aSolenoid: os << "solenoid"; break;
+        case anInvalidElement:       return os << "invalid";
+        case aMarker:                return os << "marker";
+        case aDrift:                 return os << "drift";
+        case aMonitor:               return os << "monitor";
+        case aRectangularDipole:     return os << "rect.dipole";
+        case aSectorDipole:          return os << "sector dipole";
+        case aGenericQuadrupole:     return os << "quadrupole";
+        case anHorizontalQuadrupole: return os << "hor.quadrupole";
+        case aVerticalQuadrupole:    return os << "vert.quadrupole";
+        case aSextupole:             return os << "sextupole";
+        case aMultipole:             return os << "multipole";
+        case aVerticalKicker:        return os << "vertic.kicker";
+        case anHorizontalKicker:     return os << "horiz.kicker";
+        case aRectangularCollimator: return os << "rect.collimator";
+        case anEllipticalCollimator: return os << "ellip.collimator";
+        case aCircularCollimator:    return os << "circular collimator";
+        case aPlaceholder:           return os << "placeholder";
+        case anInstrument:           return os << "instrument";
+        case aSolenoid:              return os << "solenoid";
       }
       return os;
     }

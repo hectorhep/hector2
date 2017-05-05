@@ -4,7 +4,9 @@ namespace Hector
 {
   Particle::Particle() :
     charge_( 0 ), pdgId_( 0 ), stopped_( false )
-  {}
+  {
+    addPosition( 0., StateVector() );
+  }
 
   Particle::Particle( const StateVector& sv0, float s0 ) :
     charge_( 0 ), pdgId_( 0 ), stopped_( false )

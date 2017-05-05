@@ -18,6 +18,7 @@ namespace Hector
         RectangularAperture* clone() const { return new RectangularAperture( *this ); }
 
         bool contains( const CLHEP::Hep2Vector& ) const;
+        void limits( float& lim_x, float& lim_y ) const;
 
     };
   }
