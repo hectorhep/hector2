@@ -21,6 +21,7 @@ main( int argc, char* argv[] )
     return -1;
   }
   //Hector::Parameters::compute_aperture_acceptance = false; //FIXME
+  Hector::Parameters::enable_dipoles = false; //FIXME
 
   // general plotting parameters
   const float max_s = ( argc>3 ) ? atof( argv[3] ) : 250.;
@@ -38,8 +39,8 @@ main( int argc, char* argv[] )
     std::cout << " >> Roman pot " << rps[i]->name() << " at s=" << rps[i]->s() << " m" << std::endl;
   }
 
-  parser_beam1.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( -0.097, 0. ) );
-  parser_beam2.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( +0.097, 0. ) );
+  /*parser_beam1.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( -0.097, 0. ) );
+  parser_beam2.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( +0.097, 0. ) );*/
 
   Hector::Propagator prop1( parser_beam1.beamline() ),
                      prop2( parser_beam2.beamline() );

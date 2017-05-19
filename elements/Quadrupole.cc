@@ -10,10 +10,10 @@ namespace Hector
       const float ke = fabs( fieldStrength( eloss, mp, qp ) );
       if ( ke==0. ) { return Drift::genericMatrix( length_ ); } // simple drift matrix
 
-      const float sq_k = sqrt( ke ), inv_sq_k = 1./sq_k,
-                  omega = sqrt( fabs( ke ) )*length_,
-                  s_omega = sin( omega ), c_omega = cos( omega ),
-                  sh_omega = sinh( omega ), ch_omega = cosh( omega );
+      const double sq_k = sqrt( ke ), inv_sq_k = 1./sq_k,
+                   omega = sqrt( fabs( ke ) )*length_,
+                   s_omega = sin( omega ), c_omega = cos( omega ),
+                   sh_omega = sinh( omega ), ch_omega = cosh( omega );
 
       CLHEP::HepMatrix mat = CLHEP::HepDiagMatrix( 6, 1 );
       // Focussing Twiss matrix
@@ -35,10 +35,10 @@ namespace Hector
       const float ke = fieldStrength( eloss, mp, qp );
       if ( ke==0. ) { return Drift::genericMatrix( length_ ); } // simple drift matrix
 
-      const float sq_k = sqrt( ke ), inv_sq_k = 1./sq_k,
-                  omega = sqrt( fabs( ke ) )*length_,
-                  s_omega = sin( omega ), c_omega = cos( omega ),
-                  sh_omega = sinh( omega ), ch_omega = cosh( omega );
+      const double sq_k = sqrt( ke ), inv_sq_k = 1./sq_k,
+                   omega = sqrt( fabs( ke ) )*length_,
+                   s_omega = sin( omega ), c_omega = cos( omega ),
+                   sh_omega = sinh( omega ), ch_omega = cosh( omega );
 
       CLHEP::HepMatrix mat = CLHEP::HepDiagMatrix( 6, 1 );
       // Defocussing Twiss matrix

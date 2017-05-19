@@ -15,4 +15,5 @@ namespace Hector
   bool Parameters::correct_beamline_overlaps = false;
   bool Parameters::compute_aperture_acceptance = true;
   bool Parameters::enable_kickers = false;
+  bool Parameters::enable_dipoles = true;
 }

@@ -40,8 +40,8 @@ void
 drawBeamline( const char axis, const Hector::Beamline* bl, const unsigned short beam, const char* ip="IP5", float scale=0.2, float min_s=-999., float max_s=999., bool draw_apertures=false )
 {
   const float size_y = scale/4., // general scale of the element x/y position
-              scale_y = 0.8, // element x/y displacement magnification factor
-              offset_at_s = 120.;
+              scale_y = 0.8; // element x/y displacement magnification factor
+              //offset_at_s = 120.;
 
   TLatex txt;
   txt.SetTextFont( 130+2 );
@@ -54,8 +54,8 @@ drawBeamline( const char axis, const Hector::Beamline* bl, const unsigned short 
     //if ( elem->type()==Hector::Element::ElementBase::Marker and elem->name()!=ip ) continue;
 
     // introduce a x- and y-offset for drawing purposes
-    int offset = 0;
-    /*if ( elem->s()>offset_at_s ) {
+    /*int offset = 0;
+    if ( elem->s()>offset_at_s ) {
       if ( beam==0 ) offset = -1;
       if ( beam==1 ) offset = +1;
     }*/

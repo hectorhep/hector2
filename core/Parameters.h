@@ -29,6 +29,7 @@ namespace Hector
     static bool correct_beamline_overlaps;
     static bool compute_aperture_acceptance;
     static bool enable_kickers;
+    static bool enable_dipoles;
   };
 }
 
