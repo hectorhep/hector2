@@ -9,14 +9,14 @@ int main( int argc, char* argv[] )
   parser.printInfo();
   parser.beamline()->dump();
 
-  std::cout << "beamline matrix at s = 250 m: " << parser.beamline()->matrix( 100., Hector::Parameters::beam_particles_mass, +1 ) << std::endl;
+  std::cout << "beamline matrix at s = 250 m: " << parser.beamline()->matrix( 100., Hector::Parameters::beamParticlesMass(), +1 ) << std::endl;
 
   Hector::Propagator prop( parser.beamline() );
   //parser.beamline()->dump();
 
   const unsigned short num_part = 100;
-  Hector::BeamProducer::gaussianParticleGun gun( Hector::Parameters::beam_energy/1.25, Hector::Parameters::beam_energy );
-  //Hector::BeamProducer::TXscanner gun( num_part, Hector::Parameters::beam_energy, 0., 1. );
+  Hector::BeamProducer::gaussianParticleGun gun( Hector::Parameters::beamEnergy()/1.25, Hector::Parameters::beamEnergy() );
+  //Hector::BeamProducer::TXscanner gun( num_part, Hector::Parameters::beamEnergy(), 0., 1. );
   for ( unsigned int i=0; i<num_part; i++ ) {
     Hector::Particle p = gun.shoot();
     p.setCharge( +1 );

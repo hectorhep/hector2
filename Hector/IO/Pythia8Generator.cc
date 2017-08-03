@@ -53,7 +53,7 @@ namespace Hector
       // specify the incoming state
       pythia_->settings.mode( "Beams:idA", 2212 );
       pythia_->settings.mode( "Beams:idB", 2212 );
-      pythia_->settings.parm( "Beams:eCM", 2.*Parameters::beam_energy ); //FIXME consider the asymmetric energies too!
+      pythia_->settings.parm( "Beams:eCM", 2.*Parameters::beamEnergy() ); //FIXME consider the asymmetric energies too!
       for ( unsigned short i=0; i<sizeof(config)/sizeof(config[0]); i++ ) {
         if ( !pythia_->readString( config[i].c_str() ) ) { throw Exception( __PRETTY_FUNCTION__, Form( "Failed to parse the command:\n\t  \"%s\"", config[i].c_str() ), JustWarning ); }
       }
