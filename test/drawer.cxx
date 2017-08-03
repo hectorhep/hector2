@@ -20,8 +20,8 @@ main( int argc, char* argv[] )
     std::cout << "Usage: " << argv[0] << " [MAD-X output file for beam 1] [MAD-X output file for beam 2]" << std::endl;
     return -1;
   }
-  //Hector::Parameters::compute_aperture_acceptance = false; //FIXME
-  Hector::Parameters::enable_dipoles = false; //FIXME
+  //Hector::Parameters::get()->setComputeApertureAcceptance( false ); //FIXME
+  Hector::Parameters::get()->setEnableDipoles( false ); //FIXME
 
   // general plotting parameters
   const float max_s = ( argc>3 ) ? atof( argv[3] ) : 250.;
@@ -49,8 +49,8 @@ main( int argc, char* argv[] )
   Hector::Propagator prop1( parser_beam1.beamline() ),
                      prop2( parser_beam2.beamline() );
 
-  const double mass = Hector::Parameters::beam_particles_mass,
-               energy = Hector::Parameters::beam_energy;
+  const double mass = Hector::Parameters::get()->beamParticlesMass(),
+               energy = Hector::Parameters::get()->beamEnergy();
   const CLHEP::Hep3Vector mom0( 0, 0., sqrt( energy*energy-mass*mass ) );
 
   TMultiGraph mg1_x, mg2_x,
@@ -61,9 +61,9 @@ main( int argc, char* argv[] )
   Hector::BeamProducer::gaussianParticleGun gun;
   gun.setXparams( 0., beam_lateral_width_ip );
   gun.setYparams( 0., beam_lateral_width_ip );
-  gun.setTXparams( Hector::Parameters::crossing_angle_x/2., beam_angular_divergence_ip );
-  gun.setTYparams( Hector::Parameters::crossing_angle_y/2., beam_angular_divergence_ip );
-  //Hector::BeamProducer::TYscanner gun( num_particles, Hector::Parameters::beam_energy, -1, 1, max_s );
+  gun.setTXparams( Hector::Parameters::get()->crossingAngleX()/2., beam_angular_divergence_ip );
+  gun.setTYparams( Hector::Parameters::get()->crossingAngleY()/2., beam_angular_divergence_ip );
+  //Hector::BeamProducer::TYscanner gun( num_particles, Hector::Parameters::get()->beamEnergy(), -1, 1, max_s );
 
   Hector::Timer tmr;
   TH1D h_timing( "timing", "Propagation time per element\\Event\\#mus?.2f", 100, 0., 10. );
@@ -73,7 +73,7 @@ main( int argc, char* argv[] )
   for ( size_t i=0; i<num_particles; i++ ) {
     unsigned short j;
     { // beamline 1 propagation
-      gun.setTXparams( -Hector::Parameters::crossing_angle_x/2., beam_angular_divergence_ip );
+      gun.setTXparams( -Hector::Parameters::get()->crossingAngleX()/2., beam_angular_divergence_ip );
       Hector::Particle p = gun.shoot();
       TGraph gr_x, gr_y;
       try {
@@ -94,7 +94,7 @@ main( int argc, char* argv[] )
       mg1_y.Add( dynamic_cast<TGraph*>( gr_y.Clone() ) );
     }
     { // beamline 2 propagation
-      gun.setTXparams( -Hector::Parameters::crossing_angle_x/2., beam_angular_divergence_ip );
+      gun.setTXparams( -Hector::Parameters::get()->crossingAngleX()/2., beam_angular_divergence_ip );
       Hector::Particle p = gun.shoot();
       TGraph gr_x, gr_y;
       try { prop2.propagate( p, max_s ); } catch ( Hector::Exception& e ) { e.dump(); }
@@ -116,7 +116,7 @@ main( int argc, char* argv[] )
   // drawing part
 
   {
-    Hector::Canvas c( "beamline", Form( "Hector 2 simulation, E_{beam} = %.1f TeV", Hector::Parameters::beam_energy*CLHEP::GeV/CLHEP::TeV ), true );
+    Hector::Canvas c( "beamline", Form( "Hector 2 simulation, E_{beam} = %.1f TeV", Hector::Parameters::get()->beamEnergy()*CLHEP::GeV/CLHEP::TeV ), true );
     //c.SetGrayscale();
 
     const float scale_x = 0.1,

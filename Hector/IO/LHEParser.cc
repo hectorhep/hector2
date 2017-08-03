@@ -36,11 +36,11 @@ namespace Hector
 
         if ( status==-1 and pdg_id!=2212 ) { // only accept protons as primary beam particles (FIXME: use mass to filter?)
           const short sign = ( mom.pz()>0. ) ? +1 : -1;
-          const double pz = sqrt( pow( Parameters::beam_energy, 2 )-pow( Parameters::beam_particles_mass, 2 ) );
-          CLHEP::HepLorentzVector prim( 0., 0., sign*pz, Parameters::beam_energy );
+          const double pz = sqrt( pow( Parameters::get()->beamEnergy(), 2 )-pow( Parameters::get()->beamParticlesMass(), 2 ) );
+          CLHEP::HepLorentzVector prim( 0., 0., sign*pz, Parameters::get()->beamEnergy() );
           Particle part( prim-mom );
           part.setPDGid( 2212 );
-          part.firstStateVector().setM( Parameters::beam_particles_mass );
+          part.firstStateVector().setM( Parameters::get()->beamParticlesMass() );
           parts.push_back( part );
           continue;
         }

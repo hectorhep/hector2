@@ -25,7 +25,7 @@ namespace Hector
                 y = p2_.first;
 
     const CLHEP::Hep2Vector pos_ini( x, y );
-    const CLHEP::HepLorentzVector mom_ini( 0., 0., 0., Parameters::beam_energy );
+    const CLHEP::HepLorentzVector mom_ini( 0., 0., 0., Parameters::get()->beamEnergy() );
 
     return Particle( StateVector( mom_ini, pos_ini ), s_.first );
   }
@@ -37,7 +37,7 @@ namespace Hector
                 y = p1_.first + LinearScanner::next()*( p1_.second-p1_.first )/( num_part_-1 );
 
     const CLHEP::Hep2Vector pos_ini( x, y );
-    const CLHEP::HepLorentzVector mom_ini( 0., 0., 0., Parameters::beam_energy );
+    const CLHEP::HepLorentzVector mom_ini( 0., 0., 0., Parameters::get()->beamEnergy() );
 
     return Particle( StateVector( mom_ini, pos_ini ), s_.first );
   }
@@ -64,7 +64,7 @@ namespace Hector
   BeamProducer::Xiscanner::shoot()
   {
     const float energy = e_.first + LinearScanner::next()*( e_.second-e_.first )/( num_part_-1 ),
-                mom = sqrt( energy*energy-pow( Parameters::beam_particles_mass, 2 ) );
+                mom = sqrt( energy*energy-pow( Parameters::get()->beamParticlesMass(), 2 ) );
     return Particle( StateVector( CLHEP::HepLorentzVector( 0., 0., mom, energy ), CLHEP::Hep2Vector( p1_.first, p2_.first ) ), s_.first );
   }
 

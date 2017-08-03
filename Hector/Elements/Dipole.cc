@@ -7,7 +7,7 @@ namespace Hector
     CLHEP::HepMatrix
     SectorDipole::matrix( float eloss, float mp, int qp ) const
     {
-      if ( !Parameters::enable_dipoles ) return Drift::genericMatrix( length_ );
+      if ( !Parameters::get()->enableDipoles() ) return Drift::genericMatrix( length_ );
 
       const float ke = fieldStrength( eloss, mp, qp ); //FIXME
 
@@ -19,7 +19,7 @@ namespace Hector
       const double radius = 1./ke,
                    theta = length_*ke,
                    c_theta = cos( theta ), s_theta = sin( theta ),
-                   inv_energy = 1. / Parameters::beam_energy;
+        inv_energy = 1. / Parameters::get()->beamEnergy();
 
       CLHEP::HepMatrix mat = CLHEP::HepDiagMatrix( 6, 1 );
 
@@ -28,7 +28,7 @@ namespace Hector
       mat( 2, 1 ) = s_theta * ( -ke );
       mat( 2, 2 ) = c_theta;
       mat( 3, 4 ) = length_;
-      if ( Parameters::use_relative_energy ) {
+      if ( Parameters::get()->useRelativeEnergy() ) {
         const double simp = 2.*radius*pow( sin( theta*0.5 ), 2 ) * inv_energy;
         // numerically stable version of ( r/E₀ )*( 1-cos θ )
         mat( 1, 5 ) = simp;
@@ -40,7 +40,7 @@ namespace Hector
     CLHEP::HepMatrix
     RectangularDipole::matrix( float eloss, float mp, int qp ) const
     {
-      if ( !Parameters::enable_dipoles ) return Drift::genericMatrix( length_ );
+      if ( !Parameters::get()->enableDipoles() ) return Drift::genericMatrix( length_ );
 
       const float ke = fieldStrength( eloss, mp, qp ); //FIXME
 
@@ -52,7 +52,7 @@ namespace Hector
       const double radius = 1./ke,
                    theta = length_*ke,
                    s_theta = sin( theta ), c_theta = cos( theta ),
-                   inv_energy = 1. / Parameters::beam_energy,
+                   inv_energy = 1. / Parameters::get()->beamEnergy(),
                    simp = 2.*radius*pow( sin( theta*0.5 ), 2 ) * inv_energy;
                    // numerically stable version of ( r/E₀ )*( 1-cos θ )
 
@@ -66,7 +66,7 @@ namespace Hector
       mat( 1, 5 ) = simp;
       mat( 2, 5 ) = s_theta * inv_energy;
 
-      if ( Parameters::use_relative_energy ) {
+      if ( Parameters::get()->useRelativeEnergy() ) {
         /*throw Exception( __PRETTY_FUNCTION__, "Relative energy mode not yet supported in this version of Hector!\n\t"
                                                 "Please contact the developers for more information.", Fatal );*/
         CLHEP::HepMatrix ef_matrix = CLHEP::HepDiagMatrix( 6, 1 );
