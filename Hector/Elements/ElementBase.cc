@@ -43,12 +43,12 @@ namespace Hector
       if ( qp==0 ) return 0.;
 
       // reweight the field strength by the particle charge and momentum
-      const float eini = Parameters::beamEnergy(),
-                  mp0 = Parameters::beamParticlesMass(),
+      const float eini = Parameters::get()->beamEnergy(),
+                  mp0 = Parameters::get()->beamParticlesMass(),
                   e = eini-eloss;
       const float p0 = sqrt( ( eini-mp0 )*( eini+mp0 ) ), // e_ini^2 - p_0^2 = mp0^2
                   p = sqrt( ( e-mp )*( e+mp ) ); // e^2 - p^2 = mp^2
-      return magnetic_strength_*( p0/p )*( qp/Parameters::beamParticlesCharge() );
+      return magnetic_strength_*( p0/p )*( qp/Parameters::get()->beamParticlesCharge() );
     }
 
     /// Human-readable printout of a beamline element object

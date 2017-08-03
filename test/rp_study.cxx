@@ -22,10 +22,10 @@ main( int argc, char* argv[] )
   //parser.printInfo();
   parser.beamline()->dump();
   //parser.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( -0.097, 0. ) );
-  //Hector::Parameters::use_relative_energy = true;
-  //Hector::Parameters::enable_kickers = true;
-  //Hector::Parameters::enable_dipoles = false; //FIXME
-  Hector::Parameters::compute_aperture_acceptance = false; //FIXME
+  //Hector::Parameters::get()->setUseRelativeEnergy( true );
+  //Hector::Parameters::get()->setEnableKickers( true );
+  //Hector::Parameters::get()->setEnableDipoles( false ); //FIXME
+  Hector::Parameters::get()->setComputeApertureAcceptance( false ); //FIXME
 
   Hector::Propagator prop( parser.beamline() );
 
@@ -54,7 +54,7 @@ main( int argc, char* argv[] )
               y0_pos = 200.e-6; // in m
 
   CLHEP::Hep2Vector pos_rp0;
-  Hector::Particle p = Hector::Particle::fromMassCharge( Hector::Parameters::beam_particles_mass, +1 );
+  Hector::Particle p = Hector::Particle::fromMassCharge( Hector::Parameters::get()->beamParticlesMass(), +1 );
   p.firstStateVector().setXi( 0. );
   p.firstStateVector().setPosition( 0., y0_pos );
   p.firstStateVector().setAngles( cross_angle, 0. );
@@ -69,11 +69,11 @@ main( int argc, char* argv[] )
   const float xi_values[] = { 0., 0.05, 0.1, 0.15 };
   const unsigned short num_values = sizeof( xi_values )/sizeof( xi_values[0] );
   for ( unsigned short i=0; i<num_values; i++ ) {
-    Hector::Particle p = Hector::Particle::fromMassCharge( Hector::Parameters::beam_particles_mass, +1 );
+    Hector::Particle p = Hector::Particle::fromMassCharge( Hector::Parameters::get()->beamParticlesMass, +1 );
     p.firstStateVector().setPosition( 0., y0_pos );
     p.firstStateVector().setXi( xi_values[i] );
     std::cout << p.firstStateVector().xi() << "\t" << p.firstStateVector().energy() << std::endl;
-    //p.firstStateVector().setAngles( Hector::Parameters::crossing_angle_x/2., Hector::Parameters::crossing_angle_y/2. );
+    //p.firstStateVector().setAngles( Hector::Parameters::get()->crossingAngleX()/2., Hector::Parameters::get()->crossingAngleY()/2. );
     p.firstStateVector().setAngles( cross_angle, 0. );
     try {
       prop.propagate( p, rp->s() );

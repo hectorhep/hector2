@@ -56,7 +56,7 @@ namespace Hector
 
       /// Print all information about this exception
       inline void dump( std::ostream& os=std::cerr ) const {
-        if ( type()<Parameters::loggingThreshold() ) return;
+        if ( type()<Parameters::get()->loggingThreshold() ) return;
         if ( type()==Info ) {
           os << "======================= \033[33;1mInformation\033[0m =======================" << std::endl
              << " From:        " << from() << std::endl;
