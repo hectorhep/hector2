@@ -94,7 +94,7 @@ namespace Hector
       sv_ini.setEnergy( sv_ini.energy()-e_gamma );
       return;
     }
-    const double m1 = Parameters::beam_particles_mass,
+    const double m1 = Parameters::beamParticlesMass(),
                  e1 = sv_ini.energy(),
                  e2 = sv_ini.energy()-e_gamma; // particle energy : before (1) / after (2)
 
@@ -131,7 +131,7 @@ namespace Hector
     const double ceta = sqrt( 1.+pow( m1/p1, 2 ) )*sqrt( 1.+q2/gkk*gkk ) - q2/( 2*p1*gkk ),
                  seta = sqrt( 1.-ceta*ceta );
     // theta is the angle between particle and beam
-    const double theta = atan( seta/( Parameters::beam_energy/gkk-ceta ) ),
+    const double theta = atan( seta/( Parameters::beamEnergy()/gkk-ceta ) ),
                  phi = CLHEP::RandFlat::shoot( phi_min, phi_max );
 
     CLHEP::Hep2Vector old_ang( sv_ini.angles() );

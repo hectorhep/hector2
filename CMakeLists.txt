@@ -21,6 +21,14 @@ find_package(CLHEP REQUIRED)
 #if(EXISTS $ENV{has_pythia6})
 #  add_definitions(-DPYTHIA6)
 #endif()
+find_package(Boost COMPONENTS python)
+find_package(PythonLibs)
+set(EXT_LIBS CLHEP)
+
+find_package(Pythia8 QUIET)
+if(DEFINED PYTHIA8_FOUND)
+  list(APPEND EXT_LIBS ${PYTHIA8_LIBRARY})
+endif()
 
 #----- build all the intermediate objects
 
@@ -41,12 +49,12 @@ add_library(Hector SHARED $<TARGET_OBJECTS:HectorCore>
                           $<TARGET_OBJECTS:HectorBeamline>
                           $<TARGET_OBJECTS:HectorPropagator>)
 set_target_properties(Hector PROPERTIES LINKER_LANGUAGE CXX)
+target_link_libraries(Hector ${EXT_LIBS})
 
-find_package(Pythia8 QUIET)
-if(DEFINED PYTHIA8_FOUND)
-  target_link_libraries(Hector CLHEP ${PYTHIA8_LIBRARY})
-else()
-  target_link_libraries(Hector CLHEP)
+if(Boost_FOUND)
+  include_directories(${Boost_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS})
+  add_library(pyhector SHARED ${PROJECT_SOURCE_DIR}/Hector/PythonWrapper.cc)
+  target_link_libraries(pyhector ${Boost_LIBRARIES} ${EXT_LIBS})
 endif()
 
 install(TARGETS Hector DESTINATION lib)

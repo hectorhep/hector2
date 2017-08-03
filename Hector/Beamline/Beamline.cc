@@ -64,7 +64,7 @@ namespace Hector
       if ( prev_elem->s()+prev_elem->length()<=elem->s() ) continue;
       if ( prev_elem->length()==0 ) continue;
 
-      if ( !Parameters::correct_beamline_overlaps ) {
+      if ( !Parameters::correctBeamlineOverlaps() ) {
         throw Exception( __PRETTY_FUNCTION__, Form( "Elements overlap with \"%s\" detected while adding \"%s\"!", prev_elem->name().c_str(), elem->name().c_str() ), Fatal );
       }
 

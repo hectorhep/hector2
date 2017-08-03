@@ -14,11 +14,11 @@ namespace Hector
   {
     part.clear();
     /*if ( Parameters::use_relative_energy ) {
-      part.firstStateVector().setEnergy( part.firstStateVector().energy()-Parameters::beam_energy );
+      part.firstStateVector().setEnergy( part.firstStateVector().energy()-Parameters::beamEnergy() );
     }*/
     const bool non_linear = true;
     const double energy_loss = ( non_linear )
-      ? Parameters::beam_energy-part.lastStateVector().energy()
+      ? Parameters::beamEnergy()-part.lastStateVector().energy()
       : 0.;
     //part.firstStateVector().setEnergy( energy_loss );
     const float first_s = part.firstS();
@@ -57,7 +57,7 @@ namespace Hector
 
         part.addPosition( out_pos.s(), out_pos.stateVector() );
 
-        if ( Parameters::compute_aperture_acceptance ) {
+        if ( Parameters::computeApertureAcceptance() ) {
           const Aperture::ApertureBase* aper = prev_elem->aperture();
           if ( aper and aper->type()!=Aperture::anInvalidAperture ) {
             const CLHEP::Hep2Vector pos_prev_elem( part.stateVectorAt( prev_elem->s() ).position() );
