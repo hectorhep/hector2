@@ -8,6 +8,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/cmake)
 #----- define all individual modules to be built beforehand
 
 set(MODULES Core IO Elements Beamline Propagator)
+set(HECTOR_SOURCE_DIR ${PROJECT_SOURCE_DIR}/Hector)
 
 #----- enable fortran (for Pythia/Herwig/...)
 
@@ -24,9 +25,9 @@ find_package(CLHEP REQUIRED)
 
 #----- build all the intermediate objects
 
-include_directories(${PROJECT_SOURCE_DIR}/Hector)
+include_directories(${HECTOR_SOURCE_DIR})
 foreach(_module ${MODULES})
-  include_directories(${PROJECT_SOURCE_DIR}/Hector/${_module})
+  include_directories(${HECTOR_SOURCE_DIR}/${_module})
   add_subdirectory(Hector/${_module})
 endforeach()
 
@@ -73,7 +74,14 @@ endforeach()
 #----- python wrapping
 
 include(UseCython)
-set(PYTHON_WRAPPERS_SRC ${HECTOR_SOURCE_DIR}/hector.pyx)
-set(CYMAKE_HDRS ${HECTOR_SOURCE_DIR}/Propagator/StateVector.h)
-set_source_files_properties(${PYTHON_WRAPPERS_SRC} PROPERTIES CYTHON_IS_CXX 1)
-cython_add_module(pyHector ${HECTOR_SOURCE_DIR}/hector.pyx ${CYMAKE_HDRS})
+add_custom_target(ReplicatePythonSourceTree ALL ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ReplicatePythonSourceTree.cmake ${CMAKE_CURRENT_BINARY_DIR} WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+set(pyx_files "")
+foreach(_mod ${MODULES})
+  file(GLOB sources ${HECTOR_SOURCE_DIR}/${_mod}/*.pyx)
+  set_source_files_properties(${sources} PROPERTIES CYTHON_IS_CXX 1)
+  list(APPEND pyx_files ${sources})
+endforeach()
+message(${pyx_files})
+cython_add_module(pyhector ${pyx_files})
+target_link_libraries(pyhector Hector CLHEP)
+

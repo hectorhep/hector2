@@ -18,7 +18,7 @@
 #   cython_add_standalone_executable( <executable_name> [MAIN_MODULE src1] <src1> <src2> ... <srcN> )
 #
 # To avoid dependence on Python, set the PYTHON_LIBRARY cache variable to point
-# to a static library.  If a MAIN_MODULE source is specified, 
+# to a static library.  If a MAIN_MODULE source is specified,
 # the "if __name__ == '__main__':" from that module is used as the C main() method
 # for the executable.  If MAIN_MODULE, the source with the same basename as
 # <executable_name> is assumed to be the MAIN_MODULE.
@@ -63,9 +63,9 @@
 #=============================================================================
 
 # Configuration options.
-set( CYTHON_ANNOTATE ON
+set( CYTHON_ANNOTATE OFF
   CACHE BOOL "Create an annotated .html file when compiling *.pyx." )
-set( CYTHON_NO_DOCSTRINGS ON
+set( CYTHON_NO_DOCSTRINGS OFF
   CACHE BOOL "Strip docstrings from the compiled module." )
 set( CYTHON_FLAGS "" CACHE STRING
   "Extra flags to the cython compiler." )
@@ -89,6 +89,7 @@ function( compile_pyx _name generated_file )
 
   set( cython_include_directories "" )
   set( pxd_dependencies "" )
+  set( pxi_dependencies "" )
   set( c_header_dependencies "" )
   set( pyx_locations "" )
 
@@ -115,11 +116,31 @@ function( compile_pyx _name generated_file )
     # Add the pxd file will the same name as the given pyx file.
     unset( corresponding_pxd_file CACHE )
     find_file( corresponding_pxd_file ${pyx_file_basename}.pxd
-      PATHS "${pyx_path}" ${cmake_include_directories} 
+      PATHS "${pyx_path}" ${cmake_include_directories}
       NO_DEFAULT_PATH )
     if( corresponding_pxd_file )
       list( APPEND pxd_dependencies "${corresponding_pxd_file}" )
     endif()
+
+    # Look for included pxi files
+    file(STRINGS "${pyx_file}" include_statements REGEX "include +['\"]([^'\"]+).*")
+    foreach(statement ${include_statements})
+      string(REGEX REPLACE "include +['\"]([^'\"]+).*" "\\1" pxi_file "${statement}")
+      unset(pxi_location CACHE)
+      find_file(pxi_location ${pxi_file}
+        PATHS "${pyx_path}" ${cmake_include_directories} NO_DEFAULT_PATH)
+      if (pxi_location)
+        list(APPEND pxi_dependencies ${pxi_location})
+        get_filename_component( found_pyi_file_basename "${pxi_file}" NAME_WE )
+        get_filename_component( found_pyi_path ${pxi_location} PATH )
+        unset( found_pyi_pxd_file CACHE )
+        find_file( found_pyi_pxd_file ${found_pyi_file_basename}.pxd
+          PATHS "${found_pyi_path}" ${cmake_include_directories} NO_DEFAULT_PATH )
+        if (found_pyi_pxd_file)
+            list( APPEND pxd_dependencies "${found_pyi_pxd_file}" )
+        endif()
+      endif()
+    endforeach() # for each include statement found
 
     # pxd files to check for additional dependencies.
     set( pxds_to_check "${pyx_file}" "${pxd_dependencies}" )
@@ -179,6 +200,9 @@ function( compile_pyx _name generated_file )
       endforeach() # for each pxd file to check
       list( LENGTH pxds_to_check number_pxds_to_check )
     endwhile()
+
+
+
   endforeach() # pyx_file
 
   # Set additional flags.
@@ -195,7 +219,15 @@ function( compile_pyx _name generated_file )
       set( cython_debug_arg "--gdb" )
   endif()
 
-  # Include directory arguments. 
+  if( "${PYTHONLIBS_VERSION_STRING}" MATCHES "^2." )
+    set( version_arg "-2" )
+  elseif( "${PYTHONLIBS_VERSION_STRING}" MATCHES "^3." )
+    set( version_arg "-3" )
+  else()
+    set( version_arg )
+  endif()
+
+  # Include directory arguments.
   list( REMOVE_DUPLICATES cython_include_directories )
   set( include_directory_arg "" )
   foreach( _include_dir ${cython_include_directories} )
@@ -203,7 +235,7 @@ function( compile_pyx _name generated_file )
   endforeach()
 
   # Determining generated file name.
-  set( _generated_file "${_name}.${extension}" )
+  set( _generated_file "${CMAKE_CURRENT_BINARY_DIR}/${_name}.${extension}" )
   set_source_files_properties( ${_generated_file} PROPERTIES GENERATED TRUE )
   set( ${generated_file} ${_generated_file} PARENT_SCOPE )
 
@@ -213,14 +245,13 @@ function( compile_pyx _name generated_file )
   # Add the command to run the compiler.
   add_custom_command( OUTPUT ${_generated_file}
     COMMAND ${CYTHON_EXECUTABLE}
-    ARGS ${cxx_arg} ${include_directory_arg}
-    ${annotate_arg} ${no_docstrings_arg} ${cython_debug_arg} ${CYTHON_FLAGS} 
+    ARGS ${cxx_arg} ${include_directory_arg} ${version_arg}
+    ${annotate_arg} ${no_docstrings_arg} ${cython_debug_arg} ${CYTHON_FLAGS}
     --output-file  ${_generated_file} ${pyx_locations}
-    DEPENDS ${pyx_locations} ${pxd_dependencies}
+    DEPENDS ${pyx_locations} ${pxd_dependencies} ${pxi_dependencies}
     IMPLICIT_DEPENDS ${pyx_lang} ${c_header_dependencies}
     COMMENT ${comment}
     )
-    #message(STATUS "${CYTHON_EXECUTABLE} ${_generated_file} ${cxx_arg} ${include_directory_arg} ${annotate_arg}${no_docstrings_arg} ${cython_debug_arg} ${CYTHON_FLAGS} --output-file  ${_generated_file} ${pyx_locations} ${pyx_locations} ${pxd_dependencies} ${pyx_lang} ${c_header_dependencies} ${comment}" )
 
   # Remove their visibility to the user.
   set( corresponding_pxd_file "" CACHE INTERNAL "" )
@@ -243,7 +274,11 @@ function( cython_add_module _name )
   compile_pyx( ${_name} generated_file ${pyx_module_sources} )
   include_directories( ${PYTHON_INCLUDE_DIRS} )
   python_add_module( ${_name} ${generated_file} ${other_module_sources} )
-  target_link_libraries( ${_name} ${PYTHON_LIBRARIES} ${pyx_module_libs}  )
+  if( APPLE )
+    set_target_properties( ${_name} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup" )
+  else()
+    target_link_libraries( ${_name} ${PYTHON_LIBRARIES} )
+  endif()
 endfunction()
 
 include( CMakeParseArguments )
