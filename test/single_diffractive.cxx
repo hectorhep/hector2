@@ -20,7 +20,7 @@ int main( int argc, char* argv[] )
   }
   const float s_pos = 220.;
 
-  Hector::Parameters::compute_aperture_acceptance = false;
+  Hector::Parameters::get()->setComputeApertureAcceptance( false );
   // number of events to generate
   const unsigned short num_events = 10000;
 

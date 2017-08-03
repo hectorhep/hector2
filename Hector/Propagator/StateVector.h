@@ -31,7 +31,7 @@ namespace Hector
       /// Build a blank state
       StateVector() : CLHEP::HepVector( 6, 0 ), m_( 0. ) {
         ( *this )[K] = 1.;
-        ( *this )[E] = Parameters::beamEnergy();
+        ( *this )[E] = Parameters::get()->beamEnergy();
       }
       //StateVector( const StateVector& sv ) : CLHEP::HepVector( sv.vector() ), m_( sv.m_ ) {}
       /// Build a state using a 6-component vector and a particle mass
@@ -43,7 +43,7 @@ namespace Hector
       /// \param[in] pos x-y position of the particle (m)
       StateVector( const CLHEP::HepLorentzVector& mom, const CLHEP::Hep2Vector& pos=CLHEP::Hep2Vector() );
       /// Build a state vector using the particle's position and its angle
-      StateVector( const CLHEP::Hep2Vector& pos, const CLHEP::Hep2Vector& ang, double energy=Parameters::beamEnergy(), double kick=1. );
+      StateVector( const CLHEP::Hep2Vector& pos, const CLHEP::Hep2Vector& ang, double energy=Parameters::get()->beamEnergy(), double kick=1. );
       ~StateVector() {}
 
       /// Human-readable printout of the state vector
@@ -57,9 +57,9 @@ namespace Hector
       /// Particle energy (in GeV)
       double energy() const { return ( *this )[E]; }
       /// Set the energy loss \f$ \xi \f$
-      void setXi( float xi ) { setEnergy( Parameters::beamEnergy()*( 1.-xi ) ); }
+      void setXi( float xi ) { setEnergy( Parameters::get()->beamEnergy()*( 1.-xi ) ); }
       /// Energy loss \f$ \xi \f$
-      float xi() const { return 1.-energy()/Parameters::beamEnergy(); }
+      float xi() const { return 1.-energy()/Parameters::get()->beamEnergy(); }
       /// Set the particle kick
       void setKick( double kick ) { ( *this )[K] = kick; }
       /// Particle kick
