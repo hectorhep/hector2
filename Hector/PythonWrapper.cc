@@ -10,6 +10,9 @@
 #include "Propagator/Particle.h"
 #include "Propagator/StateVector.h"
 
+#include "Beamline/Beamline.h"
+#include "IO/MADXParser.h"
+
 BOOST_PYTHON_MODULE( libpyhector )
 {
   boost::python::class_<CLHEP::HepLorentzVector>( "lorentzVector" )
@@ -51,5 +54,16 @@ BOOST_PYTHON_MODULE( libpyhector )
     .def( "energy", &Hector::StateVector::energy )
     .def( "xi", &Hector::StateVector::xi )
     .def( "momentum", &Hector::StateVector::momentum )
+  ;
+
+  boost::python::class_<Hector::Beamline>( "beamline" )
+    //.def( "sequencedBeamline", &Hector::Beamline::sequencedBeamline ).staticmethod( "sequencedBeamline" )
+    .def( "clear", &Hector::Beamline::clear )
+    .def( "addElement", &Hector::Beamline::addElement )
+  ;
+
+  boost::python::class_<Hector::Parser::MADX>( "madXparser", boost::python::init<const char*,const char*,int,boost::python::optional<float> >() )
+    .def( "beamline", &Hector::Parser::MADX::beamline )
+    .def( "romanPots", &Hector::Parser::MADX::romanPots )
   ;
 }
