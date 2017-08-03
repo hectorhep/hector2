@@ -9,3 +9,9 @@ cdef class HepVector:
     def __dealloc__(self):
         del self.thisptr
 
+cdef class Parameters:
+    cdef hector.Parameters* thisptr # c++ instance to be wrapped
+    def __cinit__(self):
+        self.thisptr = hector.Parameters_get().get()
+    def beamEnergy(self):
+        return self.thisptr.beamEnergy()

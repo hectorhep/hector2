@@ -65,9 +65,8 @@ foreach(_mod ${MODULES})
   set_source_files_properties(${sources} PROPERTIES CYTHON_IS_CXX 1)
   list(APPEND pyx_files ${sources})
 endforeach()
-message(${pyx_files})
 cython_add_module(pyhector ${pyx_files})
-target_link_libraries(pyhector ${EXT_LIBS})
+target_link_libraries(pyhector ${EXT_LIBS} Hector)
 
 #----- add the tests
 

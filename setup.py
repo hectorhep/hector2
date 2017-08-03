@@ -3,11 +3,11 @@ from distutils.sysconfig import get_python_lib
 import glob
 
 setup(
-    name = "pyhector",
+    name = "libpyhector",
     package_dir = {'': 'Hector'},
     data_files = [
-        (get_python_lib(), glob.glob('pyhector*.so')),
-        ('bin', ['pyhector.py'])
+        (get_python_lib(), glob.glob('libpyhector*.so')),
+        #('bin', ['libpyhector.py'])
     ],
     author = 'Laurent Forthomme',
     description = 'The Hector beamline transport algorithm.',

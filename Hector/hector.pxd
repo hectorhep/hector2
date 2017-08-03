@@ -1,5 +1,6 @@
 from libcpp.map cimport map
 from libcpp.pair cimport pair
+from libcpp.memory cimport shared_ptr
 
 #----- CLHEP includes
 
@@ -29,17 +30,18 @@ cdef extern from "Core/ExceptionType.h" namespace "Hector":
 
 cdef extern from "Core/Parameters.h" namespace "Hector":
     cdef struct Parameters:
-        float beam_energy
-        float beam_particles_mass
-        float crossing_angle_x
-        float crossing_angle_y
-        int beam_particles_charge
-        ExceptionType logging_threshold
-        bint use_relative_energy
-        bint correct_beamline_overlaps
-        bint compute_aperture_acceptance
-        bint enable_kickers
-        bint enable_dipoles
+        float beamEnergy()
+        float beamParticles_mass()
+        float crossingAngleX()
+        float crossingAngleY()
+        int beamParticlesCharge()
+        ExceptionType loggingThreshold()
+        bint useRelativeEnergy()
+        bint correctBeamlineOverlaps()
+        bint computeApertureAcceptance()
+        bint enableKickers()
+        bint enableDipoles()
+    cdef shared_ptr[Parameters] Parameters_get "Hector::Parameters::get"()
 
 #----- State vector
 
