@@ -31,6 +31,7 @@ namespace Hector
         case aCircularAperture:     os << "circular"; break;
         case anEllipticAperture:    os << "elliptic"; break;
         case aRectEllipticAperture: os << "rect-elliptic"; break;
+        case aRectCircularAperture: os << "rect-circular"; break;
         case aRaceTrackAperture:    os << "race-track"; break;
         case anOctagonalAperture:   os << "octagonal"; break;
       }

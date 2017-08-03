@@ -27,16 +27,20 @@ main( int argc, char* argv[] )
   const float max_s = ( argc>3 ) ? atof( argv[3] ) : 250.;
   const unsigned int num_particles = 1000;
 
-  Hector::Parser::MADX parser_beam1( argv[1], "IP5", 1, max_s ),
-                       parser_beam2( argv[2], "IP5", 1, max_s );
+  Hector::Parser::MADX parser_beam1( argv[1], "IP5", +1, max_s ),
+                       parser_beam2( argv[2], "IP5", -1, max_s );
 
   // look at both the beamlines
   parser_beam1.beamline()->dump();
 
-  const Hector::Elements rps = parser_beam1.romanPots();
-  std::cout << "---> beamline 1 has " << rps.size() << " roman pots!" << std::endl;
-  for ( unsigned short i=0; i<rps.size(); i++ ) {
-    std::cout << " >> Roman pot " << rps[i]->name() << " at s=" << rps[i]->s() << " m" << std::endl;
+  const Hector::Elements rps1 = parser_beam1.romanPots(), rps2 = parser_beam2.romanPots();
+  std::cout << "---> beamline 1 has " << rps1.size() << " roman pots!" << std::endl;
+  for ( unsigned short i=0; i<rps1.size(); i++ ) {
+    std::cout << " >> Roman pot " << rps1[i]->name() << " at s=" << rps1[i]->s() << " m" << std::endl;
+  }
+  std::cout << "---> beamline 2 has " << rps2.size() << " roman pots!" << std::endl;
+  for ( unsigned short i=0; i<rps2.size(); i++ ) {
+    std::cout << " >> Roman pot " << rps2[i]->name() << " at s=" << rps2[i]->s() << " m" << std::endl;
   }
 
   /*parser_beam1.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( -0.097, 0. ) );
@@ -116,7 +120,7 @@ main( int argc, char* argv[] )
     //c.SetGrayscale();
 
     const float scale_x = 0.1,
-                scale_y = 0.005;
+                scale_y = 0.05;
     const bool draw_apertures = false;
 
     c.cd( 1 ); // x-axis

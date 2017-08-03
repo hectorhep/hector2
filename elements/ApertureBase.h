@@ -17,6 +17,7 @@ namespace Hector
       anEllipticAperture,
       aCircularAperture,
       aRectEllipticAperture,
+      aRectCircularAperture,
       aRaceTrackAperture,
       anOctagonalAperture
     } Type;

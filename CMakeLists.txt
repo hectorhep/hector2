@@ -49,8 +49,12 @@ else()
   target_link_libraries(Hector CLHEP)
 endif()
 
+set(mods "")
+foreach(_mod ${MODULES})
+  list(APPEND mods ${_mod}/)
+endforeach()
 install(TARGETS Hector DESTINATION lib)
-install(DIRECTORY ${MODULES} DESTINATION include/Hector FILES_MATCHING PATTERN "*.h")
+install(DIRECTORY ${mods} DESTINATION include/Hector FILES_MATCHING PATTERN "*.h")
 
 add_executable(hector main.cpp)
 target_link_libraries(hector Hector)

@@ -68,7 +68,7 @@ namespace Hector
 
       if ( Parameters::use_relative_energy ) {
         /*throw Exception( __PRETTY_FUNCTION__, "Relative energy mode not yet supported in this version of Hector!\n\t"
-                                              "Please contact the developers for more information.", Fatal );*/
+                                                "Please contact the developers for more information.", Fatal );*/
         CLHEP::HepMatrix ef_matrix = CLHEP::HepDiagMatrix( 6, 1 );
         const double t_theta_half_ke = tan( theta*0.5 ) * ke;
         ef_matrix( 2, 1 ) =  t_theta_half_ke;
