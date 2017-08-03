@@ -10,12 +10,14 @@
 #include "StateVector.h"
 #include "Core/Exception.h"
 
+#include "TObject.h"
+
 using std::cout;
 
 namespace Hector
 {
   /// Generic particle model inserted in a beam
-  class Particle
+  class Particle : public TObject
   {
     public:
       /// Particle trajectory holder ; map of state vectors indexed to the s-position
@@ -116,6 +118,8 @@ namespace Hector
 
       PositionsMap positions_;
 
+    public:
+      ClassDef( Particle, 1 )
   };
 
   /// Collection of particles composing the beam

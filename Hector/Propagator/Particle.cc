@@ -1,5 +1,7 @@
 #include "Particle.h"
 
+ClassImp( Hector::Particle )
+
 namespace Hector
 {
   Particle::Particle() :
