@@ -43,18 +43,25 @@ add_library(Hector SHARED $<TARGET_OBJECTS:HectorCore>
                           $<TARGET_OBJECTS:HectorPropagator>)
 set_target_properties(Hector PROPERTIES LINKER_LANGUAGE CXX)
 
-find_package(Pythia8 QUIET)
-if(DEFINED PYTHIA8_FOUND)
-  target_link_libraries(Hector CLHEP ${PYTHIA8_LIBRARY})
-else()
-  target_link_libraries(Hector CLHEP)
-endif()
-
 install(TARGETS Hector DESTINATION lib)
 install(DIRECTORY ${MODULES} DESTINATION include FILES_MATCHING PATTERN "*.h")
 
+if(DEFINED PYTHIA8_FOUND)
+  list(APPEND EXT_LIBS ${PYTHIA8_LIBRARY})
+endif()
+
+#----- test executable
+
 add_executable(hector test/test_hector.cpp)
-target_link_libraries(hector Hector)
+target_link_libraries(hector Hector ${EXT_LIBS})
+
+#----- python wrapper
+
+if(Boost_FOUND)
+  include_directories(${Boost_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS})
+  add_library(pyhector SHARED ${PROJECT_SOURCE_DIR}/Hector/PythonWrapper.cc)
+  target_link_libraries(pyhector ${Boost_LIBRARIES} Hector ${EXT_LIBS})
+endif()
 
 #----- python wrapping
 
@@ -78,10 +85,6 @@ add_subdirectory(test)
 
 file(GLOB input RELATIVE ${PROJECT_SOURCE_DIR} data/twiss/*)
 foreach(_files ${input})
-  configure_file(
-    ${_files}
-    ${_files}
-    COPYONLY
-)
+  configure_file(${_files} ${_files} COPYONLY)
 endforeach()
 
