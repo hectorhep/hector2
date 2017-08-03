@@ -1,8 +1,8 @@
 #ifndef Hector_Core_Exception_h
 #define Hector_Core_Exception_h
 
-#include "core/Utils.h"
-#include "core/Parameters.h"
+#include "Utils.h"
+#include "Parameters.h"
 
 #include <iomanip>
 #include <iostream>

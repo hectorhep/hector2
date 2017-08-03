@@ -1,11 +1,11 @@
 #ifndef Hector_Beamline_Beamline_h
 #define Hector_Beamline_Beamline_h
 
-#include "core/Exception.h"
-#include "elements/ElementBase.h"
-#include "elements/Drift.h"
-#include "elements/Marker.h"
-#include "propagator/Particle.h"
+#include "Core/Exception.h"
+#include "Elements/ElementBase.h"
+#include "Elements/Drift.h"
+#include "Elements/Marker.h"
+#include "Propagator/Particle.h"
 
 #include <CLHEP/Vector/ThreeVector.h>
 #include <map>

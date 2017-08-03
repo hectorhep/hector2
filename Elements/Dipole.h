@@ -3,7 +3,7 @@
 
 #include "ElementBase.h"
 #include "Drift.h"
-#include "core/Exception.h"
+#include "Core/Exception.h"
 
 namespace Hector
 {

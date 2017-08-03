@@ -1,7 +1,7 @@
 #ifndef Hector_Propagator_Propagator_h
 #define Hector_Propagator_Propagator_h
 
-#include "beamline/Beamline.h"
+#include "Beamline/Beamline.h"
 #include "BeamProducer.h"
 #include "Particle.h"
 

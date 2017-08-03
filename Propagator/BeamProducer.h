@@ -1,7 +1,7 @@
 #ifndef Hector_Propagator_BeamProducer
 #define Hector_Propagator_BeamProducer
 
-#include "propagator/Particle.h"
+#include "Propagator/Particle.h"
 
 #include <CLHEP/Random/RandGauss.h>
 #include <vector>

@@ -10,8 +10,8 @@
 
 #include <map>
 
-#include "core/Exception.h"
-#include "core/Parameters.h"
+#include "Core/Exception.h"
+#include "Core/Parameters.h"
 
 using std::cout;
 

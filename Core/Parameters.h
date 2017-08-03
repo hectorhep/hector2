@@ -1,7 +1,7 @@
 #ifndef Hector_Core_Parameters_h
 #define Hector_Core_Parameters_h
 
-#include "core/ExceptionType.h"
+#include "ExceptionType.h"
 
 /// Mother of all namespaces/objects in Hector
 /// \author Laurent Forthomme <laurent.forthomme@cernSPAMNOT.ch>

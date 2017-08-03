@@ -1,21 +1,21 @@
 #ifndef Hector_IO_MADXParser_h
 #define Hector_IO_MADXParser_h
 
-#include "beamline/Beamline.h"
+#include "Beamline/Beamline.h"
 
-#include "elements/Quadrupole.h"
-#include "elements/Dipole.h"
-#include "elements/RectangularCollimator.h"
-#include "elements/Kicker.h"
-#include "elements/Marker.h"
+#include "Elements/Quadrupole.h"
+#include "Elements/Dipole.h"
+#include "Elements/RectangularCollimator.h"
+#include "Elements/Kicker.h"
+#include "Elements/Marker.h"
 
-#include "elements/EllipticAperture.h"
-#include "elements/CircularAperture.h"
-#include "elements/RectangularAperture.h"
-#include "elements/RectEllipticAperture.h"
+#include "Elements/EllipticAperture.h"
+#include "Elements/CircularAperture.h"
+#include "Elements/RectangularAperture.h"
+#include "Elements/RectEllipticAperture.h"
 
-#include "core/OrderedParametersMap.h"
-#include "core/UnorderedParametersMap.h"
+#include "Core/OrderedParametersMap.h"
+#include "Core/UnorderedParametersMap.h"
 
 #include <fstream>
 #include <regex>

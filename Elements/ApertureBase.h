@@ -1,7 +1,7 @@
 #ifndef Hector_Elements_Aperture_h
 #define Hector_Elements_Aperture_h
 
-#include "core/Utils.h"
+#include "Core/Utils.h"
 #include <CLHEP/Vector/TwoVector.h>
 #include <vector>
 

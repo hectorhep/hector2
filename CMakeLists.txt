@@ -7,7 +7,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/cmake)
 
 #----- define all individual modules to be built beforehand
 
-set(MODULES core io elements beamline propagator)
+set(MODULES Core IO Elements Beamline Propagator)
 
 #----- enable fortran (for Pythia/Herwig/...)
 
@@ -49,12 +49,8 @@ else()
   target_link_libraries(Hector CLHEP)
 endif()
 
-set(mods "")
-foreach(_mod ${MODULES})
-  list(APPEND mods ${_mod}/)
-endforeach()
 install(TARGETS Hector DESTINATION lib)
-install(DIRECTORY ${mods} DESTINATION include/Hector FILES_MATCHING PATTERN "*.h")
+install(DIRECTORY ${MODULES} DESTINATION include/Hector FILES_MATCHING PATTERN "*.h")
 
 add_executable(hector main.cpp)
 target_link_libraries(hector Hector)

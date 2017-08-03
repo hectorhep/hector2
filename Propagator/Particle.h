@@ -4,11 +4,11 @@
 #include <CLHEP/Vector/TwoVector.h>
 #include <CLHEP/Vector/LorentzVector.h>
 #include <CLHEP/Units/SystemOfUnits.h> // pi
-#include "StateVector.h"
 
 #include <vector>
 
-#include "core/Exception.h"
+#include "StateVector.h"
+#include "Core/Exception.h"
 
 using std::cout;
 
