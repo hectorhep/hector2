@@ -70,3 +70,10 @@ foreach(_files ${input})
 )
 endforeach()
 
+#----- python wrapping
+
+include(UseCython)
+set(PYTHON_WRAPPERS_SRC ${HECTOR_SOURCE_DIR}/hector.pyx)
+set(CYMAKE_HDRS ${HECTOR_SOURCE_DIR}/Propagator/StateVector.h)
+set_source_files_properties(${PYTHON_WRAPPERS_SRC} PROPERTIES CYTHON_IS_CXX 1)
+cython_add_module(pyHector ${HECTOR_SOURCE_DIR}/hector.pyx ${CYMAKE_HDRS})
