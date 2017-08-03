@@ -1,4 +1,4 @@
-#include "propagator/BeamProducer.h"
+#include "Hector/Propagator/BeamProducer.h"
 
 #include "Canvas.h"
 

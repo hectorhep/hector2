@@ -1,6 +1,6 @@
-#include "io/MADXParser.h"
-#include "propagator/Propagator.h"
-//#include "propagator/BeamProducer.h"
+#include "Hector/IO/MADXParser.h"
+#include "Hector/Propagator/Propagator.h"
+//#include "Hector/Propagator/BeamProducer.h"
 
 #include "utils.h"
 #include "Canvas.h"

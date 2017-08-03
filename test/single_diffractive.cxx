@@ -1,8 +1,8 @@
-#include "io/Pythia8Generator.h"
-#include "io/MADXParser.h"
-#include "propagator/Propagator.h"
+#include "Hector/IO/Pythia8Generator.h"
+#include "Hector/IO/MADXParser.h"
+#include "Hector/Propagator/Propagator.h"
 
-#include "test/Canvas.h"
+#include "Canvas.h"
 #include "TH2.h"
 #include "TH1.h"
 

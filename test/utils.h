@@ -1,7 +1,7 @@
 #ifndef Hector_test_utils_h
 #define Hector_test_utils_h
 
-#include "elements/ElementBase.h"
+#include "Hector/Elements/ElementBase.h"
 
 #include "TColor.h"
 

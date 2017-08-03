@@ -1,5 +1,5 @@
-#include "beamline/Beamline.h"
-#include "elements/Marker.h"
+#include "Hector/Beamline/Beamline.h"
+#include "Hector/Elements/Marker.h"
 
 int
 main( int argc, char* argv[] )
@@ -8,7 +8,7 @@ main( int argc, char* argv[] )
   
   /*Hector::Element::Marker marker( "test" );
   line.addElement( &marker );*/
-  line.addElement( new Hector::Element::Marker( "test" ), true );
+  line.addElement( new Hector::Element::Marker( "test", 0., 0. ), true );
 
   line.dump();
 

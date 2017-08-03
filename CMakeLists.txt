@@ -24,10 +24,10 @@ find_package(CLHEP REQUIRED)
 
 #----- build all the intermediate objects
 
-include_directories(${PROJECT_SOURCE_DIR})
+include_directories(${PROJECT_SOURCE_DIR}/Hector)
 foreach(_module ${MODULES})
-  include_directories(${PROJECT_SOURCE_DIR}/${_module})
-  add_subdirectory(${_module})
+  include_directories(${PROJECT_SOURCE_DIR}/Hector/${_module})
+  add_subdirectory(Hector/${_module})
 endforeach()
 
 #----- link everything into the library and executable
@@ -50,7 +50,7 @@ else()
 endif()
 
 install(TARGETS Hector DESTINATION lib)
-install(DIRECTORY ${MODULES} DESTINATION include/Hector FILES_MATCHING PATTERN "*.h")
+install(DIRECTORY ${MODULES} DESTINATION include FILES_MATCHING PATTERN "*.h")
 
 add_executable(hector main.cpp)
 target_link_libraries(hector Hector)

@@ -1,6 +1,6 @@
-#include "core/Exception.h"
-#include "core/Utils.h"
-#include "io/LHEParser.h"
+#include "Hector/Core/Exception.h"
+#include "Hector/Core/Utils.h"
+#include "Hector/IO/LHEParser.h"
 
 int
 main( int argc, char* argv[] )

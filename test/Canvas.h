@@ -154,11 +154,10 @@ namespace Hector
     }
 
     inline void Save( const char* ext, const char* out_dir="." ) {
-      if ( strstr( ext, "pdf" )==NULL ) {
-        if ( strstr( ext, "png" )==NULL ) {
-          return;
-        }
-      }
+      if ( strstr( ext, "pdf" )==NULL
+        && strstr( ext, "png" )==NULL
+        && strstr( ext, "C"   )==NULL
+      ) return;
       TCanvas::cd();
       if ( fLeg ) fLeg->Draw();
       if ( fTopLabel ) fTopLabel->Draw();

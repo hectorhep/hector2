@@ -1,7 +1,7 @@
-#include "beamline/Beamline.h"
-#include "io/MADXParser.h"
-#include "propagator/Propagator.h"
-#include "core/Timer.h"
+#include "Hector/Beamline/Beamline.h"
+#include "Hector/IO/MADXParser.h"
+#include "Hector/Propagator/Propagator.h"
+#include "Hector/Core/Timer.h"
 
 #include "utils.h"
 #include "Canvas.h"
