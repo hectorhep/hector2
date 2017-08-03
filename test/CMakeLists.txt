@@ -31,3 +31,7 @@ if(${ROOT_FOUND})
 else()
     message(STATUS "ROOT not found! skipping these tests!")
 endif()
+
+set_source_files_properties(${pyx_files} PROPERTIES CYTHON_IS_CXX 1)
+cython_add_standalone_executable(test-pyhector MAIN_MODULE test_hector.py ${pyx_files} test_hector.py)
+target_link_libraries(test-pyhector Hector CLHEP)

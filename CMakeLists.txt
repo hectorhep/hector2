@@ -56,6 +56,20 @@ install(DIRECTORY ${MODULES} DESTINATION include FILES_MATCHING PATTERN "*.h")
 add_executable(hector test/test_hector.cpp)
 target_link_libraries(hector Hector)
 
+#----- python wrapping
+
+include(UseCython)
+add_custom_target(ReplicatePythonSourceTree ALL ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ReplicatePythonSourceTree.cmake ${CMAKE_CURRENT_BINARY_DIR} WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+set(pyx_files "")
+foreach(_mod ${MODULES})
+  file(GLOB sources ${HECTOR_SOURCE_DIR}/${_mod}/*.pyx)
+  set_source_files_properties(${sources} PROPERTIES CYTHON_IS_CXX 1)
+  list(APPEND pyx_files ${sources})
+endforeach()
+message(${pyx_files})
+cython_add_module(pyhector ${pyx_files})
+target_link_libraries(pyhector Hector CLHEP)
+
 #----- add the tests
 
 add_subdirectory(test)
@@ -70,18 +84,4 @@ foreach(_files ${input})
     COPYONLY
 )
 endforeach()
-
-#----- python wrapping
-
-include(UseCython)
-add_custom_target(ReplicatePythonSourceTree ALL ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ReplicatePythonSourceTree.cmake ${CMAKE_CURRENT_BINARY_DIR} WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-set(pyx_files "")
-foreach(_mod ${MODULES})
-  file(GLOB sources ${HECTOR_SOURCE_DIR}/${_mod}/*.pyx)
-  set_source_files_properties(${sources} PROPERTIES CYTHON_IS_CXX 1)
-  list(APPEND pyx_files ${sources})
-endforeach()
-message(${pyx_files})
-cython_add_module(pyhector ${pyx_files})
-target_link_libraries(pyhector Hector CLHEP)
 
