@@ -18,10 +18,10 @@ enable_language(Fortran OPTIONAL)
 
 find_package(CLHEP REQUIRED)
 #add_subdirectory(external)
-#
-#if(EXISTS $ENV{has_pythia6})
-#  add_definitions(-DPYTHIA6)
-#endif()
+find_package(PythonLibs 2.7 REQUIRED)
+set(EXT_LIBS CLHEP)
+
+find_package(Pythia8)
 
 #----- build all the intermediate objects
 
@@ -55,14 +55,6 @@ endif()
 add_executable(hector test/test_hector.cpp)
 target_link_libraries(hector Hector ${EXT_LIBS})
 
-#----- python wrapper
-
-if(Boost_FOUND)
-  include_directories(${Boost_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS})
-  add_library(pyhector SHARED ${PROJECT_SOURCE_DIR}/Hector/PythonWrapper.cc)
-  target_link_libraries(pyhector ${Boost_LIBRARIES} Hector ${EXT_LIBS})
-endif()
-
 #----- python wrapping
 
 include(UseCython)
@@ -75,7 +67,7 @@ foreach(_mod ${MODULES})
 endforeach()
 message(${pyx_files})
 cython_add_module(pyhector ${pyx_files})
-target_link_libraries(pyhector Hector CLHEP)
+target_link_libraries(pyhector ${EXT_LIBS})
 
 #----- add the tests
 
