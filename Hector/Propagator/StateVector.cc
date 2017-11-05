@@ -1,5 +1,9 @@
 #include "StateVector.h"
 
+#include "Core/Exception.h"
+
+#include <CLHEP/Matrix/Matrix.h>
+
 namespace Hector
 {
   StateVector::StateVector( const CLHEP::HepVector& vec, double mass ) :

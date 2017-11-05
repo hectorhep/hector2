@@ -1,7 +1,5 @@
 #include "Hector/Propagator/BeamProducer.h"
 
-#include "Canvas.h"
-
 /// \test Produce a vector of particles for a given pattern
 int
 main( int argc, char* argv[] )

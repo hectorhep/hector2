@@ -1,14 +1,11 @@
 #ifndef Hector_Propagator_Particle_h
 #define Hector_Propagator_Particle_h
 
-#include <CLHEP/Vector/TwoVector.h>
 #include <CLHEP/Vector/LorentzVector.h>
-#include <CLHEP/Units/SystemOfUnits.h> // pi
 
 #include <vector>
 
 #include "StateVector.h"
-#include "Core/Exception.h"
 
 using std::cout;
 
@@ -107,7 +104,7 @@ namespace Hector
       const CLHEP::HepLorentzVector momentumAt( float s ) const { return stateVectorAt( s ).momentum(); }
 
       /// Let the particle emit a photon
-      void emitGamma( float e_gamma, float q2, float phi_min=0., float phi_max=2*CLHEP::pi );
+      void emitGamma( float e_gamma, float q2, float phi_min=0., float phi_max=2*M_PI );
 
     private:
       int charge_;

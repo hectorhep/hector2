@@ -1,5 +1,7 @@
 #include "Drift.h"
 
+#include <CLHEP/Matrix/DiagMatrix.h>
+
 namespace Hector
 {
   namespace Element

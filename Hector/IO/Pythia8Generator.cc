@@ -1,5 +1,11 @@
 #include "Pythia8Generator.h"
 
+#include "Core/Parameters.h"
+#include "Core/Utils.h"
+#include "Core/Exception.h"
+
+#include <Pythia8/Event.h>
+
 namespace Hector
 {
   Pythia8Generator::Pythia8Generator() :

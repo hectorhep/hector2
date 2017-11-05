@@ -23,6 +23,7 @@ find_package(Pythia8)
 
 #----- build all the intermediate objects
 
+include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${HECTOR_SOURCE_DIR})
 foreach(_module ${HECTOR_MODULES})
   include_directories(${HECTOR_SOURCE_DIR}/${_module})

@@ -1,12 +1,14 @@
 #include "Hector/Beamline/Beamline.h"
 #include "Hector/IO/MADXParser.h"
-#include "Hector/Propagator/Propagator.h"
 #include "Hector/Core/Timer.h"
+#include "Hector/Propagator/BeamProducer.h"
+#include "Hector/Propagator/Propagator.h"
 
 #include "utils.h"
 #include "Canvas.h"
 
 #include <CLHEP/Random/RandGauss.h>
+#include <CLHEP/Units/SystemOfUnits.h>
 
 #include "TGraph.h"
 #include "TMultiGraph.h"

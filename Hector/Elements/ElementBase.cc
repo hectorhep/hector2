@@ -1,5 +1,12 @@
 #include "ElementBase.h"
 
+#include "Core/Utils.h"
+#include "Core/Parameters.h"
+
+#include <CLHEP/Matrix/DiagMatrix.h>
+#include <CLHEP/Vector/TwoVector.h>
+#include <sstream>
+
 namespace Hector
 {
   namespace Element

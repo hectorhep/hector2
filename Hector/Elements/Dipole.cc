@@ -1,4 +1,9 @@
 #include "Dipole.h"
+#include "Drift.h"
+
+#include "Core/Exception.h"
+
+#include <CLHEP/Matrix/DiagMatrix.h>
 
 namespace Hector
 {

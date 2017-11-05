@@ -2,15 +2,11 @@
 #define Hector_Propagator_StateVector_h
 
 #include <CLHEP/Matrix/Vector.h>
-#include <CLHEP/Matrix/Matrix.h>
 #include <CLHEP/Vector/TwoVector.h>
 #include <CLHEP/Vector/LorentzVector.h>
-#include <CLHEP/Units/SystemOfUnits.h> // pi
-#include <CLHEP/Random/RandFlat.h>
 
 #include <map>
 
-#include "Core/Exception.h"
 #include "Core/Parameters.h"
 
 using std::cout;

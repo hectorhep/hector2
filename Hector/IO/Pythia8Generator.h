@@ -1,12 +1,9 @@
 #ifndef Hector_IO_Pythia8Generator_h
 #define Hector_IO_Pythia8Generator_h
 
-#include "Core/Parameters.h"
-#include "Core/Utils.h"
 #include "Propagator/Particle.h"
 
 #include <Pythia8/Pythia.h>
-#include <Pythia8/Event.h>
 
 #include <memory>
 

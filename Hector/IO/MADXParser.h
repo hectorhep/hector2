@@ -3,23 +3,12 @@
 
 #include "Beamline/Beamline.h"
 
-#include "Elements/Quadrupole.h"
-#include "Elements/Dipole.h"
-#include "Elements/RectangularCollimator.h"
-#include "Elements/Kicker.h"
-#include "Elements/Marker.h"
-
-#include "Elements/EllipticAperture.h"
-#include "Elements/CircularAperture.h"
-#include "Elements/RectangularAperture.h"
-#include "Elements/RectEllipticAperture.h"
-
+#include "Core/Exception.h"
 #include "Core/OrderedParametersMap.h"
 #include "Core/UnorderedParametersMap.h"
 
 #include <fstream>
 #include <regex>
-#include <map>
 #include <string>
 
 using std::ostream;

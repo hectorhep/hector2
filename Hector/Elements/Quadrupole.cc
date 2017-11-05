@@ -1,4 +1,7 @@
 #include "Quadrupole.h"
+#include "Drift.h"
+
+#include <CLHEP/Matrix/DiagMatrix.h>
 
 namespace Hector
 {

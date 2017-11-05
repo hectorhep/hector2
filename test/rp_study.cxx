@@ -69,7 +69,7 @@ main( int argc, char* argv[] )
   const float xi_values[] = { 0., 0.05, 0.1, 0.15 };
   const unsigned short num_values = sizeof( xi_values )/sizeof( xi_values[0] );
   for ( unsigned short i=0; i<num_values; i++ ) {
-    Hector::Particle p = Hector::Particle::fromMassCharge( Hector::Parameters::get()->beamParticlesMass, +1 );
+    Hector::Particle p = Hector::Particle::fromMassCharge( Hector::Parameters::get()->beamParticlesMass(), +1 );
     p.firstStateVector().setPosition( 0., y0_pos );
     p.firstStateVector().setXi( xi_values[i] );
     std::cout << p.firstStateVector().xi() << "\t" << p.firstStateVector().energy() << std::endl;
