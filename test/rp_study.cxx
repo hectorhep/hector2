@@ -22,10 +22,10 @@ main( int argc, char* argv[] )
   //parser.printInfo();
   parser.beamline()->dump();
   //parser.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( -0.097, 0. ) );
-  //Hector::Parameters::get()->setUseRelativeEnergy( true );
-  //Hector::Parameters::get()->setEnableKickers( true );
-  //Hector::Parameters::get()->setEnableDipoles( false ); //FIXME
-  Hector::Parameters::get()->setComputeApertureAcceptance( false ); //FIXME
+  //Hector::Parameters::get()->useRelativeEnergy() = true;
+  //Hector::Parameters::get()->enableKickers() = true;
+  //Hector::Parameters::get()->enableDipoles() = false; //FIXME
+  Hector::Parameters::get()->computeApertureAcceptance() = false; //FIXME
 
   Hector::Propagator prop( parser.beamline() );
 

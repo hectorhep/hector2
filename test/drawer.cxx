@@ -22,8 +22,8 @@ main( int argc, char* argv[] )
     std::cout << "Usage: " << argv[0] << " [MAD-X output file for beam 1] [MAD-X output file for beam 2]" << std::endl;
     return -1;
   }
-  //Hector::Parameters::get()->setComputeApertureAcceptance( false ); //FIXME
-  Hector::Parameters::get()->setEnableDipoles( false ); //FIXME
+  //Hector::Parameters::get()->computeApertureAcceptance() = false; //FIXME
+  Hector::Parameters::get()->enableDipoles() = false; //FIXME
 
   // general plotting parameters
   const float max_s = ( argc>3 ) ? atof( argv[3] ) : 250.;
@@ -85,10 +85,11 @@ main( int argc, char* argv[] )
         h_timing.Fill( prop_time ); // in us
       } catch ( Hector::Exception& e ) { e.dump(); }
       j = 0;
-      for ( Hector::Particle::PositionsMap::const_iterator it=p.begin(); it!=p.end(); it++, j++ ) {
-        Hector::Particle::Position pos( it );
+      for ( const auto& elemPtr : p ) {
+        Hector::Particle::Position pos( elemPtr );
         gr_x.SetPoint( j, pos.s(), pos.stateVector().position().x() );
         gr_y.SetPoint( j, pos.s(), pos.stateVector().position().y() );
+        j++;
       }
       gr_x.SetLineColor( kBlack );
       gr_y.SetLineColor( kBlack );
@@ -101,10 +102,11 @@ main( int argc, char* argv[] )
       TGraph gr_x, gr_y;
       try { prop2.propagate( p, max_s ); } catch ( Hector::Exception& e ) { e.dump(); }
       j = 0;
-      for ( Hector::Particle::PositionsMap::const_iterator it=p.begin(); it!=p.end(); it++, j++ ) {
-        Hector::Particle::Position pos( it );
+      for ( const auto& elemPtr : p ) {
+        Hector::Particle::Position pos( elemPtr );
         gr_x.SetPoint( j, pos.s(), pos.stateVector().position().x() );
         gr_y.SetPoint( j, pos.s(), pos.stateVector().position().y() );
+        j++;
       }
       gr_x.SetLineColor( kRed );
       gr_x.SetLineStyle( 2 );

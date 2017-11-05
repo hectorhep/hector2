@@ -40,17 +40,17 @@ namespace Hector
         parseHeader();
 
         raw_beamline_ = std::unique_ptr<Beamline>( new Beamline( max_s ) );
-        if ( max_s<0. and header_float_.hasKey( "length" ) ) raw_beamline_->setLength( header_float_.get( "length" ) );
-        if ( header_float_.hasKey( "energy" ) and Parameters::get()->beamEnergy()!=header_float_.get( "energy" ) ) {
-          Parameters::get()->setBeamEnergy( header_float_.get( "energy" ) );
+        if ( max_s < 0. && header_float_.hasKey( "length" ) ) raw_beamline_->setLength( header_float_.get( "length" ) );
+        if ( header_float_.hasKey( "energy" ) && Parameters::get()->beamEnergy() != header_float_.get( "energy" ) ) {
+          Parameters::get()->beamEnergy() = header_float_.get( "energy" );
           PrintWarning( Form( "Beam energy changed to %.1f GeV to match the MAD-X optics parameters", Parameters::get()->beamEnergy() ) );
         }
-        if ( header_float_.hasKey( "mass" ) and Parameters::get()->beamParticlesMass()!=header_float_.get( "mass" ) ) {
-          Parameters::get()->setBeamParticlesMass( header_float_.get( "mass" ) );
+        if ( header_float_.hasKey( "mass" ) && Parameters::get()->beamParticlesMass() != header_float_.get( "mass" ) ) {
+          Parameters::get()->beamParticlesMass() = header_float_.get( "mass" );
           PrintWarning( Form( "Beam particles mass changed to %.4f GeV to match the MAD-X optics parameters", Parameters::get()->beamParticlesMass() ) );
         }
-        if ( header_float_.hasKey( "charge" ) and Parameters::get()->beamParticlesCharge()!=static_cast<int>( header_float_.get( "charge" ) ) ) {
-          Parameters::get()->setBeamParticlesCharge( static_cast<int>( header_float_.get( "charge" ) ) );
+        if ( header_float_.hasKey( "charge" ) && Parameters::get()->beamParticlesCharge() != static_cast<int>( header_float_.get( "charge" ) ) ) {
+          Parameters::get()->beamParticlesCharge() = static_cast<int>( header_float_.get( "charge" ) );
           PrintWarning( Form( "Beam particles charge changed to %d e to match the MAD-X optics parameters", Parameters::get()->beamParticlesCharge() ) );
         }
 
@@ -95,13 +95,12 @@ namespace Hector
         PrintWarning( "Beamline not yet parsed! returning an empty list" );
         return out;
       }
-      for ( Elements::const_iterator it=raw_beamline_->begin(); it!=raw_beamline_->end(); it++ ) {
-        Element::ElementBase* elem = *( it );
-        if ( std::regex_match( elem->name(), rgx_rp_horiz_name_ ) ) {
-          if ( type==allPots or type==horizontalPots ) out.push_back( elem );
+      for ( const auto& elemPtr : *raw_beamline_ ) {
+        if ( std::regex_match( elemPtr->name(), rgx_rp_horiz_name_ ) ) {
+          if ( type == allPots || type == horizontalPots ) out.push_back( elemPtr );
         }
-        if ( std::regex_match( elem->name(), rgx_rp_vert_name_ ) ) {
-          if ( type==allPots or type==verticalPots ) out.push_back( elem );
+        if ( std::regex_match( elemPtr->name(), rgx_rp_vert_name_ ) ) {
+          if ( type == allPots || type == verticalPots ) out.push_back( elemPtr );
         }
       }
       return out;
@@ -394,22 +393,22 @@ namespace Hector
     Element::Type
     MADX::findElementTypeByKeyword( std::string keyword )
     {
-      if ( keyword.compare(      "marker" )==0 ) return Element::aMarker;
-      if ( keyword.compare(       "drift" )==0 ) return Element::aDrift;
-      if ( keyword.compare(     "monitor" )==0 ) return Element::aMonitor;
-      if ( keyword.compare(  "quadrupole" )==0 ) return Element::aGenericQuadrupole;
-      if ( keyword.compare(   "sextupole" )==0 ) return Element::aSextupole;
-      if ( keyword.compare(   "multipole" )==0 ) return Element::aMultipole;
-      if ( keyword.compare(       "sbend" )==0 ) return Element::aSectorDipole;
-      if ( keyword.compare(       "rbend" )==0 ) return Element::aRectangularDipole;
-      if ( keyword.compare(     "hkicker" )==0 ) return Element::anHorizontalKicker;
-      if ( keyword.compare(     "vkicker" )==0 ) return Element::aVerticalKicker;
-      if ( keyword.compare( "rcollimator" )==0 ) return Element::aRectangularCollimator;
-      if ( keyword.compare( "ecollimator" )==0 ) return Element::anEllipticalCollimator;
-      if ( keyword.compare( "ccollimator" )==0 ) return Element::aCircularCollimator;
-      if ( keyword.compare( "placeholder" )==0 ) return Element::aPlaceholder;
-      if ( keyword.compare(  "instrument" )==0 ) return Element::anInstrument;
-      if ( keyword.compare(    "solenoid" )==0 ) return Element::aSolenoid;
+      if ( keyword.compare(      "marker" ) == 0 ) return Element::aMarker;
+      if ( keyword.compare(       "drift" ) == 0 ) return Element::aDrift;
+      if ( keyword.compare(     "monitor" ) == 0 ) return Element::aMonitor;
+      if ( keyword.compare(  "quadrupole" ) == 0 ) return Element::aGenericQuadrupole;
+      if ( keyword.compare(   "sextupole" ) == 0 ) return Element::aSextupole;
+      if ( keyword.compare(   "multipole" ) == 0 ) return Element::aMultipole;
+      if ( keyword.compare(       "sbend" ) == 0 ) return Element::aSectorDipole;
+      if ( keyword.compare(       "rbend" ) == 0 ) return Element::aRectangularDipole;
+      if ( keyword.compare(     "hkicker" ) == 0 ) return Element::anHorizontalKicker;
+      if ( keyword.compare(     "vkicker" ) == 0 ) return Element::aVerticalKicker;
+      if ( keyword.compare( "rcollimator" ) == 0 ) return Element::aRectangularCollimator;
+      if ( keyword.compare( "ecollimator" ) == 0 ) return Element::anEllipticalCollimator;
+      if ( keyword.compare( "ccollimator" ) == 0 ) return Element::aCircularCollimator;
+      if ( keyword.compare( "placeholder" ) == 0 ) return Element::aPlaceholder;
+      if ( keyword.compare(  "instrument" ) == 0 ) return Element::anInstrument;
+      if ( keyword.compare(    "solenoid" ) == 0 ) return Element::aSolenoid;
       return Element::anInvalidElement;
     }
 
