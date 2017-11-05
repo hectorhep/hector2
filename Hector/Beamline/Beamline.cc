@@ -190,13 +190,13 @@ namespace Hector
     }
   }
 
-  Beamline*
+  std::unique_ptr<Beamline>
   Beamline::sequencedBeamline( const Beamline* beamline )
   {
     // add the drifts between optical elements
     float pos = 0.;
     // brand new beamline to populate
-    Beamline* tmp = new Beamline( *beamline, false );
+    std::unique_ptr<Beamline> tmp( new Beamline( *beamline, false ) );
 
     // convert all empty spaces into drifts
     for ( Elements::const_iterator it=beamline->begin(); it!=beamline->end(); it++ ) {

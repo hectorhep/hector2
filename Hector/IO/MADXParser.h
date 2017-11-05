@@ -10,6 +10,7 @@
 #include <fstream>
 #include <regex>
 #include <string>
+#include <memory>
 
 using std::ostream;
 
@@ -40,12 +41,12 @@ namespace Hector
         Beamline* beamline() const {
           if ( !beamline_ ) {
             PrintWarning( "Sequenced beamline not computed from the MAD-X Twiss file. Retrieving the raw version. You may encounter some numerical issues." );
-            return raw_beamline_;
+            return raw_beamline_.get();
           }
-          return beamline_;
+          return beamline_.get();
         }
         /// Retrieve the raw beamline parsed from the MAD-X Twiss file
-        Beamline* rawBeamline() const { return raw_beamline_; }
+        Beamline* rawBeamline() const { return raw_beamline_.get(); }
 
         /// Get a Hector element type from a Twiss element name string
         static Element::Type findElementTypeByName( std::string name );
@@ -75,8 +76,8 @@ namespace Hector
         std::ifstream in_file_;
         std::streampos in_file_lastline_;
 
-        Beamline* beamline_;
-        Beamline* raw_beamline_;
+        std::unique_ptr<Beamline> beamline_;
+        std::unique_ptr<Beamline> raw_beamline_;
 
         int dir_;
         std::string ip_name_;

@@ -5,6 +5,7 @@
 #include "Elements/Marker.h"
 
 #include <map>
+#include <memory>
 
 using std::cout;
 
@@ -28,7 +29,7 @@ namespace Hector
       ~Beamline();
 
       /// Compute all drifts between each element in the beamline
-      static Beamline* sequencedBeamline( const Beamline* );
+      static std::unique_ptr<Beamline> sequencedBeamline( const Beamline* );
 
       /// Remove and clean all elements in the beamline
       void clear();

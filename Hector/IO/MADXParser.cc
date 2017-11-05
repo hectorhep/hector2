@@ -29,7 +29,7 @@ namespace Hector
     std::regex MADX::rgx_rect_coll_name_( "T[C,A].*\\.\\d[L,R]\\d\\.?(B[1-9])?" );
 
     MADX::MADX( const char* filename, const char* ip_name, int direction, float max_s ) :
-      beamline_( 0 ), raw_beamline_( 0 ), dir_( direction/abs( direction ) ),
+      dir_( direction/abs( direction ) ),
       ip_name_( ip_name ), s_offset_( 0. ), found_interaction_point_( false ),
       has_next_element_( false )
     {
@@ -39,7 +39,7 @@ namespace Hector
         if ( !in_file_.is_open() ) throw Exception( __PRETTY_FUNCTION__, Form( "Failed to open Twiss file \"%s\"\n\tCheck the path!", filename ), Fatal );
         parseHeader();
 
-        raw_beamline_ = new Beamline( max_s );
+        raw_beamline_ = std::unique_ptr<Beamline>( new Beamline( max_s ) );
         if ( max_s<0. and header_float_.hasKey( "length" ) ) raw_beamline_->setLength( header_float_.get( "length" ) );
         if ( header_float_.hasKey( "energy" ) and Parameters::get()->beamEnergy()!=header_float_.get( "energy" ) ) {
           Parameters::get()->setBeamEnergy( header_float_.get( "energy" ) );
@@ -62,7 +62,7 @@ namespace Hector
         // then parse all elements
         parseElements();
 
-        beamline_ = Beamline::sequencedBeamline( raw_beamline_ );
+        beamline_ = std::move( Beamline::sequencedBeamline( raw_beamline_.get() ) );
 
       } catch ( Exception& e ) { e.dump(); }
     }
@@ -70,8 +70,6 @@ namespace Hector
     MADX::~MADX()
     {
       if ( in_file_.is_open() ) in_file_.close();
-      if ( beamline_ ) delete beamline_;
-      if ( raw_beamline_ ) delete raw_beamline_;
     }
 
     void
