@@ -29,7 +29,7 @@ namespace Hector
 
     try {
 
-      for ( Elements::const_iterator it=beamline_->begin()+1; it!=beamline_->end(); it++ ) {
+      for ( Elements::const_iterator it = beamline_->begin()+1; it != beamline_->end(); ++it ) {
         // extract the previous and the current element in the beamline
         const Element::ElementBase *prev_elem = *( it-1 ), *elem = *( it );
         if ( elem->s()>s_max ) break;
@@ -97,7 +97,7 @@ namespace Hector
   bool
   Propagator::stopped( Particle& part, float s_max ) const
   {
-    for ( Elements::const_iterator it=beamline_->begin()+1; it!=beamline_->end(); it++ ) {
+    for ( Elements::const_iterator it = beamline_->begin()+1; it != beamline_->end(); ++it ) {
       // extract the previous and the current element in the beamline
       const Element::ElementBase *prev_elem = *( it-1 ), *elem = *( it );
       if ( s_max>0 and elem->s()>s_max ) return false;
@@ -143,8 +143,8 @@ namespace Hector
   void
   Propagator::propagate( Particles& beam, float s_max ) const
   {
-    for ( Particles::iterator it=beam.begin(); it!=beam.end(); it++ ) {
-      propagate( *it, s_max );
+    for ( auto& part : beam ) {
+      propagate( part, s_max );
     }
   }
 }

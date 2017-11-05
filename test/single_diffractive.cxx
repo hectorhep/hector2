@@ -15,12 +15,12 @@ int main( int argc, char* argv[] )
   Hector::Parser::MADX madx( argv[1], "IP5", 1, 250. );
   Hector::Propagator prop( madx.beamline() );
   const Hector::Elements rps = madx.romanPots( Hector::Parser::MADX::horizontalPots );
-  for ( Hector::Elements::const_iterator rp=rps.begin(); rp!=rps.end(); rp++ ) {
-    std::cout << "--------> " << ( *rp )->name() << " at " << ( *rp )->s() << std::endl;
+  for ( const auto& rp : rps ) {
+    std::cout << "--------> " << rp->name() << " at " << rp->s() << std::endl;
   }
   const float s_pos = 220.;
 
-  Hector::Parameters::get()->setComputeApertureAcceptance( false );
+  Hector::Parameters::get()->computeApertureAcceptance() = false;
   // number of events to generate
   const unsigned short num_events = 10000;
 

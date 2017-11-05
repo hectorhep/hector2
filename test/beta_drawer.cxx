@@ -72,26 +72,25 @@ main( int argc, char* argv[] )
 
   float min_rp = 999., max_rp = 0.;
 
-  for ( Hector::Elements::const_iterator e=beamline->begin(); e!=beamline->end(); ++e ) {
-    const Hector::Element::ElementBase* elem = *e;
-    if ( elem->type()==Hector::Element::aDrift ) continue;
-    //std::cout << elem << "::" << elem->dispersion().x() << std::endl;
-    if ( fabs( elem->s() )>max_s and fabs( elem->s()+elem->length() )>max_s ) continue;
-    if ( elem->type()==Hector::Element::aMarker and !std::regex_match( elem->name(), rgx_cmspipe ) ) {
-      //std::cout << ">>> " << elem->name() << std::endl;
-      labels.push_back( txt.DrawLatex( elem->s(), 100., elem->name().c_str() ) );
+  for ( const auto& elemPtr : *beamline ) {
+    if ( elemPtr->type() == Hector::Element::aDrift ) continue;
+    //std::cout << elemPtr << "::" << elemPtr->dispersion().x() << std::endl;
+    if ( fabs( elemPtr->s() )>max_s && fabs( elemPtr->s()+elemPtr->length() ) > max_s ) continue;
+    if ( elemPtr->type() == Hector::Element::aMarker && !std::regex_match( elemPtr->name(), rgx_cmspipe ) ) {
+      //std::cout << ">>> " << elemPtr->name() << std::endl;
+      labels.push_back( txt.DrawLatex( elemPtr->s(), 100., elemPtr->name().c_str() ) );
     }
-    if ( elem->type()==Hector::Element::aRectangularCollimator and std::regex_match( elem->name(), rgx_rp ) ) {
-      if ( fabs( elem->s() )<fabs( min_rp ) ) min_rp = elem->s();
-      if ( fabs( elem->s()+elem->length() )>fabs( max_rp ) ) max_rp = elem->s();
+    if ( elemPtr->type() == Hector::Element::aRectangularCollimator && std::regex_match( elemPtr->name(), rgx_rp ) ) {
+      if ( fabs( elemPtr->s() ) < fabs( min_rp ) ) min_rp = elemPtr->s();
+      if ( fabs( elemPtr->s()+elemPtr->length() ) > fabs( max_rp ) ) max_rp = elemPtr->s();
     }
 
-    gr_betax.SetPoint( gr_betax.GetN(), elem->s(), elem->beta().x() );
-    gr_betay.SetPoint( gr_betay.GetN(), elem->s(), elem->beta().y() );
-    gr_dispx.SetPoint( gr_dispx.GetN(), elem->s(), elem->dispersion().x() );
-    gr_dispy.SetPoint( gr_dispy.GetN(), elem->s(), elem->dispersion().y() );
-    gr_relx.SetPoint( gr_relx.GetN(), elem->s(), elem->relativePosition().x() );
-    gr_rely.SetPoint( gr_rely.GetN(), elem->s(), elem->relativePosition().y() );
+    gr_betax.SetPoint( gr_betax.GetN(), elemPtr->s(), elemPtr->beta().x() );
+    gr_betay.SetPoint( gr_betay.GetN(), elemPtr->s(), elemPtr->beta().y() );
+    gr_dispx.SetPoint( gr_dispx.GetN(), elemPtr->s(), elemPtr->dispersion().x() );
+    gr_dispy.SetPoint( gr_dispy.GetN(), elemPtr->s(), elemPtr->dispersion().y() );
+    gr_relx.SetPoint( gr_relx.GetN(), elemPtr->s(), elemPtr->relativePosition().x() );
+    gr_rely.SetPoint( gr_rely.GetN(), elemPtr->s(), elemPtr->relativePosition().y() );
   }
   gr_betax.SetTitle( "#beta_{X}" );
   gr_betay.SetTitle( "#beta_{Y}" );

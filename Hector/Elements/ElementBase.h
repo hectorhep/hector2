@@ -4,6 +4,7 @@
 #include "ApertureBase.h"
 
 #include <CLHEP/Matrix/Matrix.h>
+#include <memory>
 
 namespace Hector
 {
@@ -47,7 +48,7 @@ namespace Hector
         ElementBase( const Type& type, const std::string& name="invalid element", float spos=0., float length=0. );
         /// Copy constructor (cloning the associated aperture if any)
         ElementBase( const ElementBase& elem );
-        virtual ~ElementBase();
+        virtual ~ElementBase() {}
 
         /// Return a pointer to a clone of the current element
         virtual ElementBase* clone() const = 0;
@@ -131,12 +132,9 @@ namespace Hector
         CLHEP::Hep2Vector relativePosition() const { return rel_pos_; }
 
         /// Set the aperture for this element
-        void setAperture( const Aperture::ApertureBase* apert, bool delete_after=false ) {
-          aperture_ = apert->clone();
-          if ( delete_after ) delete apert;
-        }
+        void setAperture( const Aperture::ApertureBase* apert, bool delete_after=false );
         /// Aperture
-        Aperture::ApertureBase* aperture() const { return aperture_; }
+        Aperture::ApertureBase* aperture() const { return aperture_.get(); }
 
         /// Compute the modified field strength of the element for a given energy loss of a particle of given mass and charge
         /// \note \f$ k_e = k \cdot \frac{p}{p-\mathrm{d}p} \cdot \frac{q_{\mathrm{part}}}{q_{\mathrm{b}}} \f$
@@ -148,7 +146,7 @@ namespace Hector
         /// Element name
         std::string name_;
         /// Pointer to the associated aperture object (if any)
-        Aperture::ApertureBase* aperture_;
+        std::unique_ptr<Aperture::ApertureBase> aperture_;
 
         /// Element longitudinal length
         float length_;

@@ -45,13 +45,13 @@ namespace Hector
   StateVector
   Particle::stateVectorAt( float s ) const
   {
-    PositionsMap::const_iterator it = positions_.find( s );
-    if ( it!=positions_.end() ) return it->second;
+    const auto& pos_s = positions_.find( s );
+    if ( pos_s != positions_.end() ) return pos_s->second;
 
-    PositionsMap::const_iterator lower_it = --positions_.upper_bound( s ),
-                                 upper_it = positions_.upper_bound( s );
+    const auto& lower_it = --positions_.upper_bound( s ),
+                upper_it = positions_.upper_bound( s );
 
-    if ( lower_it==positions_.end() or  upper_it->first<lower_it->first ) {
+    if ( lower_it == positions_.end() || upper_it->first < lower_it->first ) {
       throw Exception( __PRETTY_FUNCTION__, Form( "Impossible to interpolate the position at s = %.2f m", s ), JustWarning );
     }
 
@@ -82,8 +82,8 @@ namespace Hector
        << " initial position: " << firstStateVector() << "\n";
     if ( positions_.size()==1 ) return;
     os << " list of associated state vectors:\n";
-    for ( PositionsMap::const_iterator it=positions_.begin(); it!=positions_.end(); it++ ) {
-      os << Form( "   s = %8.3f m:", it->first ) << " " << it->second << std::endl;
+    for ( const auto& pos : positions_ ) {
+      os << Form( "   s = %8.3f m:", pos.first ) << " " << pos.second << std::endl;
     }
   }
 

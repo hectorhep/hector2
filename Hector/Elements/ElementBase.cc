@@ -5,6 +5,7 @@
 
 #include <CLHEP/Matrix/DiagMatrix.h>
 #include <CLHEP/Vector/TwoVector.h>
+
 #include <sstream>
 
 namespace Hector
@@ -12,35 +13,37 @@ namespace Hector
   namespace Element
   {
     ElementBase::ElementBase( const Type& type, const std::string& name, float spos, float length ) :
-      type_( type ), name_( name ), aperture_( 0 ),
+      type_( type ), name_( name ),
       length_( length ), magnetic_strength_( 0. ), s_( spos )
     {}
 
     ElementBase::ElementBase( const ElementBase& rhs ) :
-      type_( rhs.type_ ), name_( rhs.name_ ), aperture_( 0 ),
+      type_( rhs.type_ ), name_( rhs.name_ ),
       length_( rhs.length_ ), magnetic_strength_( rhs.magnetic_strength_ ),
       pos_( rhs.pos_ ), angles_( rhs.angles_ ), s_( rhs.s_ ),
       beta_( rhs.beta_ ), disp_( rhs.disp_ ), rel_pos_( rhs.rel_pos_ )
     {
-      if ( rhs.aperture_ ) aperture_ = rhs.aperture_->clone();
-    }
-
-    ElementBase::~ElementBase()
-    {
-      if ( aperture_!=0 ) delete aperture_;
+      if ( rhs.aperture_ ) aperture_ = std::unique_ptr<Aperture::ApertureBase>( rhs.aperture_->clone() );
     }
 
     bool
     ElementBase::operator==( const ElementBase& rhs ) const
     {
-      if ( type_!=rhs.type_ ) return false;
-      if ( s_!=rhs.s_ ) return false;
-      if ( pos_!=rhs.pos_ ) return false;
-      if ( magnetic_strength_!=rhs.magnetic_strength_ ) return false;
-      if ( length_!=rhs.length_ ) return false;
-      if ( name_!=rhs.name_ ) return false;
-      if ( aperture_ and rhs.aperture_ and *aperture_!=*rhs.aperture_ ) return false;
+      if ( type_ != rhs.type_ ) return false;
+      if ( s_ != rhs.s_ ) return false;
+      if ( pos_ != rhs.pos_ ) return false;
+      if ( magnetic_strength_ != rhs.magnetic_strength_ ) return false;
+      if ( length_ != rhs.length_ ) return false;
+      if ( name_ != rhs.name_ ) return false;
+      if ( aperture_ && rhs.aperture_ && *aperture_ != *rhs.aperture_ ) return false;
       return true;
+    }
+
+    void
+    ElementBase::setAperture( const Aperture::ApertureBase* apert, bool delete_after )
+    {
+      aperture_ = std::unique_ptr<Aperture::ApertureBase>( apert->clone() );
+      if ( delete_after ) delete apert;
     }
 
     float

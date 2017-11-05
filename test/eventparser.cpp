@@ -13,11 +13,11 @@ main( int argc, char* argv[] )
 
   parser.printInfo();
 
-  Hector::Particles part;
-  while ( parser.nextEvent( part ) ) {
-    for ( Hector::Particles::const_iterator it=part.begin(); it!=part.end(); it++ ) {
+  Hector::Particles particles;
+  while ( parser.nextEvent( particles ) ) {
+    for ( const auto& part : particles ) {
       //it->dump();
-      std::cout << "particle with pdgId=" << it->pdgId() << " has mass " << it->mass() << std::endl;
+      std::cout << "particle with pdgId=" << part.pdgId() << " has mass " << part.mass() << std::endl;
     }
   }
 
