@@ -2,7 +2,6 @@
 #define Hector_Elements_Kicker_h
 
 #include "ElementBase.h"
-#include "Drift.h"
 
 namespace Hector
 {

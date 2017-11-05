@@ -1,5 +1,7 @@
 #include "LHEParser.h"
 
+#include "Core/Exception.h"
+
 namespace Hector
 {
   namespace Parser

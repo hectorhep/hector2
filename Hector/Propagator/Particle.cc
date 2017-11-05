@@ -1,4 +1,8 @@
 #include "Particle.h"
+#include "Core/Exception.h"
+
+#include <CLHEP/Random/RandFlat.h>
+#include <CLHEP/Vector/TwoVector.h>
 
 namespace Hector
 {

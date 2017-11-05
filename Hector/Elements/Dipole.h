@@ -2,8 +2,6 @@
 #define Hector_Elements_Dipole_h
 
 #include "ElementBase.h"
-#include "Drift.h"
-#include "Core/Exception.h"
 
 namespace Hector
 {

@@ -2,7 +2,6 @@
 #define Hector_Elements_Quadrupole_h
 
 #include "ElementBase.h"
-#include "Drift.h"
 
 namespace Hector
 {

@@ -1,5 +1,16 @@
 #include "MADXParser.h"
 
+#include "Elements/Quadrupole.h"
+#include "Elements/Dipole.h"
+#include "Elements/RectangularCollimator.h"
+#include "Elements/Kicker.h"
+#include "Elements/Marker.h"
+
+#include "Elements/EllipticAperture.h"
+#include "Elements/CircularAperture.h"
+#include "Elements/RectangularAperture.h"
+#include "Elements/RectEllipticAperture.h"
+
 namespace Hector
 {
   namespace Parser

@@ -7,20 +7,16 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/cmake)
 
 #----- define all individual modules to be built beforehand
 
-set(MODULES Core IO Elements Beamline Propagator)
+set(HECTOR_MODULES Core IO Elements Beamline Propagator)
+set(HECTOR_SOURCE_DIR ${PROJECT_SOURCE_DIR}/Hector)
 
 #----- enable fortran (for Pythia/Herwig/...)
 
 enable_language(Fortran OPTIONAL)
 
-#----- include external hadronisers/...
+#----- include external dependencies
 
 find_package(CLHEP REQUIRED)
-#add_subdirectory(external)
-#
-#if(EXISTS $ENV{has_pythia6})
-#  add_definitions(-DPYTHIA6)
-#endif()
 find_package(Boost COMPONENTS python)
 find_package(PythonLibs 2.7 REQUIRED)
 set(EXT_LIBS CLHEP)
@@ -29,9 +25,10 @@ find_package(Pythia8)
 
 #----- build all the intermediate objects
 
-include_directories(${PROJECT_SOURCE_DIR}/Hector)
-foreach(_module ${MODULES})
-  include_directories(${PROJECT_SOURCE_DIR}/Hector/${_module})
+include_directories(${PROJECT_SOURCE_DIR})
+include_directories(${HECTOR_SOURCE_DIR})
+foreach(_module ${HECTOR_MODULES})
+  include_directories(${HECTOR_SOURCE_DIR}/${_module})
   add_subdirectory(Hector/${_module})
 endforeach()
 
@@ -47,17 +44,9 @@ add_library(Hector SHARED $<TARGET_OBJECTS:HectorCore>
                           $<TARGET_OBJECTS:HectorPropagator>)
 set_target_properties(Hector PROPERTIES LINKER_LANGUAGE CXX)
 
-install(TARGETS Hector DESTINATION lib)
-install(DIRECTORY ${MODULES} DESTINATION include FILES_MATCHING PATTERN "*.h")
-
 if(DEFINED PYTHIA8_FOUND)
   list(APPEND EXT_LIBS ${PYTHIA8_LIBRARY})
 endif()
-
-#----- test executable
-
-add_executable(hector test/test_hector.cpp)
-target_link_libraries(hector Hector ${EXT_LIBS})
 
 #----- python wrapper
 
@@ -66,6 +55,14 @@ if(Boost_FOUND)
   add_library(pyhector SHARED ${PROJECT_SOURCE_DIR}/Hector/PythonWrapper.cc)
   target_link_libraries(pyhector ${Boost_LIBRARIES} Hector ${EXT_LIBS})
 endif()
+
+install(TARGETS Hector DESTINATION lib)
+install(DIRECTORY ${HECTOR_MODULES} DESTINATION include FILES_MATCHING PATTERN "*.h")
+
+#----- test executable
+
+add_executable(hector test/test_hector.cpp)
+target_link_libraries(hector Hector ${EXT_LIBS})
 
 #----- add the tests
 

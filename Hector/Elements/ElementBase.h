@@ -2,14 +2,8 @@
 #define Hector_Elements_ElementBase_h
 
 #include "ApertureBase.h"
-#include "Core/Utils.h"
-#include "Core/Parameters.h"
 
-#include <sstream>
-
-#include <CLHEP/Vector/TwoVector.h>
 #include <CLHEP/Matrix/Matrix.h>
-#include <CLHEP/Matrix/DiagMatrix.h>
 
 namespace Hector
 {

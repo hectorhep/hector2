@@ -1,5 +1,12 @@
 #include "Beamline.h"
 
+#include "Core/Exception.h"
+#include "Elements/Drift.h"
+#include "Propagator/Particle.h"
+
+#include <CLHEP/Matrix/DiagMatrix.h>
+#include <CLHEP/Vector/ThreeVector.h>
+
 namespace Hector
 {
   Beamline::Beamline() :
