@@ -7,7 +7,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/cmake)
 
 #----- define all individual modules to be built beforehand
 
-set(HECTOR_MODULES Core IO Elements Beamline Propagator)
+set(HECTOR_MODULES IO Core Elements Beamline Propagator)
 set(HECTOR_SOURCE_DIR ${PROJECT_SOURCE_DIR}/Hector)
 
 #----- enable fortran (for Pythia/Herwig/...)
@@ -48,14 +48,6 @@ if(DEFINED PYTHIA8_FOUND)
   list(APPEND EXT_LIBS ${PYTHIA8_LIBRARY})
 endif()
 
-#----- python wrapper
-
-if(Boost_FOUND)
-  include_directories(${Boost_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS})
-  add_library(pyhector SHARED ${PROJECT_SOURCE_DIR}/Hector/PythonWrapper.cc)
-  target_link_libraries(pyhector ${Boost_LIBRARIES} Hector ${EXT_LIBS})
-endif()
-
 install(TARGETS Hector DESTINATION lib)
 install(DIRECTORY ${HECTOR_MODULES} DESTINATION include FILES_MATCHING PATTERN "*.h")
 
@@ -63,6 +55,14 @@ install(DIRECTORY ${HECTOR_MODULES} DESTINATION include FILES_MATCHING PATTERN "
 
 add_executable(hector test/test_hector.cpp)
 target_link_libraries(hector Hector ${EXT_LIBS})
+
+#----- python wrapper
+
+if(Boost_FOUND)
+  include_directories(${Boost_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS})
+  PYTHON_ADD_MODULE(pyhector ${PROJECT_SOURCE_DIR}/Hector/PythonWrapper.cc)
+  target_link_libraries(pyhector $<TARGET_OBJECTS:HectorCore> $<TARGET_OBJECTS:HectorIO> $<TARGET_OBJECTS:HectorElements> $<TARGET_OBJECTS:HectorBeamline> $<TARGET_OBJECTS:HectorPropagator> ${EXT_LIBS} ${Boost_LIBRARIES})
+endif()
 
 #----- add the tests
 
