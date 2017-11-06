@@ -83,7 +83,7 @@ namespace Hector
     for ( unsigned short i=0; i<evt.size(); i++ ) {
       const Pythia8::Particle part = evt[i];
       if ( part.id()==9902210 ) { // diffractive proton
-        pout.emplace_back( CLHEP::HepLorentzVector( part.px(), part.py(), part.pz(), part.e() ), part.charge() );
+        pout.emplace_back( CLHEP::HepLorentzVector( part.px(), part.py(), part.pz(), part.e() ), (int)part.charge() );
       }
     }
     return pout;
@@ -98,7 +98,7 @@ namespace Hector
     for ( unsigned short i=0; i<evt.size(); i++ ) {
       const Pythia8::Particle part = evt[i];
       if ( part.id()==9902210 ) { // diffractive proton
-        return Particle( CLHEP::HepLorentzVector( part.px(), part.py(), part.pz(), part.e() ), part.charge() );
+        return Particle( CLHEP::HepLorentzVector( part.px(), part.py(), part.pz(), part.e() ), (int)part.charge() );
       }
     }
     throw Exception( __PRETTY_FUNCTION__, "Failed to generate the diffractive proton!", JustWarning );

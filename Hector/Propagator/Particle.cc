@@ -12,7 +12,7 @@ namespace Hector
     addPosition( 0., StateVector() );
   }
 
-  Particle::Particle( const StateVector& sv0, float s0 ) :
+  Particle::Particle( const StateVector& sv0, double s0 ) :
     charge_( 0 ), pdgId_( 0 ), stopped_( false )
   {
     addPosition( s0, sv0 );
@@ -23,7 +23,7 @@ namespace Hector
   {}
 
   Particle
-  Particle::fromMassCharge( double mass, float charge )
+  Particle::fromMassCharge( double mass, int charge )
   {
     Particle p( StateVector( CLHEP::HepVector( 6, 0 ), mass ) );
     p.setCharge( charge );
@@ -43,7 +43,7 @@ namespace Hector
   }
 
   StateVector
-  Particle::stateVectorAt( float s ) const
+  Particle::stateVectorAt( double s ) const
   {
     const auto& pos_s = positions_.find( s );
     if ( pos_s != positions_.end() ) return pos_s->second;
@@ -62,7 +62,7 @@ namespace Hector
     const CLHEP::Hep2Vector in = sv_before.position(),
                             out = sv_after.position();
 
-    const float drift_length = upper_it->first-lower_it->first;
+    const double drift_length = upper_it->first-lower_it->first;
     if ( drift_length==0 ) {
       throw Exception( __PRETTY_FUNCTION__, Form( "No luck in choosing position (s=%.3f m)\n\t"
                                                   "Interpolation is impossible!", s ), JustWarning );
@@ -88,9 +88,9 @@ namespace Hector
   }
 
   void
-  Particle::emitGamma( float e_gamma, float q2_gamma, float phi_min, float phi_max )
+  Particle::emitGamma( double e_gamma, double q2_gamma, double phi_min, double phi_max )
   {
-    const float pos_ini = firstS();
+    const double pos_ini = firstS();
     StateVector sv_ini = firstStateVector();
 
     if ( q2_gamma==0. ) {
