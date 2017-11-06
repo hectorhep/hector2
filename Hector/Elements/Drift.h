@@ -34,8 +34,6 @@ namespace Hector
          * \f$
          */
         static CLHEP::HepMatrix genericMatrix( float length );
-
-      private:
     };
   }
 }

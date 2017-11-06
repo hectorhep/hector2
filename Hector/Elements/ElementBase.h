@@ -72,6 +72,8 @@ namespace Hector
         void setName( const std::string& name ) { name_ = name; }
         /// Element name
         const std::string& name() const { return name_; }
+        /// Set the element type
+        void setType( const Type& type ) { type_ = type; }
         /// Element type
         Type type() const { return type_; }
 

@@ -67,6 +67,17 @@ namespace Hector
       } catch ( Exception& e ) { e.dump(); }
     }
 
+    MADX::MADX( const MADX& rhs ) :
+      dir_( rhs.dir_ ), ip_name_( rhs.ip_name_ ), s_offset_( rhs.s_offset_ ),
+      found_interaction_point_( rhs.found_interaction_point_ ), has_next_element_( rhs.has_next_element_ )
+    {}
+
+    MADX::MADX( MADX& rhs ) :
+      beamline_( std::move( rhs.beamline_ ) ), raw_beamline_( std::move( rhs.raw_beamline_ ) ),
+      dir_( rhs.dir_ ), ip_name_( rhs.ip_name_ ), s_offset_( rhs.s_offset_ ),
+      found_interaction_point_( rhs.found_interaction_point_ ), has_next_element_( rhs.has_next_element_ )
+    {}
+
     MADX::~MADX()
     {
       if ( in_file_.is_open() ) in_file_.close();

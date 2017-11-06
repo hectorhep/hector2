@@ -17,9 +17,6 @@ namespace Hector
           Drift( name, aRectangularCollimator, spos, length ) {}
 
         RectangularCollimator* clone() const { return new RectangularCollimator( *this ); }
-
-      private:
-
     };
   }
 }

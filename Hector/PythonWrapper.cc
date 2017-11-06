@@ -1,5 +1,6 @@
 #include <boost/python.hpp>
 #include <boost/python/overloads.hpp>
+#include <boost/python/call.hpp>
 #include <boost/python/return_internal_reference.hpp>
 
 #include <CLHEP/Vector/LorentzVector.h>
@@ -11,7 +12,17 @@
 #include "Propagator/StateVector.h"
 
 #include "Beamline/Beamline.h"
+#include "Elements/ElementBase.h"
+#include "Elements/Drift.h"
+#include "Elements/Dipole.h"
+#include "Elements/Quadrupole.h"
+#include "Elements/Kicker.h"
+
 #include "IO/MADXParser.h"
+
+#include <memory>
+
+namespace py = boost::python;
 
 namespace
 {
@@ -24,14 +35,42 @@ namespace
     std::ostringstream os; os << sv;
     return os.str();
   }
+  std::string dump_beamline( const Hector::Beamline& bl ) {
+    std::ostringstream os;
+    bl.dump( os, true );
+    return os.str();
+  }
+  template<class T>
+  void convertElementBase( const char* name )
+  {
+    struct Wrap : T, py::wrapper<T>
+    {
+      T* clone() const { return this->get_override( "clone" )(); }
+      CLHEP::HepMatrix matrix( float eloss, float mp, int qp ) const { return this->get_override( "matrix" )( eloss, mp, qp ); }
+    };
+    py::class_<Wrap, boost::noncopyable, py::bases<Hector::Element::ElementBase> >( name, py::no_init )
+      .def( "clone", py::pure_virtual( &Hector::Element::ElementBase::clone ), py::return_value_policy<py::manage_new_object>() )
+      .def( "matrix", py::pure_virtual( &Hector::Element::ElementBase::matrix ) )
+    ;
+  }
+  template<class T,class init=py::init<std::string,float,float,float>,class P=Hector::Element::ElementBase>
+  void convertElement( const char* name )
+  {
+    py::class_<T, py::bases<P> >( name, init() )
+      .def( "clone", &T::clone, py::return_value_policy<py::manage_new_object>() )
+      .def( "matrix", &T::matrix )
+    ;
+  }
 }
 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS( particle_add_position_pos_overloads, addPosition, 1, 2 )
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS( particle_add_position_vec_overloads, addPosition, 2, 3 )
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS( beamline_dump_overloads, dump, 0, 2 )
 
 BOOST_PYTHON_MODULE( pyhector )
 {
-  namespace py = boost::python;
+  //----- GENERAL HELPERS
+
   py::class_<CLHEP::HepLorentzVector>( "LorentzVector" )
     .def( "px", &CLHEP::HepLorentzVector::px )
     .def( "py", &CLHEP::HepLorentzVector::py )
@@ -39,14 +78,14 @@ BOOST_PYTHON_MODULE( pyhector )
     .def( "e", &CLHEP::HepLorentzVector::e )
   ;
 
-  /*py::enum_<Hector::ExceptionType>( "ExceptionType" )
+  py::enum_<Hector::ExceptionType>( "ExceptionType" )
     .value( "undefined", Hector::ExceptionType::Undefined )
     .value( "info", Hector::ExceptionType::Info )
     .value( "justWarning", Hector::ExceptionType::JustWarning )
     .value( "fatal", Hector::ExceptionType::Fatal )
-  ;*/
+  ;
 
-  py::class_<Hector::Parameters, std::shared_ptr<Hector::Parameters>, boost::noncopyable>( "Parameters", py::no_init )
+  py::class_<Hector::Parameters, std::shared_ptr<Hector::Parameters>, boost::noncopyable>( "Parameters", py::init<>() )
     .def( "get", &Hector::Parameters::get ).staticmethod( "get" )
     .def( "beamEnergy", &Hector::Parameters::beamEnergy, py::return_value_policy<py::return_by_value>() )
     .def( "beamParticlesMass", &Hector::Parameters::beamParticlesMass, py::return_value_policy<py::return_by_value>() )
@@ -60,6 +99,8 @@ BOOST_PYTHON_MODULE( pyhector )
     .def( "enableKickers", &Hector::Parameters::enableKickers, py::return_value_policy<py::return_by_value>() )
     .def( "enableDipoles", &Hector::Parameters::enableDipoles, py::return_value_policy<py::return_by_value>() )
   ;
+
+  //----- BEAM PROPERTIES
 
   void ( Hector::Particle::*addPosition_vec )( double, const Hector::StateVector&, bool ) = &Hector::Particle::addPosition;
   void ( Hector::Particle::*addPosition_pos )( const Hector::Particle::Position&, bool ) = &Hector::Particle::addPosition;
@@ -86,14 +127,66 @@ BOOST_PYTHON_MODULE( pyhector )
     .add_property( "momentum", &Hector::StateVector::momentum, &Hector::StateVector::setMomentum )
   ;
 
-/*  py::class_<Hector::Beamline>( "Beamline" )
-    //.def( "sequencedBeamline", &Hector::Beamline::sequencedBeamline ).staticmethod( "sequencedBeamline" )
+  //----- BEAMLINE DEFINITION
+
+  struct ElementBaseWrap : Hector::Element::ElementBase, py::wrapper<Hector::Element::ElementBase>
+  {
+    ElementBaseWrap() : Hector::Element::ElementBase( Hector::Element::anInvalidElement ) {}
+    Hector::Element::ElementBase* clone() const override { return this->get_override( "clone" )(); }
+    CLHEP::HepMatrix matrix( float eloss, float mp, int qp ) const override { return this->get_override( "matrix" )( eloss, mp, qp ); }
+  };
+  //py::class_<Hector::Element::ElementBase, boost::noncopyable>( "Element", py::no_init )
+  py::class_<ElementBaseWrap, boost::noncopyable>( "Element", py::init<>() )
+    //.def( "clone", py::pure_virtual( &Hector::Element::ElementBase::clone ), py::return_value_policy<py::reference_existing_object>() )
+    .def( "clone", py::pure_virtual( &Hector::Element::ElementBase::clone ), py::return_value_policy<py::manage_new_object>() )
+    //.def( "clone", py::pure_virtual( &Hector::Element::ElementBase::clone ), py::return_internal_reference<>() )
+    //.def( "clone", py::pure_virtual( &Hector::Element::ElementBase::clone ) )
+    .def( "matrix", py::pure_virtual( &Hector::Element::ElementBase::matrix ) )
+    .def( "__str__", &Hector::Element::ElementBase::name )
+    .add_property( "name", &Hector::Element::ElementBase::name, &Hector::Element::ElementBase::setName )
+    .add_property( "type", &Hector::Element::ElementBase::type, &Hector::Element::ElementBase::setType )
+    .add_property( "s", &Hector::Element::ElementBase::s, &Hector::Element::ElementBase::setS )
+    .add_property( "length", &Hector::Element::ElementBase::length, &Hector::Element::ElementBase::setLength )
+    .add_property( "position", &Hector::Element::ElementBase::position, &Hector::Element::ElementBase::setPosition )
+    .add_property( "angles", &Hector::Element::ElementBase::angles, &Hector::Element::ElementBase::setAngles )
+    .add_property( "magneticStrength", &Hector::Element::ElementBase::magneticStrength, &Hector::Element::ElementBase::setMagneticStrength )
+    .add_property( "beta", &Hector::Element::ElementBase::beta, &Hector::Element::ElementBase::setBeta )
+    .add_property( "dispersion", &Hector::Element::ElementBase::dispersion, &Hector::Element::ElementBase::setDispersion )
+    .add_property( "relativePosition", &Hector::Element::ElementBase::relativePosition, &Hector::Element::ElementBase::setRelativePosition )
+  ;
+
+  //--- passive elements
+  convertElement<Hector::Element::Drift, py::init<std::string,float,float> >( "Drift" );
+  convertElement<Hector::Element::Marker, py::init<std::string,float,float> >( "Marker" );
+
+  //--- dipoles
+  convertElementBase<Hector::Element::Dipole>( "Dipole" );
+  convertElement<Hector::Element::SectorDipole, py::init<std::string,float,float,float>, Hector::Element::Dipole>( "SectorDipole" );
+  convertElement<Hector::Element::RectangularDipole, py::init<std::string,float,float,float>, Hector::Element::Dipole>( "RectangularDipole" );
+
+  //--- quadrupoles
+  convertElementBase<Hector::Element::Quadrupole>( "Quadrupole" );
+  convertElement<Hector::Element::HorizontalQuadrupole, py::init<std::string,float,float,float>, Hector::Element::Quadrupole>( "HorizontalQuadrupole" );
+  convertElement<Hector::Element::VerticalQuadrupole, py::init<std::string,float,float,float>, Hector::Element::Quadrupole>( "VerticalQuadrupole" );
+
+  //--- kickers
+  convertElementBase<Hector::Element::Kicker>( "Kicker" );
+  convertElement<Hector::Element::HorizontalKicker, py::init<std::string,float,float,float>, Hector::Element::Kicker>( "HorizontalKicker" );
+  convertElement<Hector::Element::VerticalKicker, py::init<std::string,float,float,float>, Hector::Element::Kicker>( "VerticalKicker" );
+
+  py::class_<Hector::Beamline>( "Beamline" )
+    .def( "__str__", &dump_beamline )
+    .def( "dump", &Hector::Beamline::dump, beamline_dump_overloads() )
+    //.def( "elements", py::range( &Hector::Beamline::begin, &Hector::Beamline::end ) )
+    .def( "sequencedBeamline", &Hector::Beamline::sequencedBeamline ).staticmethod( "sequencedBeamline" )
     .def( "clear", &Hector::Beamline::clear )
     .def( "addElement", &Hector::Beamline::addElement )
   ;
 
+  //----- I/O HANDLERS
+
   py::class_<Hector::Parser::MADX>( "MadXparser", py::init<const char*,const char*,int,py::optional<float> >() )
-    .def( "beamline", &Hector::Parser::MADX::beamline )
+    .def( "beamline", &Hector::Parser::MADX::beamline, py::return_value_policy<py::reference_existing_object>() )
     .def( "romanPots", &Hector::Parser::MADX::romanPots )
-  ;*/
+  ;
 }

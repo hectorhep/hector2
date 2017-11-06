@@ -16,11 +16,6 @@ namespace Hector
           ElementBase( type, name, spos, length ) {
           setMagneticStrength( mag_str );
         }
-
-        virtual Quadrupole* clone() const = 0;
-        virtual CLHEP::HepMatrix matrix( float, float, int ) const = 0;
-
-      protected:
     };
 
     /// Horizontal quadrupole object builder
@@ -47,8 +42,6 @@ namespace Hector
          * assuming \f$ k =  k_{0} \cdot \frac{p_{0}}{p_{0} - \mathrm{d}p} \cdot \frac{q_{\mathrm{part}}}{q_{\mathrm{b}}} \f$ and \f$ \omega \equiv \omega(k,L) = L \sqrt{|k|} \f$
          */
         CLHEP::HepMatrix matrix( float, float, int ) const;
-
-      private:
     };
 
     /// Vertical quadrupole object builder
@@ -75,8 +68,6 @@ namespace Hector
          * assuming \f$ k =  k_{0} \cdot \frac{p_{0}}{p_{0} - \mathrm{d}p} \cdot \frac{q_{\mathrm{part}}}{q_{\mathrm{b}}} \f$ and \f$ \omega \equiv \omega(k,l) = L \sqrt{|k|} \f$
          */
         CLHEP::HepMatrix matrix( float, float, int ) const;
-
-      private:
     };
   }
 }

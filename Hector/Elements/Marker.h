@@ -18,9 +18,6 @@ namespace Hector
         /** \note \f$ \mathbf{M} = \mathbf{I}_6 \f$
          */
         CLHEP::HepMatrix matrix( float, float, int ) const;
-
-      private:
-
     };
   }
 }

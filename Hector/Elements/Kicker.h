@@ -16,9 +16,6 @@ namespace Hector
           ElementBase( type, name, spos, length ) {
           setMagneticStrength( mag_str );
         }
-
-        virtual Kicker* clone() const = 0;
-        virtual CLHEP::HepMatrix matrix( float, float, int ) const = 0;
     };
 
     /// Horizontal kicker object builder

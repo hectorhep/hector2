@@ -16,18 +16,13 @@ namespace Hector
           ElementBase( type, name, spos, length ) {
           setMagneticStrength( mag_str );
         }
-
-        virtual Dipole* clone() const = 0;
-        virtual CLHEP::HepMatrix matrix( float, float, int ) const = 0;
-
-      protected:
     };
 
     /// Rectangular dipole object builder
     class RectangularDipole : public Dipole
     {
       public:
-        /// Class constructo
+        /// Class constructor
         RectangularDipole( const std::string& name, float spos, float length, float mag_str ) :
           Dipole( aRectangularDipole, name, spos, length, mag_str ) {}
 
@@ -49,8 +44,6 @@ namespace Hector
         /// \note Numerical sensitivity (~\f$10^{-8}\f$ relative precision on a 64-bit Intel machine) expected with \f$ \frac{r}{E_{\mathrm{b}}} \left(1-\cos{\theta}\right)\f$.
         ///  Using \f$ \cos{2x} = 1-2\sin^{2}{x} \f$ to transform this term (see the variable called "simp")
         CLHEP::HepMatrix matrix( float, float, int ) const;
-
-      private:
     };
 
     /// Sector dipole object builder
@@ -90,8 +83,6 @@ namespace Hector
          * assuming \f$\theta = L/r\f$, \f$ \frac{1}{r} \equiv k =  k_{0} \cdot \frac{p_{0}}{p_{0} - \mathrm{d}p} \cdot \frac{q_{\mathrm{part}}}{q_{\mathrm{b}}} \f$
          */
         CLHEP::HepMatrix matrix( float, float, int ) const;
-
-      private:
     };
   }
 }
