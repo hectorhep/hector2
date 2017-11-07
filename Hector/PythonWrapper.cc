@@ -1,7 +1,4 @@
-#include <boost/python.hpp>
-#include <boost/python/overloads.hpp>
-#include <boost/python/call.hpp>
-#include <boost/python/return_internal_reference.hpp>
+#include "PythonWrapper.h"
 
 #include <CLHEP/Vector/LorentzVector.h>
 
@@ -22,8 +19,6 @@
 
 #include <memory>
 
-namespace py = boost::python;
-
 namespace
 {
   std::string dump_particle( const Hector::Particle& part ) {
@@ -39,27 +34,6 @@ namespace
     std::ostringstream os;
     bl.dump( os, true );
     return os.str();
-  }
-  template<class T>
-  void convertElementBase( const char* name )
-  {
-    struct Wrap : T, py::wrapper<T>
-    {
-      T* clone() const { return this->get_override( "clone" )(); }
-      CLHEP::HepMatrix matrix( float eloss, float mp, int qp ) const { return this->get_override( "matrix" )( eloss, mp, qp ); }
-    };
-    py::class_<Wrap, boost::noncopyable, py::bases<Hector::Element::ElementBase> >( name, py::no_init )
-      .def( "clone", py::pure_virtual( &Hector::Element::ElementBase::clone ), py::return_value_policy<py::manage_new_object>() )
-      .def( "matrix", py::pure_virtual( &Hector::Element::ElementBase::matrix ) )
-    ;
-  }
-  template<class T,class init=py::init<std::string,float,float,float>,class P=Hector::Element::ElementBase>
-  void convertElement( const char* name )
-  {
-    py::class_<T, py::bases<P> >( name, init() )
-      .def( "clone", &T::clone, py::return_value_policy<py::manage_new_object>() )
-      .def( "matrix", &T::matrix )
-    ;
   }
 }
 
@@ -129,19 +103,11 @@ BOOST_PYTHON_MODULE( pyhector )
 
   //----- BEAMLINE DEFINITION
 
-  struct ElementBaseWrap : Hector::Element::ElementBase, py::wrapper<Hector::Element::ElementBase>
-  {
-    ElementBaseWrap() : Hector::Element::ElementBase( Hector::Element::anInvalidElement ) {}
-    Hector::Element::ElementBase* clone() const override { return this->get_override( "clone" )(); }
-    CLHEP::HepMatrix matrix( float eloss, float mp, int qp ) const override { return this->get_override( "matrix" )( eloss, mp, qp ); }
-  };
-  //py::class_<Hector::Element::ElementBase, boost::noncopyable>( "Element", py::no_init )
-  py::class_<ElementBaseWrap, boost::noncopyable>( "Element", py::init<>() )
-    //.def( "clone", py::pure_virtual( &Hector::Element::ElementBase::clone ), py::return_value_policy<py::reference_existing_object>() )
-    .def( "clone", py::pure_virtual( &Hector::Element::ElementBase::clone ), py::return_value_policy<py::manage_new_object>() )
-    //.def( "clone", py::pure_virtual( &Hector::Element::ElementBase::clone ), py::return_internal_reference<>() )
+  py::class_<ElementBaseWrap, boost::noncopyable>( "Element", py::no_init )
+//    .def( "matrix", py::pure_virtual( &Hector::Element::ElementBase::matrix ) )
     //.def( "clone", py::pure_virtual( &Hector::Element::ElementBase::clone ) )
-    .def( "matrix", py::pure_virtual( &Hector::Element::ElementBase::matrix ) )
+//    .def( "clone", py::pure_virtual( &Hector::Element::ElementBase::clone ), py::return_value_policy<py::manage_new_object>() )
+    //.def( "clone", py::pure_virtual( &Hector::Element::ElementBase::clone ), py::return_internal_reference<>() )
     .def( "__str__", &Hector::Element::ElementBase::name )
     .add_property( "name", &Hector::Element::ElementBase::name, &Hector::Element::ElementBase::setName )
     .add_property( "type", &Hector::Element::ElementBase::type, &Hector::Element::ElementBase::setType )
