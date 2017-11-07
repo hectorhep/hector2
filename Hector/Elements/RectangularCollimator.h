@@ -16,10 +16,7 @@ namespace Hector
         RectangularCollimator( const std::string& name, float spos=0., float length=0. ) :
           Drift( name, aRectangularCollimator, spos, length ) {}
 
-        RectangularCollimator* clone() const { return new RectangularCollimator( *this ); }
-
-      private:
-
+        std::shared_ptr<ElementBase> clone() const override { return std::make_shared<RectangularCollimator>( *this ); }
     };
   }
 }

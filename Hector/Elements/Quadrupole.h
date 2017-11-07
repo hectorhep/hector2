@@ -16,11 +16,6 @@ namespace Hector
           ElementBase( type, name, spos, length ) {
           setMagneticStrength( mag_str );
         }
-
-        virtual Quadrupole* clone() const = 0;
-        virtual CLHEP::HepMatrix matrix( float, float, int ) const = 0;
-
-      protected:
     };
 
     /// Horizontal quadrupole object builder
@@ -31,7 +26,7 @@ namespace Hector
         HorizontalQuadrupole( const std::string& name, float spos, float length, float mag_str ) :
           Quadrupole( anHorizontalQuadrupole, name, spos, length, mag_str ) {}
 
-        HorizontalQuadrupole* clone() const { return new HorizontalQuadrupole( *this ); }
+        std::shared_ptr<ElementBase> clone() const override { return std::make_shared<HorizontalQuadrupole>( *this ); }
         /** \note \f$
          * \mathbf{M} = \left(
          * \begin{array}{cccccc}
@@ -46,9 +41,7 @@ namespace Hector
          * \f$
          * assuming \f$ k =  k_{0} \cdot \frac{p_{0}}{p_{0} - \mathrm{d}p} \cdot \frac{q_{\mathrm{part}}}{q_{\mathrm{b}}} \f$ and \f$ \omega \equiv \omega(k,L) = L \sqrt{|k|} \f$
          */
-        CLHEP::HepMatrix matrix( float, float, int ) const;
-
-      private:
+        CLHEP::HepMatrix matrix( float, float, int ) const override;
     };
 
     /// Vertical quadrupole object builder
@@ -59,7 +52,7 @@ namespace Hector
         VerticalQuadrupole( const std::string& name, float spos, float length, float mag_str ) :
           Quadrupole( aVerticalQuadrupole, name, spos, length, mag_str ) {}
 
-        VerticalQuadrupole* clone() const { return new VerticalQuadrupole( *this ); }
+        std::shared_ptr<ElementBase> clone() const override { return std::make_shared<VerticalQuadrupole>( *this ); }
         /** \note \f$
          * \mathbf{M} = \left(
          * \begin{array}{cccccc}
@@ -74,9 +67,7 @@ namespace Hector
          * \f$
          * assuming \f$ k =  k_{0} \cdot \frac{p_{0}}{p_{0} - \mathrm{d}p} \cdot \frac{q_{\mathrm{part}}}{q_{\mathrm{b}}} \f$ and \f$ \omega \equiv \omega(k,l) = L \sqrt{|k|} \f$
          */
-        CLHEP::HepMatrix matrix( float, float, int ) const;
-
-      private:
+        CLHEP::HepMatrix matrix( float, float, int ) const override;
     };
   }
 }

@@ -51,7 +51,7 @@ namespace Hector
         virtual ~ElementBase() {}
 
         /// Return a pointer to a clone of the current element
-        virtual ElementBase* clone() const = 0;
+        virtual std::shared_ptr<ElementBase> clone() const = 0;
         /// Check if two elements (and their properties) are identical
         bool operator==( const ElementBase& ) const;
         /// Check if two elements (and their properties) are different
@@ -176,16 +176,16 @@ namespace Hector
         return ( &lhs < &rhs );
       }
       /// Compare the pointers to two elements
-      inline bool operator()( const ElementBase* lhs, const ElementBase* rhs ) const {
-        if ( lhs->s()<rhs->s() ) return true;
-        if ( lhs->s()>rhs->s() ) return false;
-        if ( lhs->s()+lhs->length()<rhs->s()+rhs->length() ) return true;
+      inline bool operator()( const std::shared_ptr<ElementBase> lhs, const std::shared_ptr<ElementBase> rhs ) const {
+        if ( lhs->s() < rhs->s() ) return true;
+        if ( lhs->s() > rhs->s() ) return false;
+        if ( lhs->s()+lhs->length() < rhs->s()+rhs->length() ) return true;
         return false;
       }
     };
   }
   /// List of elements
-  typedef std::vector<Element::ElementBase*> Elements;
+  typedef std::vector<std::shared_ptr<Element::ElementBase> > Elements;
 }
 
 #endif

@@ -6,7 +6,7 @@
 #include "TColor.h"
 
 Color_t
-elementColour( const Hector::Element::ElementBase* elem )
+elementColour( const std::shared_ptr<Hector::Element::ElementBase> elem )
 {
   switch ( elem->type() ) {
     case Hector::Element::aMarker: return kBlue+3;

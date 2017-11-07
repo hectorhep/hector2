@@ -41,7 +41,7 @@ main( int argc, char* argv[] )
     std::cout << ">> " << h_rp[i]->name() << " at s = " << h_rp[i]->s() << " m" << std::endl;
   }
 
-  const Hector::Element::ElementBase* rp = parser.beamline()->getElement( rp_names["56-210-fr-hr"] );
+  const auto rp = parser.beamline()->getElement( rp_names["56-210-fr-hr"] );
   if ( !rp ) {
     std::cerr << "Failed to retrieve Roman pot " << rp_names["56-210-fr-hr"] << " in beamline!" << std::endl;
     return -1;

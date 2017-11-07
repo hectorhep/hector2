@@ -16,9 +16,6 @@ namespace Hector
           ElementBase( type, name, spos, length ) {
           setMagneticStrength( mag_str );
         }
-
-        virtual Kicker* clone() const = 0;
-        virtual CLHEP::HepMatrix matrix( float, float, int ) const = 0;
     };
 
     /// Horizontal kicker object builder
@@ -29,7 +26,7 @@ namespace Hector
         HorizontalKicker( const std::string& name, float spos, float length, float mag_str ) :
           Kicker( anHorizontalKicker, name, spos, length, mag_str ) {}
 
-        HorizontalKicker* clone() const { return new HorizontalKicker( *this ); }
+        std::shared_ptr<ElementBase> clone() const override { return std::make_shared<HorizontalKicker>( *this ); }
         /** \note \f$
          * \mathbf{M} = \left(
          * \begin{array}{cccccc}
@@ -44,7 +41,7 @@ namespace Hector
          * \f$
          * assuming \f$ k =  k_{0} \cdot \frac{p_{0}}{p_{0} - \mathrm{d}p} \cdot \frac{q_{\mathrm{particle}}}{q_{\mathrm{beam}}} \f$
          */
-        CLHEP::HepMatrix matrix( float, float, int ) const;
+        CLHEP::HepMatrix matrix( float, float, int ) const override;
     };
 
     /// Vertical kicker object builder
@@ -55,7 +52,7 @@ namespace Hector
         VerticalKicker( const std::string& name, float spos, float length, float mag_str ) :
           Kicker( aVerticalKicker, name, spos, length, mag_str ) {}
 
-        VerticalKicker* clone() const { return new VerticalKicker( *this ); }
+        std::shared_ptr<ElementBase> clone() const override { return std::make_shared<VerticalKicker>( *this ); }
         /** \note \f$
          * \mathbf{M} = \left(
          * \begin{array}{cccccc}
@@ -70,7 +67,7 @@ namespace Hector
          * \f$
          * assuming \f$ k =  k_{0} \cdot \frac{p_{0}}{p_{0} - \mathrm{d}p} \cdot \frac{q_{\mathrm{particle}}}{q_{\mathrm{beam}}} \f$
          */
-        CLHEP::HepMatrix matrix( float, float, int ) const;
+        CLHEP::HepMatrix matrix( float, float, int ) const override;
     };
   }
 }
