@@ -1,7 +1,6 @@
-#include "Dipole.h"
-#include "Drift.h"
-
-#include "Core/Exception.h"
+#include "Hector/Elements/Dipole.h"
+#include "Hector/Elements/Drift.h"
+#include "Hector/Core/Exception.h"
 
 #include <CLHEP/Matrix/DiagMatrix.h>
 

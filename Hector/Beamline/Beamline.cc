@@ -1,8 +1,7 @@
-#include "Beamline.h"
-
-#include "Core/Exception.h"
-#include "Elements/Drift.h"
-#include "Propagator/Particle.h"
+#include "Hector/Beamline/Beamline.h"
+#include "Hector/Core/Exception.h"
+#include "Hector/Elements/Drift.h"
+#include "Hector/Propagator/Particle.h"
 
 #include <CLHEP/Matrix/DiagMatrix.h>
 #include <CLHEP/Vector/ThreeVector.h>

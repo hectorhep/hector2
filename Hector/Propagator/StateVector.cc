@@ -1,6 +1,5 @@
-#include "StateVector.h"
-
-#include "Core/Exception.h"
+#include "Hector/Propagator/StateVector.h"
+#include "Hector/Core/Exception.h"
 
 #include <CLHEP/Matrix/Matrix.h>
 

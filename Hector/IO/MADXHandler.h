@@ -1,11 +1,10 @@
 #ifndef Hector_IO_MADXParser_h
 #define Hector_IO_MADXParser_h
 
-#include "Beamline/Beamline.h"
-
-#include "Core/Exception.h"
-#include "Core/OrderedParametersMap.h"
-#include "Core/UnorderedParametersMap.h"
+#include "Hector/Beamline/Beamline.h"
+#include "Hector/Core/Exception.h"
+#include "Hector/Core/OrderedParametersMap.h"
+#include "Hector/Core/UnorderedParametersMap.h"
 
 #include <fstream>
 #include <regex>

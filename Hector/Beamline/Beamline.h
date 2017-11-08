@@ -1,8 +1,8 @@
 #ifndef Hector_Beamline_Beamline_h
 #define Hector_Beamline_Beamline_h
 
-#include "Elements/ElementBase.h"
-#include "Elements/Marker.h"
+#include "Hector/Elements/ElementBase.h"
+#include "Hector/Elements/Marker.h"
 
 #include <map>
 #include <memory>

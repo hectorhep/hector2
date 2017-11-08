@@ -1,8 +1,8 @@
 #include "Propagator.h"
 #include "BeamProducer.h"
 
-#include "Core/Exception.h"
-#include "Core/Utils.h"
+#include "Hector/Core/Exception.h"
+#include "Hector/Core/Utils.h"
 
 namespace Hector
 {

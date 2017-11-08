@@ -1,13 +1,9 @@
-file(GLOB sources *Parser.cc)
-file(GLOB headers *Parser.h)
+file(GLOB sources *Handler.cc)
 
 include_directories(${PROJECT_SOURCE_DIR})
 
-find_package(Pythia8 QUIET)
 if(DEFINED PYTHIA8_FOUND)
   list(APPEND sources Pythia8Generator.cc)
-  list(APPEND headers Pythia8Generator.h)
-#  message(STATUS ${sources})
 endif()
 
 #----- build the object

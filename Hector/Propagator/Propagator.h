@@ -1,8 +1,8 @@
 #ifndef Hector_Propagator_Propagator_h
 #define Hector_Propagator_Propagator_h
 
-#include "Beamline/Beamline.h"
-#include "Particle.h"
+#include "Hector/Beamline/Beamline.h"
+#include "Hector/Propagator/Particle.h"
 
 namespace Hector
 {

@@ -1,6 +1,5 @@
-#include "LHEParser.h"
-
-#include "Core/Exception.h"
+#include "Hector/IO/LHEHandler.h"
+#include "Hector/Core/Exception.h"
 
 namespace Hector
 {

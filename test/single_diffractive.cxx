@@ -43,7 +43,7 @@ int main( int argc, char* argv[] )
     "MultipartonInteractions:expPow = 1.6",
     // initialise the single-diffraction
     "SoftQCD:singleDiffractive = on",
-    "SoftQCD:doubleDiffractive = on",
+    "SoftQCD:doubleDiffractive = off",
     // disable the hadronisation
     "HadronLevel:all = off",
   } };

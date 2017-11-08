@@ -1,5 +1,5 @@
-#include "Particle.h"
-#include "Core/Exception.h"
+#include "Hector/Propagator/Particle.h"
+#include "Hector/Core/Exception.h"
 
 #include <CLHEP/Random/RandFlat.h>
 #include <CLHEP/Vector/TwoVector.h>

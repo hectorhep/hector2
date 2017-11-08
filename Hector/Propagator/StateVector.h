@@ -7,7 +7,7 @@
 
 #include <map>
 
-#include "Core/Parameters.h"
+#include "Hector/Core/Parameters.h"
 
 using std::cout;
 

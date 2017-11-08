@@ -1,6 +1,6 @@
-#include "IO/MADXParser.h"
-#include "Propagator/Propagator.h"
-#include "Propagator/BeamProducer.h"
+#include "Hector/IO/MADXHandler.h"
+#include "Hector/Propagator/Propagator.h"
+#include "Hector/Propagator/BeamProducer.h"
 
 int main( int argc, char* argv[] )
 {

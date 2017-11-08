@@ -1,6 +1,6 @@
 #include "BeamProducer.h"
 
-#include "Core/Exception.h"
+#include "Hector/Core/Exception.h"
 
 namespace Hector
 {

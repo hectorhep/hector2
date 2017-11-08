@@ -10,21 +10,14 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/cmake)
 set(HECTOR_MODULES Core IO Elements Beamline Propagator)
 set(HECTOR_SOURCE_DIR ${PROJECT_SOURCE_DIR}/Hector)
 
-#----- enable fortran (for Pythia/Herwig/...)
-
-enable_language(Fortran OPTIONAL)
-
 #----- include external dependencies
 
 find_package(CLHEP REQUIRED)
-set(EXT_LIBS CLHEP)
-
-find_package(Pythia8)
+set(HECTOR_DEPENDENCIES CLHEP)
 
 #----- build all the intermediate objects
 
 include_directories(${PROJECT_SOURCE_DIR})
-include_directories(${HECTOR_SOURCE_DIR})
 foreach(_module ${HECTOR_MODULES})
   include_directories(${HECTOR_SOURCE_DIR}/${_module})
   add_subdirectory(Hector/${_module})
@@ -42,17 +35,21 @@ add_library(Hector SHARED $<TARGET_OBJECTS:HectorCore>
                           $<TARGET_OBJECTS:HectorPropagator>)
 set_target_properties(Hector PROPERTIES LINKER_LANGUAGE CXX)
 
-if(DEFINED PYTHIA8_FOUND)
-  list(APPEND EXT_LIBS ${PYTHIA8_LIBRARY})
-endif()
-
 install(TARGETS Hector DESTINATION lib)
 install(DIRECTORY ${HECTOR_MODULES} DESTINATION include FILES_MATCHING PATTERN "*.h")
+
+#----- Pythia 8 for physics samples generation
+
+find_package(Pythia8 QUIET)
+
+if(DEFINED PYTHIA8_FOUND)
+  list(APPEND HECTOR_DEPENDENCIES ${PYTHIA8_LIBRARY})
+endif()
 
 #----- test executable
 
 add_executable(hector test/test_hector.cpp)
-target_link_libraries(hector Hector ${EXT_LIBS})
+target_link_libraries(hector Hector ${HECTOR_DEPENDENCIES})
 
 #----- add the tests
 

@@ -1,15 +1,15 @@
-#include "MADXParser.h"
+#include "Hector/IO/MADXHandler.h"
 
-#include "Elements/Quadrupole.h"
-#include "Elements/Dipole.h"
-#include "Elements/RectangularCollimator.h"
-#include "Elements/Kicker.h"
-#include "Elements/Marker.h"
+#include "Hector/Elements/Quadrupole.h"
+#include "Hector/Elements/Dipole.h"
+#include "Hector/Elements/RectangularCollimator.h"
+#include "Hector/Elements/Kicker.h"
+#include "Hector/Elements/Marker.h"
 
-#include "Elements/EllipticAperture.h"
-#include "Elements/CircularAperture.h"
-#include "Elements/RectangularAperture.h"
-#include "Elements/RectEllipticAperture.h"
+#include "Hector/Elements/EllipticAperture.h"
+#include "Hector/Elements/CircularAperture.h"
+#include "Hector/Elements/RectangularAperture.h"
+#include "Hector/Elements/RectEllipticAperture.h"
 
 namespace Hector
 {

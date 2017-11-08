@@ -1,5 +1,7 @@
-#ifndef Hector_Elements_Aperture_h
-#define Hector_Elements_Aperture_h
+#ifndef Hector_Elements_ApertureBase_h
+#define Hector_Elements_ApertureBase_h
+
+#include "ApertureType.h"
 
 #include <vector>
 #include <CLHEP/Vector/TwoVector.h>
@@ -12,20 +14,6 @@ namespace Hector
   /// Collection of apertures to be associated to element objects
   namespace Aperture
   {
-    /// List of types allowed for an aperture
-    typedef enum {
-      anInvalidAperture,
-      aRectangularAperture,
-      anEllipticAperture,
-      aCircularAperture,
-      aRectEllipticAperture,
-      aRectCircularAperture,
-      aRaceTrackAperture,
-      anOctagonalAperture
-    } Type;
-    /// Human-readable printout of an aperture type
-    std::ostream& operator<<( std::ostream&, const Type& );
-
     /// A generic aperture object for a beamline element
     class ApertureBase
     {
@@ -35,7 +23,7 @@ namespace Hector
 
       public:
         /// Build a new aperture to an element
-        /// \param[in] type Aperture type (see Aperture::ApertureBase::Type)
+        /// \param[in] type Aperture type (see Aperture::Type)
         /// \param[in] pos Aperture position
         /// \param[in] param Shape parameters
         ApertureBase( const Type& type, const CLHEP::Hep2Vector& pos, const std::vector<float>& param );

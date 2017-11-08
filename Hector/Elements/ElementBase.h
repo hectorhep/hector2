@@ -2,6 +2,7 @@
 #define Hector_Elements_ElementBase_h
 
 #include "ApertureBase.h"
+#include "ElementType.h"
 
 #include <CLHEP/Matrix/Matrix.h>
 #include <memory>
@@ -11,37 +12,12 @@ namespace Hector
   /// Collection of beamline elements
   namespace Element
   {
-    /// List of types allowed for an element
-    typedef enum {
-      anInvalidElement = -1, ///< Invalid element
-      aMarker, ///< Simple s-marker
-      aDrift, ///< Drift element
-      aMonitor, ///< Monitoring element
-      aRectangularDipole, ///< Rectangular-type dipole
-      aSectorDipole, ///< Sector-type dipole
-      aGenericQuadrupole, ///< Generic (vertical or horizontal) quadrupole
-      aVerticalQuadrupole, ///< Vertical-type quadrupole
-      anHorizontalQuadrupole, ///< Horizontal-type quadrupole
-      aSextupole, ///< Generic sextupole
-      aMultipole, ///< Generic multipole
-      aVerticalKicker, ///< Vertical-type kicker
-      anHorizontalKicker, ///< Horizontal-type kicker
-      aRectangularCollimator, ///< Rectangular-type collimator
-      anEllipticalCollimator, ///< Rectangular-type collimator
-      aCircularCollimator, ///< Circular-type collimator
-      //RomanPot, InteractionPoint,
-      aPlaceholder, ///< A placeholder element
-      anInstrument, ///< A measurement apparatus
-      aSolenoid ///< Solenoid
-    } Type;
-    /// Human-readable printout of a element type
-    std::ostream& operator<<( std::ostream&, const Type& );
     /// A generic beamline element object
     class ElementBase
     {
       public:
         /// Build a new element
-        /// \param[in] type Element type (see Element::ElementBase::Type)
+        /// \param[in] type Element type (see Element::Type)
         /// \param[in] name Element name
         /// \param[in] spos s-position of the element in the beamline
         /// \param[in] length Element length (in m)
