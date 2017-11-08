@@ -17,8 +17,7 @@ enable_language(Fortran OPTIONAL)
 #----- include external dependencies
 
 find_package(CLHEP REQUIRED)
-find_package(Boost COMPONENTS python)
-find_package(PythonLibs 2.7 REQUIRED)
+find_package(Boost COMPONENTS python QUIET)
 set(EXT_LIBS CLHEP)
 
 find_package(Pythia8)
@@ -59,6 +58,7 @@ target_link_libraries(hector Hector ${EXT_LIBS})
 #----- python wrapper
 
 if(Boost_FOUND)
+  find_package(PythonLibs 2.7 REQUIRED)
   include_directories(${Boost_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS})
   PYTHON_ADD_MODULE(pyhector ${PROJECT_SOURCE_DIR}/Hector/PythonWrapper.cc)
   target_link_libraries(pyhector $<TARGET_OBJECTS:HectorCore> $<TARGET_OBJECTS:HectorIO> $<TARGET_OBJECTS:HectorElements> $<TARGET_OBJECTS:HectorBeamline> $<TARGET_OBJECTS:HectorPropagator> ${EXT_LIBS} ${Boost_LIBRARIES})
@@ -66,6 +66,7 @@ endif()
 
 #----- add the tests
 
+enable_testing()
 add_subdirectory(test)
 
 #----- copy the data files
