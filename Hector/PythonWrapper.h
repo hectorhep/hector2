@@ -14,11 +14,12 @@ namespace
   {
     struct Wrap : T, py::wrapper<T>
     {
-      T* clone() const { return this->get_override( "clone" )(); }
+      std::shared_ptr<Hector::Element::ElementBase> clone() const { return this->get_override( "clone" )(); }
       CLHEP::HepMatrix matrix( float eloss, float mp, int qp ) const { return this->get_override( "matrix" )( eloss, mp, qp ); }
     };
     py::class_<Wrap, boost::noncopyable, py::bases<Hector::Element::ElementBase> >( name, py::no_init )
-      .def( "clone", py::pure_virtual( &Hector::Element::ElementBase::clone ), py::return_value_policy<py::manage_new_object>() )
+      //.def( "clone", py::pure_virtual( &Hector::Element::ElementBase::clone ), py::return_value_policy<py::manage_new_object>() )
+      .def( "clone", py::pure_virtual( &Wrap::clone ), py::return_value_policy<py::manage_new_object>() )
       .def( "matrix", py::pure_virtual( &Hector::Element::ElementBase::matrix ) )
     ;
   }
@@ -35,7 +36,7 @@ namespace
   struct ElementBaseWrap : Hector::Element::ElementBase, py::wrapper<Hector::Element::ElementBase>
   {
     ElementBaseWrap() : Hector::Element::ElementBase( Hector::Element::anInvalidElement ) {}
-    Hector::Element::ElementBase* clone() const override { return this->get_override( "clone" )(); }
+    std::shared_ptr<Hector::Element::ElementBase> clone() const override { return this->get_override( "clone" )(); }
     CLHEP::HepMatrix matrix( float eloss, float mp, int qp ) const override { return this->get_override( "matrix" )( eloss, mp, qp ); }
   };
 }

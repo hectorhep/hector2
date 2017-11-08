@@ -61,17 +61,17 @@ BOOST_PYTHON_MODULE( pyhector )
 
   py::class_<Hector::Parameters, std::shared_ptr<Hector::Parameters>, boost::noncopyable>( "Parameters", py::init<>() )
     .def( "get", &Hector::Parameters::get ).staticmethod( "get" )
-    .def( "beamEnergy", &Hector::Parameters::beamEnergy, py::return_value_policy<py::return_by_value>() )
-    .def( "beamParticlesMass", &Hector::Parameters::beamParticlesMass, py::return_value_policy<py::return_by_value>() )
-    .def( "crossingAngleX", &Hector::Parameters::crossingAngleX, py::return_value_policy<py::return_by_value>() )
-    .def( "crossingAngleY", &Hector::Parameters::crossingAngleX, py::return_value_policy<py::return_by_value>() )
-    .def( "beamParticlesCharge", &Hector::Parameters::beamParticlesCharge, py::return_value_policy<py::return_by_value>() )
-    .def( "loggingThreshold", &Hector::Parameters::loggingThreshold, py::return_value_policy<py::return_by_value>() )
-    .def( "useRelativeEnergy", &Hector::Parameters::useRelativeEnergy, py::return_value_policy<py::return_by_value>() )
-    .def( "correctBeamlineOverlaps", &Hector::Parameters::correctBeamlineOverlaps, py::return_value_policy<py::return_by_value>() )
-    .def( "computeApertureAcceptance", &Hector::Parameters::computeApertureAcceptance, py::return_value_policy<py::return_by_value>() )
-    .def( "enableKickers", &Hector::Parameters::enableKickers, py::return_value_policy<py::return_by_value>() )
-    .def( "enableDipoles", &Hector::Parameters::enableDipoles, py::return_value_policy<py::return_by_value>() )
+    .add_property( "beamEnergy", &Hector::Parameters::beamEnergy, &Hector::Parameters::setBeamEnergy )
+    .add_property( "beamParticlesMass", &Hector::Parameters::beamParticlesMass, &Hector::Parameters::setBeamParticlesMass )
+    .add_property( "crossingAngleX", &Hector::Parameters::crossingAngleX, &Hector::Parameters::setCrossingAngleX )
+    .add_property( "crossingAngleY", &Hector::Parameters::crossingAngleY, &Hector::Parameters::setCrossingAngleY )
+    .add_property( "beamParticlesCharge", &Hector::Parameters::beamParticlesCharge, &Hector::Parameters::setBeamParticlesCharge )
+    .add_property( "loggingThreshold", &Hector::Parameters::loggingThreshold, &Hector::Parameters::setLoggingThreshold )
+    .add_property( "useRelativeEnergy", &Hector::Parameters::useRelativeEnergy, &Hector::Parameters::setUseRelativeEnergy )
+    .add_property( "correctBeamlineOverlaps", &Hector::Parameters::correctBeamlineOverlaps, &Hector::Parameters::setCorrectBeamlineOverlaps )
+    .add_property( "computeApertureAcceptance", &Hector::Parameters::computeApertureAcceptance, &Hector::Parameters::setComputeApertureAcceptance )
+    .add_property( "enableKickers", &Hector::Parameters::enableKickers, &Hector::Parameters::setEnableKickers )
+    .add_property( "enableDipoles", &Hector::Parameters::enableDipoles, &Hector::Parameters::setEnableDipoles )
   ;
 
   //----- BEAM PROPERTIES
@@ -104,9 +104,9 @@ BOOST_PYTHON_MODULE( pyhector )
   //----- BEAMLINE DEFINITION
 
   py::class_<ElementBaseWrap, boost::noncopyable>( "Element", py::no_init )
-//    .def( "matrix", py::pure_virtual( &Hector::Element::ElementBase::matrix ) )
-    //.def( "clone", py::pure_virtual( &Hector::Element::ElementBase::clone ) )
-//    .def( "clone", py::pure_virtual( &Hector::Element::ElementBase::clone ), py::return_value_policy<py::manage_new_object>() )
+    .def( "matrix", py::pure_virtual( &Hector::Element::ElementBase::matrix ) )
+    .def( "clone", py::pure_virtual( &Hector::Element::ElementBase::clone ) )
+    //.def( "clone", py::pure_virtual( &Hector::Element::ElementBase::clone ), py::return_value_policy<py::manage_new_object>() )
     //.def( "clone", py::pure_virtual( &Hector::Element::ElementBase::clone ), py::return_internal_reference<>() )
     .def( "__str__", &Hector::Element::ElementBase::name )
     .add_property( "name", &Hector::Element::ElementBase::name, &Hector::Element::ElementBase::setName )
@@ -123,7 +123,7 @@ BOOST_PYTHON_MODULE( pyhector )
 
   //--- passive elements
   convertElement<Hector::Element::Drift, py::init<std::string,float,float> >( "Drift" );
-  convertElement<Hector::Element::Marker, py::init<std::string,float,float> >( "Marker" );
+/*  convertElement<Hector::Element::Marker, py::init<std::string,float,float> >( "Marker" );
 
   //--- dipoles
   convertElementBase<Hector::Element::Dipole>( "Dipole" );
@@ -139,7 +139,7 @@ BOOST_PYTHON_MODULE( pyhector )
   convertElementBase<Hector::Element::Kicker>( "Kicker" );
   convertElement<Hector::Element::HorizontalKicker, py::init<std::string,float,float,float>, Hector::Element::Kicker>( "HorizontalKicker" );
   convertElement<Hector::Element::VerticalKicker, py::init<std::string,float,float,float>, Hector::Element::Kicker>( "VerticalKicker" );
-
+*/
   py::class_<Hector::Beamline>( "Beamline" )
     .def( "__str__", &dump_beamline )
     .def( "dump", &Hector::Beamline::dump, beamline_dump_overloads() )
