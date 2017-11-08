@@ -56,6 +56,7 @@ target_link_libraries(hector Hector ${EXT_LIBS})
 
 #----- add the tests
 
+enable_testing()
 add_subdirectory(test)
 
 #----- copy the data files
