@@ -33,7 +33,7 @@ namespace Hector
       int beamParticlesCharge() const { return beam_particles_charge_; }
       void setBeamParticlesCharge( int q ) { beam_particles_charge_ = q; }
       ExceptionType loggingThreshold() const { return logging_threshold_; }
-      void loggingThreshold( const ExceptionType& type ) { logging_threshold_ = type; }
+      void setLoggingThreshold( const ExceptionType& type ) { logging_threshold_ = type; }
       /// Do we use the relative energy loss in the path computation through elements?
       bool useRelativeEnergy() const { return use_relative_energy_; }
       void setUseRelativeEnergy( bool rel ) { use_relative_energy_ = rel; }

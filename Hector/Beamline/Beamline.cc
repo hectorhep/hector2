@@ -149,7 +149,7 @@ namespace Hector
   }
 
   void
-  Beamline::dump( std::ostream& os, bool show_drifts )
+  Beamline::dump( std::ostream& os, bool show_drifts ) const
   {
     os << "=============== Beamline dump ===============\n"
        << " interaction point: " << interactionPoint() << "\n"

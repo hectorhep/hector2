@@ -35,7 +35,7 @@ namespace Hector
       void clear();
       /// Print all useful information on a beamline and all its enclosing elements
       /// \param[out] os Output stream where to dump the information
-      void dump( std::ostream& os = std::cout, bool show_drifts = true );
+      void dump( std::ostream& os = std::cout, bool show_drifts = true ) const;
 
       /// Retrieve the position of the interaction point
       CLHEP::Hep3Vector interactionPoint() const { return ip_; }

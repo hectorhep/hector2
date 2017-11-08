@@ -49,6 +49,8 @@ endif()
 install(TARGETS Hector DESTINATION lib)
 install(DIRECTORY ${HECTOR_MODULES} DESTINATION include FILES_MATCHING PATTERN "*.h")
 
+#----- test executable
+
 add_executable(hector test/test_hector.cpp)
 target_link_libraries(hector Hector ${EXT_LIBS})
 

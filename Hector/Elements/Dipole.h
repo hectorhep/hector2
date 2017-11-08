@@ -22,7 +22,7 @@ namespace Hector
     class RectangularDipole : public Dipole
     {
       public:
-        /// Class constructo
+        /// Class constructor
         RectangularDipole( const std::string& name, float spos, float length, float mag_str ) :
           Dipole( aRectangularDipole, name, spos, length, mag_str ) {}
 

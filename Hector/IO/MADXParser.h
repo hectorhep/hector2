@@ -35,6 +35,8 @@ namespace Hector
         /// \param[in] filename Path to the MAD-X Twiss file to parse
         /// \param[in] ip_name Name of the interaction point
         MADX( const char* filename, const char* ip_name, int direction, float max_s=-1. );
+        MADX( const MADX& );
+        MADX( MADX& );
         ~MADX();
 
         /// Retrieve the sequenced beamline parsed from the MAD-X Twiss file
