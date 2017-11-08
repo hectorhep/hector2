@@ -46,6 +46,8 @@ namespace Hector
         /// \param[in] spos s-position of the element in the beamline
         /// \param[in] length Element length (in m)
         ElementBase( const Type& type, const std::string& name="invalid element", float spos=0., float length=0. );
+        /// Copy constructor (moving the associated aperture if any)
+        ElementBase( ElementBase& elem );
         /// Copy constructor (cloning the associated aperture if any)
         ElementBase( const ElementBase& elem );
         virtual ~ElementBase() {}
@@ -132,7 +134,7 @@ namespace Hector
         CLHEP::Hep2Vector relativePosition() const { return rel_pos_; }
 
         /// Set the aperture for this element
-        void setAperture( const Aperture::ApertureBase* apert, bool delete_after=false );
+        void setAperture( const std::shared_ptr<Aperture::ApertureBase> apert );
         /// Aperture
         Aperture::ApertureBase* aperture() const { return aperture_.get(); }
 
@@ -146,7 +148,7 @@ namespace Hector
         /// Element name
         std::string name_;
         /// Pointer to the associated aperture object (if any)
-        std::unique_ptr<Aperture::ApertureBase> aperture_;
+        std::shared_ptr<Aperture::ApertureBase> aperture_;
 
         /// Element longitudinal length
         float length_;

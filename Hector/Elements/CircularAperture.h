@@ -15,9 +15,7 @@ namespace Hector
         CircularAperture( float, const CLHEP::Hep2Vector& pos=CLHEP::Hep2Vector() );
         ~CircularAperture();
 
-        CircularAperture* clone() const { return new CircularAperture( *this ); }
-
-      private:
+        std::shared_ptr<ApertureBase> clone() const override { return std::make_shared<CircularAperture>( *this ); }
     };
   }
 }

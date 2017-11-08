@@ -17,14 +17,21 @@ namespace Hector
       length_( length ), magnetic_strength_( 0. ), s_( spos )
     {}
 
-    ElementBase::ElementBase( const ElementBase& rhs ) :
+    ElementBase::ElementBase( ElementBase& rhs ) :
       type_( rhs.type_ ), name_( rhs.name_ ),
+      aperture_( rhs.aperture_ ),
       length_( rhs.length_ ), magnetic_strength_( rhs.magnetic_strength_ ),
       pos_( rhs.pos_ ), angles_( rhs.angles_ ), s_( rhs.s_ ),
       beta_( rhs.beta_ ), disp_( rhs.disp_ ), rel_pos_( rhs.rel_pos_ )
-    {
-      if ( rhs.aperture_ ) aperture_ = std::unique_ptr<Aperture::ApertureBase>( rhs.aperture_->clone() );
-    }
+    {}
+
+    ElementBase::ElementBase( const ElementBase& rhs ) :
+      type_( rhs.type_ ), name_( rhs.name_ ),
+      aperture_( rhs.aperture_ ),
+      length_( rhs.length_ ), magnetic_strength_( rhs.magnetic_strength_ ),
+      pos_( rhs.pos_ ), angles_( rhs.angles_ ), s_( rhs.s_ ),
+      beta_( rhs.beta_ ), disp_( rhs.disp_ ), rel_pos_( rhs.rel_pos_ )
+    {}
 
     bool
     ElementBase::operator==( const ElementBase& rhs ) const
@@ -35,22 +42,24 @@ namespace Hector
       if ( magnetic_strength_ != rhs.magnetic_strength_ ) return false;
       if ( length_ != rhs.length_ ) return false;
       if ( name_ != rhs.name_ ) return false;
-      if ( aperture_ && rhs.aperture_ && *aperture_ != *rhs.aperture_ ) return false;
+      if ( aperture_ ) {
+        if ( !rhs.aperture_ ) return false;
+        if ( *aperture_ != *rhs.aperture_ ) return false;
+      }
       return true;
     }
 
     void
-    ElementBase::setAperture( const Aperture::ApertureBase* apert, bool delete_after )
+    ElementBase::setAperture( const std::shared_ptr<Aperture::ApertureBase> apert )
     {
-      aperture_ = std::unique_ptr<Aperture::ApertureBase>( apert->clone() );
-      if ( delete_after ) delete apert;
+      aperture_ = apert;
     }
 
     float
     ElementBase::fieldStrength( float eloss, float mp, int qp ) const
     {
       // only act on charged particles
-      if ( qp==0 ) return 0.;
+      if ( qp == 0 ) return 0.;
 
       // reweight the field strength by the particle charge and momentum
       const float eini = Parameters::get()->beamEnergy(),
