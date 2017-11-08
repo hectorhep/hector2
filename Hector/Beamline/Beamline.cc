@@ -78,7 +78,7 @@ namespace Hector
       PrintWarning( Form( "%s (%s) is inside %s (%s)\n\tHector will fix the overlap by splitting the earlier.",
                           elem->name().c_str(), os_elem.str().c_str(), prev_elem->name().c_str(), os_prevelem.str().c_str() ) );
       const float prev_length = prev_elem->length();
-      elements_.push_back( elem->clone() );
+      elements_.push_back( elem );
       already_added = true;
 
       const std::string prev_name = prev_elem->name();
@@ -99,7 +99,7 @@ namespace Hector
     }
 
     if ( !already_added ) {
-      elements_.push_back( elem->clone() );
+      elements_.push_back( elem );
     }
 
     // sort all beamline elements according to their s-position
@@ -216,8 +216,8 @@ namespace Hector
   void
   Beamline::setElements( const Beamline& moth_bl )
   {
-    for ( const auto& elemPtr : moth_bl ) {
-      addElement( elemPtr->clone() );
+    for ( const auto& elem : moth_bl ) {
+      addElement( elem );
     }
   }
 }

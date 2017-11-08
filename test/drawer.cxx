@@ -22,34 +22,34 @@ main( int argc, char* argv[] )
     std::cout << "Usage: " << argv[0] << " [MAD-X output file for beam 1] [MAD-X output file for beam 2]" << std::endl;
     return -1;
   }
-  //Hector::Parameters::get()->computeApertureAcceptance() = false; //FIXME
-  Hector::Parameters::get()->enableDipoles() = false; //FIXME
+  //Hector::Parameters::get()->setComputeApertureAcceptance( false ); //FIXME
+  //Hector::Parameters::get()->setEnableDipoles( false ); //FIXME
 
-  // general plotting parameters
-  const float max_s = ( argc>3 ) ? atof( argv[3] ) : 250.;
+  //--- general plotting parameters
+  const float max_s = ( argc > 3 ) ? atof( argv[3] ) : 250.;
   const unsigned int num_particles = 1000;
 
-  Hector::Parser::MADX parser_beam1( argv[1], "IP5", +1, max_s ),
-                       parser_beam2( argv[2], "IP5", -1, max_s );
+  const Hector::Parser::MADX parser_beam1( argv[1], "IP5", +1, max_s ), parser_beam2( argv[2], "IP5", -1, max_s );
 
-  // look at both the beamlines
-  parser_beam1.beamline()->dump();
+  //--- look at both the beamlines
+  //parser_beam1.beamline()->dump();
+  //parser_beam2.beamline()->dump();
 
   const Hector::Elements rps1 = parser_beam1.romanPots(), rps2 = parser_beam2.romanPots();
   std::cout << "---> beamline 1 has " << rps1.size() << " roman pots!" << std::endl;
-  for ( unsigned short i=0; i<rps1.size(); i++ ) {
+  for ( unsigned short i = 0; i < rps1.size(); ++i ) {
     std::cout << " >> Roman pot " << rps1[i]->name() << " at s=" << rps1[i]->s() << " m" << std::endl;
   }
   std::cout << "---> beamline 2 has " << rps2.size() << " roman pots!" << std::endl;
-  for ( unsigned short i=0; i<rps2.size(); i++ ) {
+  for ( unsigned short i = 0; i < rps2.size(); ++i ) {
     std::cout << " >> Roman pot " << rps2[i]->name() << " at s=" << rps2[i]->s() << " m" << std::endl;
   }
 
-  /*parser_beam1.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( -0.097, 0. ) );
-  parser_beam2.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( +0.097, 0. ) );*/
+  //parser_beam1.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( -0.097, 0. ) );
+  //parser_beam2.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( +0.097, 0. ) );
 
-  Hector::Propagator prop1( parser_beam1.beamline() ),
-                     prop2( parser_beam2.beamline() );
+  //--- define the propagator objects
+  const Hector::Propagator prop1( parser_beam1.beamline() ), prop2( parser_beam2.beamline() );
 
   const double mass = Hector::Parameters::get()->beamParticlesMass(),
                energy = Hector::Parameters::get()->beamEnergy();
@@ -63,8 +63,8 @@ main( int argc, char* argv[] )
   Hector::BeamProducer::gaussianParticleGun gun;
   gun.setXparams( 0., beam_lateral_width_ip );
   gun.setYparams( 0., beam_lateral_width_ip );
-  gun.setTXparams( Hector::Parameters::get()->crossingAngleX()/2., beam_angular_divergence_ip );
-  gun.setTYparams( Hector::Parameters::get()->crossingAngleY()/2., beam_angular_divergence_ip );
+  gun.setTXparams( 0.5 * Hector::Parameters::get()->crossingAngleX(), beam_angular_divergence_ip );
+  gun.setTYparams( 0.5 * Hector::Parameters::get()->crossingAngleY(), beam_angular_divergence_ip );
   //Hector::BeamProducer::TYscanner gun( num_particles, Hector::Parameters::get()->beamEnergy(), -1, 1, max_s );
 
   Hector::Timer tmr;
@@ -72,10 +72,10 @@ main( int argc, char* argv[] )
 
   const unsigned short num_beamline_elems = parser_beam1.beamline()->numElements();
 
-  for ( size_t i=0; i<num_particles; i++ ) {
+  for ( size_t i = 0; i < num_particles; ++i ) {
     unsigned short j;
-    { // beamline 1 propagation
-      gun.setTXparams( -Hector::Parameters::get()->crossingAngleX()/2., beam_angular_divergence_ip );
+    { //----- beamline 1 propagation
+      gun.setTXparams( -0.5 * Hector::Parameters::get()->crossingAngleX(), beam_angular_divergence_ip );
       Hector::Particle p = gun.shoot();
       TGraph gr_x, gr_y;
       try {
@@ -85,10 +85,9 @@ main( int argc, char* argv[] )
         h_timing.Fill( prop_time ); // in us
       } catch ( Hector::Exception& e ) { e.dump(); }
       j = 0;
-      for ( const auto& elemPtr : p ) {
-        Hector::Particle::Position pos( elemPtr );
-        gr_x.SetPoint( j, pos.s(), pos.stateVector().position().x() );
-        gr_y.SetPoint( j, pos.s(), pos.stateVector().position().y() );
+      for ( const auto& pos : p ) {
+        gr_x.SetPoint( j, pos.first, pos.second.position().x() );
+        gr_y.SetPoint( j, pos.first, pos.second.position().y() );
         j++;
       }
       gr_x.SetLineColor( kBlack );
@@ -97,15 +96,14 @@ main( int argc, char* argv[] )
       mg1_y.Add( dynamic_cast<TGraph*>( gr_y.Clone() ) );
     }
     { // beamline 2 propagation
-      gun.setTXparams( -Hector::Parameters::get()->crossingAngleX()/2., beam_angular_divergence_ip );
+      gun.setTXparams( +0.5 * Hector::Parameters::get()->crossingAngleX(), beam_angular_divergence_ip );
       Hector::Particle p = gun.shoot();
       TGraph gr_x, gr_y;
       try { prop2.propagate( p, max_s ); } catch ( Hector::Exception& e ) { e.dump(); }
       j = 0;
-      for ( const auto& elemPtr : p ) {
-        Hector::Particle::Position pos( elemPtr );
-        gr_x.SetPoint( j, pos.s(), pos.stateVector().position().x() );
-        gr_y.SetPoint( j, pos.s(), pos.stateVector().position().y() );
+      for ( const auto& pos : p ) {
+        gr_x.SetPoint( j, pos.first, pos.second.position().x() );
+        gr_y.SetPoint( j, pos.first, pos.second.position().y() );
         j++;
       }
       gr_x.SetLineColor( kRed );

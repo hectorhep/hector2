@@ -18,12 +18,12 @@ main()
               y_min = -0.5, y_max = 0.5;
   const unsigned short num_steps = 500;
 
-  auto aper_rect = std::make_unique<Hector::Aperture::RectangularAperture>( 0.35, 0.25 );
-  auto aper_el = std::make_unique<Hector::Aperture::EllipticAperture>( 0.4, 0.2 );
-  auto aper = std::make_unique<Hector::Aperture::RectEllipticAperture>( 0.35, 0.25, 0.4, 0.2, CLHEP::Hep2Vector( 0.0, 0.0 ) );
-  CLHEP::Hep2Vector limits = aper->limits();
+  Hector::Aperture::RectangularAperture aper_rect( 0.35, 0.25 );
+  Hector::Aperture::EllipticAperture aper_el( 0.4, 0.2 );
+  Hector::Aperture::RectEllipticAperture aper( 0.35, 0.25, 0.4, 0.2, CLHEP::Hep2Vector( 0.0, 0.0 ) );
+  CLHEP::Hep2Vector limits = aper.limits();
   
-  std::ostringstream os; os << "Aperture: " << std::setprecision( 2 ) << aper.get();
+  std::ostringstream os; os << "Aperture: " << std::setprecision( 2 ) << aper;
   std::cout << os.str() << " has limits: " << limits.x() << " / " << limits.y() << std::endl;
 
   TGraph g_inside, g_outside, g_elliptic, g_rect;
@@ -32,9 +32,9 @@ main()
     for ( unsigned short j=0; j<num_steps; j++ ) {
       const float y = y_min + ( y_max-y_min ) * j / ( num_steps-1 );
       const CLHEP::Hep2Vector pos( x, y );
-      if ( aper_rect->contains( pos ) ) g_rect.SetPoint( g_rect.GetN(), x, y );
-      if ( aper_el->contains( pos ) ) g_elliptic.SetPoint( g_elliptic.GetN(), x, y );
-      if ( aper->contains( pos ) ) g_inside.SetPoint( g_inside.GetN(), x, y );
+      if ( aper_rect.contains( pos ) ) g_rect.SetPoint( g_rect.GetN(), x, y );
+      if ( aper_el.contains( pos ) ) g_elliptic.SetPoint( g_elliptic.GetN(), x, y );
+      if ( aper.contains( pos ) ) g_inside.SetPoint( g_inside.GetN(), x, y );
       /*else {
         g_outside.SetPoint( g_outside.GetN(), x, y );
       }*/

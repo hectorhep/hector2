@@ -42,15 +42,15 @@ namespace Hector
         raw_beamline_ = std::unique_ptr<Beamline>( new Beamline( max_s ) );
         if ( max_s < 0. && header_float_.hasKey( "length" ) ) raw_beamline_->setLength( header_float_.get( "length" ) );
         if ( header_float_.hasKey( "energy" ) && Parameters::get()->beamEnergy() != header_float_.get( "energy" ) ) {
-          Parameters::get()->beamEnergy() = header_float_.get( "energy" );
+          Parameters::get()->setBeamEnergy( header_float_.get( "energy" ) );
           PrintWarning( Form( "Beam energy changed to %.1f GeV to match the MAD-X optics parameters", Parameters::get()->beamEnergy() ) );
         }
         if ( header_float_.hasKey( "mass" ) && Parameters::get()->beamParticlesMass() != header_float_.get( "mass" ) ) {
-          Parameters::get()->beamParticlesMass() = header_float_.get( "mass" );
+          Parameters::get()->setBeamParticlesMass( header_float_.get( "mass" ) );
           PrintWarning( Form( "Beam particles mass changed to %.4f GeV to match the MAD-X optics parameters", Parameters::get()->beamParticlesMass() ) );
         }
         if ( header_float_.hasKey( "charge" ) && Parameters::get()->beamParticlesCharge() != static_cast<int>( header_float_.get( "charge" ) ) ) {
-          Parameters::get()->beamParticlesCharge() = static_cast<int>( header_float_.get( "charge" ) );
+          Parameters::get()->setBeamParticlesCharge( static_cast<int>( header_float_.get( "charge" ) ) );
           PrintWarning( Form( "Beam particles charge changed to %d e to match the MAD-X optics parameters", Parameters::get()->beamParticlesCharge() ) );
         }
 
