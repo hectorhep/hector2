@@ -14,10 +14,10 @@ namespace Hector
         /// Class constructor
         Marker( const std::string& name, float spos, float length );
 
-        Marker* clone() const { return new Marker( *this ); }
+        std::shared_ptr<ElementBase> clone() const override { return std::make_shared<Marker>( *this ); }
         /** \note \f$ \mathbf{M} = \mathbf{I}_6 \f$
          */
-        CLHEP::HepMatrix matrix( float, float, int ) const;
+        CLHEP::HepMatrix matrix( float, float, int ) const override;
     };
   }
 }

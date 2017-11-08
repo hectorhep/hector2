@@ -42,15 +42,15 @@ namespace Hector
         raw_beamline_ = std::unique_ptr<Beamline>( new Beamline( max_s ) );
         if ( max_s < 0. && header_float_.hasKey( "length" ) ) raw_beamline_->setLength( header_float_.get( "length" ) );
         if ( header_float_.hasKey( "energy" ) && Parameters::get()->beamEnergy() != header_float_.get( "energy" ) ) {
-          Parameters::get()->beamEnergy() = header_float_.get( "energy" );
+          Parameters::get()->setBeamEnergy( header_float_.get( "energy" ) );
           PrintWarning( Form( "Beam energy changed to %.1f GeV to match the MAD-X optics parameters", Parameters::get()->beamEnergy() ) );
         }
         if ( header_float_.hasKey( "mass" ) && Parameters::get()->beamParticlesMass() != header_float_.get( "mass" ) ) {
-          Parameters::get()->beamParticlesMass() = header_float_.get( "mass" );
+          Parameters::get()->setBeamParticlesMass( header_float_.get( "mass" ) );
           PrintWarning( Form( "Beam particles mass changed to %.4f GeV to match the MAD-X optics parameters", Parameters::get()->beamParticlesMass() ) );
         }
         if ( header_float_.hasKey( "charge" ) && Parameters::get()->beamParticlesCharge() != static_cast<int>( header_float_.get( "charge" ) ) ) {
-          Parameters::get()->beamParticlesCharge() = static_cast<int>( header_float_.get( "charge" ) );
+          Parameters::get()->setBeamParticlesCharge( static_cast<int>( header_float_.get( "charge" ) ) );
           PrintWarning( Form( "Beam particles charge changed to %d e to match the MAD-X optics parameters", Parameters::get()->beamParticlesCharge() ) );
         }
 
@@ -195,15 +195,14 @@ namespace Hector
                                                       trim( values.at( 0 ) ).c_str(), values.size(), elements_fields_.size() ), Fatal );
         }
         try {
-          Element::ElementBase* elem = parseElement( values );
-          if ( elem==0 ) continue;
+          auto elem = parseElement( values );
+          if ( !elem ) continue;
           if ( elem->name()==ip_name_ ) {
             found_interaction_point_ = true;
             s_offset_ = elem->s();
-            raw_beamline_->addElement( elem, true );
+            raw_beamline_->addElement( elem );
             return;
           }
-          delete elem;
         } catch ( Exception& e ) {
           e.dump();
           throw Exception( __PRETTY_FUNCTION__, Form( "Failed to retrieve the interaction point with name=\"%s\"", ip_name_.c_str() ), Fatal );
@@ -222,21 +221,20 @@ namespace Hector
       while ( !in_file_.eof() ) {
         std::getline( in_file_, line );
         std::stringstream str( trim( line ) );
-        if ( str.str().length()==0 ) continue;
+        if ( str.str().empty() ) continue;
 
         // extract the list of properties
         std::string buffer;
         ValuesCollection values;
         while ( str >> buffer ) { values.push_back( buffer ); }
-        Element::ElementBase* elem = 0;
         try {
-          elem = parseElement( values );
+          auto elem = parseElement( values );
           if ( !elem ) continue;
           if ( fabs( elem->s() )>raw_beamline_->maxLength() ) {
             if ( has_next_element_ ) throw Exception( __PRETTY_FUNCTION__, "Finished to parse the beamline", Info );
             has_next_element_ = true;
           }
-          raw_beamline_->addElement( elem, true );
+          raw_beamline_->addElement( elem );
         } catch ( Exception& e ) {
           if ( e.type()==Info ) break; // finished to parse
           e.dump();
@@ -244,13 +242,11 @@ namespace Hector
       }
     }
 
-    Element::ElementBase*
+    std::shared_ptr<Element::ElementBase>
     MADX::parseElement( const ValuesCollection& values )
     {
-      Element::ElementBase* elem = 0;
-
       // first check if the "correct" number of element properties is parsed
-      if ( values.size()!=elements_fields_.size() ) {
+      if ( values.size() != elements_fields_.size() ) {
         throw Exception( __PRETTY_FUNCTION__, Form( "MAD-X output seems corrupted!\n\t"
                                                     "Element %s has %d fields when %d are expected.",
                                                     trim( values.at( 0 ) ).c_str(), values.size(), elements_fields_.size() ), Fatal );
@@ -284,6 +280,8 @@ namespace Hector
         ? findElementTypeByKeyword( lowercase( trim( elem_map_str.get( "keyword" ) ) ) )
         : findElementTypeByName( name );
 
+      std::shared_ptr<Element::ElementBase> elem;
+
       try {
         // create the element
         switch ( elemtype ) {
@@ -292,8 +290,8 @@ namespace Hector
 
             const float k1l = elem_map_floats.get( "k1l" ),
                         mag_str_k = -k1l/length;
-            if ( k1l>0 ) { elem = new Element::HorizontalQuadrupole( name, s, length, mag_str_k ); }
-            else         { elem = new Element::VerticalQuadrupole( name, s, length, mag_str_k ); }
+            if ( k1l>0 ) { elem.reset( new Element::HorizontalQuadrupole( name, s, length, mag_str_k ) ); }
+            else         { elem.reset( new Element::VerticalQuadrupole( name, s, length, mag_str_k ) ); }
           } break;
           case Element::aRectangularDipole: {
             const float k0l = elem_map_floats.get( "k0l" );
@@ -301,7 +299,7 @@ namespace Hector
             if ( k0l==0. ) throw Exception( __PRETTY_FUNCTION__, Form( "Trying to add a rectangular dipole (%s) with k0l=%.2e", name.c_str(), k0l ), JustWarning );
 
             const float mag_strength = dir_*k0l/length;
-            elem = new Element::RectangularDipole( name, s, length, mag_strength );
+            elem.reset( new Element::RectangularDipole( name, s, length, mag_strength ) );
           } break;
           case Element::aSectorDipole: {
             const float k0l = elem_map_floats.get( "k0l" );
@@ -309,26 +307,26 @@ namespace Hector
             if ( k0l==0. ) throw Exception( __PRETTY_FUNCTION__, Form( "Trying to add a sector dipole (%s) with k0l=%.2e", name.c_str(), k0l ), JustWarning );
 
             const float mag_strength = dir_*k0l/length;
-            elem = new Element::SectorDipole( name, s, length, mag_strength );
+            elem.reset( new Element::SectorDipole( name, s, length, mag_strength ) );
           } break;
           case Element::anHorizontalKicker: {
             const float hkick = elem_map_floats.get( "hkick" );
             //if ( hkick==0. ) throw Exception( __PRETTY_FUNCTION__, Form( "Trying to add a horizontal kicker (%s) with kick=%.2e", name.c_str(), hkick ), JustWarning );
             if ( hkick==0. ) return 0;
 
-            elem = new Element::HorizontalKicker( name, s, length, hkick );
+            elem.reset( new Element::HorizontalKicker( name, s, length, hkick ) );
           } break;
           case Element::aVerticalKicker: {
             const float vkick = elem_map_floats.get( "vkick" );
             //if ( vkick==0. ) throw Exception( __PRETTY_FUNCTION__, Form( "Trying to add a vertical kicker (%s) with kick=%.2e", name.c_str(), vkick ), JustWarning );
             if ( vkick==0. ) return 0;
 
-            elem = new Element::VerticalKicker( name, s, length, vkick );
+            elem.reset( new Element::VerticalKicker( name, s, length, vkick ) );
           } break;
           case Element::aRectangularCollimator: {
-            elem = new Element::RectangularCollimator( name, s, length );
+            elem.reset( new Element::RectangularCollimator( name, s, length ) );
           } break;
-          case Element::aMarker: { elem = new Element::Marker( name, s, length ); } break;
+          case Element::aMarker: { elem.reset( new Element::Marker( name, s, length ) ); } break;
           case Element::aMonitor:
           case Element::anInstrument: {
             raw_beamline_->addMarker( Element::Marker( name, s, length ) );
@@ -346,7 +344,7 @@ namespace Hector
         }
 
         // did not successfully create and populate a new element
-        if ( !elem ) return 0;
+        if ( !elem ) return elem;
 
         const CLHEP::Hep2Vector relpos( elem_map_floats.get( "x" ), elem_map_floats.get( "y" ) );
         //const CLHEP::Hep2Vector relpos;
@@ -373,11 +371,11 @@ namespace Hector
                       aper_3 = elem_map_floats.get( "aper_3" ),
                       aper_4 = elem_map_floats.get( "aper_4" ); // MAD-X provides it in m
           switch ( apertype ) {
-            case Aperture::aRectEllipticAperture: { elem->setAperture( new Aperture::RectEllipticAperture( aper_1, aper_2, aper_3, aper_4, relpos ), true ); } break;
-            case Aperture::aRectCircularAperture: { elem->setAperture( new Aperture::RectEllipticAperture( aper_1, aper_2, aper_3, aper_3, relpos ), true ); } break;
-            case Aperture::aCircularAperture:     { elem->setAperture( new Aperture::CircularAperture( aper_1, relpos ), true ); } break;
-            case Aperture::aRectangularAperture:  { elem->setAperture( new Aperture::RectangularAperture( aper_1, aper_2, relpos ), true ); } break;
-            case Aperture::anEllipticAperture:    { elem->setAperture( new Aperture::EllipticAperture( aper_1, aper_2, relpos ), true ); } break;
+            case Aperture::aRectEllipticAperture: { elem->setAperture( std::make_shared<Aperture::RectEllipticAperture>( aper_1, aper_2, aper_3, aper_4, relpos ) ); } break;
+            case Aperture::aRectCircularAperture: { elem->setAperture( std::make_shared<Aperture::RectEllipticAperture>( aper_1, aper_2, aper_3, aper_3, relpos ) ); } break;
+            case Aperture::aCircularAperture:     { elem->setAperture( std::make_shared<Aperture::CircularAperture>( aper_1, relpos ) ); } break;
+            case Aperture::aRectangularAperture:  { elem->setAperture( std::make_shared<Aperture::RectangularAperture>( aper_1, aper_2, relpos ) ); } break;
+            case Aperture::anEllipticAperture:    { elem->setAperture( std::make_shared<Aperture::EllipticAperture>( aper_1, aper_2, relpos ) ); } break;
             default: break;
           }
         }

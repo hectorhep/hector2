@@ -42,19 +42,18 @@ namespace Hector
 
       /// Add a new element in the beamline
       /// \param[in] elem Element to be copied and added to the beamline
-      /// \param[in] delete_after Is the parent element to be deleted afterwards?
-      void addElement( const Element::ElementBase* elem, bool delete_after = false );
+      void addElement( const std::shared_ptr<Element::ElementBase> elem );
       /// Get the full beamline content (vector of elements)
       const Elements& elements() const { return elements_; }
       /// Retrieve a beamline element given its name
       /// \param[in] name Name of the element to be retrieved
-      const Element::ElementBase* getElement( const std::string& name ) const;
+      const std::shared_ptr<Element::ElementBase> getElement( const std::string& name ) const;
       /// Retrieve a beamline element given its name
       /// \param[in] name Name of the element to be retrieved
-      const Element::ElementBase* getElement( const char* name ) const { return getElement( std::string( name ) ); }
+      const std::shared_ptr<Element::ElementBase> getElement( const char* name ) const { return getElement( std::string( name ) ); }
       /// Retrieve a beamline element given its s-position
       /// \param[in] s s-position of the element (computed wrt the interaction point)
-      const Element::ElementBase* getElement( float s ) const;
+      const std::shared_ptr<Element::ElementBase> getElement( float s ) const;
       /// Number of elements in the beamline
       unsigned short numElements() const { return elements_.size(); }
 
@@ -91,7 +90,7 @@ namespace Hector
 
     private:
       /// Copy the list of elements from one beamline to this one
-      void setElements( const Beamline& moth_bl, bool delete_after = false );
+      void setElements( const Beamline& moth_bl );
       /// Beamline maximal length (in m)
       float max_length_;
       /// Position of the interaction point

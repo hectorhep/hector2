@@ -18,7 +18,7 @@ namespace Hector
     markers_( rhs.markers_ )
   {
     clear();
-    if ( copy_elements ) setElements( rhs, false );
+    if ( copy_elements ) setElements( rhs );
   }
 
   Beamline::Beamline( float length, const CLHEP::Hep3Vector& ip ) :
@@ -35,9 +35,6 @@ namespace Hector
   void
   Beamline::clear()
   {
-    for ( auto& elemPtr : elements_ ) {
-      if ( elemPtr ) delete elemPtr;
-    }
     elements_.clear();
   }
 
@@ -48,11 +45,10 @@ namespace Hector
   }
 
   void
-  Beamline::addElement( const Element::ElementBase* elem, bool delete_after )
+  Beamline::addElement( const std::shared_ptr<Element::ElementBase> elem )
   {
     const float new_size = elem->s()+elem->length();
     if ( new_size > max_length_ && max_length_ < 0. ) {
-      if ( delete_after ) delete elem;
       throw Exception( __PRETTY_FUNCTION__, Form( "Element %s is too far away for this beamline!\n"
                                                   "\tBeamline length: %.3f m, this element: %.3f m",
                                                   elem->name().c_str(), max_length_, new_size ), Fatal );
@@ -82,52 +78,49 @@ namespace Hector
       PrintWarning( Form( "%s (%s) is inside %s (%s)\n\tHector will fix the overlap by splitting the earlier.",
                           elem->name().c_str(), os_elem.str().c_str(), prev_elem->name().c_str(), os_prevelem.str().c_str() ) );
       const float prev_length = prev_elem->length();
-      elements_.push_back( elem->clone() );
+      elements_.push_back( elem );
       already_added = true;
 
       const std::string prev_name = prev_elem->name();
       // add an extra sub-part (leftover from the previous element)
-      Element::ElementBase* prev_elem_toedit = prev_elem->clone();
+      auto prev_elem_toedit = prev_elem->clone();
       prev_elem_toedit->setLength( elem->s()-prev_elem->s() );
-      delete prev_elem;
+      prev_elem.reset( prev_elem_toedit.get() );
       // check if one needs to add an extra piece to the previous element
       if ( elem->s()+elem->length() < prev_elem->s()+prev_elem->length() ) {
         prev_elem_toedit->setName( Form( "%s.part1", prev_name.c_str() ) );
-        Element::ElementBase* next_elem = prev_elem->clone();
+        auto next_elem = prev_elem->clone();
         next_elem->setName( Form( "%s.part2", prev_name.c_str() ) );
         next_elem->setS( elem->s()+elem->length() );
         next_elem->setLength( prev_length-elem->length() );
         elements_.push_back( next_elem );
       }
-      elements_.push_back( prev_elem_toedit );
       break;
     }
 
     if ( !already_added ) {
-      elements_.push_back( elem->clone() );
+      elements_.push_back( elem );
     }
-    // clean the memory if needed
-    if ( delete_after ) delete elem;
 
     // sort all beamline elements according to their s-position
     std::sort( elements_.begin(), elements_.end(), Element::ElementsSorter() );
   }
 
-  const Element::ElementBase*
+  const std::shared_ptr<Element::ElementBase>
   Beamline::getElement( const std::string& name ) const
   {
     for ( size_t i = 0; i < elements_.size(); ++i ) {
-      const Element::ElementBase* elem = elements_.at( i );
+      const auto elem = elements_.at( i );
       if ( elem->name().find( name ) != std::string::npos ) return elem;
     }
     return 0;
   }
 
-  const Element::ElementBase*
+  const std::shared_ptr<Element::ElementBase>
   Beamline::getElement( float s ) const
   {
     for ( size_t i = 0; i < elements_.size(); ++i ) {
-      const Element::ElementBase* elem = elements_.at( i );
+      const auto elem = elements_.at( i );
       if ( elem->s() > s ) continue;
       if ( elem->s() <= s && elem->s()+elem->length() >= s ) return elem;
     }
@@ -140,7 +133,7 @@ namespace Hector
     CLHEP::HepMatrix out = CLHEP::HepDiagMatrix( 6, 1 );
 
     for ( size_t i = 0; i < elements_.size(); ++i ) {
-      const Element::ElementBase* elem = elements_.at( i );
+      const auto elem = elements_.at( i );
       out = out * elem->matrix( eloss, mp, qp );
     }
 
@@ -151,7 +144,7 @@ namespace Hector
   Beamline::length() const
   {
     if ( elements_.empty() ) return 0.;
-    const Element::ElementBase* elem = *elements_.rbegin();
+    const auto elem = *elements_.rbegin();
     return ( elem->s() + elem->length() );
   }
 
@@ -203,7 +196,7 @@ namespace Hector
       const float drift_length = elemPtr->s()-pos;
       if ( drift_length > 0. ) {
         try {
-          tmp->addElement( new Element::Drift( Form( "drift:%.4E", pos ).c_str(), pos, drift_length ), true );
+          tmp->addElement( std::make_shared<Element::Drift>( Form( "drift:%.4E", pos ).c_str(), pos, drift_length ) );
         } catch ( Exception& e ) { e.dump(); }
       }
       try { tmp->addElement( elemPtr ); } catch ( Exception& e ) { e.dump(); }
@@ -213,7 +206,7 @@ namespace Hector
     const float drift_length = tmp->length()-pos;
     if ( drift_length > 0 ) {
       try {
-        tmp->addElement( new Element::Drift( Form( "drift:%.4E", pos ).c_str(), pos, drift_length ), true );
+        tmp->addElement( std::make_shared<Element::Drift>( Form( "drift:%.4E", pos ).c_str(), pos, drift_length ) );
       } catch ( Exception& e ) { e.dump(); }
     }
 
@@ -221,10 +214,10 @@ namespace Hector
   }
 
   void
-  Beamline::setElements( const Beamline& moth_bl, bool delete_after )
+  Beamline::setElements( const Beamline& moth_bl )
   {
-    for ( const auto& elemPtr : moth_bl ) {
-      addElement( elemPtr->clone(), delete_after );
+    for ( const auto& elem : moth_bl ) {
+      addElement( elem );
     }
   }
 }

@@ -8,7 +8,7 @@ main( int argc, char* argv[] )
   
   /*Hector::Element::Marker marker( "test" );
   line.addElement( &marker );*/
-  line.addElement( new Hector::Element::Marker( "test", 0., 0. ), true );
+  line.addElement( std::make_shared<Hector::Element::Marker>( "test", 0., 0. ) );
 
   line.dump();
 

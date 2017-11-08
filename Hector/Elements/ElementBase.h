@@ -46,12 +46,14 @@ namespace Hector
         /// \param[in] spos s-position of the element in the beamline
         /// \param[in] length Element length (in m)
         ElementBase( const Type& type, const std::string& name="invalid element", float spos=0., float length=0. );
+        /// Copy constructor (moving the associated aperture if any)
+        ElementBase( ElementBase& elem );
         /// Copy constructor (cloning the associated aperture if any)
         ElementBase( const ElementBase& elem );
         virtual ~ElementBase() {}
 
         /// Return a pointer to a clone of the current element
-        virtual ElementBase* clone() const = 0;
+        virtual std::shared_ptr<ElementBase> clone() const = 0;
         /// Check if two elements (and their properties) are identical
         bool operator==( const ElementBase& ) const;
         /// Check if two elements (and their properties) are different
@@ -134,7 +136,7 @@ namespace Hector
         CLHEP::Hep2Vector relativePosition() const { return rel_pos_; }
 
         /// Set the aperture for this element
-        void setAperture( const Aperture::ApertureBase* apert, bool delete_after=false );
+        void setAperture( const std::shared_ptr<Aperture::ApertureBase> apert );
         /// Aperture
         Aperture::ApertureBase* aperture() const { return aperture_.get(); }
 
@@ -148,7 +150,7 @@ namespace Hector
         /// Element name
         std::string name_;
         /// Pointer to the associated aperture object (if any)
-        std::unique_ptr<Aperture::ApertureBase> aperture_;
+        std::shared_ptr<Aperture::ApertureBase> aperture_;
 
         /// Element longitudinal length
         float length_;
@@ -178,16 +180,16 @@ namespace Hector
         return ( &lhs < &rhs );
       }
       /// Compare the pointers to two elements
-      inline bool operator()( const ElementBase* lhs, const ElementBase* rhs ) const {
-        if ( lhs->s()<rhs->s() ) return true;
-        if ( lhs->s()>rhs->s() ) return false;
-        if ( lhs->s()+lhs->length()<rhs->s()+rhs->length() ) return true;
+      inline bool operator()( const std::shared_ptr<ElementBase> lhs, const std::shared_ptr<ElementBase> rhs ) const {
+        if ( lhs->s() < rhs->s() ) return true;
+        if ( lhs->s() > rhs->s() ) return false;
+        if ( lhs->s()+lhs->length() < rhs->s()+rhs->length() ) return true;
         return false;
       }
     };
   }
   /// List of elements
-  typedef std::vector<Element::ElementBase*> Elements;
+  typedef std::vector<std::shared_ptr<Element::ElementBase> > Elements;
 }
 
 #endif

@@ -68,7 +68,7 @@ namespace Hector
         void parseElementsFields();
         void parseElements();
         void findInteractionPoint();
-        Element::ElementBase* parseElement( const ValuesCollection& );
+        std::shared_ptr<Element::ElementBase> parseElement( const ValuesCollection& );
 
         ParametersMap::Ordered<std::string> header_str_;
         ParametersMap::Ordered<float> header_float_;

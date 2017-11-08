@@ -16,8 +16,8 @@ namespace Hector
         /// Class constructor
         Drift( const std::string&, const Type& type, float spos=0., float length=0. );
 
-        Drift* clone() const { return new Drift( *this ); }
-        CLHEP::HepMatrix matrix( float eloss=-1., float mp=-1., int qp=0 ) const;
+        std::shared_ptr<ElementBase> clone() const override { return std::make_shared<Drift>( *this ); }
+        CLHEP::HepMatrix matrix( float eloss=-1., float mp=-1., int qp=0 ) const override;
         /// Build a transfer matrix for a given drift length
         /// \param[in] length drift length
         /** \note \f$

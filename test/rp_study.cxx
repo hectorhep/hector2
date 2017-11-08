@@ -22,10 +22,10 @@ main( int argc, char* argv[] )
   //parser.printInfo();
   parser.beamline()->dump();
   //parser.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( -0.097, 0. ) );
-  //Hector::Parameters::get()->useRelativeEnergy() = true;
-  //Hector::Parameters::get()->enableKickers() = true;
-  //Hector::Parameters::get()->enableDipoles() = false; //FIXME
-  Hector::Parameters::get()->computeApertureAcceptance() = false; //FIXME
+  //Hector::Parameters::get()->setUseRelativeEnergy( true );
+  //Hector::Parameters::get()->setEnableKickers( true );
+  //Hector::Parameters::get()->setEnableDipoles( false ); //FIXME
+  Hector::Parameters::get()->setComputeApertureAcceptance( false ); //FIXME
 
   Hector::Propagator prop( parser.beamline() );
 
@@ -41,7 +41,7 @@ main( int argc, char* argv[] )
     std::cout << ">> " << h_rp[i]->name() << " at s = " << h_rp[i]->s() << " m" << std::endl;
   }
 
-  const Hector::Element::ElementBase* rp = parser.beamline()->getElement( rp_names["56-210-fr-hr"] );
+  const auto rp = parser.beamline()->getElement( rp_names["56-210-fr-hr"] );
   if ( !rp ) {
     std::cerr << "Failed to retrieve Roman pot " << rp_names["56-210-fr-hr"] << " in beamline!" << std::endl;
     return -1;
