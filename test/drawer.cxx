@@ -1,5 +1,5 @@
 #include "Hector/Beamline/Beamline.h"
-#include "Hector/IO/MADXParser.h"
+#include "Hector/IO/MADXHandler.h"
 #include "Hector/Core/Timer.h"
 #include "Hector/Propagator/BeamProducer.h"
 #include "Hector/Propagator/Propagator.h"
@@ -29,7 +29,7 @@ main( int argc, char* argv[] )
   const float max_s = ( argc > 3 ) ? atof( argv[3] ) : 250.;
   const unsigned int num_particles = 1000;
 
-  const Hector::Parser::MADX parser_beam1( argv[1], "IP5", +1, max_s ), parser_beam2( argv[2], "IP5", -1, max_s );
+  const Hector::IO::MADX parser_beam1( argv[1], "IP5", +1, max_s ), parser_beam2( argv[2], "IP5", -1, max_s );
 
   //--- look at both the beamlines
   //parser_beam1.beamline()->dump();

@@ -5,7 +5,7 @@
 int main( int argc, char* argv[] )
 {
   const char* twiss_file = ( argc>1 ) ? argv[1] : "data/twiss/twiss_coll0p4m_ir5b1_6p5tev.tfs";
-  Hector::Parser::MADX parser( twiss_file, "IP5", +1, 250. );
+  Hector::IO::MADX parser( twiss_file, "IP5", +1, 250. );
   parser.printInfo();
   parser.beamline()->dump();
 

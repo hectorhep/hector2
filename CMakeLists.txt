@@ -15,6 +15,14 @@ set(HECTOR_SOURCE_DIR ${PROJECT_SOURCE_DIR}/Hector)
 find_package(CLHEP REQUIRED)
 set(HECTOR_DEPENDENCIES CLHEP)
 
+#----- Pythia 8 for physics samples generation
+
+find_package(Pythia8 QUIET)
+
+if(DEFINED PYTHIA8_FOUND)
+  list(APPEND HECTOR_DEPENDENCIES ${PYTHIA8_LIBRARY})
+endif()
+
 #----- build all the intermediate objects
 
 include_directories(${PROJECT_SOURCE_DIR})
@@ -37,14 +45,6 @@ set_target_properties(Hector PROPERTIES LINKER_LANGUAGE CXX)
 
 install(TARGETS Hector DESTINATION lib)
 install(DIRECTORY ${HECTOR_MODULES} DESTINATION include FILES_MATCHING PATTERN "*.h")
-
-#----- Pythia 8 for physics samples generation
-
-find_package(Pythia8 QUIET)
-
-if(DEFINED PYTHIA8_FOUND)
-  list(APPEND HECTOR_DEPENDENCIES ${PYTHIA8_LIBRARY})
-endif()
 
 #----- test executable
 

@@ -1,5 +1,5 @@
 #include "Hector/IO/Pythia8Generator.h"
-#include "Hector/IO/MADXParser.h"
+#include "Hector/IO/MADXHandler.h"
 #include "Hector/Propagator/Propagator.h"
 
 #include "Canvas.h"
@@ -12,9 +12,9 @@ int main( int argc, char* argv[] )
     std::cerr << "Usage: " << argv[0] << " <mad-x twiss file>" << std::endl;
     return -1;
   }
-  Hector::Parser::MADX madx( argv[1], "IP5", 1, 250. );
+  Hector::IO::MADX madx( argv[1], "IP5", 1, 250. );
   Hector::Propagator prop( madx.beamline() );
-  const Hector::Elements rps = madx.romanPots( Hector::Parser::MADX::horizontalPots );
+  const Hector::Elements rps = madx.romanPots( Hector::IO::MADX::horizontalPots );
   for ( const auto& rp : rps ) {
     std::cout << "--------> " << rp->name() << " at " << rp->s() << std::endl;
   }

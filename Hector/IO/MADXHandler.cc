@@ -13,7 +13,7 @@
 
 namespace Hector
 {
-  namespace Parser
+  namespace IO
   {
     std::regex MADX::rgx_typ_( "^\\%[0-9]{0,}(s|le)$" );
     std::regex MADX::rgx_hdr_( "^\\@ (\\w+) +\\%([0-9]+s|le) +\\\"?([^\"\\n]+)" );
@@ -435,13 +435,13 @@ namespace Hector
     }
 
     std::ostream&
-    operator<<( std::ostream& os, const Parser::MADX::ValueType& type )
+    operator<<( std::ostream& os, const IO::MADX::ValueType& type )
     {
       switch ( type ) {
-        case Parser::MADX::Unknown: os << "unknown"; break;
-        case Parser::MADX::String:  os <<  "string"; break;
-        case Parser::MADX::Float:   os <<   "float"; break;
-        case Parser::MADX::Integer: os << "integer"; break;
+        case IO::MADX::Unknown: os << "unknown"; break;
+        case IO::MADX::String:  os <<  "string"; break;
+        case IO::MADX::Float:   os <<   "float"; break;
+        case IO::MADX::Integer: os << "integer"; break;
       }
       return os;
     }

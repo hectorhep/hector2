@@ -3,7 +3,7 @@
 
 namespace Hector
 {
-  namespace Parser
+  namespace IO
   {
     LHE::LHE( const char* filename ) :
       reader_( filename )

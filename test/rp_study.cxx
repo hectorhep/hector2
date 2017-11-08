@@ -1,4 +1,4 @@
-#include "Hector/IO/MADXParser.h"
+#include "Hector/IO/MADXHandler.h"
 #include "Hector/Propagator/Propagator.h"
 //#include "Hector/Propagator/BeamProducer.h"
 
@@ -18,7 +18,7 @@ main( int argc, char* argv[] )
   }
   const char* ip = ( argc>2 ) ? argv[2] : "IP5";
 
-  Hector::Parser::MADX parser( argv[1], ip, +1, 250. );
+  Hector::IO::MADX parser( argv[1], ip, +1, 250. );
   //parser.printInfo();
   parser.beamline()->dump();
   //parser.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( -0.097, 0. ) );
@@ -36,7 +36,7 @@ main( int argc, char* argv[] )
   rp_names.insert( std::make_pair( "56-220-fr-hr", "XRPH.B6R5.B1" ) );
 
   std::cout << "list of horizontal roman pots: " << std::endl;
-  const Hector::Elements h_rp = parser.romanPots( Hector::Parser::MADX::horizontalPots );
+  const Hector::Elements h_rp = parser.romanPots( Hector::IO::MADX::horizontalPots );
   for ( unsigned short i=0; i<h_rp.size(); i++ ) {
     std::cout << ">> " << h_rp[i]->name() << " at s = " << h_rp[i]->s() << " m" << std::endl;
   }

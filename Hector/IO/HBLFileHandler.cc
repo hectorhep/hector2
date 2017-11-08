@@ -5,7 +5,7 @@
 
 namespace Hector
 {
-  namespace Parser
+  namespace IO
   {
     HBL::HBL( const char* filename )
     {

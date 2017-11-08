@@ -1,5 +1,5 @@
 #include "Hector/Beamline/Beamline.h"
-#include "Hector/IO/MADXParser.h"
+#include "Hector/IO/MADXHandler.h"
 #include "Hector/Propagator/Propagator.h"
 #include "Hector/Propagator/BeamProducer.h"
 
@@ -21,7 +21,7 @@ main( int argc, char* argv[] )
   const float s_pos = atof( argv[2] );
   const char* ip = ( argc>3 ) ? argv[3] : "IP5";
 
-  Hector::Parser::MADX parser( argv[1], ip, +1, s_pos );
+  Hector::IO::MADX parser( argv[1], ip, +1, s_pos );
   parser.printInfo();
 
   const CLHEP::Hep2Vector offset( -0.097, 0. );

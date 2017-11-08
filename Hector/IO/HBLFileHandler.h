@@ -10,23 +10,25 @@
 
 namespace Hector
 {
-  struct HBLHeader
-  {
-    unsigned long long magic;
-    unsigned long version;
-  };
-  struct HBLElement
-  {
-    Element::Type elem_type;
-    std::string elem_name;
-    double mag_str;
-    Aperture::Type aper_type;
-    std::array<double,4> aper_params;
-  };
-  namespace Parser
+  namespace IO
   {
     class HBL
     {
+      public:
+        struct HBLHeader
+        {
+        unsigned long long magic;
+        unsigned long version;
+        };
+        struct HBLElement
+        {
+          Element::Type elem_type;
+          std::string elem_name;
+          double mag_str;
+          Aperture::Type aper_type;
+          std::array<double,4> aper_params;
+        };
+
       public:
         HBL( const char* );
         ~HBL() {}

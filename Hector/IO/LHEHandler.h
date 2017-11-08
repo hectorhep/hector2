@@ -7,8 +7,7 @@
 
 namespace Hector
 {
-  /// List of all useful parsers
-  namespace Parser
+  namespace IO
   {
     /// Parsing tool for LHEF files to use as beams of primary particles
     class LHE

@@ -15,19 +15,11 @@ using std::ostream;
 
 namespace Hector
 {
-  namespace Parser
+  namespace IO
   {
     /// Parsing tool for MAD-X output stp files
     class MADX
     {
-      public:
-        /// A collection of values to be propagated through this parser
-        typedef std::vector<std::string> ValuesCollection;
-        /// Type of content stored in the parameters map
-        enum ValueType { Unknown = -1, String, Float, Integer };
-        /// Human-readable printout of a value type
-        friend std::ostream& operator<<( std::ostream&, const ValueType& );
-
       public:
         /// Class constructor
         /// \param[in] max_s Maximal s-coordinate at which the Twiss file must be parsed
@@ -63,6 +55,13 @@ namespace Hector
         void printInfo() const;
 
       private:
+        /// A collection of values to be propagated through this parser
+        typedef std::vector<std::string> ValuesCollection;
+        /// Type of content stored in the parameters map
+        enum ValueType { Unknown = -1, String, Float, Integer };
+        /// Human-readable printout of a value type
+        friend std::ostream& operator<<( std::ostream&, const ValueType& );
+
         void parseHeader();
         void parseElementsFields();
         void parseElements();
