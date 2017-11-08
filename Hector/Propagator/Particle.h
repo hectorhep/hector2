@@ -27,7 +27,7 @@ namespace Hector
           /// Construct a couple between a longitudinal position and a state vector
           Position( double s, const StateVector& sv ) : std::pair<double,StateVector>( s, sv ) {}
           /// Longitudinal position
-          const double s() const { return this->first; }
+          double s() const { return this->first; }
           /// State vector components
           StateVector& stateVector() { return this->second; }
           /// State vector components
@@ -44,7 +44,7 @@ namespace Hector
         charge_ = charge;
       }
       /// Construct a particle according to its first state vector/s-position couple
-      Particle( const StateVector&, double s0=0. );
+      Particle( const StateVector&, double s0 = 0. );
       ~Particle();
 
       /// Build a Particle object from a mass and electric charge
@@ -53,9 +53,9 @@ namespace Hector
       /// Clear all state vectors (but the initial one)
       void clear() { positions_.erase( ++begin(), end() ); }
       /// Add a new s-position/state vector couple to the particle's trajectory
-      void addPosition( double s, const StateVector& vec, bool stopped=false ) { addPosition( Position( s, vec ), stopped ); }
+      void addPosition( double s, const StateVector& vec, bool stopped = false ) { addPosition( Position( s, vec ), stopped ); }
       /// Add a new position (s-position/state vector couple) to the particle's trajectory
-      void addPosition( const Position& pos, bool stopped=false );
+      void addPosition( const Position& pos, bool stopped = false );
 
       /// Set the electric charge (in e)
       void setCharge( int ch ) { charge_ = ch; }
@@ -71,12 +71,12 @@ namespace Hector
       double mass() const { return firstStateVector().m(); }
 
       /// Print all useful information about a particle
-      void dump( std::ostream& os=std::cout ) const;
+      void dump( std::ostream& os = std::cout ) const;
 
       /// First position associated to the particle along s
-      const double firstS() const { return positions_.begin()->first; }
+      double firstS() const { return positions_.begin()->first; }
       /// Last position associated to the particle along s
-      const double lastS() const { return positions_.rbegin()->first; }
+      double lastS() const { return positions_.rbegin()->first; }
 
       /// First state vector associated to the particle
       StateVector& firstStateVector() { return positions_.begin()->second; }
@@ -104,7 +104,7 @@ namespace Hector
       const CLHEP::HepLorentzVector momentumAt( double s ) const { return stateVectorAt( s ).momentum(); }
 
       /// Let the particle emit a photon
-      void emitGamma( double e_gamma, double q2, double phi_min=0., double phi_max=2*M_PI );
+      void emitGamma( double e_gamma, double q2, double phi_min = 0., double phi_max = 2.*M_PI );
 
     private:
       int charge_;

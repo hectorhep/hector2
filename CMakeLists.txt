@@ -7,7 +7,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/cmake)
 
 #----- define all individual modules to be built beforehand
 
-set(HECTOR_MODULES IO Core Elements Beamline Propagator)
+set(HECTOR_MODULES Core IO Elements Beamline Propagator)
 set(HECTOR_SOURCE_DIR ${PROJECT_SOURCE_DIR}/Hector)
 
 #----- enable fortran (for Pythia/Herwig/...)

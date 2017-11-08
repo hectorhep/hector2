@@ -63,7 +63,7 @@ namespace Hector
                             out = sv_after.position();
 
     const double drift_length = upper_it->first-lower_it->first;
-    if ( drift_length==0 ) {
+    if ( drift_length == 0 ) {
       throw Exception( __PRETTY_FUNCTION__, Form( "No luck in choosing position (s=%.3f m)\n\t"
                                                   "Interpolation is impossible!", s ), JustWarning );
     }
@@ -93,7 +93,7 @@ namespace Hector
     const double pos_ini = firstS();
     StateVector sv_ini = firstStateVector();
 
-    if ( q2_gamma==0. ) {
+    if ( q2_gamma == 0. ) {
       PrintInfo( "Virtuality is null: only energy has changed" );
       sv_ini.setEnergy( sv_ini.energy()-e_gamma );
       return;
@@ -119,7 +119,7 @@ namespace Hector
       is_physical = false;
     }*///FIXME
 
-    const double q2 = ( q2_gamma>q2max ) ? q2max : ( q2_gamma<q2min ) ? q2min : q2_gamma;
+    const double q2 = ( q2_gamma > q2max ) ? q2max : ( q2_gamma<q2min ) ? q2min : q2_gamma;
 
     bool has_emitted = false;
     if ( has_emitted ) {
