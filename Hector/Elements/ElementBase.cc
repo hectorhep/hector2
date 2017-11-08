@@ -1,46 +1,65 @@
 #include "ElementBase.h"
 
+#include "Core/Utils.h"
+#include "Core/Parameters.h"
+
+#include <CLHEP/Matrix/DiagMatrix.h>
+#include <CLHEP/Vector/TwoVector.h>
+
+#include <sstream>
+
 namespace Hector
 {
   namespace Element
   {
     ElementBase::ElementBase( const Type& type, const std::string& name, float spos, float length ) :
-      type_( type ), name_( name ), aperture_( 0 ),
+      type_( type ), name_( name ),
       length_( length ), magnetic_strength_( 0. ), s_( spos )
     {}
 
-    ElementBase::ElementBase( const ElementBase& rhs ) :
-      type_( rhs.type_ ), name_( rhs.name_ ), aperture_( 0 ),
+    ElementBase::ElementBase( ElementBase& rhs ) :
+      type_( rhs.type_ ), name_( rhs.name_ ),
+      aperture_( rhs.aperture_ ),
       length_( rhs.length_ ), magnetic_strength_( rhs.magnetic_strength_ ),
       pos_( rhs.pos_ ), angles_( rhs.angles_ ), s_( rhs.s_ ),
       beta_( rhs.beta_ ), disp_( rhs.disp_ ), rel_pos_( rhs.rel_pos_ )
-    {
-      if ( rhs.aperture_ ) aperture_ = rhs.aperture_->clone();
-    }
+    {}
 
-    ElementBase::~ElementBase()
-    {
-      if ( aperture_!=0 ) delete aperture_;
-    }
+    ElementBase::ElementBase( const ElementBase& rhs ) :
+      type_( rhs.type_ ), name_( rhs.name_ ),
+      aperture_( rhs.aperture_ ),
+      length_( rhs.length_ ), magnetic_strength_( rhs.magnetic_strength_ ),
+      pos_( rhs.pos_ ), angles_( rhs.angles_ ), s_( rhs.s_ ),
+      beta_( rhs.beta_ ), disp_( rhs.disp_ ), rel_pos_( rhs.rel_pos_ )
+    {}
 
     bool
     ElementBase::operator==( const ElementBase& rhs ) const
     {
-      if ( type_!=rhs.type_ ) return false;
-      if ( s_!=rhs.s_ ) return false;
-      if ( pos_!=rhs.pos_ ) return false;
-      if ( magnetic_strength_!=rhs.magnetic_strength_ ) return false;
-      if ( length_!=rhs.length_ ) return false;
-      if ( name_!=rhs.name_ ) return false;
-      if ( aperture_ and rhs.aperture_ and *aperture_!=*rhs.aperture_ ) return false;
+      if ( type_ != rhs.type_ ) return false;
+      if ( s_ != rhs.s_ ) return false;
+      if ( pos_ != rhs.pos_ ) return false;
+      if ( magnetic_strength_ != rhs.magnetic_strength_ ) return false;
+      if ( length_ != rhs.length_ ) return false;
+      if ( name_ != rhs.name_ ) return false;
+      if ( aperture_ ) {
+        if ( !rhs.aperture_ ) return false;
+        if ( *aperture_ != *rhs.aperture_ ) return false;
+      }
       return true;
+    }
+
+    void
+    ElementBase::setAperture( const std::shared_ptr<Aperture::ApertureBase> apert )
+    {
+      aperture_ = apert;
     }
 
     float
     ElementBase::fieldStrength( float eloss, float mp, int qp ) const
     {
       // only act on charged particles
-      if ( qp==0 ) return 0.;
+      if ( qp == 0 ) return 0.;
 
       // reweight the field strength by the particle charge and momentum
       const float eini = Parameters::get()->beamEnergy(),

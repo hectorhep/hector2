@@ -7,26 +7,25 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/cmake)
 
 #----- define all individual modules to be built beforehand
 
-set(MODULES Core IO Elements Beamline Propagator)
+set(HECTOR_MODULES Core IO Elements Beamline Propagator)
 set(HECTOR_SOURCE_DIR ${PROJECT_SOURCE_DIR}/Hector)
 
 #----- enable fortran (for Pythia/Herwig/...)
 
 enable_language(Fortran OPTIONAL)
 
-#----- include external hadronisers/...
+#----- include external dependencies
 
 find_package(CLHEP REQUIRED)
-#add_subdirectory(external)
-find_package(PythonLibs 2.7 REQUIRED)
 set(EXT_LIBS CLHEP)
 
 find_package(Pythia8)
 
 #----- build all the intermediate objects
 
+include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${HECTOR_SOURCE_DIR})
-foreach(_module ${MODULES})
+foreach(_module ${HECTOR_MODULES})
   include_directories(${HECTOR_SOURCE_DIR}/${_module})
   add_subdirectory(Hector/${_module})
 endforeach()
@@ -43,12 +42,12 @@ add_library(Hector SHARED $<TARGET_OBJECTS:HectorCore>
                           $<TARGET_OBJECTS:HectorPropagator>)
 set_target_properties(Hector PROPERTIES LINKER_LANGUAGE CXX)
 
-install(TARGETS Hector DESTINATION lib)
-install(DIRECTORY ${MODULES} DESTINATION include FILES_MATCHING PATTERN "*.h")
-
 if(DEFINED PYTHIA8_FOUND)
   list(APPEND EXT_LIBS ${PYTHIA8_LIBRARY})
 endif()
+
+install(TARGETS Hector DESTINATION lib)
+install(DIRECTORY ${HECTOR_MODULES} DESTINATION include FILES_MATCHING PATTERN "*.h")
 
 #----- test executable
 
@@ -58,6 +57,7 @@ target_link_libraries(hector Hector ${EXT_LIBS})
 #----- python wrapping
 
 include(UseCython)
+find_package(PythonLibs 2.7 REQUIRED)
 add_custom_target(ReplicatePythonSourceTree ALL ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ReplicatePythonSourceTree.cmake ${CMAKE_CURRENT_BINARY_DIR} WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 set(pyx_files "")
 foreach(_mod ${MODULES})
@@ -70,6 +70,7 @@ target_link_libraries(pyhector ${EXT_LIBS} Hector)
 
 #----- add the tests
 
+enable_testing()
 add_subdirectory(test)
 
 #----- copy the data files

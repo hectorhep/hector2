@@ -1,14 +1,13 @@
 #ifndef Hector_IO_Pythia8Generator_h
 #define Hector_IO_Pythia8Generator_h
 
-#include "Core/Parameters.h"
-#include "Core/Utils.h"
 #include "Propagator/Particle.h"
 
 #include <Pythia8/Pythia.h>
-#include <Pythia8/Event.h>
 
 #include <memory>
+#include <vector>
+#include <string>
 
 namespace Hector
 {
@@ -21,7 +20,7 @@ namespace Hector
   {
     public:
       /// Create and configure a `Pythia8` instance
-      Pythia8Generator();
+      Pythia8Generator( const std::vector<std::string>& );
       /// Create and configure a `Pythia8` instance
       /// \param[in] xml_input Input configuration file
       Pythia8Generator( const char* xml_input );
@@ -35,9 +34,6 @@ namespace Hector
       Particle diffractiveProton();
 
     private:
-      void initialise();
-      void switchSingleDiffraction( bool onoff ) { pythia_->settings.mode( "SoftQCD:singleDiffractive", onoff ); }
-      void switchDoubleDiffraction( bool onoff ) { pythia_->settings.mode( "SoftQCD:doubleDiffractive", onoff ); }
       std::unique_ptr<Pythia8::Pythia> pythia_;
   };
 }

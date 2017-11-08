@@ -41,7 +41,7 @@ main( int argc, char* argv[] )
     std::cout << ">> " << h_rp[i]->name() << " at s = " << h_rp[i]->s() << " m" << std::endl;
   }
 
-  const Hector::Element::ElementBase* rp = parser.beamline()->getElement( rp_names["56-210-fr-hr"] );
+  const auto rp = parser.beamline()->getElement( rp_names["56-210-fr-hr"] );
   if ( !rp ) {
     std::cerr << "Failed to retrieve Roman pot " << rp_names["56-210-fr-hr"] << " in beamline!" << std::endl;
     return -1;
@@ -69,7 +69,7 @@ main( int argc, char* argv[] )
   const float xi_values[] = { 0., 0.05, 0.1, 0.15 };
   const unsigned short num_values = sizeof( xi_values )/sizeof( xi_values[0] );
   for ( unsigned short i=0; i<num_values; i++ ) {
-    Hector::Particle p = Hector::Particle::fromMassCharge( Hector::Parameters::get()->beamParticlesMass, +1 );
+    Hector::Particle p = Hector::Particle::fromMassCharge( Hector::Parameters::get()->beamParticlesMass(), +1 );
     p.firstStateVector().setPosition( 0., y0_pos );
     p.firstStateVector().setXi( xi_values[i] );
     std::cout << p.firstStateVector().xi() << "\t" << p.firstStateVector().energy() << std::endl;

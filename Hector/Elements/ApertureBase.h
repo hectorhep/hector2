@@ -1,9 +1,11 @@
 #ifndef Hector_Elements_Aperture_h
 #define Hector_Elements_Aperture_h
 
-#include "Core/Utils.h"
-#include <CLHEP/Vector/TwoVector.h>
 #include <vector>
+#include <CLHEP/Vector/TwoVector.h>
+#include <memory>
+
+using std::ostream;
 
 namespace Hector
 {
@@ -40,7 +42,7 @@ namespace Hector
         virtual ~ApertureBase();
 
         /// Return a pointer to a clone of the current aperture
-        virtual ApertureBase* clone() const = 0;
+        virtual std::shared_ptr<ApertureBase> clone() const = 0;
         /// Check if two apertures (and their properties) are identical
         bool operator==( const ApertureBase& ) const;
         /// Check if two apertures (and their properties) are different

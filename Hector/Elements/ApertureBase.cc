@@ -1,5 +1,7 @@
 #include "ApertureBase.h"
 
+#include "Core/Utils.h"
+
 namespace Hector
 {
   namespace Aperture

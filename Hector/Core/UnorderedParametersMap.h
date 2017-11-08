@@ -23,8 +23,8 @@ namespace Hector
 
         /// Does the map have this key?
         bool hasKey( const char* key ) const {
-          for ( const_iterator it=map::begin(); it!=map::end(); it++ ) {
-            if ( it->first==std::string( key ) ) return true;
+          for ( const auto& val : *this ) {
+            if ( val.first == std::string( key ) ) return true;
           }
           return false;
         }
@@ -60,16 +60,16 @@ namespace Hector
 
         /// Retrieve the value associated to a key
         const T get( const char* key ) const {
-          for ( const_iterator it=map::begin(); it!=map::end(); it++ ) {
-            if ( it->first==std::string( key ) ) return it->second;
+          for ( const auto& val : *this ) {
+            if ( val.first == std::string( key ) ) return val.second;
           }
           return static_cast<T>( 0 );
         }
 
         /// Print the whole list of key-values stored in the map
         void dump( std::ostream& os=std::cout ) const {
-          for ( const_iterator p=map::begin(); p!=map::end(); p++ ) {
-            os << " [" << p->first << "] " << p->second << std::endl;
+          for ( const auto& val : *this ) {
+            os << " [" << val.first << "] " << val.second << std::endl;
           }
         }
 

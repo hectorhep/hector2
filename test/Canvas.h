@@ -1,6 +1,8 @@
 #ifndef Hector_test_Canvas_h
 #define Hector_test_Canvas_h
 
+#include "Hector/Core/Utils.h"
+
 #include "TCanvas.h"
 #include "TLegend.h"
 #include "TPaveText.h"
@@ -161,7 +163,7 @@ namespace Hector
       TCanvas::cd();
       if ( fLeg ) fLeg->Draw();
       if ( fTopLabel ) fTopLabel->Draw();
-      TCanvas::SaveAs( Form( "%s/%s.%s", out_dir, TCanvas::GetName(), ext ).c_str() );
+      TCanvas::SaveAs( Hector::Form( "%s/%s.%s", out_dir, TCanvas::GetName(), ext ).c_str() );
     }
 
    private:

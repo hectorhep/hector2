@@ -1,4 +1,8 @@
 #include "Propagator.h"
+#include "BeamProducer.h"
+
+#include "Core/Exception.h"
+#include "Core/Utils.h"
 
 namespace Hector
 {
@@ -25,9 +29,9 @@ namespace Hector
 
     try {
 
-      for ( Elements::const_iterator it=beamline_->begin()+1; it!=beamline_->end(); it++ ) {
+      for ( Elements::const_iterator it = beamline_->begin()+1; it != beamline_->end(); ++it ) {
         // extract the previous and the current element in the beamline
-        const Element::ElementBase *prev_elem = *( it-1 ), *elem = *( it );
+        const auto prev_elem = *( it-1 ), elem = *it;
         if ( elem->s()>s_max ) break;
 
         const Particle::Position in_pos( *part.rbegin() );
@@ -43,11 +47,10 @@ namespace Hector
           }
 
           // build a temporary element mimicking the drift effect
-          Element::ElementBase* elem_tmp = prev_elem->clone();
+          auto elem_tmp = prev_elem->clone();
           elem_tmp->setS( first_s );
           elem_tmp->setLength( elem->s()-first_s );
           out_pos = propagateThrough( in_pos, elem_tmp, energy_loss, part.charge() );
-          if ( elem_tmp ) delete elem_tmp;
         }
         // before one element
         if ( first_s<=elem->s() ) {
@@ -93,9 +96,9 @@ namespace Hector
   bool
   Propagator::stopped( Particle& part, float s_max ) const
   {
-    for ( Elements::const_iterator it=beamline_->begin()+1; it!=beamline_->end(); it++ ) {
+    for ( Elements::const_iterator it = beamline_->begin()+1; it != beamline_->end(); ++it ) {
       // extract the previous and the current element in the beamline
-      const Element::ElementBase *prev_elem = *( it-1 ), *elem = *( it );
+      const auto prev_elem = *( it-1 ), elem = *it;
       if ( s_max>0 and elem->s()>s_max ) return false;
 
       const Aperture::ApertureBase* aper = prev_elem->aperture();
@@ -117,7 +120,7 @@ namespace Hector
   }
 
   Particle::Position
-  Propagator::propagateThrough( const Particle::Position& ini_pos, const Element::ElementBase* elem, float eloss, int qp ) const
+  Propagator::propagateThrough( const Particle::Position& ini_pos, const std::shared_ptr<Element::ElementBase> elem, float eloss, int qp ) const
   {
     const StateVector shift( elem->position(), elem->angles(), 0., 0. );
 
@@ -139,8 +142,8 @@ namespace Hector
   void
   Propagator::propagate( Particles& beam, float s_max ) const
   {
-    for ( Particles::iterator it=beam.begin(); it!=beam.end(); it++ ) {
-      propagate( *it, s_max );
+    for ( auto& part : beam ) {
+      propagate( part, s_max );
     }
   }
 }

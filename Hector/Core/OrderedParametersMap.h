@@ -32,14 +32,14 @@ namespace Hector
         void add( const char* key, const T& value ) { add( std::string( key ), value ); }
         /// Retrieve the value associated to a key
         const T get( const char* key ) const {
-          const_iterator p = map::find( std::string( key ) );
-          return ( p!=map::end() ) ? p->second : static_cast<T>( 0 );
+          const auto& val = map::find( std::string( key ) );
+          return ( val != map::end() ) ? val->second : static_cast<T>( 0 );
         }
 
         /// Print the whole list of key-values stored in the map
         void dump( std::ostream& os=std::cout ) const {
-          for ( const_iterator p=map::begin(); p!=map::end(); p++ ) {
-            os << " [" << p->first << "] " << p->second << std::endl;
+          for ( const auto& val : *this ) {
+            os << " [" << val.first << "] " << val.second << std::endl;
           }
         }
 

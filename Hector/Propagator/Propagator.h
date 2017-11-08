@@ -2,7 +2,6 @@
 #define Hector_Propagator_Propagator_h
 
 #include "Beamline/Beamline.h"
-#include "BeamProducer.h"
 #include "Particle.h"
 
 namespace Hector
@@ -25,7 +24,7 @@ namespace Hector
 
     private:
       /// Extract a particle position at the exit of an element once it enters it
-      Particle::Position propagateThrough( const Particle::Position& ini_pos, const Element::ElementBase* ele, float eloss, int qp ) const;
+      Particle::Position propagateThrough( const Particle::Position& ini_pos, const std::shared_ptr<Element::ElementBase> ele, float eloss, int qp ) const;
 
       const Beamline* beamline_;
   };

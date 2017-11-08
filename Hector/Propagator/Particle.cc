@@ -1,4 +1,8 @@
 #include "Particle.h"
+#include "Core/Exception.h"
+
+#include <CLHEP/Random/RandFlat.h>
+#include <CLHEP/Vector/TwoVector.h>
 
 namespace Hector
 {
@@ -8,7 +12,7 @@ namespace Hector
     addPosition( 0., StateVector() );
   }
 
-  Particle::Particle( const StateVector& sv0, float s0 ) :
+  Particle::Particle( const StateVector& sv0, double s0 ) :
     charge_( 0 ), pdgId_( 0 ), stopped_( false )
   {
     addPosition( s0, sv0 );
@@ -19,7 +23,7 @@ namespace Hector
   {}
 
   Particle
-  Particle::fromMassCharge( double mass, float charge )
+  Particle::fromMassCharge( double mass, int charge )
   {
     Particle p( StateVector( CLHEP::HepVector( 6, 0 ), mass ) );
     p.setCharge( charge );
@@ -39,15 +43,15 @@ namespace Hector
   }
 
   StateVector
-  Particle::stateVectorAt( float s ) const
+  Particle::stateVectorAt( double s ) const
   {
-    PositionsMap::const_iterator it = positions_.find( s );
-    if ( it!=positions_.end() ) return it->second;
+    const auto& pos_s = positions_.find( s );
+    if ( pos_s != positions_.end() ) return pos_s->second;
 
-    PositionsMap::const_iterator lower_it = --positions_.upper_bound( s ),
-                                 upper_it = positions_.upper_bound( s );
+    const auto& lower_it = --positions_.upper_bound( s ),
+                upper_it = positions_.upper_bound( s );
 
-    if ( lower_it==positions_.end() or  upper_it->first<lower_it->first ) {
+    if ( lower_it == positions_.end() || upper_it->first < lower_it->first ) {
       throw Exception( __PRETTY_FUNCTION__, Form( "Impossible to interpolate the position at s = %.2f m", s ), JustWarning );
     }
 
@@ -58,8 +62,8 @@ namespace Hector
     const CLHEP::Hep2Vector in = sv_before.position(),
                             out = sv_after.position();
 
-    const float drift_length = upper_it->first-lower_it->first;
-    if ( drift_length==0 ) {
+    const double drift_length = upper_it->first-lower_it->first;
+    if ( drift_length == 0 ) {
       throw Exception( __PRETTY_FUNCTION__, Form( "No luck in choosing position (s=%.3f m)\n\t"
                                                   "Interpolation is impossible!", s ), JustWarning );
     }
@@ -78,18 +82,18 @@ namespace Hector
        << " initial position: " << firstStateVector() << "\n";
     if ( positions_.size()==1 ) return;
     os << " list of associated state vectors:\n";
-    for ( PositionsMap::const_iterator it=positions_.begin(); it!=positions_.end(); it++ ) {
-      os << Form( "   s = %8.3f m:", it->first ) << " " << it->second << std::endl;
+    for ( const auto& pos : positions_ ) {
+      os << Form( "   s = %8.3f m:", pos.first ) << " " << pos.second << std::endl;
     }
   }
 
   void
-  Particle::emitGamma( float e_gamma, float q2_gamma, float phi_min, float phi_max )
+  Particle::emitGamma( double e_gamma, double q2_gamma, double phi_min, double phi_max )
   {
-    const float pos_ini = firstS();
+    const double pos_ini = firstS();
     StateVector sv_ini = firstStateVector();
 
-    if ( q2_gamma==0. ) {
+    if ( q2_gamma == 0. ) {
       PrintInfo( "Virtuality is null: only energy has changed" );
       sv_ini.setEnergy( sv_ini.energy()-e_gamma );
       return;
@@ -115,7 +119,7 @@ namespace Hector
       is_physical = false;
     }*///FIXME
 
-    const double q2 = ( q2_gamma>q2max ) ? q2max : ( q2_gamma<q2min ) ? q2min : q2_gamma;
+    const double q2 = ( q2_gamma > q2max ) ? q2max : ( q2_gamma<q2min ) ? q2min : q2_gamma;
 
     bool has_emitted = false;
     if ( has_emitted ) {

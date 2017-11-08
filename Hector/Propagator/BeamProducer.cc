@@ -1,5 +1,7 @@
 #include "BeamProducer.h"
 
+#include "Core/Exception.h"
+
 namespace Hector
 {
   /*const float half_crossing_angle = Constants::crossing_angle/2., // urad (at IP)

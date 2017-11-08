@@ -2,15 +2,11 @@
 #define Hector_Propagator_StateVector_h
 
 #include <CLHEP/Matrix/Vector.h>
-#include <CLHEP/Matrix/Matrix.h>
 #include <CLHEP/Vector/TwoVector.h>
 #include <CLHEP/Vector/LorentzVector.h>
-#include <CLHEP/Units/SystemOfUnits.h> // pi
-#include <CLHEP/Random/RandFlat.h>
 
 #include <map>
 
-#include "Core/Exception.h"
 #include "Core/Parameters.h"
 
 using std::cout;
@@ -57,9 +53,9 @@ namespace Hector
       /// Particle energy (in GeV)
       double energy() const { return ( *this )[E]; }
       /// Set the energy loss \f$ \xi \f$
-      void setXi( float xi ) { setEnergy( Parameters::get()->beamEnergy()*( 1.-xi ) ); }
+      void setXi( double xi ) { setEnergy( Parameters::get()->beamEnergy()*( 1.-xi ) ); }
       /// Energy loss \f$ \xi \f$
-      float xi() const { return 1.-energy()/Parameters::get()->beamEnergy(); }
+      double xi() const { return 1.-energy()/Parameters::get()->beamEnergy(); }
       /// Set the particle kick
       void setKick( double kick ) { ( *this )[K] = kick; }
       /// Particle kick

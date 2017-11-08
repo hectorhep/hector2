@@ -3,24 +3,14 @@
 
 #include "Beamline/Beamline.h"
 
-#include "Elements/Quadrupole.h"
-#include "Elements/Dipole.h"
-#include "Elements/RectangularCollimator.h"
-#include "Elements/Kicker.h"
-#include "Elements/Marker.h"
-
-#include "Elements/EllipticAperture.h"
-#include "Elements/CircularAperture.h"
-#include "Elements/RectangularAperture.h"
-#include "Elements/RectEllipticAperture.h"
-
+#include "Core/Exception.h"
 #include "Core/OrderedParametersMap.h"
 #include "Core/UnorderedParametersMap.h"
 
 #include <fstream>
 #include <regex>
-#include <map>
 #include <string>
+#include <memory>
 
 using std::ostream;
 
@@ -45,18 +35,20 @@ namespace Hector
         /// \param[in] filename Path to the MAD-X Twiss file to parse
         /// \param[in] ip_name Name of the interaction point
         MADX( const char* filename, const char* ip_name, int direction, float max_s=-1. );
+        MADX( const MADX& );
+        MADX( MADX& );
         ~MADX();
 
         /// Retrieve the sequenced beamline parsed from the MAD-X Twiss file
         Beamline* beamline() const {
           if ( !beamline_ ) {
             PrintWarning( "Sequenced beamline not computed from the MAD-X Twiss file. Retrieving the raw version. You may encounter some numerical issues." );
-            return raw_beamline_;
+            return raw_beamline_.get();
           }
-          return beamline_;
+          return beamline_.get();
         }
         /// Retrieve the raw beamline parsed from the MAD-X Twiss file
-        Beamline* rawBeamline() const { return raw_beamline_; }
+        Beamline* rawBeamline() const { return raw_beamline_.get(); }
 
         /// Get a Hector element type from a Twiss element name string
         static Element::Type findElementTypeByName( std::string name );
@@ -76,7 +68,7 @@ namespace Hector
         void parseElementsFields();
         void parseElements();
         void findInteractionPoint();
-        Element::ElementBase* parseElement( const ValuesCollection& );
+        std::shared_ptr<Element::ElementBase> parseElement( const ValuesCollection& );
 
         ParametersMap::Ordered<std::string> header_str_;
         ParametersMap::Ordered<float> header_float_;
@@ -86,8 +78,8 @@ namespace Hector
         std::ifstream in_file_;
         std::streampos in_file_lastline_;
 
-        Beamline* beamline_;
-        Beamline* raw_beamline_;
+        std::unique_ptr<Beamline> beamline_;
+        std::unique_ptr<Beamline> raw_beamline_;
 
         int dir_;
         std::string ip_name_;
