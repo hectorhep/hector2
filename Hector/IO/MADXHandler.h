@@ -28,7 +28,7 @@ namespace Hector
         MADX( const char* filename, const char* ip_name, int direction, float max_s=-1. );
         MADX( const MADX& );
         MADX( MADX& );
-        ~MADX();
+        ~MADX() {}
 
         /// Retrieve the sequenced beamline parsed from the MAD-X Twiss file
         Beamline* beamline() const {
