@@ -20,6 +20,6 @@ endif()
 
 add_library(HectorIO OBJECT ${sources})
 set_target_properties(HectorIO PROPERTIES LINKER_LANGUAGE CXX)
-if(DEFINED PYTHIA8_FOUND)
-  link_libraries(HectorIO Pythia8)
+if(PYTHIA8_FOUND)
+  link_libraries(HectorIO ${PYTHIA8_LIBRARIES})
 endif()
