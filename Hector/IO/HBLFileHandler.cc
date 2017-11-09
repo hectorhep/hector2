@@ -15,6 +15,7 @@
 #include "Hector/IO/HBLFileStructures.h"
 
 #include <fstream>
+#include <sstream>
 
 namespace Hector
 {

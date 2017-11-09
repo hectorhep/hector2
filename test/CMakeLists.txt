@@ -21,6 +21,7 @@ if(${ROOT_FOUND})
     message(STATUS "ROOT found in ${ROOT_INCLUDE_DIRS}")
     include_directories(${ROOT_INCLUDE_DIRS})
     link_directories(${ROOT_LIBRARY_DIR})
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 
     foreach(exec_src ${executables_root})
         string(REPLACE ".cxx" "" exec_bin ${exec_src})

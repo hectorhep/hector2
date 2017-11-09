@@ -25,10 +25,10 @@ namespace Hector
       /// \param[in] desc Error message
       /// \param[in] type Type of exception encountered
       /// \param[in] id Error code associated to the exception
-      inline Exception( const char* from, const std::string& desc, ExceptionType type = Undefined, const int id = 0 ) :
+      inline Exception( const char* from, const std::string& desc, ExceptionType type = Undefined, int id = 0 ) :
         std::runtime_error( desc ), from_( from ), type_( type ), error_num_( id ) {}
       /// Construct an exception from a char* description
-      inline Exception( const char* from, const char* desc, ExceptionType type = Undefined, const int id = 0 ) :
+      inline Exception( const char* from, const char* desc, ExceptionType type = Undefined, int id = 0 ) :
         std::runtime_error( desc ), from_( from ), type_( type ), error_num_( id ) {}
 
       /// Destruct the exception (and terminate the program execution if fatal)
@@ -39,9 +39,9 @@ namespace Hector
       /// Method/function that raised the exception
       inline const std::string from() const { return from_; }
       /// Error code associated to the exception
-      inline const int errorNumber() const { return error_num_; }
+      inline int errorNumber() const { return error_num_; }
       /// Type of exception encountered (info, warning, fatal error)
-      inline const ExceptionType type() const { return type_; }
+      inline ExceptionType type() const { return type_; }
       /// Prettified (colourised) string of the exception type
       inline const std::string typeString() const {
         switch ( type() ) {
@@ -73,10 +73,7 @@ namespace Hector
       }
       /// Get a one-line description of the error
       inline const std::string oneLine() const {
-        std::ostringstream os;
-        os << "[" << type() << "] === " << from() << " === "
-           << what();
-        return os.str();
+        return Form( "[%s] ::: %s ::: %s", type(), from().c_str(), what() );
       }
 
     private:

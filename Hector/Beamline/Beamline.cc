@@ -6,6 +6,8 @@
 #include <CLHEP/Matrix/DiagMatrix.h>
 #include <CLHEP/Vector/ThreeVector.h>
 
+#include <sstream>
+
 namespace Hector
 {
   Beamline::Beamline() :
