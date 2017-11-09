@@ -50,7 +50,7 @@ namespace Hector
           return map::at( i ).second;
         }
         /// Retrieve the position in the map for the given key
-        const size_t id( const char* k ) const {
+        size_t id( const char* k ) const {
           for ( size_t i=0; i<map::size(); i++ ) {
             if ( key( i )==k ) return i;
           }
