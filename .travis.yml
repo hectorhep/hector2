@@ -1,13 +1,6 @@
 language: cpp
 sudo: true
 
-addons:
-  apt:
-    sources:
-      - llvm-toolchain-precise-3.6
-    packages:
-      - libclhep-dev
-
 matrix:
   include:
     - os: linux
@@ -16,9 +9,9 @@ matrix:
         apt:
           sources:
             - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise-3.6
           packages:
             - g++-4.9
+            - libclhep-dev
     - os: linux
       compiler: clang
       addons:
@@ -28,6 +21,18 @@ matrix:
             - llvm-toolchain-precise-3.6
           packages:
             - clang-3.6
+            - libclhep-dev
+    - os: linux
+      compiler: clang
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.6
+          packages:
+            - clang-3.6
+            - libclhep-dev
+            - libpythia8-dev
 
 before_script:
   - mkdir build
