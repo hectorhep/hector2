@@ -21,7 +21,7 @@ matrix:
           packages:
             - g++-4.9
             - libclhep-dev
-            - liblhapdf0 # workaround for precise
+            - liblhapdf-dev # workaround for precise
             - libpythia8-dev
     - os: linux
       compiler: clang
@@ -43,7 +43,7 @@ matrix:
           packages:
             - clang-3.6
             - libclhep-dev
-            - liblhapdf0 # workaround for precise
+            - liblhapdf-dev # workaround for precise
             - libpythia8-dev
 
 before_script:
