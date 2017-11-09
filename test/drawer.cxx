@@ -22,8 +22,9 @@ main( int argc, char* argv[] )
     std::cout << "Usage: " << argv[0] << " [MAD-X output file for beam 1] [MAD-X output file for beam 2]" << std::endl;
     return -1;
   }
+  Hector::Parameters::get()->setUseRelativeEnergy( false ); //FIXME
   //Hector::Parameters::get()->setComputeApertureAcceptance( false ); //FIXME
-  //Hector::Parameters::get()->setEnableDipoles( false ); //FIXME
+  //Hector::Parameters::get()->setComputeApertureAcceptance( false ); //FIXME
 
   //--- general plotting parameters
   const float max_s = ( argc > 3 ) ? atof( argv[3] ) : 250.;

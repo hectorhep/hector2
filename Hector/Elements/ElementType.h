@@ -9,7 +9,8 @@ namespace Hector
   namespace Element
   {
     /// List of types allowed for an element
-    typedef enum {
+    enum Type
+    {
       anInvalidElement = -1, ///< Invalid element
       aMarker, ///< Simple s-marker
       aDrift, ///< Drift element
@@ -30,7 +31,7 @@ namespace Hector
       aPlaceholder, ///< A placeholder element
       anInstrument, ///< A measurement apparatus
       aSolenoid ///< Solenoid
-    } Type;
+    };
     /// Human-readable printout of a element type
     std::ostream& operator<<( std::ostream&, const Type& );
   }

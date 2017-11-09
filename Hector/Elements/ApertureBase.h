@@ -51,6 +51,7 @@ namespace Hector
 
         /// Retrieve a shape parameter of the aperture
         float p( const size_t& i ) const { return ( i<param_.size() ) ? param_.at( i ) : -1.0; }
+        const Parameters& parameters() const { return param_; }
 
         /// Set the transverse position of the aperture barycentre
         void setPosition( const CLHEP::Hep2Vector& pos ) { pos_ = pos; }

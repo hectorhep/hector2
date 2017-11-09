@@ -9,8 +9,9 @@ namespace Hector
   namespace Aperture
   {
     /// List of types allowed for an aperture
-    typedef enum {
-      anInvalidAperture,
+    enum Type
+    {
+      anInvalidAperture = -1,
       aRectangularAperture,
       anEllipticAperture,
       aCircularAperture,
@@ -18,7 +19,7 @@ namespace Hector
       aRectCircularAperture,
       aRaceTrackAperture,
       anOctagonalAperture
-    } Type;
+    };
     /// Human-readable printout of an aperture type
     std::ostream& operator<<( std::ostream&, const Type& );
   }
