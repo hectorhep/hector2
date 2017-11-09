@@ -13,6 +13,16 @@ matrix:
             - g++-4.9
             - libclhep-dev
     - os: linux
+      compiler: gcc
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-4.9
+            - libclhep-dev
+            - libpythia8-dev
+    - os: linux
       compiler: clang
       addons:
         apt:

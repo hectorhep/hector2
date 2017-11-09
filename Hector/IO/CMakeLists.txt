@@ -12,6 +12,7 @@ endif()
 #----- include the Pythia8 wrapper if present on the system
 
 if(PYTHIA8_FOUND)
+  include_directories(${PYTHIA8_INCLUDE_DIRS})
   list(APPEND sources Pythia8Generator.cc)
 endif()
 
