@@ -3,10 +3,23 @@ sudo: true
 compiler:
   - gcc
 
-before_install:
-  - sudo apt-get update
-  - sudo add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu/ trusty main universe"
-  - sudo apt-get install -y libclhep-dev
+matrix:
+  include:
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.6
+          packages:
+            - g++-4.9
+            - clang-3.6
+            - libclhep-dev
+
+#before_install:
+#  - sudo apt-get update
+#  - sudo add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu/ trusty main universe"
+#  - sudo apt-get install -y libclhep-dev
 
 #install:
 #  - make install
@@ -18,11 +31,6 @@ before_script:
   - wget --quiet https://gist.githubusercontent.com/forthommel/e6932e25b781710ebe5bd8dc6726dc3c/raw/1d7bd5f2aeff0d50f8e1740d7dcacaf1be006a59/FindCLHEP.cmake
   - cmake -D CMAKE_MODULE_PATH=$PWD ..
   - make
-
-#addons:
-#  apt:
-#    packages:
-#    - libclhep-dev
 
 script:
   - pwd

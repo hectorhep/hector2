@@ -73,10 +73,7 @@ namespace Hector
       }
       /// Get a one-line description of the error
       inline const std::string oneLine() const {
-        std::ostringstream os;
-        os << "[" << type() << "] === " << from() << " === "
-           << what();
-        return os.str();
+        return Form( "[%s] ::: %s ::: %s", type(), from().c_str(), what() );
       }
 
     private:

@@ -8,7 +8,7 @@
 namespace Hector
 {
   Pythia8Generator::Pythia8Generator( const std::vector<std::string>& params ) :
-    pythia_( std::make_unique<Pythia8::Pythia>() )
+    pythia_( new Pythia8::Pythia )
   {
     // specify the incoming state
     pythia_->settings.mode( "Beams:idA", 2212 );
@@ -27,7 +27,7 @@ namespace Hector
   }
 
   Pythia8Generator::Pythia8Generator( const char* xml_input ) :
-    pythia_( std::make_unique<Pythia8::Pythia>( xml_input ) )
+    pythia_( new Pythia8::Pythia( xml_input ) )
   {
     // initialise the core
     if ( !pythia_->init() ) {
