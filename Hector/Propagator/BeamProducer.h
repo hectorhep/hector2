@@ -3,9 +3,13 @@
 
 #include "Hector/Propagator/Particle.h"
 
-#include <CLHEP/Random/RandFlat.h>
-#include <CLHEP/Random/RandGauss.h>
 #include <vector>
+
+namespace CLHEP
+{
+  class RandFlat;
+  class RandGauss;
+}
 
 namespace Hector
 {
@@ -19,12 +23,12 @@ namespace Hector
     {
       public:
         /// Class constructor
-        LinearScanner( const unsigned short& num_part, float p1_ini, float p1_end, float p2_ini, float p2_end=999., float e_ini=0., float e_end=0., float s_ini=0. ) :
+        LinearScanner( const unsigned short& num_part, float p1_ini, float p1_end, float p2_ini, float p2_end = 999., float e_ini = 0., float e_end = 0., float s_ini = 0. ) :
           num_part_( num_part ), num_gen_( 0 ),
           p1_( p1_ini, p1_end ), p2_( p2_ini, p2_end ),
           e_( e_ini, e_end ), s_( s_ini, s_ini )
         {
-          if ( p2_.second==999. ) { p2_.second = p2_.first; }
+          if ( p2_.second == 999. ) { p2_.second = p2_.first; }
         }
         /// Get the next event number to scan
         unsigned short next();
@@ -59,7 +63,7 @@ namespace Hector
         /// \param[in] x_max maximal parameter value
         /// \param[in] y fixed parameter value
         /// \param[in] s_ini initial s position
-        Xscanner( const unsigned short& num_part, float e_ini, float x_min, float x_max, float y=0., float s_ini=0. ) :
+        Xscanner( const unsigned short& num_part, float e_ini, float x_min, float x_max, float y = 0., float s_ini = 0. ) :
           LinearScanner( num_part, x_min, x_max, y, y, e_ini, e_ini, s_ini ) {}
         Particle shoot();
     };
@@ -75,7 +79,7 @@ namespace Hector
         /// \param[in] y_min minimal parameter value
         /// \param[in] y_max maximal parameter value
         /// \param[in] s_ini initial s position
-        Yscanner( const unsigned short& num_part, float e_ini, float y_min, float y_max, float x=0., float s_ini=0. ) :
+        Yscanner( const unsigned short& num_part, float e_ini, float y_min, float y_max, float x = 0., float s_ini = 0. ) :
           LinearScanner( num_part, y_min, y_max, x, x, e_ini, e_ini, s_ini ) {}
         Particle shoot();
     };
@@ -91,7 +95,7 @@ namespace Hector
         /// \param[in] tx_max maximal parameter value
         /// \param[in] ty fixed parameter value
         /// \param[in] s_ini initial s position
-        TXscanner( const unsigned short& num_part, float e_ini, float tx_min, float tx_max, float ty=0., float s_ini=0. ) :
+        TXscanner( const unsigned short& num_part, float e_ini, float tx_min, float tx_max, float ty = 0., float s_ini = 0. ) :
           LinearScanner( num_part, tx_min, tx_max, ty, ty, e_ini, e_ini, s_ini ) {}
         Particle shoot();
     };
@@ -107,7 +111,7 @@ namespace Hector
         /// \param[in] ty_min minimal parameter value
         /// \param[in] ty_max maximal parameter value
         /// \param[in] s_ini initial s position
-        TYscanner( const unsigned short& num_part, float e_ini, float ty_min, float ty_max, float tx=0., float s_ini=0. ) :
+        TYscanner( const unsigned short& num_part, float e_ini, float ty_min, float ty_max, float tx = 0., float s_ini = 0. ) :
           LinearScanner( num_part, ty_min, ty_max, tx, tx, e_ini, e_ini, s_ini ) {}
         Particle shoot();
     };
@@ -122,7 +126,7 @@ namespace Hector
         /// \param[in] x horizontal particle position
         /// \param[in] y vertical particle position
         /// \param[in] s_ini initial s position
-        Xiscanner( const unsigned short& num_part, float xi_min, float xi_max, float x=0., float y=0., float s_ini=0. ) :
+        Xiscanner( const unsigned short& num_part, float xi_min, float xi_max, float x = 0., float y = 0., float s_ini = 0. ) :
           LinearScanner( num_part, x, x, y, y, Parameters::get()->beamEnergy()*( 1.-xi_min ), Parameters::get()->beamEnergy()*( 1.-xi_max ), s_ini ) {}
         Particle shoot();
     };
@@ -134,8 +138,8 @@ namespace Hector
       public:
         /// Class constructor
         ParticleGun( float e_min = Parameters::get()->beamEnergy(), float e_max = Parameters::get()->beamEnergy(),
-                     float s_min = 0., float s_max=0.,
-                     float x_min = 0., float x_max=0., float y_min=0., float y_max=0.,
+                     float s_min = 0., float s_max = 0.,
+                     float x_min = 0., float x_max = 0., float y_min = 0., float y_max = 0.,
                      float tx_min = -M_PI/2., float tx_max = M_PI/2.,
                      float ty_min = -M_PI/2., float ty_max = M_PI/2.,
                      float mass = Parameters::get()->beamParticlesMass(), float charge = Parameters::get()->beamParticlesCharge() ) :

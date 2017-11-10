@@ -4,6 +4,7 @@
 #include "Hector/Core/Exception.h"
 
 #include <Pythia8/Event.h>
+#include <CLHEP/Vector/LorentzVector.h>
 
 namespace Hector
 {

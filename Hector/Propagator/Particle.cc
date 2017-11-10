@@ -3,6 +3,7 @@
 
 #include <CLHEP/Random/RandFlat.h>
 #include <CLHEP/Vector/TwoVector.h>
+#include <CLHEP/Vector/LorentzVector.h>
 
 namespace Hector
 {
@@ -73,6 +74,12 @@ namespace Hector
     StateVector out_stvec( lower_it->second );
     out_stvec.setPosition( s_pos );
     return out_stvec;
+  }
+
+  const CLHEP::HepLorentzVector
+  Particle::momentumAt( double s ) const
+  {
+    return stateVectorAt( s ).momentum();
   }
 
   void

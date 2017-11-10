@@ -1,6 +1,9 @@
 #ifndef Hector_Core_UnorderedParametersMap_h
 #define Hector_Core_UnorderedParametersMap_h
 
+#include "Hector/Core/ExceptionType.h"
+#include "Hector/Core/Utils.h"
+
 #include <vector>
 #include <string>
 
@@ -8,6 +11,7 @@ using std::cout;
 
 namespace Hector
 {
+  class Exception;
   namespace ParametersMap
   {
     /// Unordered set of parameters indexed by key

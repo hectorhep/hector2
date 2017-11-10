@@ -1,6 +1,10 @@
+#include "Hector/Core/Exception.h"
 #include "Hector/IO/MADXHandler.h"
+#include "Hector/Beamline/Beamline.h"
 #include "Hector/Propagator/Propagator.h"
 #include "Hector/Propagator/BeamProducer.h"
+
+#include <CLHEP/Random/RandGauss.h>
 
 int main( int argc, char* argv[] )
 {

@@ -1,5 +1,9 @@
 #include "Hector/IO/MADXHandler.h"
 
+#include "Hector/Core/Exception.h"
+
+#include "Hector/Beamline/Beamline.h"
+
 #include "Hector/Elements/Quadrupole.h"
 #include "Hector/Elements/Dipole.h"
 #include "Hector/Elements/RectangularCollimator.h"
@@ -77,6 +81,16 @@ namespace Hector
       dir_( rhs.dir_ ), ip_name_( rhs.ip_name_ ), s_offset_( rhs.s_offset_ ),
       found_interaction_point_( rhs.found_interaction_point_ ), has_next_element_( rhs.has_next_element_ )
     {}
+
+    Beamline*
+    MADX::beamline() const
+    {
+      if ( !beamline_ ) {
+        PrintWarning( "Sequenced beamline not computed from the MAD-X Twiss file. Retrieving the raw version. You may encounter some numerical issues." );
+        return raw_beamline_.get();
+      }
+      return beamline_.get();
+    }
 
     void
     MADX::printInfo() const

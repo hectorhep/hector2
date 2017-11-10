@@ -3,6 +3,7 @@
 
 #include <map>
 #include <string>
+#include <iostream>
 
 using std::cout;
 
@@ -37,7 +38,7 @@ namespace Hector
         }
 
         /// Print the whole list of key-values stored in the map
-        void dump( std::ostream& os=std::cout ) const {
+        void dump( std::ostream& os = std::cout ) const {
           for ( const auto& val : *this ) {
             os << " [" << val.first << "] " << val.second << std::endl;
           }

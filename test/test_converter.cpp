@@ -1,4 +1,5 @@
 #include "Hector/IO/MADXHandler.h"
+#include "Hector/Beamline/Beamline.h"
 #include "Hector/IO/HBLFileHandler.h"
 
 using namespace std;

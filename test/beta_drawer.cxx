@@ -1,4 +1,5 @@
 #include "Hector/IO/MADXHandler.h"
+#include "Hector/Beamline/Beamline.h"
 
 #include "Canvas.h"
 

@@ -1,8 +1,13 @@
-#include "Propagator.h"
-#include "BeamProducer.h"
+#include "Hector/Propagator/Propagator.h"
+#include "Hector/Propagator/BeamProducer.h"
+
+#include "Hector/Beamline/Beamline.h"
+#include "Hector/Elements/ElementBase.h"
 
 #include "Hector/Core/Exception.h"
 #include "Hector/Core/Utils.h"
+
+#include <sstream>
 
 namespace Hector
 {

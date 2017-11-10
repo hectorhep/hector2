@@ -1,14 +1,11 @@
 #ifndef Hector_IO_HBLFileHandler_h
 #define Hector_IO_HBLFileHandler_h
 
-#include "Hector/Elements/ElementType.h"
-#include "Hector/Elements/ApertureType.h"
-#include "Hector/Beamline/Beamline.h"
-
 #include <memory>
 
 namespace Hector
 {
+  class Beamline;
   namespace IO
   {
     class HBL

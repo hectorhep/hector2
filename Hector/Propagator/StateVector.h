@@ -3,7 +3,6 @@
 
 #include <CLHEP/Matrix/Vector.h>
 #include <CLHEP/Vector/TwoVector.h>
-#include <CLHEP/Vector/LorentzVector.h>
 
 #include <map>
 
@@ -11,6 +10,10 @@
 
 using std::cout;
 
+namespace CLHEP
+{
+  class HepLorentzVector;
+}
 namespace Hector
 {
   /// Six-dimensional state vector associated to a particle at a given s
@@ -25,10 +28,7 @@ namespace Hector
       };
     public:
       /// Build a blank state
-      StateVector() : CLHEP::HepVector( 6, 0 ), m_( 0. ) {
-        ( *this )[K] = 1.;
-        ( *this )[E] = Parameters::get()->beamEnergy();
-      }
+      StateVector();
       //StateVector( const StateVector& sv ) : CLHEP::HepVector( sv.vector() ), m_( sv.m_ ) {}
       /// Build a state using a 6-component vector and a particle mass
       /// \param[in] vec A 6-component vector
@@ -37,9 +37,9 @@ namespace Hector
       /// Build a state using a particle kinematics and position
       /// \param[in] mom Four-momentum of the particle (GeV)
       /// \param[in] pos x-y position of the particle (m)
-      StateVector( const CLHEP::HepLorentzVector& mom, const CLHEP::Hep2Vector& pos=CLHEP::Hep2Vector() );
+      StateVector( const CLHEP::HepLorentzVector& mom, const CLHEP::Hep2Vector& pos = CLHEP::Hep2Vector() );
       /// Build a state vector using the particle's position and its angle
-      StateVector( const CLHEP::Hep2Vector& pos, const CLHEP::Hep2Vector& ang, double energy=Parameters::get()->beamEnergy(), double kick=1. );
+      StateVector( const CLHEP::Hep2Vector& pos, const CLHEP::Hep2Vector& ang, double energy = Parameters::get()->beamEnergy(), double kick = 1. );
       ~StateVector() {}
 
       /// Human-readable printout of the state vector

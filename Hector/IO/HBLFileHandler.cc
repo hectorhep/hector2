@@ -1,12 +1,13 @@
 #include "Hector/IO/HBLFileHandler.h"
 #include "Hector/Core/Exception.h"
 
+#include "Hector/Beamline/Beamline.h"
+
 #include "Hector/Elements/Drift.h"
 #include "Hector/Elements/Kicker.h"
 #include "Hector/Elements/Dipole.h"
 #include "Hector/Elements/Quadrupole.h"
 #include "Hector/Elements/RectangularCollimator.h"
-
 #include "Hector/Elements/RectangularAperture.h"
 #include "Hector/Elements/CircularAperture.h"
 #include "Hector/Elements/EllipticAperture.h"

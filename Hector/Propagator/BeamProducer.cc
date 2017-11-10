@@ -1,6 +1,9 @@
-#include "BeamProducer.h"
-
+#include "Hector/Propagator/BeamProducer.h"
 #include "Hector/Core/Exception.h"
+
+#include <CLHEP/Random/RandFlat.h>
+#include <CLHEP/Random/RandGauss.h>
+#include <CLHEP/Vector/LorentzVector.h>
 
 namespace Hector
 {

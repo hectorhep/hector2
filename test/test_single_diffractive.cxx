@@ -1,3 +1,5 @@
+#include "Hector/Core/Exception.h"
+#include "Hector/Beamline/Beamline.h"
 #include "Hector/IO/Pythia8Generator.h"
 #include "Hector/IO/MADXHandler.h"
 #include "Hector/Propagator/Propagator.h"
@@ -97,7 +99,7 @@ int main( int argc, char* argv[] )
         h_ty_sp.Fill( part.firstStateVector().Ty(), ev_weight );
         const auto pos = part.stateVectorAt( s_pos ).position();
         h_hitmap.Fill( pos.x(), pos.y() );
-      } catch ( Hector::Exception& e ) {}
+      } catch ( Hector::Exception& e ) { e.dump(); }
     }
   }
 

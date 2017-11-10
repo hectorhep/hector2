@@ -71,17 +71,17 @@ drawBeamline( const char axis, const Hector::Beamline* bl, const unsigned short 
       const Hector::Aperture::ApertureBase* aper = elemPtr->aperture();
       if ( aper ) {
         const CLHEP::Hep2Vector aper_lim = aper->limits();
-        const float pos_aper = ( axis=='x' ) ? aper->x() : aper->y(),
-                    half_len_aper = ( axis=='x' ) ? aper_lim.x() : aper_lim.y();
-        TArrow* arr1 = new TArrow( elemPtr->s(), ( pos_aper+half_len_aper )*0.95, elemPtr->s(), pos_aper+half_len_aper, 0.01, "-|" ),
-               *arr2 = new TArrow( elemPtr->s(), pos_aper-half_len_aper, elemPtr->s(), ( pos_aper-half_len_aper )*0.95, 0.01, "|-" );
-        if ( fabs( pos_aper+half_len_aper )<scale ) arr1->Draw();
-        if ( fabs( pos_aper-half_len_aper )<scale ) arr2->Draw();
+        const float pos_aper = ( axis == 'x' ) ? aper->x() : aper->y(),
+                    half_len_aper = ( axis == 'x' ) ? aper_lim.x() : aper_lim.y();
+        auto arr1 = new TArrow( elemPtr->s(), ( pos_aper+half_len_aper )*0.95, elemPtr->s(), pos_aper+half_len_aper, 0.01, "-|" ),
+             arr2 = new TArrow( elemPtr->s(), pos_aper-half_len_aper, elemPtr->s(), ( pos_aper-half_len_aper )*0.95, 0.01, "|-" );
+        if ( fabs( pos_aper+half_len_aper ) < scale ) arr1->Draw();
+        if ( fabs( pos_aper-half_len_aper ) < scale ) arr2->Draw();
       }
     }
 
     // ROOT and its brilliant memory management...
-    TPave* elem_box = new TPave( pos_x_ini, pos_y_low, pos_x_end, pos_y_high, 1 );
+    auto elem_box = new TPave( pos_x_ini, pos_y_low, pos_x_end, pos_y_high, 1 );
     elem_box->SetLineColor( kGray );
     //elem_box->SetFillStyle( 1001 );
     elem_box->SetFillColorAlpha( elementColour( elemPtr ), alpha );
@@ -91,7 +91,7 @@ drawBeamline( const char axis, const Hector::Beamline* bl, const unsigned short 
       txt.SetTextSize( 0.015 );
       txt.SetTextAngle( 90. );
       txt.SetTextAlign( 22 );
-      txt.DrawLatex( elemPtr->s()+elemPtr->length()/2., 3.* ( ( beam==0 ) ? -1 : +1 ) * ( size_y ), elemPtr->name().c_str() );
+      txt.DrawLatex( elemPtr->s()+elemPtr->length()/2., 3.* ( ( beam == 0 ) ? -1 : +1 ) * ( size_y ), elemPtr->name().c_str() );
     }
     else {
       txt.SetTextSize( 0.035 );

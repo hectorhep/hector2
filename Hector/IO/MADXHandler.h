@@ -1,10 +1,11 @@
 #ifndef Hector_IO_MADXParser_h
 #define Hector_IO_MADXParser_h
 
-#include "Hector/Beamline/Beamline.h"
-#include "Hector/Core/Exception.h"
 #include "Hector/Core/OrderedParametersMap.h"
 #include "Hector/Core/UnorderedParametersMap.h"
+
+#include "Hector/Elements/ElementBase.h"
+#include "Hector/Elements/ApertureType.h"
 
 #include <fstream>
 #include <regex>
@@ -15,6 +16,7 @@ using std::ostream;
 
 namespace Hector
 {
+  class Beamline;
   namespace IO
   {
     /// Parsing tool for MAD-X output stp files
@@ -31,13 +33,7 @@ namespace Hector
         ~MADX() {}
 
         /// Retrieve the sequenced beamline parsed from the MAD-X Twiss file
-        Beamline* beamline() const {
-          if ( !beamline_ ) {
-            PrintWarning( "Sequenced beamline not computed from the MAD-X Twiss file. Retrieving the raw version. You may encounter some numerical issues." );
-            return raw_beamline_.get();
-          }
-          return beamline_.get();
-        }
+        Beamline* beamline() const;
         /// Retrieve the raw beamline parsed from the MAD-X Twiss file
         Beamline* rawBeamline() const { return raw_beamline_.get(); }
 
@@ -49,7 +45,7 @@ namespace Hector
         static Aperture::Type findApertureTypeByApertype( std::string apertype );
 
         typedef enum { allPots, horizontalPots, verticalPots } RPType;
-        Elements romanPots( const RPType& type=allPots ) const;
+        Elements romanPots( const RPType& type = allPots ) const;
 
         /// Print all useful information parsed from the MAD-X Twiss file
         void printInfo() const;

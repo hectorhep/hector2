@@ -162,7 +162,7 @@ namespace Hector
       if ( fLeg ) fLeg->Draw();
       if ( fTopLogo ) fTopLogo->Draw();
       if ( fTopLabel ) fTopLabel->Draw();
-      TCanvas::SaveAs( Hector::Form( "%s/%s.%s", out_dir, TCanvas::GetName(), ext ).c_str() );
+      TCanvas::SaveAs( ::Form( "%s/%s.%s", out_dir, TCanvas::GetName(), ext ) );
     }
 
    private:
