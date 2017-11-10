@@ -20,7 +20,13 @@ set(HECTOR_DEPENDENCIES CLHEP)
 find_package(Pythia8 QUIET)
 
 if(PYTHIA8_FOUND)
-  list(APPEND HECTOR_DEPENDENCIES ${PYTHIA8_LIBRARY} lhapdfdummy)
+  list(APPEND HECTOR_DEPENDENCIES ${PYTHIA8_LIBRARY})
+  find_library(LHAPDF LHAPDF)
+  if(LHAPDF)
+    list(APPEND HECTOR_DEPENDENCIES ${LHAPDF})
+  else()
+    list(APPEND HECTOR_DEPENDENCIES lhapdfdummy)
+  endif()
 endif()
 
 #----- build all the intermediate objects
