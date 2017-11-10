@@ -25,14 +25,6 @@ namespace Hector
       float beamParticlesMass() const { return beam_particles_mass_; }
       void setBeamParticlesMass( float m ) { beam_particles_mass_ = m; }
 
-      /// Horizontal crossing angle of the particles beams (in rad)
-      float crossingAngleX() const { return crossing_angle_x_; }
-      void setCrossingAngleX( float tx ) { crossing_angle_x_ = tx; }
-
-      /// Vertical crossing angle of the particles beams (in rad)
-      float crossingAngleY() const { return crossing_angle_y_; }
-      void setCrossingAngleY( float ty ) { crossing_angle_y_ = ty; }
-
       /// Electric charge of the primary particles in the beam (in e)
       int beamParticlesCharge() const { return beam_particles_charge_; }
       void setBeamParticlesCharge( int q ) { beam_particles_charge_ = q; }

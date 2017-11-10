@@ -22,7 +22,7 @@ namespace Hector
   namespace IO
   {
     HBL::HBL( const char* filename ) :
-      bl_( std::unique_ptr<Beamline>( new Beamline ) )
+      bl_( new Beamline )
     {
       parse( filename );
     }

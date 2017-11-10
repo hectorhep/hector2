@@ -39,9 +39,10 @@ namespace Hector
     public:
       Particle();
       /// Construct a particle according to its first state vector's 4-momentum
-      Particle( const CLHEP::HepLorentzVector& mom, int charge=Parameters::get()->beamParticlesCharge() ) :
+      Particle( const CLHEP::HepLorentzVector& mom, int charge = Parameters::get()->beamParticlesCharge(), int pdgid = 2212 ) :
         Particle( StateVector( mom ) ) {
         charge_ = charge;
+        pdgId_ = pdgid;
       }
       /// Construct a particle according to its first state vector/s-position couple
       Particle( const StateVector&, double s0 = 0. );

@@ -72,8 +72,8 @@ namespace Hector
 
   template<>
   BeamProducer::params
-  BeamProducer::ParticleGun<CLHEP::RandGauss>::parameters( const float& lim1, const float& lim2 )
+  BeamProducer::ParticleGun<CLHEP::RandGauss>::parameters( float lim1, float lim2 )
   {
-    return BeamProducer::params( ( lim1+lim2 )/2., ( lim2-lim1 )/2. );
+    return BeamProducer::params( 0.5 * ( lim1+lim2 ), 0.5 * ( lim2-lim1 ) );
   }
 }

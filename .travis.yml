@@ -44,6 +44,7 @@ matrix:
             - clang-3.6
             - libclhep-dev
             - liblhapdf-dev # workaround for precise
+            - libhepmc-dev
             - libpythia8-dev
 
 before_script:

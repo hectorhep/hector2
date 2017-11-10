@@ -133,11 +133,12 @@ namespace Hector
     {
       public:
         /// Class constructor
-        ParticleGun( float e_min=Parameters::get()->beamEnergy(), float e_max=Parameters::get()->beamEnergy(),
-                     float s_min=0., float s_max=0.,
-                     float x_min=0., float x_max=0., float y_min=0., float y_max=0.,
-                     float tx_min=-M_PI/2., float tx_max=M_PI/2., float ty_min=-M_PI/2., float ty_max=M_PI/2.,
-                     float mass=Parameters::get()->beamParticlesMass(), float charge=Parameters::get()->beamParticlesCharge() ) :
+        ParticleGun( float e_min = Parameters::get()->beamEnergy(), float e_max = Parameters::get()->beamEnergy(),
+                     float s_min = 0., float s_max=0.,
+                     float x_min = 0., float x_max=0., float y_min=0., float y_max=0.,
+                     float tx_min = -M_PI/2., float tx_max = M_PI/2.,
+                     float ty_min = -M_PI/2., float ty_max = M_PI/2.,
+                     float mass = Parameters::get()->beamParticlesMass(), float charge = Parameters::get()->beamParticlesCharge() ) :
           e_( parameters( e_min, e_max ) ), s_( parameters( s_min, s_max ) ),
           x_( parameters( x_min, x_max ) ), y_( parameters( y_min, y_max ) ),
           tx_( parameters( tx_min, tx_max ) ), ty_( parameters( ty_min, ty_max ) ),
@@ -168,7 +169,7 @@ namespace Hector
         void setEparams( float e1, float e2 ) { e_ = params( e1, e2 ); }
         /// Set the lower and upper limits to the initial beam energy distribution
         void setElimits( float e1, float e2=-1. ) {
-          if ( e2<0 ) e2 = e1; // energies are supposingly positive
+          if ( e2 < 0 ) e2 = e1; // energies are supposingly positive
           e_ = parameters( e1, e2 );
         }
 
@@ -206,7 +207,7 @@ namespace Hector
 
       private:
         /// Translate lower and upper limits into parameters to give to the random generator
-        params parameters( const float& lim1, const float& lim2 ) { return params( lim1, lim2 ); }
+        params parameters( float lim1, float lim2 ) { return params( lim1, lim2 ); }
 
         params e_, s_;
         params x_, y_;
@@ -220,7 +221,7 @@ namespace Hector
     typedef ParticleGun<CLHEP::RandGauss> gaussianParticleGun;
 
     /// Specialization for Gaussian parameters
-    template<> params gaussianParticleGun::parameters( const float& lim1, const float& lim2 );
+    template<> params gaussianParticleGun::parameters( float lim1, float lim2 );
   }
 }
 

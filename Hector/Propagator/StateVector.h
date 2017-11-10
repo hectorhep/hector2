@@ -73,6 +73,8 @@ namespace Hector
       void setAngles( const CLHEP::Hep2Vector& angles ) { setAngles( angles.x(), angles.y() ); }
       /// x'-y' polar angles of a particles (in rad)
       CLHEP::Hep2Vector angles() const;
+      double Tx() const { return angles().x(); }
+      double Ty() const { return angles().y(); }
 
       /// Fill the components of a state according to the particle kinematics
       void setMomentum( const CLHEP::HepLorentzVector& mom );

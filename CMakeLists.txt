@@ -20,7 +20,7 @@ set(HECTOR_DEPENDENCIES CLHEP)
 find_package(Pythia8 QUIET)
 
 if(PYTHIA8_FOUND)
-  list(APPEND HECTOR_DEPENDENCIES ${PYTHIA8_LIBRARY} ${PYTHIA8_lhapdfdummy_LIBRARY})
+  list(APPEND HECTOR_DEPENDENCIES ${PYTHIA8_LIBRARIES})
 endif()
 
 #----- build all the intermediate objects
@@ -36,20 +36,20 @@ endforeach()
 # do not forget to retrieve
 # http://home.thep.lu.se/~leif/LHEF/LHEF.h
 
-add_library(Hector SHARED $<TARGET_OBJECTS:HectorCore>
-                          $<TARGET_OBJECTS:HectorIO>
-                          $<TARGET_OBJECTS:HectorElements>
-                          $<TARGET_OBJECTS:HectorBeamline>
-                          $<TARGET_OBJECTS:HectorPropagator>)
-set_target_properties(Hector PROPERTIES LINKER_LANGUAGE CXX)
+add_library(Hector2 SHARED $<TARGET_OBJECTS:HectorCore>
+                           $<TARGET_OBJECTS:HectorIO>
+                           $<TARGET_OBJECTS:HectorElements>
+                           $<TARGET_OBJECTS:HectorBeamline>
+                           $<TARGET_OBJECTS:HectorPropagator>)
+set_target_properties(Hector2 PROPERTIES LINKER_LANGUAGE CXX)
 
-install(TARGETS Hector DESTINATION lib)
+install(TARGETS Hector2 DESTINATION lib)
 install(DIRECTORY ${HECTOR_MODULES} DESTINATION include FILES_MATCHING PATTERN "*.h")
 
 #----- test executable
 
 add_executable(hector test/test_hector.cpp)
-target_link_libraries(hector Hector ${HECTOR_DEPENDENCIES})
+target_link_libraries(hector Hector2 ${HECTOR_DEPENDENCIES})
 
 #----- add the tests
 

@@ -33,7 +33,7 @@ namespace Hector
 
       /// Destruct the exception (and terminate the program execution if fatal)
       inline ~Exception() {
-        if ( type() == Fatal ) exit( 0 ); // we stop the execution of this process on fatal exception
+        if ( type_ == Fatal ) exit( 0 ); // we stop the execution of this process on fatal exception
       }
 
       /// Method/function that raised the exception
@@ -44,7 +44,7 @@ namespace Hector
       inline ExceptionType type() const { return type_; }
       /// Prettified (colourised) string of the exception type
       inline const std::string typeString() const {
-        switch ( type() ) {
+        switch ( type_ ) {
           case JustWarning:        return "\033[32;1mJustWarning\033[0m";
           case Info:               return "\033[33;1mInfo\033[0m";
           case Fatal:              return "\033[31;1mFatal\033[0m";
@@ -54,26 +54,26 @@ namespace Hector
 
       /// Print all information about this exception
       inline void dump( std::ostream& os = std::cerr ) const {
-        if ( type()<Parameters::get()->loggingThreshold() ) return;
-        if ( type() == Info ) {
+        if ( type_ < Parameters::get()->loggingThreshold() ) return;
+        if ( type_ == Info ) {
           os << "======================= \033[33;1mInformation\033[0m =======================" << std::endl
-             << " From:        " << from() << std::endl;
+             << " From:        " << from_ << std::endl;
         }
         else {
           os << "=================== Exception detected! ===================" << std::endl
              << " Class:       " << typeString() << std::endl
-             << " Raised by:   " << from() << std::endl;
+             << " Raised by:   " << from_ << std::endl;
         }
         os << " Description: " << std::endl
            << "\t" << what() << std::endl;
-        if ( errorNumber()!=0 )
+        if ( error_num_ != 0 )
           os << "-----------------------------------------------------------" << std::endl
              << " Error #" << errorNumber() << std::endl;
         os << "===========================================================" << std::endl;
       }
       /// Get a one-line description of the error
       inline const std::string oneLine() const {
-        return Form( "[%s] ::: %s ::: %s", type(), from().c_str(), what() );
+        return Form( "[%s] ::: %s ::: %s", type_, from_.c_str(), what() );
       }
 
     private:
