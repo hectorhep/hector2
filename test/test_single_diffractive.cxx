@@ -20,7 +20,7 @@ int main( int argc, char* argv[] )
     cerr << "Usage: " << argv[0] << " <mad-x twiss file> [crossing angle (urad)]" << endl;
     return -1;
   }
-  const double crossing_angle = ( argc > 2 ) ? atof( argv[2] ) : Hector::Parameters::get()->crossingAngleX();
+  const double crossing_angle = ( argc > 2 ) ? atof( argv[2] ) : 180.e-6;
   const double beam_divergence = 20.e-6; // in rad
   const double vertex_size = 10.e-6; // in m
 
@@ -79,6 +79,7 @@ int main( int argc, char* argv[] )
       // smear the vertex and divergence ; apply the crossing angle
       auto ang = part.firstStateVector().angles(), pos = part.firstStateVector().position();
       ang[CLHEP::Hep2Vector::X] += CLHEP::RandGauss::shoot( crossing_angle, beam_divergence );
+      ang[CLHEP::Hep2Vector::Y] += CLHEP::RandGauss::shoot( 0., beam_divergence );
       pos[CLHEP::Hep2Vector::X] += CLHEP::RandGauss::shoot( 0., vertex_size );
       pos[CLHEP::Hep2Vector::Y] += CLHEP::RandGauss::shoot( 0., vertex_size );
       part.firstStateVector().setAngles( ang );
