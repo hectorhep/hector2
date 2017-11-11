@@ -1,11 +1,18 @@
-#include "StateVector.h"
-
-#include "Core/Exception.h"
+#include "Hector/Propagator/StateVector.h"
+#include "Hector/Core/Exception.h"
 
 #include <CLHEP/Matrix/Matrix.h>
+#include <CLHEP/Vector/LorentzVector.h>
 
 namespace Hector
 {
+  StateVector::StateVector() :
+    CLHEP::HepVector( 6, 0 ), m_( 0. )
+  {
+    ( *this )[K] = 1.;
+    ( *this )[E] = Parameters::get()->beamEnergy();
+  }
+
   StateVector::StateVector( const CLHEP::HepVector& vec, double mass ) :
     CLHEP::HepVector( vec ), m_( mass )
   {}

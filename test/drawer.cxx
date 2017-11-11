@@ -1,5 +1,6 @@
 #include "Hector/Beamline/Beamline.h"
-#include "Hector/IO/MADXParser.h"
+#include "Hector/IO/MADXHandler.h"
+#include "Hector/Core/Exception.h"
 #include "Hector/Core/Timer.h"
 #include "Hector/Propagator/BeamProducer.h"
 #include "Hector/Propagator/Propagator.h"
@@ -22,14 +23,16 @@ main( int argc, char* argv[] )
     std::cout << "Usage: " << argv[0] << " [MAD-X output file for beam 1] [MAD-X output file for beam 2]" << std::endl;
     return -1;
   }
+  Hector::Parameters::get()->setUseRelativeEnergy( false ); //FIXME
   //Hector::Parameters::get()->setComputeApertureAcceptance( false ); //FIXME
-  //Hector::Parameters::get()->setEnableDipoles( false ); //FIXME
 
   //--- general plotting parameters
   const float max_s = ( argc > 3 ) ? atof( argv[3] ) : 250.;
   const unsigned int num_particles = 1000;
 
-  const Hector::Parser::MADX parser_beam1( argv[1], "IP5", +1, max_s ), parser_beam2( argv[2], "IP5", -1, max_s );
+  const float crossing_angle_x = 180.e-6, crossing_angle_y = 0.;
+
+  const Hector::IO::MADX parser_beam1( argv[1], "IP5", +1, max_s ), parser_beam2( argv[2], "IP5", -1, max_s );
 
   //--- look at both the beamlines
   //parser_beam1.beamline()->dump();
@@ -63,8 +66,8 @@ main( int argc, char* argv[] )
   Hector::BeamProducer::gaussianParticleGun gun;
   gun.setXparams( 0., beam_lateral_width_ip );
   gun.setYparams( 0., beam_lateral_width_ip );
-  gun.setTXparams( 0.5 * Hector::Parameters::get()->crossingAngleX(), beam_angular_divergence_ip );
-  gun.setTYparams( 0.5 * Hector::Parameters::get()->crossingAngleY(), beam_angular_divergence_ip );
+  gun.setTXparams( crossing_angle_x, beam_angular_divergence_ip );
+  gun.setTYparams( crossing_angle_y, beam_angular_divergence_ip );
   //Hector::BeamProducer::TYscanner gun( num_particles, Hector::Parameters::get()->beamEnergy(), -1, 1, max_s );
 
   Hector::Timer tmr;
@@ -75,7 +78,7 @@ main( int argc, char* argv[] )
   for ( size_t i = 0; i < num_particles; ++i ) {
     unsigned short j;
     { //----- beamline 1 propagation
-      gun.setTXparams( -0.5 * Hector::Parameters::get()->crossingAngleX(), beam_angular_divergence_ip );
+      gun.setTXparams( -crossing_angle_x, beam_angular_divergence_ip );
       Hector::Particle p = gun.shoot();
       TGraph gr_x, gr_y;
       try {
@@ -96,7 +99,7 @@ main( int argc, char* argv[] )
       mg1_y.Add( dynamic_cast<TGraph*>( gr_y.Clone() ) );
     }
     { // beamline 2 propagation
-      gun.setTXparams( +0.5 * Hector::Parameters::get()->crossingAngleX(), beam_angular_divergence_ip );
+      gun.setTXparams( crossing_angle_x, beam_angular_divergence_ip );
       Hector::Particle p = gun.shoot();
       TGraph gr_x, gr_y;
       try { prop2.propagate( p, max_s ); } catch ( Hector::Exception& e ) { e.dump(); }
@@ -118,7 +121,7 @@ main( int argc, char* argv[] )
   // drawing part
 
   {
-    Hector::Canvas c( "beamline", Form( "Hector 2 simulation, E_{beam} = %.1f TeV", Hector::Parameters::get()->beamEnergy()*CLHEP::GeV/CLHEP::TeV ), true );
+    Hector::Canvas c( "beamline", Form( "E_{p} = %.1f TeV, #alpha_{X} = %.1f #murad", Hector::Parameters::get()->beamEnergy()*CLHEP::GeV/CLHEP::TeV, crossing_angle_x*1.e6 ), true );
     //c.SetGrayscale();
 
     const float scale_x = 0.1,
@@ -136,6 +139,10 @@ main( int argc, char* argv[] )
     mg1_x.Draw( "l" );
     mg2_x.Draw( "l" );
     c.Prettify( mg1_x.GetHistogram() );
+    mg1_x.GetXaxis()->SetLabelSize( 0.055 );
+    mg1_x.GetYaxis()->SetLabelSize( 0.055 );
+    mg1_x.GetYaxis()->SetTitleSize( 0.1 );
+    mg1_x.GetYaxis()->SetTitleOffset( 0.65 );
     mg1_x.GetXaxis()->SetTitle( "" );
 
     c.cd( 2 ); // y-axis
@@ -149,12 +156,20 @@ main( int argc, char* argv[] )
     mg1_y.Draw( "l" );
     mg2_y.Draw( "l" );
     c.Prettify( mg1_y.GetHistogram() );
+    mg1_y.GetXaxis()->SetLabelSize( 0.055 );
+    mg1_y.GetYaxis()->SetLabelSize( 0.055 );
+    mg1_y.GetXaxis()->SetTitleSize( 0.1 );
+    mg1_y.GetYaxis()->SetTitleSize( 0.1);
+    mg1_y.GetXaxis()->SetTitleOffset( 0.7 );
+    mg1_y.GetYaxis()->SetTitleOffset( 0.65 );
 
     //c.SetMargin( 5., 5., 5., 5. );
 
     c.cd();
     const std::string file1( argv[1] ), file2( argv[2] );
-    Hector::Canvas::PaveText( 0.01, 0., 0.05, 0.05, Form( "#scale[0.3]{Beam 1: %s - Beam 2: %s}", file1.substr( file1.find_last_of( "/\\" )+1 ).c_str(), file2.substr( file2.find_last_of( "/\\")+1 ).c_str() ) ).Draw();
+    auto pt = new Hector::Canvas::PaveText( 0.0, 0.0, 0.15, 0.01, Form( "#scale[0.3]{Beam 1: %s - Beam 2: %s}", file1.substr( file1.find_last_of( "/\\" )+1 ).c_str(), file2.substr( file2.find_last_of( "/\\")+1 ).c_str() ) );
+    pt->SetTextAlign( kHAlignLeft+kVAlignBottom );
+    pt->Draw();
 
     c.Save( "pdf" );
   }
@@ -168,7 +183,7 @@ main( int argc, char* argv[] )
     c.Save( "pdf" );
   }
   {
-    Hector::Canvas c( "propagation_time", Form( "Hector 2 simulation, %d events, s_{max} = %.1f m", num_particles, max_s ) );
+    Hector::Canvas c( "propagation_time", Form( "%d events, s_{max} = %.1f m", num_particles, max_s ) );
     gStyle->SetOptStat( 1111 );
     h_timing.Draw();
     c.Prettify( &h_timing );

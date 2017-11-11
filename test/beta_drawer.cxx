@@ -1,4 +1,5 @@
-#include "Hector/IO/MADXParser.h"
+#include "Hector/IO/MADXHandler.h"
+#include "Hector/Beamline/Beamline.h"
 
 #include "Canvas.h"
 
@@ -52,7 +53,7 @@ main( int argc, char* argv[] )
 
   const float max_s = ( argc>2 ) ? atof( argv[2] ) : 500.;
 
-  Hector::Parser::MADX madx( argv[1], "IP5", +1, max_s );
+  Hector::IO::MADX madx( argv[1], "IP5", +1, max_s );
   const Hector::Beamline* beamline = madx.rawBeamline();
 
   TGraph gr_betax, gr_betay,

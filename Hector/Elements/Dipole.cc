@@ -1,7 +1,6 @@
-#include "Dipole.h"
-#include "Drift.h"
-
-#include "Core/Exception.h"
+#include "Hector/Elements/Dipole.h"
+#include "Hector/Elements/Drift.h"
+#include "Hector/Core/Exception.h"
 
 #include <CLHEP/Matrix/DiagMatrix.h>
 
@@ -16,7 +15,7 @@ namespace Hector
 
       const float ke = fieldStrength( eloss, mp, qp ); //FIXME
 
-      if ( ke==0. ) { // simple drift matrix
+      if ( ke == 0. ) { // simple drift matrix
         Exception( __PRETTY_FUNCTION__, Form( "Dipole %s has no effect. Treating it as a drift.", name_.c_str() ), JustWarning ).dump();
         return Drift::genericMatrix( length_ );
       }
@@ -49,7 +48,7 @@ namespace Hector
 
       const float ke = fieldStrength( eloss, mp, qp ); //FIXME
 
-      if ( ke==0. ) { // simple drift matrix
+      if ( ke == 0. ) { // simple drift matrix
         Exception( __PRETTY_FUNCTION__, Form( "Dipole %s has no effect. Treating it as a drift.", name_.c_str() ), JustWarning ).dump();
         return Drift::genericMatrix( length_ );
       }

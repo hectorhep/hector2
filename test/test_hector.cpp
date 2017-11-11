@@ -1,11 +1,15 @@
-#include "IO/MADXParser.h"
-#include "Propagator/Propagator.h"
-#include "Propagator/BeamProducer.h"
+#include "Hector/Core/Exception.h"
+#include "Hector/IO/MADXHandler.h"
+#include "Hector/Beamline/Beamline.h"
+#include "Hector/Propagator/Propagator.h"
+#include "Hector/Propagator/BeamProducer.h"
+
+#include <CLHEP/Random/RandGauss.h>
 
 int main( int argc, char* argv[] )
 {
   const char* twiss_file = ( argc>1 ) ? argv[1] : "data/twiss/twiss_coll0p4m_ir5b1_6p5tev.tfs";
-  Hector::Parser::MADX parser( twiss_file, "IP5", +1, 250. );
+  Hector::IO::MADX parser( twiss_file, "IP5", +1, 250. );
   parser.printInfo();
   parser.beamline()->dump();
 

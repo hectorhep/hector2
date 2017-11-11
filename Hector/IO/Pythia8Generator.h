@@ -1,7 +1,7 @@
 #ifndef Hector_IO_Pythia8Generator_h
 #define Hector_IO_Pythia8Generator_h
 
-#include "Propagator/Particle.h"
+#include "Hector/Propagator/Particle.h"
 
 #include <Pythia8/Pythia.h>
 
@@ -26,10 +26,15 @@ namespace Hector
       Pythia8Generator( const char* xml_input );
       ~Pythia8Generator();
 
-      double crossSection() const { return pythia_->info.sigmaGen(); }
-      double crossSectionError() const { return pythia_->info.sigmaErr(); }
+      double crossSection() const {
+        return pythia_->info.sigmaGen() * 1.e9; // in pb
+      }
+      double crossSectionError() const {
+        return pythia_->info.sigmaErr() * 1.e9;
+      }
       /// Generate an event (list of output particles)
-      Particles generate();
+      /// \param[in] stable Only retrieve stable particles?
+      Particles generate( bool stable = false );
       void generate( Particle& part );
       Particle diffractiveProton();
 

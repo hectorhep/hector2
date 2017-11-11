@@ -1,13 +1,19 @@
-#include "LHEParser.h"
+#include "Hector/IO/LHEHandler.h"
 
-#include "Core/Exception.h"
+#ifndef GOOD_HEPMC
+#pragma message "HepMC version 2 was found on your system! Version 3 is required!"
+#else
+
+#include "Hector/Core/Exception.h"
+
+#include "LHEF.h"
 
 namespace Hector
 {
-  namespace Parser
+  namespace IO
   {
     LHE::LHE( const char* filename ) :
-      reader_( filename )
+      reader_( new LHEF::Reader( filename ) )
     {}
 
     LHE::~LHE()
@@ -27,14 +33,14 @@ namespace Hector
     LHE::nextEvent( Particles& parts )
     {
       parts.clear();
-      bool status = reader_.readEvent();
+      bool status = reader_->readEvent();
       if ( !status ) return false;
 
-      for ( int i=0; i<reader_.hepeup.NUP; i++ ) {
-        const short status = reader_.hepeup.ISTUP[i],
-                    pdg_id = reader_.hepeup.IDUP[i];
+      for ( int i=0; i<reader_->hepeup.NUP; i++ ) {
+        const short status = reader_->hepeup.ISTUP[i],
+                    pdg_id = reader_->hepeup.IDUP[i];
 
-        const CLHEP::HepLorentzVector mom( reader_.hepeup.PUP[i][0], reader_.hepeup.PUP[i][1], reader_.hepeup.PUP[i][2], reader_.hepeup.PUP[i][3] );
+        const CLHEP::HepLorentzVector mom( reader_->hepeup.PUP[i][0], reader_->hepeup.PUP[i][1], reader_->hepeup.PUP[i][2], reader_->hepeup.PUP[i][3] );
 
         if ( status==-1 and pdg_id!=2212 ) { // only accept protons as primary beam particles (FIXME: use mass to filter?)
           const short sign = ( mom.pz()>0. ) ? +1 : -1;
@@ -55,5 +61,43 @@ namespace Hector
       }
       return true;
     }
+
+    float
+    LHE::crossSection() const
+    {
+      return *( reader_->heprup.XSECUP.begin() );
+    }
+
+    float
+    LHE::crossSectionError() const
+    {
+      return *( reader_->heprup.XERRUP.begin() );
+    }
+
+    int
+    LHE::beam1PDGId() const
+    {
+      return reader_->heprup.IDBMUP.first;
+    }
+
+    int
+    LHE::beam2PDGid() const
+    {
+      return reader_->heprup.IDBMUP.second;
+    }
+
+    float
+    LHE::beam1Energy() const
+    {
+      return reader_->heprup.EBMUP.first;
+    }
+
+    float
+    LHE::beam2Energy() const
+    {
+      return reader_->heprup.EBMUP.second;
+    }
   }
 }
+
+#endif

@@ -1,6 +1,6 @@
 #include "Hector/Core/Exception.h"
 #include "Hector/Core/Utils.h"
-#include "Hector/IO/LHEParser.h"
+#include "Hector/IO/LHEHandler.h"
 
 int
 main( int argc, char* argv[] )
@@ -9,7 +9,7 @@ main( int argc, char* argv[] )
     Hector::Exception( __PRETTY_FUNCTION__, Hector::Form( "Usage: %s [LHE input file]", argv[0] ), Hector::Fatal ).dump();
   }
 
-  Hector::Parser::LHE parser( argv[1] );
+  Hector::IO::LHE parser( argv[1] );
 
   parser.printInfo();
 

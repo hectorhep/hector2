@@ -1,6 +1,5 @@
-#include "ApertureBase.h"
-
-#include "Core/Utils.h"
+#include "Hector/Elements/ApertureBase.h"
+#include "Hector/Core/Utils.h"
 
 namespace Hector
 {
@@ -22,22 +21,6 @@ namespace Hector
       if ( pos_!=rhs.pos_ ) return false;
       if ( param_!=rhs.param_ ) return false;
       return true;
-    }
-
-    std::ostream&
-    operator<<( std::ostream& os, const Type& type )
-    {
-      switch ( type ) {
-        case anInvalidAperture:     os << "invalid"; break;
-        case aRectangularAperture:  os << "rectangular"; break;
-        case aCircularAperture:     os << "circular"; break;
-        case anEllipticAperture:    os << "elliptic"; break;
-        case aRectEllipticAperture: os << "rect-elliptic"; break;
-        case aRectCircularAperture: os << "rect-circular"; break;
-        case aRaceTrackAperture:    os << "race-track"; break;
-        case anOctagonalAperture:   os << "octagonal"; break;
-      }
-      return os;
     }
 
     std::ostream&
