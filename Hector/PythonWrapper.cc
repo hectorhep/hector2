@@ -26,10 +26,6 @@ namespace
     part.dump( os );
     return os.str();
   }
-  std::string dump_statevector( const Hector::StateVector& sv ) {
-    std::ostringstream os; os << sv;
-    return os.str();
-  }
   std::string dump_beamline( const Hector::Beamline& bl ) {
     std::ostringstream os;
     bl.dump( os, true );
@@ -46,10 +42,17 @@ BOOST_PYTHON_MODULE( pyhector )
   //----- GENERAL HELPERS
 
   py::class_<CLHEP::HepLorentzVector>( "LorentzVector" )
-    .def( "px", &CLHEP::HepLorentzVector::px )
-    .def( "py", &CLHEP::HepLorentzVector::py )
-    .def( "pz", &CLHEP::HepLorentzVector::pz )
-    .def( "e", &CLHEP::HepLorentzVector::e )
+    .def( py::init<double,double,double,double>() )
+    .def( py::self_ns::str( py::self_ns::self ) )
+    .def( py::self += py::other<CLHEP::HepLorentzVector>() )
+    .add_property( "x", &CLHEP::HepLorentzVector::x, &CLHEP::HepLorentzVector::setX )
+    .add_property( "y", &CLHEP::HepLorentzVector::y, &CLHEP::HepLorentzVector::setY )
+    .add_property( "z", &CLHEP::HepLorentzVector::z, &CLHEP::HepLorentzVector::setZ )
+    .add_property( "t", &CLHEP::HepLorentzVector::t, &CLHEP::HepLorentzVector::setT )
+    .add_property( "px", &CLHEP::HepLorentzVector::px, &CLHEP::HepLorentzVector::setPx )
+    .add_property( "py", &CLHEP::HepLorentzVector::py, &CLHEP::HepLorentzVector::setPy )
+    .add_property( "pz", &CLHEP::HepLorentzVector::pz, &CLHEP::HepLorentzVector::setPz )
+    .add_property( "e", &CLHEP::HepLorentzVector::e, &CLHEP::HepLorentzVector::setE )
   ;
 
   py::enum_<Hector::ExceptionType>( "ExceptionType" )
@@ -93,20 +96,34 @@ BOOST_PYTHON_MODULE( pyhector )
     .def( py::init<CLHEP::HepVector,double>() )
     .def( py::init<CLHEP::HepLorentzVector,CLHEP::Hep2Vector>() )
     .def( py::init<CLHEP::Hep2Vector,CLHEP::Hep2Vector,double,double>() )
-    .def( "__str__", &dump_statevector )
+    //.def( py::self += py::other<Hector::StateVector>() )
+    .def( py::self_ns::str( py::self_ns::self ) )
     .add_property( "energy", &Hector::StateVector::energy, &Hector::StateVector::setEnergy )
     .add_property( "xi", &Hector::StateVector::xi, &Hector::StateVector::setXi )
     .add_property( "momentum", &Hector::StateVector::momentum, &Hector::StateVector::setMomentum )
+    .add_property( "kick", &Hector::StateVector::kick, &Hector::StateVector::setKick )
+    .add_property( "x", &Hector::StateVector::x, &Hector::StateVector::setX )
+    .add_property( "Tx", &Hector::StateVector::Tx, &Hector::StateVector::setTx )
+    .add_property( "y", &Hector::StateVector::y, &Hector::StateVector::setY )
+    .add_property( "Ty", &Hector::StateVector::Ty, &Hector::StateVector::setTy )
   ;
 
   //----- BEAMLINE DEFINITION
 
-  py::class_<ElementBaseWrap, boost::noncopyable>( "Element", py::no_init )
+  //typedef std::shared_ptr<Hector::Element::ElementBase> ( Hector::Element::ElementBase::*clone )() const;
+/*
+  //py::register_ptr_to_python<std::shared_ptr<Hector::Element::ElementBase> >();
+  //py::objects::class_value_wrapper<std::shared_ptr<Hector::Element::ElementBase>, py::objects::make_ptr_instance<Hector::Element::ElementBase, py::objects::pointer_holder<std::shared_ptr<Hector::Element::ElementBase>,Hector::Element::ElementBase> > >();
+  //py::class_<ElementBaseWrap, std::shared_ptr<Hector::Element::ElementBase>, boost::noncopyable>( "Element", py::no_init )
+  py::class_<Hector::Element::ElementBase, ElementBaseWrap, std::shared_ptr<Hector::Element::ElementBase>, boost::noncopyable>( "Element", py::no_init )
+  //py::class_<ElementBaseWrap, std::shared_ptr<Hector::Element::ElementBase>, boost::noncopyable>( "Element", py::init<>() )
     .def( "matrix", py::pure_virtual( &Hector::Element::ElementBase::matrix ) )
-    .def( "clone", py::pure_virtual( &Hector::Element::ElementBase::clone ) )
-    //.def( "clone", py::pure_virtual( &Hector::Element::ElementBase::clone ), py::return_value_policy<py::manage_new_object>() )
+    //.def( "clone", py::pure_virtual( &Hector::Element::ElementBase::clone ) )
+    .def( "clone", py::pure_virtual( &Hector::Element::ElementBase::clone ), py::return_value_policy<py::manage_new_object>() )
+    //.def( "clone", &ElementBaseWrap::cloneDef, py::return_value_policy<py::manage_new_object>() )
+    //.def( "clone", py::pure_virtual( &Hector::Element::ElementBase::clone ), py::return_value_policy<py::return_by_value>() )
     //.def( "clone", py::pure_virtual( &Hector::Element::ElementBase::clone ), py::return_internal_reference<>() )
-    .def( "__str__", &Hector::Element::ElementBase::name )
+    .def( py::self_ns::str( py::self_ns::self ) )
     .add_property( "name", &Hector::Element::ElementBase::name, &Hector::Element::ElementBase::setName )
     .add_property( "type", &Hector::Element::ElementBase::type, &Hector::Element::ElementBase::setType )
     .add_property( "s", &Hector::Element::ElementBase::s, &Hector::Element::ElementBase::setS )
@@ -118,6 +135,7 @@ BOOST_PYTHON_MODULE( pyhector )
     .add_property( "dispersion", &Hector::Element::ElementBase::dispersion, &Hector::Element::ElementBase::setDispersion )
     .add_property( "relativePosition", &Hector::Element::ElementBase::relativePosition, &Hector::Element::ElementBase::setRelativePosition )
   ;
+  //py::objects::class_value_wrapper<std::shared_ptr<Hector::Element::ElementBase>, py::objects::make_ptr_instance<Hector::Element::ElementBase, py::objects::pointer_holder<std::shared_ptr<Hector::Element::ElementBase>,Hector::Element::ElementBase> > >();
 
   //--- passive elements
   convertElement<Hector::Element::Drift, py::init<std::string,float,float> >( "Drift" );
@@ -138,7 +156,7 @@ BOOST_PYTHON_MODULE( pyhector )
   convertElement<Hector::Element::HorizontalKicker, py::init<std::string,float,float,float>, Hector::Element::Kicker>( "HorizontalKicker" );
   convertElement<Hector::Element::VerticalKicker, py::init<std::string,float,float,float>, Hector::Element::Kicker>( "VerticalKicker" );
 */
-  py::class_<Hector::Beamline>( "Beamline" )
+/*  py::class_<Hector::Beamline>( "Beamline" )
     .def( "__str__", &dump_beamline )
     .def( "dump", &Hector::Beamline::dump, beamline_dump_overloads() )
     //.def( "elements", py::range( &Hector::Beamline::begin, &Hector::Beamline::end ) )
@@ -146,11 +164,11 @@ BOOST_PYTHON_MODULE( pyhector )
     .def( "clear", &Hector::Beamline::clear )
     .def( "addElement", &Hector::Beamline::addElement )
   ;
-
+*/
   //----- I/O HANDLERS
-
+/*
   py::class_<Hector::IO::MADX>( "MadXparser", py::init<const char*,const char*,int,py::optional<float> >() )
     .def( "beamline", &Hector::IO::MADX::beamline, py::return_value_policy<py::reference_existing_object>() )
     .def( "romanPots", &Hector::IO::MADX::romanPots )
-  ;
+  ;*/
 }

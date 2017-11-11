@@ -33,11 +33,20 @@ namespace
     ;
   }
 
-  struct ElementBaseWrap : Hector::Element::ElementBase, py::wrapper<Hector::Element::ElementBase>
+  /*struct ElementBaseWrap : Hector::Element::ElementBase, py::wrapper<Hector::Element::ElementBase>
   {
     ElementBaseWrap() : Hector::Element::ElementBase( Hector::Element::anInvalidElement ) {}
     std::shared_ptr<Hector::Element::ElementBase> clone() const override { return this->get_override( "clone" )(); }
+    std::shared_ptr<ElementBaseWrap> cloneDef() const { return std::make_shared<ElementBaseWrap>( *this ); }
     CLHEP::HepMatrix matrix( float eloss, float mp, int qp ) const override { return this->get_override( "matrix" )( eloss, mp, qp ); }
+  };*/
+  struct ElementBaseWrap : Hector::Element::ElementBase
+  {
+    ElementBaseWrap( PyObject* self ) :
+      Hector::Element::ElementBase( Hector::Element::anInvalidElement ),
+      self_( self ) {}
+    PyObject* self_;
+    std::shared_ptr<Hector::Element::ElementBase> clone() const { return py::call_method<std::shared_ptr<Hector::Element::ElementBase> >( self_, "clone" ); }
   };
 }
 

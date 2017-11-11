@@ -48,7 +48,7 @@ if(Boost_FOUND)
   find_package(PythonLibs 2.7 REQUIRED)
   include_directories(${Boost_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS})
   PYTHON_ADD_MODULE(pyhector ${PROJECT_SOURCE_DIR}/Hector/PythonWrapper.cc)
-  target_link_libraries(pyhector $<TARGET_OBJECTS:HectorCore> $<TARGET_OBJECTS:HectorIO> $<TARGET_OBJECTS:HectorElements> $<TARGET_OBJECTS:HectorBeamline> $<TARGET_OBJECTS:HectorPropagator> ${EXT_LIBS} ${Boost_LIBRARIES})
+  target_link_libraries(pyhector Hector2 ${HECTOR_DEPENDENCIES} ${Boost_LIBRARIES})
 endif()
 
 #----- add the tests
