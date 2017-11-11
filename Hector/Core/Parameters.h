@@ -52,8 +52,6 @@ namespace Hector
     private:
       float beam_energy_;
       float beam_particles_mass_;
-      float crossing_angle_x_;
-      float crossing_angle_y_;
       int beam_particles_charge_;
       ExceptionType logging_threshold_;
       bool use_relative_energy_;

@@ -12,22 +12,7 @@ set(HECTOR_SOURCE_DIR ${PROJECT_SOURCE_DIR}/Hector)
 
 #----- include external dependencies
 
-find_package(CLHEP REQUIRED)
-set(HECTOR_DEPENDENCIES CLHEP)
-
-#----- Pythia 8 for physics samples generation
-
-find_package(Pythia8 QUIET)
-
-if(PYTHIA8_FOUND)
-  list(APPEND HECTOR_DEPENDENCIES ${PYTHIA8_LIBRARY})
-  find_library(LHAPDF LHAPDF)
-  if(LHAPDF)
-    list(APPEND HECTOR_DEPENDENCIES ${LHAPDF})
-  else()
-    list(APPEND HECTOR_DEPENDENCIES lhapdfdummy)
-  endif()
-endif()
+include(SetEnvironment)
 
 #----- build all the intermediate objects
 

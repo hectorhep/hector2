@@ -54,7 +54,7 @@ namespace Hector
         /// A collection of values to be propagated through this parser
         typedef std::vector<std::string> ValuesCollection;
         /// Type of content stored in the parameters map
-        enum ValueType { Unknown = -1, String, Float, Integer };
+        enum ValueType : short { Unknown = -1, String, Float, Integer };
         /// Human-readable printout of a value type
         friend std::ostream& operator<<( std::ostream&, const ValueType& );
 

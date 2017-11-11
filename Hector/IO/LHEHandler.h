@@ -1,12 +1,21 @@
 #ifndef Hector_IO_LHEParser_h
 #define Hector_IO_LHEParser_h
 
-#include "Hector/Propagator/Particle.h"
+#ifdef HEPMC
 
-#include "LHEF.h"
+#include "HepMC/Version.h"
+
+#ifdef HEPMC_VERSION_CODE // HepMC v3+
+#define GOOD_HEPMC
+
+#include "Hector/Propagator/Particle.h"
 
 namespace Hector
 {
+  namespace LHEF
+  {
+    class Reader;
+  }
   namespace IO
   {
     /// Parsing tool for LHEF files to use as beams of primary particles
@@ -27,23 +36,26 @@ namespace Hector
         bool nextEvent( Particles& parts );
 
         /// Process cross section (in pb)
-        float crossSection() const { return *( reader_.heprup.XSECUP.begin() ); }
+        float crossSection() const;
         /// Error on the process cross section (in pb)
-        float crossSectionError() const { return *( reader_.heprup.XERRUP.begin() ); }
+        float crossSectionError() const;
 
         /// PDG id of the positive z beam
-        int beam1PDGId() const { return reader_.heprup.IDBMUP.first; }
+        int beam1PDGId() const;
         /// PDG id of the negative z beam
-        int beam2PDGid() const { return reader_.heprup.IDBMUP.second; }
+        int beam2PDGid() const;
         /// Energy of the positive z beam (in GeV)
-        float beam1Energy() const { return reader_.heprup.EBMUP.first; }
+        float beam1Energy() const;
         /// Energy of the negative z beam (in GeV)
-        float beam2Energy() const { return reader_.heprup.EBMUP.second; }
+        float beam2Energy() const;
 
       private:
-        LHEF::Reader reader_;
+        std::unique_ptr<LHEF::Reader> reader_;
     };
   }
 }
+#endif
+
+#endif
 
 #endif

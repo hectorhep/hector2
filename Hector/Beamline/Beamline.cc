@@ -7,6 +7,7 @@
 #include <CLHEP/Vector/ThreeVector.h>
 
 #include <sstream>
+#include <algorithm>
 
 namespace Hector
 {

@@ -16,7 +16,7 @@ namespace Hector
   {
     /// Unordered set of parameters indexed by key
     template<class T>
-    class Unordered : private std::vector< std::pair<std::string,T> >
+    class Unordered : private std::vector<std::pair<std::string,T> >
     {
       public:
         Unordered() {}
@@ -79,10 +79,10 @@ namespace Hector
 
       public:
         /// Constant-type iterator to browse the map
-        typedef typename std::vector< std::pair<std::string,T> >::const_iterator const_iterator;
+        typedef typename std::vector<std::pair<std::string,T> >::const_iterator const_iterator;
 
       private:
-        typedef std::vector< std::pair<std::string,T> > map;
+        typedef std::vector<std::pair<std::string,T> > map;
     };
   }
 }

@@ -17,6 +17,11 @@
 
 namespace Hector
 {
+/*  namespace ParametersMap
+  {
+    //template class Unordered<IO::MADX::ValueType>;
+    template const std::string Unordered<IO::MADX::ValueType>::key( const size_t i ) const;
+  }*/
   namespace IO
   {
     std::regex MADX::rgx_typ_( "^\\%[0-9]{0,}(s|le)$" );
@@ -462,6 +467,5 @@ namespace Hector
       }
       return os;
     }
-
-  } // namespace Parser
+  } // namespace IO
 } // namespace Hector
