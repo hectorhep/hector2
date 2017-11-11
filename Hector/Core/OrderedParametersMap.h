@@ -21,16 +21,22 @@ namespace Hector
         ~Ordered() {}
 
         /// Number of keys stored in the map
-        size_t size() const { return map::size(); }
+        size_t size() const {
+          return map::size();
+        }
 
         /// Does the map have this key?
-        bool hasKey( const char* key ) const { return map::find( std::string( key ) )!=map::end(); }
+        bool hasKey( const char* key ) const {
+          return map::find( std::string( key ) ) != map::end();
+        }
         /// Add a new key-value combination
         void add( const std::string& key, const T& value ) {
           map::insert( std::pair<std::string,T>( key, value ) );
         }
         /// Add a new key-value combination
-        void add( const char* key, const T& value ) { add( std::string( key ), value ); }
+        void add( const char* key, const T& value ) {
+          add( std::string( key ), value );
+        }
         /// Retrieve the value associated to a key
         const T get( const char* key ) const {
           const auto& val = map::find( std::string( key ) );
