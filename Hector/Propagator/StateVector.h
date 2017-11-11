@@ -42,9 +42,6 @@ namespace Hector
       StateVector( const CLHEP::Hep2Vector& pos, const CLHEP::Hep2Vector& ang, double energy = Parameters::get()->beamEnergy(), double kick = 1. );
       ~StateVector() {}
 
-      /// Human-readable printout of the state vector
-      friend std::ostream& operator<<( std::ostream&, const StateVector& );
-
       /// Get the 6-vector associated to this state
       const CLHEP::HepVector& vector() const { return *this; }
 
@@ -67,13 +64,20 @@ namespace Hector
       void setPosition( const CLHEP::Hep2Vector& pos ) { setPosition( pos.x(), pos.y() ); }
       /// x-y position of a particle (in m)
       CLHEP::Hep2Vector position() const;
+      void setX( double x ) { ( *this )[X] = x; }
+      double x() const { return ( *this )[X]; }
+      void setY( double y ) { ( *this )[Y] = y; }
+      double y() const { return ( *this )[Y]; }
+
       /// Fill the components of a state according to the particle x'-y' angles (in rad)
       void setAngles( double tx, double ty );
       /// Fill the components of a state according to the particle x'-y' angles (in rad)
       void setAngles( const CLHEP::Hep2Vector& angles ) { setAngles( angles.x(), angles.y() ); }
       /// x'-y' polar angles of a particles (in rad)
       CLHEP::Hep2Vector angles() const;
+      void setTx( double tx ) { ( *this )[TX] = tx; }
       double Tx() const { return angles().x(); }
+      void setTy( double ty ) { ( *this )[TY] = ty; }
       double Ty() const { return angles().y(); }
 
       /// Fill the components of a state according to the particle kinematics
@@ -90,6 +94,8 @@ namespace Hector
     private:
       double m_;
   };
+  /// Human-readable printout of the state vector
+  std::ostream& operator<<( std::ostream&, const StateVector& );
 }
 
 #endif

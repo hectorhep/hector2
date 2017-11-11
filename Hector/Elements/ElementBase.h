@@ -41,11 +41,6 @@ namespace Hector
         /// \param[in] qp Particle charge (e)
         virtual CLHEP::HepMatrix matrix( float eloss, float mp, int qp ) const = 0;
 
-        /// Human-readable printout of the properties of an element
-        friend std::ostream& operator<<( std::ostream&, const ElementBase& );
-        /// Human-readable printout of the properties of an element
-        friend std::ostream& operator<<( std::ostream&, const ElementBase* );
-
         /// Set the name of the element
         void setName( const std::string& name ) { name_ = name; }
         /// Element name
@@ -166,6 +161,10 @@ namespace Hector
   }
   /// List of elements
   typedef std::vector<std::shared_ptr<Element::ElementBase> > Elements;
+  /// Human-readable printout of the properties of an element
+  std::ostream& operator<<( std::ostream&, const Element::ElementBase& );
+  /// Human-readable printout of the properties of an element
+  std::ostream& operator<<( std::ostream&, const Element::ElementBase* );
 }
 
 #endif

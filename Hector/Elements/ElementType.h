@@ -32,10 +32,10 @@ namespace Hector
       anInstrument, ///< A measurement apparatus
       aSolenoid ///< Solenoid
     };
-    /// Human-readable printout of a element type
-    std::ostream& operator<<( std::ostream&, const Type& );
   }
 }
+/// Human-readable printout of a element type
+std::ostream& operator<<( std::ostream&, const Hector::Element::Type& );
 
 #endif
 
