@@ -71,7 +71,7 @@ namespace Hector
         // then parse all elements
         parseElements();
 
-        beamline_ = std::move( Beamline::sequencedBeamline( raw_beamline_.get() ) );
+        beamline_ = Beamline::sequencedBeamline( raw_beamline_.get() );
 
       } catch ( Exception& e ) { e.dump(); }
     }
