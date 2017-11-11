@@ -1,15 +1,15 @@
-#include "Pythia8Generator.h"
-
-#include "Core/Parameters.h"
-#include "Core/Utils.h"
-#include "Core/Exception.h"
+#include "Hector/IO/Pythia8Generator.h"
+#include "Hector/Core/Parameters.h"
+#include "Hector/Core/Utils.h"
+#include "Hector/Core/Exception.h"
 
 #include <Pythia8/Event.h>
+#include <CLHEP/Vector/LorentzVector.h>
 
 namespace Hector
 {
   Pythia8Generator::Pythia8Generator( const std::vector<std::string>& params ) :
-    pythia_( std::make_unique<Pythia8::Pythia>() )
+    pythia_( new Pythia8::Pythia )
   {
     // specify the incoming state
     pythia_->settings.mode( "Beams:idA", 2212 );
@@ -28,7 +28,7 @@ namespace Hector
   }
 
   Pythia8Generator::Pythia8Generator( const char* xml_input ) :
-    pythia_( std::make_unique<Pythia8::Pythia>( xml_input ) )
+    pythia_( new Pythia8::Pythia( xml_input ) )
   {
     // initialise the core
     if ( !pythia_->init() ) {
@@ -43,7 +43,7 @@ namespace Hector
   }
 
   Particles
-  Pythia8Generator::generate()
+  Pythia8Generator::generate( bool stable )
   {
     pythia_->next();
     const Pythia8::Event evt = pythia_->event;
@@ -51,8 +51,8 @@ namespace Hector
     Particles pout;
     for ( unsigned short i=0; i<evt.size(); i++ ) {
       const Pythia8::Particle part = evt[i];
-      if ( part.id() == 9902210 ) { // diffractive proton
-        pout.emplace_back( CLHEP::HepLorentzVector( part.px(), part.py(), part.pz(), part.e() ), (int)part.charge() );
+      if ( !stable || ( stable && part.status() > 0 ) ) { // stable particles
+        pout.emplace_back( CLHEP::HepLorentzVector( part.px(), part.py(), part.pz(), part.e() ), (int)part.charge(), part.id() );
       }
     }
     return pout;
@@ -67,7 +67,7 @@ namespace Hector
     for ( unsigned short i=0; i<evt.size(); i++ ) {
       const Pythia8::Particle part = evt[i];
       if ( part.id() == 9902210 ) { // diffractive proton
-        return Particle( CLHEP::HepLorentzVector( part.px(), part.py(), part.pz(), part.e() ), (int)part.charge() );
+        return Particle( CLHEP::HepLorentzVector( part.px(), part.py(), part.pz(), part.e() ), (int)part.charge(), part.id() );
       }
     }
     throw Exception( __PRETTY_FUNCTION__, "Failed to generate the diffractive proton!", JustWarning );
@@ -82,7 +82,7 @@ namespace Hector
     const Pythia8::Event evt = pythia_->event;
     for ( unsigned short i=0; i<evt.size(); i++ ) {
       const Pythia8::Particle part = evt[i];
-      if ( part.id()==9902210 ) { // diffractive proton
+      if ( part.id() == 9902210 ) { // diffractive proton
         in_part.firstStateVector().addMomentum( CLHEP::HepLorentzVector( part.px(), part.py(), part.pz(), part.e() ) );
         return;
       }

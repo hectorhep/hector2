@@ -1,19 +1,28 @@
-#include "MADXParser.h"
+#include "Hector/IO/MADXHandler.h"
 
-#include "Elements/Quadrupole.h"
-#include "Elements/Dipole.h"
-#include "Elements/RectangularCollimator.h"
-#include "Elements/Kicker.h"
-#include "Elements/Marker.h"
+#include "Hector/Core/Exception.h"
 
-#include "Elements/EllipticAperture.h"
-#include "Elements/CircularAperture.h"
-#include "Elements/RectangularAperture.h"
-#include "Elements/RectEllipticAperture.h"
+#include "Hector/Beamline/Beamline.h"
+
+#include "Hector/Elements/Quadrupole.h"
+#include "Hector/Elements/Dipole.h"
+#include "Hector/Elements/RectangularCollimator.h"
+#include "Hector/Elements/Kicker.h"
+#include "Hector/Elements/Marker.h"
+
+#include "Hector/Elements/EllipticAperture.h"
+#include "Hector/Elements/CircularAperture.h"
+#include "Hector/Elements/RectangularAperture.h"
+#include "Hector/Elements/RectEllipticAperture.h"
 
 namespace Hector
 {
-  namespace Parser
+/*  namespace ParametersMap
+  {
+    //template class Unordered<IO::MADX::ValueType>;
+    template const std::string Unordered<IO::MADX::ValueType>::key( const size_t i ) const;
+  }*/
+  namespace IO
   {
     std::regex MADX::rgx_typ_( "^\\%[0-9]{0,}(s|le)$" );
     std::regex MADX::rgx_hdr_( "^\\@ (\\w+) +\\%([0-9]+s|le) +\\\"?([^\"\\n]+)" );
@@ -29,14 +38,14 @@ namespace Hector
     std::regex MADX::rgx_rect_coll_name_( "T[C,A].*\\.\\d[L,R]\\d\\.?(B[1-9])?" );
 
     MADX::MADX( const char* filename, const char* ip_name, int direction, float max_s ) :
+      in_file_( filename ),
       dir_( direction/abs( direction ) ),
       ip_name_( ip_name ), s_offset_( 0. ), found_interaction_point_( false ),
       has_next_element_( false )
     {
-      in_file_ = std::ifstream( filename );
-
       try {
-        if ( !in_file_.is_open() ) throw Exception( __PRETTY_FUNCTION__, Form( "Failed to open Twiss file \"%s\"\n\tCheck the path!", filename ), Fatal );
+        if ( !in_file_.is_open() )
+          throw Exception( __PRETTY_FUNCTION__, Form( "Failed to open Twiss file \"%s\"\n\tCheck the path!", filename ), Fatal );
         parseHeader();
 
         raw_beamline_ = std::unique_ptr<Beamline>( new Beamline( max_s ) );
@@ -62,7 +71,7 @@ namespace Hector
         // then parse all elements
         parseElements();
 
-        beamline_ = std::move( Beamline::sequencedBeamline( raw_beamline_.get() ) );
+        beamline_ = Beamline::sequencedBeamline( raw_beamline_.get() );
 
       } catch ( Exception& e ) { e.dump(); }
     }
@@ -78,9 +87,14 @@ namespace Hector
       found_interaction_point_( rhs.found_interaction_point_ ), has_next_element_( rhs.has_next_element_ )
     {}
 
-    MADX::~MADX()
+    Beamline*
+    MADX::beamline() const
     {
-      if ( in_file_.is_open() ) in_file_.close();
+      if ( !beamline_ ) {
+        PrintWarning( "Sequenced beamline not computed from the MAD-X Twiss file. Retrieving the raw version. You may encounter some numerical issues." );
+        return raw_beamline_.get();
+      }
+      return beamline_.get();
     }
 
     void
@@ -120,6 +134,8 @@ namespace Hector
     void
     MADX::parseHeader()
     {
+      if ( !in_file_.is_open() )
+        throw Exception( __PRETTY_FUNCTION__, "Twiss file is not opened nor ready for parsing!", Fatal );
       std::string line;
       while ( !in_file_.eof() ) {
         std::getline( in_file_, line );
@@ -141,6 +157,8 @@ namespace Hector
     void
     MADX::parseElementsFields()
     {
+      if ( !in_file_.is_open() )
+        throw Exception( __PRETTY_FUNCTION__, "Twiss file is not opened nor ready for parsing!", Fatal );
       std::string line;
 
       in_file_.seekg( in_file_lastline_ );
@@ -178,6 +196,8 @@ namespace Hector
     void
     MADX::findInteractionPoint()
     {
+      if ( !in_file_.is_open() )
+        throw Exception( __PRETTY_FUNCTION__, "Twiss file is not opened nor ready for parsing!", Fatal );
       std::string line;
       in_file_.seekg( in_file_lastline_ );
 
@@ -213,6 +233,8 @@ namespace Hector
     void
     MADX::parseElements()
     {
+      if ( !in_file_.is_open() )
+        throw Exception( __PRETTY_FUNCTION__, "Twiss file is not opened nor ready for parsing!", Fatal );
       // parse the optics elements and their characteristics
       std::string line;
 
@@ -435,16 +457,15 @@ namespace Hector
     }
 
     std::ostream&
-    operator<<( std::ostream& os, const Parser::MADX::ValueType& type )
+    operator<<( std::ostream& os, const IO::MADX::ValueType& type )
     {
       switch ( type ) {
-        case Parser::MADX::Unknown: os << "unknown"; break;
-        case Parser::MADX::String:  os <<  "string"; break;
-        case Parser::MADX::Float:   os <<   "float"; break;
-        case Parser::MADX::Integer: os << "integer"; break;
+        case IO::MADX::Unknown: os << "unknown"; break;
+        case IO::MADX::String:  os <<  "string"; break;
+        case IO::MADX::Float:   os <<   "float"; break;
+        case IO::MADX::Integer: os << "integer"; break;
       }
       return os;
     }
-
-  } // namespace Parser
+  } // namespace IO
 } // namespace Hector

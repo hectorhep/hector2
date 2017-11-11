@@ -2,6 +2,7 @@
 #define Hector_Elements_ElementBase_h
 
 #include "ApertureBase.h"
+#include "ElementType.h"
 
 #include <CLHEP/Matrix/Matrix.h>
 #include <memory>
@@ -11,41 +12,16 @@ namespace Hector
   /// Collection of beamline elements
   namespace Element
   {
-    /// List of types allowed for an element
-    typedef enum {
-      anInvalidElement = -1, ///< Invalid element
-      aMarker, ///< Simple s-marker
-      aDrift, ///< Drift element
-      aMonitor, ///< Monitoring element
-      aRectangularDipole, ///< Rectangular-type dipole
-      aSectorDipole, ///< Sector-type dipole
-      aGenericQuadrupole, ///< Generic (vertical or horizontal) quadrupole
-      aVerticalQuadrupole, ///< Vertical-type quadrupole
-      anHorizontalQuadrupole, ///< Horizontal-type quadrupole
-      aSextupole, ///< Generic sextupole
-      aMultipole, ///< Generic multipole
-      aVerticalKicker, ///< Vertical-type kicker
-      anHorizontalKicker, ///< Horizontal-type kicker
-      aRectangularCollimator, ///< Rectangular-type collimator
-      anEllipticalCollimator, ///< Rectangular-type collimator
-      aCircularCollimator, ///< Circular-type collimator
-      //RomanPot, InteractionPoint,
-      aPlaceholder, ///< A placeholder element
-      anInstrument, ///< A measurement apparatus
-      aSolenoid ///< Solenoid
-    } Type;
-    /// Human-readable printout of a element type
-    std::ostream& operator<<( std::ostream&, const Type& );
     /// A generic beamline element object
     class ElementBase
     {
       public:
         /// Build a new element
-        /// \param[in] type Element type (see Element::ElementBase::Type)
+        /// \param[in] type Element type (see Element::Type)
         /// \param[in] name Element name
         /// \param[in] spos s-position of the element in the beamline
         /// \param[in] length Element length (in m)
-        ElementBase( const Type& type, const std::string& name="invalid element", float spos=0., float length=0. );
+        ElementBase( const Type& type, const std::string& name="invalid element", float spos = 0., float length = 0. );
         /// Copy constructor (moving the associated aperture if any)
         ElementBase( ElementBase& elem );
         /// Copy constructor (cloning the associated aperture if any)
@@ -57,7 +33,7 @@ namespace Hector
         /// Check if two elements (and their properties) are identical
         bool operator==( const ElementBase& ) const;
         /// Check if two elements (and their properties) are different
-        bool operator!=( const ElementBase& rhs ) const { return !( *this==rhs ); }
+        bool operator!=( const ElementBase& rhs ) const { return !( *this == rhs ); }
 
         /// Compute the propagation matrix for this element
         /// \param[in] eloss Particle energy loss in the element (GeV)

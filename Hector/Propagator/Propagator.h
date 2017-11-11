@@ -1,11 +1,14 @@
 #ifndef Hector_Propagator_Propagator_h
 #define Hector_Propagator_Propagator_h
 
-#include "Beamline/Beamline.h"
-#include "Particle.h"
+#include "Hector/Propagator/Particle.h"
 
 namespace Hector
 {
+  class Beamline;
+  namespace Element {
+    class ElementBase;
+  }
   /// Main object to propagate particles through a beamline
   class Propagator
   {

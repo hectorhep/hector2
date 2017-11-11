@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
 project(Hector)
 set(PROJECT_VERSION 2)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-long-long -pedantic -g -fPIC")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -g -std=c++11 -fPIC")
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/cmake)
 
 #----- define all individual modules to be built beforehand
@@ -10,22 +10,13 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/cmake)
 set(HECTOR_MODULES Core IO Elements Beamline Propagator)
 set(HECTOR_SOURCE_DIR ${PROJECT_SOURCE_DIR}/Hector)
 
-#----- enable fortran (for Pythia/Herwig/...)
-
-enable_language(Fortran OPTIONAL)
-
 #----- include external dependencies
 
-find_package(CLHEP REQUIRED)
-find_package(Boost COMPONENTS python QUIET)
-set(EXT_LIBS CLHEP)
-
-find_package(Pythia8)
+include(SetEnvironment)
 
 #----- build all the intermediate objects
 
 include_directories(${PROJECT_SOURCE_DIR})
-include_directories(${HECTOR_SOURCE_DIR})
 foreach(_module ${HECTOR_MODULES})
   include_directories(${HECTOR_SOURCE_DIR}/${_module})
   add_subdirectory(Hector/${_module})
@@ -36,24 +27,20 @@ endforeach()
 # do not forget to retrieve
 # http://home.thep.lu.se/~leif/LHEF/LHEF.h
 
-add_library(Hector SHARED $<TARGET_OBJECTS:HectorCore>
-                          $<TARGET_OBJECTS:HectorIO>
-                          $<TARGET_OBJECTS:HectorElements>
-                          $<TARGET_OBJECTS:HectorBeamline>
-                          $<TARGET_OBJECTS:HectorPropagator>)
-set_target_properties(Hector PROPERTIES LINKER_LANGUAGE CXX)
+add_library(Hector2 SHARED $<TARGET_OBJECTS:HectorCore>
+                           $<TARGET_OBJECTS:HectorIO>
+                           $<TARGET_OBJECTS:HectorElements>
+                           $<TARGET_OBJECTS:HectorBeamline>
+                           $<TARGET_OBJECTS:HectorPropagator>)
+set_target_properties(Hector2 PROPERTIES LINKER_LANGUAGE CXX)
 
-if(DEFINED PYTHIA8_FOUND)
-  list(APPEND EXT_LIBS ${PYTHIA8_LIBRARY})
-endif()
-
-install(TARGETS Hector DESTINATION lib)
+install(TARGETS Hector2 DESTINATION lib)
 install(DIRECTORY ${HECTOR_MODULES} DESTINATION include FILES_MATCHING PATTERN "*.h")
 
 #----- test executable
 
 add_executable(hector test/test_hector.cpp)
-target_link_libraries(hector Hector ${EXT_LIBS})
+target_link_libraries(hector Hector2 ${HECTOR_DEPENDENCIES})
 
 #----- python wrapper
 

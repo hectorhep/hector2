@@ -1,6 +1,9 @@
-#include "BeamProducer.h"
+#include "Hector/Propagator/BeamProducer.h"
+#include "Hector/Core/Exception.h"
 
-#include "Core/Exception.h"
+#include <CLHEP/Random/RandFlat.h>
+#include <CLHEP/Random/RandGauss.h>
+#include <CLHEP/Vector/LorentzVector.h>
 
 namespace Hector
 {
@@ -72,8 +75,8 @@ namespace Hector
 
   template<>
   BeamProducer::params
-  BeamProducer::ParticleGun<CLHEP::RandGauss>::parameters( const float& lim1, const float& lim2 )
+  BeamProducer::ParticleGun<CLHEP::RandGauss>::parameters( float lim1, float lim2 )
   {
-    return BeamProducer::params( ( lim1+lim2 )/2., ( lim2-lim1 )/2. );
+    return BeamProducer::params( 0.5 * ( lim1+lim2 ), 0.5 * ( lim2-lim1 ) );
   }
 }

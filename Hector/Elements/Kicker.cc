@@ -1,7 +1,6 @@
-#include "Kicker.h"
-#include "Drift.h"
-
-#include "Core/Parameters.h"
+#include "Hector/Elements/Kicker.h"
+#include "Hector/Elements/Drift.h"
+#include "Hector/Core/Parameters.h"
 
 namespace Hector
 {

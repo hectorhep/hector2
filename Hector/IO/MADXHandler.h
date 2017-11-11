@@ -1,11 +1,11 @@
 #ifndef Hector_IO_MADXParser_h
 #define Hector_IO_MADXParser_h
 
-#include "Beamline/Beamline.h"
+#include "Hector/Core/OrderedParametersMap.h"
+#include "Hector/Core/UnorderedParametersMap.h"
 
-#include "Core/Exception.h"
-#include "Core/OrderedParametersMap.h"
-#include "Core/UnorderedParametersMap.h"
+#include "Hector/Elements/ElementBase.h"
+#include "Hector/Elements/ApertureType.h"
 
 #include <fstream>
 #include <regex>
@@ -16,19 +16,12 @@ using std::ostream;
 
 namespace Hector
 {
-  namespace Parser
+  class Beamline;
+  namespace IO
   {
     /// Parsing tool for MAD-X output stp files
     class MADX
     {
-      public:
-        /// A collection of values to be propagated through this parser
-        typedef std::vector<std::string> ValuesCollection;
-        /// Type of content stored in the parameters map
-        enum ValueType { Unknown = -1, String, Float, Integer };
-        /// Human-readable printout of a value type
-        friend std::ostream& operator<<( std::ostream&, const ValueType& );
-
       public:
         /// Class constructor
         /// \param[in] max_s Maximal s-coordinate at which the Twiss file must be parsed
@@ -37,16 +30,10 @@ namespace Hector
         MADX( const char* filename, const char* ip_name, int direction, float max_s=-1. );
         MADX( const MADX& );
         MADX( MADX& );
-        ~MADX();
+        ~MADX() {}
 
         /// Retrieve the sequenced beamline parsed from the MAD-X Twiss file
-        Beamline* beamline() const {
-          if ( !beamline_ ) {
-            PrintWarning( "Sequenced beamline not computed from the MAD-X Twiss file. Retrieving the raw version. You may encounter some numerical issues." );
-            return raw_beamline_.get();
-          }
-          return beamline_.get();
-        }
+        Beamline* beamline() const;
         /// Retrieve the raw beamline parsed from the MAD-X Twiss file
         Beamline* rawBeamline() const { return raw_beamline_.get(); }
 
@@ -58,12 +45,19 @@ namespace Hector
         static Aperture::Type findApertureTypeByApertype( std::string apertype );
 
         typedef enum { allPots, horizontalPots, verticalPots } RPType;
-        Elements romanPots( const RPType& type=allPots ) const;
+        Elements romanPots( const RPType& type = allPots ) const;
 
         /// Print all useful information parsed from the MAD-X Twiss file
         void printInfo() const;
 
       private:
+        /// A collection of values to be propagated through this parser
+        typedef std::vector<std::string> ValuesCollection;
+        /// Type of content stored in the parameters map
+        enum ValueType : short { Unknown = -1, String, Float, Integer };
+        /// Human-readable printout of a value type
+        friend std::ostream& operator<<( std::ostream&, const ValueType& );
+
         void parseHeader();
         void parseElementsFields();
         void parseElements();

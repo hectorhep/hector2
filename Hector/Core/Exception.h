@@ -17,7 +17,7 @@ using std::cerr;
 namespace Hector
 {
   /// A simple exception handler
-  class Exception
+  class Exception : public std::runtime_error
   {
     public:
       /// Construct an exception from a std::string description
@@ -25,28 +25,26 @@ namespace Hector
       /// \param[in] desc Error message
       /// \param[in] type Type of exception encountered
       /// \param[in] id Error code associated to the exception
-      inline Exception( const char* from, const std::string& desc, ExceptionType type=Undefined, const int id=0 ) :
-        from_( from ), description_( desc ), type_( type ), error_num_( id ) {}
+      inline Exception( const char* from, const std::string& desc, ExceptionType type = Undefined, int id = 0 ) :
+        std::runtime_error( desc ), from_( from ), type_( type ), error_num_( id ) {}
       /// Construct an exception from a char* description
-      inline Exception( const char* from, const char* desc, ExceptionType type=Undefined, const int id=0 ) :
-        from_( from ), description_( desc ), type_( type ), error_num_( id ) {}
+      inline Exception( const char* from, const char* desc, ExceptionType type = Undefined, int id = 0 ) :
+        std::runtime_error( desc ), from_( from ), type_( type ), error_num_( id ) {}
 
       /// Destruct the exception (and terminate the program execution if fatal)
       inline ~Exception() {
-        if ( type()==Fatal ) exit(0); // we stop the execution of this process on fatal exception
+        if ( type_ == Fatal ) exit( 0 ); // we stop the execution of this process on fatal exception
       }
 
       /// Method/function that raised the exception
       inline const std::string from() const { return from_; }
       /// Error code associated to the exception
-      inline const int errorNumber() const { return error_num_; }
-      /// Exception message
-      inline const std::string description() const { return description_; }
+      inline int errorNumber() const { return error_num_; }
       /// Type of exception encountered (info, warning, fatal error)
-      inline const ExceptionType type() const { return type_; }
+      inline ExceptionType type() const { return type_; }
       /// Prettified (colourised) string of the exception type
       inline const std::string typeString() const {
-        switch ( type() ) {
+        switch ( type_ ) {
           case JustWarning:        return "\033[32;1mJustWarning\033[0m";
           case Info:               return "\033[33;1mInfo\033[0m";
           case Fatal:              return "\033[31;1mFatal\033[0m";
@@ -55,35 +53,31 @@ namespace Hector
       }
 
       /// Print all information about this exception
-      inline void dump( std::ostream& os=std::cerr ) const {
-        if ( type()<Parameters::get()->loggingThreshold() ) return;
-        if ( type()==Info ) {
+      inline void dump( std::ostream& os = std::cerr ) const {
+        if ( type_ < Parameters::get()->loggingThreshold() ) return;
+        if ( type_ == Info ) {
           os << "======================= \033[33;1mInformation\033[0m =======================" << std::endl
-             << " From:        " << from() << std::endl;
+             << " From:        " << from_ << std::endl;
         }
         else {
           os << "=================== Exception detected! ===================" << std::endl
              << " Class:       " << typeString() << std::endl
-             << " Raised by:   " << from() << std::endl;
+             << " Raised by:   " << from_ << std::endl;
         }
         os << " Description: " << std::endl
-           << "\t" << description() << std::endl;
-        if ( errorNumber()!=0 )
+           << "\t" << what() << std::endl;
+        if ( error_num_ != 0 )
           os << "-----------------------------------------------------------" << std::endl
              << " Error #" << errorNumber() << std::endl;
         os << "===========================================================" << std::endl;
       }
       /// Get a one-line description of the error
       inline const std::string oneLine() const {
-        std::ostringstream os;
-        os << "[" << type() << "] === " << from() << " === "
-           << description();
-        return os.str();
+        return Form( "[%s] ::: %s ::: %s", type_, from_.c_str(), what() );
       }
 
     private:
       std::string from_;
-      std::string description_;
       ExceptionType type_;
       int error_num_;
   };

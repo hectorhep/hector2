@@ -1,21 +1,21 @@
-#include "PythonWrapper.h"
+#include "Hector/PythonWrapper.h"
 
 #include <CLHEP/Vector/LorentzVector.h>
 
-#include "Core/ExceptionType.h"
-#include "Core/Parameters.h"
+#include "Hector/Core/ExceptionType.h"
+#include "Hector/Core/Parameters.h"
 
-#include "Propagator/Particle.h"
-#include "Propagator/StateVector.h"
+#include "Hector/Propagator/Particle.h"
+#include "Hector/Propagator/StateVector.h"
 
-#include "Beamline/Beamline.h"
-#include "Elements/ElementBase.h"
-#include "Elements/Drift.h"
-#include "Elements/Dipole.h"
-#include "Elements/Quadrupole.h"
-#include "Elements/Kicker.h"
+#include "Hector/Beamline/Beamline.h"
+#include "Hector/Elements/ElementBase.h"
+#include "Hector/Elements/Drift.h"
+#include "Hector/Elements/Dipole.h"
+#include "Hector/Elements/Quadrupole.h"
+#include "Hector/Elements/Kicker.h"
 
-#include "IO/MADXParser.h"
+#include "Hector/IO/MADXHandler.h"
 
 #include <memory>
 
@@ -63,8 +63,6 @@ BOOST_PYTHON_MODULE( pyhector )
     .def( "get", &Hector::Parameters::get ).staticmethod( "get" )
     .add_property( "beamEnergy", &Hector::Parameters::beamEnergy, &Hector::Parameters::setBeamEnergy )
     .add_property( "beamParticlesMass", &Hector::Parameters::beamParticlesMass, &Hector::Parameters::setBeamParticlesMass )
-    .add_property( "crossingAngleX", &Hector::Parameters::crossingAngleX, &Hector::Parameters::setCrossingAngleX )
-    .add_property( "crossingAngleY", &Hector::Parameters::crossingAngleY, &Hector::Parameters::setCrossingAngleY )
     .add_property( "beamParticlesCharge", &Hector::Parameters::beamParticlesCharge, &Hector::Parameters::setBeamParticlesCharge )
     .add_property( "loggingThreshold", &Hector::Parameters::loggingThreshold, &Hector::Parameters::setLoggingThreshold )
     .add_property( "useRelativeEnergy", &Hector::Parameters::useRelativeEnergy, &Hector::Parameters::setUseRelativeEnergy )
@@ -151,8 +149,8 @@ BOOST_PYTHON_MODULE( pyhector )
 
   //----- I/O HANDLERS
 
-  py::class_<Hector::Parser::MADX>( "MadXparser", py::init<const char*,const char*,int,py::optional<float> >() )
-    .def( "beamline", &Hector::Parser::MADX::beamline, py::return_value_policy<py::reference_existing_object>() )
-    .def( "romanPots", &Hector::Parser::MADX::romanPots )
+  py::class_<Hector::IO::MADX>( "MadXparser", py::init<const char*,const char*,int,py::optional<float> >() )
+    .def( "beamline", &Hector::IO::MADX::beamline, py::return_value_policy<py::reference_existing_object>() )
+    .def( "romanPots", &Hector::IO::MADX::romanPots )
   ;
 }
