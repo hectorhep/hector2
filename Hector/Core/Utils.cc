@@ -3,7 +3,6 @@
 #include <stdarg.h>  // For va_start, etc.
 #include <algorithm>
 #include <locale>
-#include <CLHEP/Vector/TwoVector.h>
 
 namespace Hector
 {
@@ -42,20 +41,5 @@ namespace Hector
     std::string s( str );
     std::transform( str.begin(), str.end(), s.begin(), ::tolower );
     return s;
-  }
-
-  namespace math
-  {
-    /// Compute the tangent of both the components of a 2-vector
-    CLHEP::Hep2Vector tan2( const CLHEP::Hep2Vector& ang ) {
-      const double x = ang.x(), y = ang.y();
-      return CLHEP::Hep2Vector( tan( x ), tan( y ) );
-    }
-
-    /// Compute the arc-tangent of both the components of a 2-vector
-    CLHEP::Hep2Vector atan2( const CLHEP::Hep2Vector& ang ) {
-      const double x = ang.x(), y = ang.y();
-      return CLHEP::Hep2Vector( atan( x ), atan( y ) );
-    }
   }
 }

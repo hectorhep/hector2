@@ -2,7 +2,7 @@
 #include "Hector/IO/MADXHandler.h"
 #include "Hector/Core/Exception.h"
 #include "Hector/Core/Timer.h"
-#include "Hector/Propagator/BeamProducer.h"
+#include "Hector/Utils/BeamProducer.h"
 #include "Hector/Propagator/Propagator.h"
 
 #include "utils.h"

@@ -1,24 +1,22 @@
 #include "Quadrupole.h"
 #include "Drift.h"
 
-#include <CLHEP/Matrix/DiagMatrix.h>
-
 namespace Hector
 {
   namespace Element
   {
-    CLHEP::HepMatrix
+    Matrix
     HorizontalQuadrupole::matrix( float eloss, float mp, int qp ) const
     {
       const float ke = fabs( fieldStrength( eloss, mp, qp ) );
-      if ( ke==0. ) { return Drift::genericMatrix( length_ ); } // simple drift matrix
+      if ( ke == 0. ) return Drift::genericMatrix( length_ ); // simple drift matrix
 
       const double sq_k = sqrt( ke ), inv_sq_k = 1./sq_k,
                    omega = sqrt( fabs( ke ) )*length_,
                    s_omega = sin( omega ), c_omega = cos( omega ),
                    sh_omega = sinh( omega ), ch_omega = cosh( omega );
 
-      CLHEP::HepMatrix mat = CLHEP::HepDiagMatrix( 6, 1 );
+      Matrix mat = DiagMatrix( 6, 1 );
       // Focussing Twiss matrix
       mat( 1, 1 ) = c_omega;
       mat( 1, 2 ) = s_omega * inv_sq_k;
@@ -32,18 +30,18 @@ namespace Hector
       return mat;
     }
 
-    CLHEP::HepMatrix
+    Matrix
     VerticalQuadrupole::matrix( float eloss, float mp, int qp ) const
     {
       const float ke = fieldStrength( eloss, mp, qp );
-      if ( ke==0. ) { return Drift::genericMatrix( length_ ); } // simple drift matrix
+      if ( ke == 0. ) return Drift::genericMatrix( length_ ); // simple drift matrix
 
       const double sq_k = sqrt( ke ), inv_sq_k = 1./sq_k,
                    omega = sqrt( fabs( ke ) )*length_,
                    s_omega = sin( omega ), c_omega = cos( omega ),
                    sh_omega = sinh( omega ), ch_omega = cosh( omega );
 
-      CLHEP::HepMatrix mat = CLHEP::HepDiagMatrix( 6, 1 );
+      Matrix mat = DiagMatrix( 6, 1 );
       // Defocussing Twiss matrix
       mat( 1, 1 ) = ch_omega;
       mat( 1, 2 ) = sh_omega * inv_sq_k;

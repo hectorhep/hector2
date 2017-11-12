@@ -2,8 +2,6 @@
 #include "Hector/Core/Exception.h"
 
 #include <CLHEP/Random/RandFlat.h>
-#include <CLHEP/Vector/TwoVector.h>
-#include <CLHEP/Vector/LorentzVector.h>
 
 namespace Hector
 {
@@ -26,7 +24,7 @@ namespace Hector
   Particle
   Particle::fromMassCharge( double mass, int charge )
   {
-    Particle p( StateVector( CLHEP::HepVector( 6, 0 ), mass ) );
+    Particle p( StateVector( Vector( 6, 0 ), mass ) );
     p.setCharge( charge );
     return p;
   }
@@ -34,7 +32,7 @@ namespace Hector
   void
   Particle::addPosition( const Position& pos, bool stopped )
   {
-    if ( positions_.size()>0 and lastStateVector().m()!=pos.stateVector().m() ) {
+    if ( !positions_.empty() > 0 && lastStateVector().m() != pos.stateVector().m() ) {
       throw Exception( __PRETTY_FUNCTION__, Form( "Particle mass is not conserved in propagation!\n\t"
                                                   "Previous mass was %.3f GeV, new mass is %.3f GeV",
                                                   lastStateVector().m(), pos.stateVector().m() ), Fatal );
@@ -60,8 +58,8 @@ namespace Hector
 
     const StateVector sv_before = lower_it->second,
                       sv_after = upper_it->second;
-    const CLHEP::Hep2Vector in = sv_before.position(),
-                            out = sv_after.position();
+    const TwoVector in = sv_before.position(),
+                    out = sv_after.position();
 
     const double drift_length = upper_it->first-lower_it->first;
     if ( drift_length == 0 ) {
@@ -69,14 +67,14 @@ namespace Hector
                                                   "Interpolation is impossible!", s ), JustWarning );
     }
 
-    const CLHEP::Hep2Vector s_pos = in + ( ( s-lower_it->first )/drift_length )*( out-in );
+    const TwoVector s_pos = in + ( ( s-lower_it->first )/drift_length )*( out-in );
 
     StateVector out_stvec( lower_it->second );
     out_stvec.setPosition( s_pos );
     return out_stvec;
   }
 
-  const CLHEP::HepLorentzVector
+  const LorentzVector
   Particle::momentumAt( double s ) const
   {
     return stateVectorAt( s ).momentum();
@@ -145,8 +143,8 @@ namespace Hector
     const double theta = atan( seta/( Parameters::get()->beamEnergy()/gkk-ceta ) ),
                  phi = CLHEP::RandFlat::shoot( phi_min, phi_max );
 
-    CLHEP::Hep2Vector old_ang( sv_ini.angles() );
-    sv_ini.setAngles( old_ang + CLHEP::Hep2Vector( theta*cos( phi ), -theta*sin( phi ) ) );
+    TwoVector old_ang( sv_ini.angles() );
+    sv_ini.setAngles( old_ang + TwoVector( theta*cos( phi ), -theta*sin( phi ) ) );
 
     // caution: emitting a photon erases all known positions !
     positions_.clear();

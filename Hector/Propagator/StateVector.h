@@ -1,23 +1,17 @@
 #ifndef Hector_Propagator_StateVector_h
 #define Hector_Propagator_StateVector_h
 
-#include <CLHEP/Matrix/Vector.h>
-#include <CLHEP/Vector/TwoVector.h>
+#include "Hector/Core/Algebra.h"
+#include "Hector/Core/Parameters.h"
 
 #include <map>
 
-#include "Hector/Core/Parameters.h"
-
 using std::cout;
 
-namespace CLHEP
-{
-  class HepLorentzVector;
-}
 namespace Hector
 {
   /// Six-dimensional state vector associated to a particle at a given s
-  class StateVector : private CLHEP::HepVector
+  class StateVector : private Vector
   {
     private:
       /// Human-readable enumeration of the 6 state vector coordinates
@@ -29,21 +23,21 @@ namespace Hector
     public:
       /// Build a blank state
       StateVector();
-      //StateVector( const StateVector& sv ) : CLHEP::HepVector( sv.vector() ), m_( sv.m_ ) {}
+      //StateVector( const StateVector& sv ) : TwoVector( sv.vector() ), m_( sv.m_ ) {}
       /// Build a state using a 6-component vector and a particle mass
       /// \param[in] vec A 6-component vector
       /// \param[in] mass Particle mass (GeV)
-      StateVector( const CLHEP::HepVector& vec, double mass );
+      StateVector( const Vector& vec, double mass );
       /// Build a state using a particle kinematics and position
       /// \param[in] mom Four-momentum of the particle (GeV)
       /// \param[in] pos x-y position of the particle (m)
-      StateVector( const CLHEP::HepLorentzVector& mom, const CLHEP::Hep2Vector& pos = CLHEP::Hep2Vector() );
+      StateVector( const LorentzVector& mom, const TwoVector& pos = TwoVector() );
       /// Build a state vector using the particle's position and its angle
-      StateVector( const CLHEP::Hep2Vector& pos, const CLHEP::Hep2Vector& ang, double energy = Parameters::get()->beamEnergy(), double kick = 1. );
+      StateVector( const TwoVector& pos, const TwoVector& ang, double energy = Parameters::get()->beamEnergy(), double kick = 1. );
       ~StateVector() {}
 
       /// Get the 6-vector associated to this state
-      const CLHEP::HepVector& vector() const { return *this; }
+      const Vector& vector() const { return *this; }
 
       /// Set the particle energy (in GeV)
       void setEnergy( double energy ) { ( *this )[E] = energy; }
@@ -61,9 +55,9 @@ namespace Hector
       /// Fill the components of a state according to the particle position
       void setPosition( double x, double y );
       /// Fill the components of a state according to the particle position
-      void setPosition( const CLHEP::Hep2Vector& pos ) { setPosition( pos.x(), pos.y() ); }
+      void setPosition( const TwoVector& pos ) { setPosition( pos.x(), pos.y() ); }
       /// x-y position of a particle (in m)
-      CLHEP::Hep2Vector position() const;
+      TwoVector position() const;
       void setX( double x ) { ( *this )[X] = x; }
       double x() const { return ( *this )[X]; }
       void setY( double y ) { ( *this )[Y] = y; }
@@ -72,19 +66,19 @@ namespace Hector
       /// Fill the components of a state according to the particle x'-y' angles (in rad)
       void setAngles( double tx, double ty );
       /// Fill the components of a state according to the particle x'-y' angles (in rad)
-      void setAngles( const CLHEP::Hep2Vector& angles ) { setAngles( angles.x(), angles.y() ); }
+      void setAngles( const TwoVector& angles ) { setAngles( angles.x(), angles.y() ); }
       /// x'-y' polar angles of a particles (in rad)
-      CLHEP::Hep2Vector angles() const;
+      TwoVector angles() const;
       void setTx( double tx ) { ( *this )[TX] = tx; }
       double Tx() const { return angles().x(); }
       void setTy( double ty ) { ( *this )[TY] = ty; }
       double Ty() const { return angles().y(); }
 
       /// Fill the components of a state according to the particle kinematics
-      void setMomentum( const CLHEP::HepLorentzVector& mom );
-      void addMomentum( const CLHEP::HepLorentzVector& mom );
+      void setMomentum( const LorentzVector& mom );
+      void addMomentum( const LorentzVector& mom );
       /// Four-momentum of the particle (in GeV)
-      CLHEP::HepLorentzVector momentum() const;
+      LorentzVector momentum() const;
       /// Set the particle mass (in GeV)
       /// \warning Use with care! edits the energy as well as the mass to maintain a consistant kinematics.
       void setM( double mass );

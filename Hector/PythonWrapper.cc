@@ -1,7 +1,5 @@
 #include "Hector/PythonWrapper.h"
 
-#include <CLHEP/Vector/LorentzVector.h>
-
 #include "Hector/Core/ExceptionType.h"
 #include "Hector/Core/Parameters.h"
 
@@ -41,18 +39,18 @@ BOOST_PYTHON_MODULE( pyhector )
 {
   //----- GENERAL HELPERS
 
-  py::class_<CLHEP::HepLorentzVector>( "LorentzVector" )
+  py::class_<Hector::LorentzVector>( "LorentzVector" )
     .def( py::init<double,double,double,double>() )
     .def( py::self_ns::str( py::self_ns::self ) )
-    .def( py::self += py::other<CLHEP::HepLorentzVector>() )
-    .add_property( "x", &CLHEP::HepLorentzVector::x, &CLHEP::HepLorentzVector::setX )
-    .add_property( "y", &CLHEP::HepLorentzVector::y, &CLHEP::HepLorentzVector::setY )
-    .add_property( "z", &CLHEP::HepLorentzVector::z, &CLHEP::HepLorentzVector::setZ )
-    .add_property( "t", &CLHEP::HepLorentzVector::t, &CLHEP::HepLorentzVector::setT )
-    .add_property( "px", &CLHEP::HepLorentzVector::px, &CLHEP::HepLorentzVector::setPx )
-    .add_property( "py", &CLHEP::HepLorentzVector::py, &CLHEP::HepLorentzVector::setPy )
-    .add_property( "pz", &CLHEP::HepLorentzVector::pz, &CLHEP::HepLorentzVector::setPz )
-    .add_property( "e", &CLHEP::HepLorentzVector::e, &CLHEP::HepLorentzVector::setE )
+    .def( py::self += py::other<Hector::LorentzVector>() )
+    .add_property( "x", &Hector::LorentzVector::x, &Hector::LorentzVector::setX )
+    .add_property( "y", &Hector::LorentzVector::y, &Hector::LorentzVector::setY )
+    .add_property( "z", &Hector::LorentzVector::z, &Hector::LorentzVector::setZ )
+    .add_property( "t", &Hector::LorentzVector::t, &Hector::LorentzVector::setT )
+    .add_property( "px", &Hector::LorentzVector::px, &Hector::LorentzVector::setPx )
+    .add_property( "py", &Hector::LorentzVector::py, &Hector::LorentzVector::setPy )
+    .add_property( "pz", &Hector::LorentzVector::pz, &Hector::LorentzVector::setPz )
+    .add_property( "e", &Hector::LorentzVector::e, &Hector::LorentzVector::setE )
   ;
 
   py::enum_<Hector::ExceptionType>( "ExceptionType" )
@@ -80,7 +78,7 @@ BOOST_PYTHON_MODULE( pyhector )
   void ( Hector::Particle::*addPosition_vec )( double, const Hector::StateVector&, bool ) = &Hector::Particle::addPosition;
   void ( Hector::Particle::*addPosition_pos )( const Hector::Particle::Position&, bool ) = &Hector::Particle::addPosition;
   py::class_<Hector::Particle>( "Particle" )
-    .def( py::init<CLHEP::HepLorentzVector,int>() )
+    .def( py::init<Hector::LorentzVector,int>() )
     .def( py::init<Hector::StateVector,double>() )
     .def( "__str__", &dump_particle )
     .add_property( "pdgId", &Hector::Particle::pdgId, &Hector::Particle::setPDGid )
@@ -93,9 +91,9 @@ BOOST_PYTHON_MODULE( pyhector )
   ;
 
   py::class_<Hector::StateVector>( "StateVector" )
-    .def( py::init<CLHEP::HepVector,double>() )
-    .def( py::init<CLHEP::HepLorentzVector,CLHEP::Hep2Vector>() )
-    .def( py::init<CLHEP::Hep2Vector,CLHEP::Hep2Vector,double,double>() )
+    .def( py::init<Hector::Vector,double>() )
+    .def( py::init<Hector::LorentzVector,Hector::TwoVector>() )
+    .def( py::init<Hector::TwoVector,Hector::TwoVector,double,double>() )
     //.def( py::self += py::other<Hector::StateVector>() )
     .def( py::self_ns::str( py::self_ns::self ) )
     .add_property( "energy", &Hector::StateVector::energy, &Hector::StateVector::setEnergy )

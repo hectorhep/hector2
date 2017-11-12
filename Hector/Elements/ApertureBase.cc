@@ -5,7 +5,7 @@ namespace Hector
 {
   namespace Aperture
   {
-    ApertureBase::ApertureBase( const Type& type, const CLHEP::Hep2Vector& pos, const Parameters& param ) :
+    ApertureBase::ApertureBase( const Type& type, const TwoVector& pos, const Parameters& param ) :
       type_( type ), pos_( pos ), param_( param )
     {}
 

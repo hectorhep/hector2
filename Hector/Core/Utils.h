@@ -3,11 +3,6 @@
 
 #include <string>
 
-namespace CLHEP
-{
-  class Hep2Vector;
-}
-
 namespace Hector
 {
   /// Format a string using a printf style format descriptor.
@@ -16,14 +11,6 @@ namespace Hector
   std::string trim( const std::string& str );
   /// Get the lowercase version of a string
   std::string lowercase( const std::string& str );
-
-  namespace math
-  {
-    /// Compute the tangent of both the components of a 2-vector
-    CLHEP::Hep2Vector tan2( const CLHEP::Hep2Vector& ang );
-    /// Compute the arc-tangent of both the components of a 2-vector
-    CLHEP::Hep2Vector atan2( const CLHEP::Hep2Vector& ang );
-  }
 }
 
 #endif

@@ -1,7 +1,5 @@
 #include "Drift.h"
 
-#include <CLHEP/Matrix/DiagMatrix.h>
-
 namespace Hector
 {
   namespace Element
@@ -14,16 +12,16 @@ namespace Hector
       ElementBase( type, name, spos, length )
     {}
 
-    CLHEP::HepMatrix
+    Matrix
     Drift::matrix( float, float, int ) const
     {
       return genericMatrix( length_ );
     }
 
-    CLHEP::HepMatrix
+    Matrix
     Drift::genericMatrix( float length )
     {
-      CLHEP::HepMatrix mat = CLHEP::HepDiagMatrix( 6, 1 );
+      Matrix mat = DiagMatrix( 6, 1 );
       mat( 1, 2 ) = length;
       mat( 3, 4 ) = length;
       return mat;

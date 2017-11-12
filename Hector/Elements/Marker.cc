@@ -9,7 +9,7 @@ namespace Hector
       ElementBase( aMarker, name, spos, length )
     {}
 
-    CLHEP::HepMatrix
+    Matrix
     Marker::matrix( float, float, int ) const
     {
       return Drift::genericMatrix( length_ );

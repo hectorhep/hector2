@@ -7,7 +7,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/cmake)
 
 #----- define all individual modules to be built beforehand
 
-set(HECTOR_MODULES Core IO Elements Beamline Propagator)
+set(HECTOR_MODULES Core IO Elements Beamline Propagator Utils)
 set(HECTOR_SOURCE_DIR ${PROJECT_SOURCE_DIR}/Hector)
 
 #----- include external dependencies
@@ -31,7 +31,8 @@ add_library(Hector2 SHARED $<TARGET_OBJECTS:HectorCore>
                            $<TARGET_OBJECTS:HectorIO>
                            $<TARGET_OBJECTS:HectorElements>
                            $<TARGET_OBJECTS:HectorBeamline>
-                           $<TARGET_OBJECTS:HectorPropagator>)
+                           $<TARGET_OBJECTS:HectorPropagator>
+                           $<TARGET_OBJECTS:HectorUtils>)
 set_target_properties(Hector2 PROPERTIES LINKER_LANGUAGE CXX)
 
 install(TARGETS Hector2 DESTINATION lib)

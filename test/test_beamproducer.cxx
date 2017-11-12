@@ -1,4 +1,4 @@
-#include "Hector/Propagator/BeamProducer.h"
+#include "Hector/Utils/BeamProducer.h"
 
 /// \test Produce a vector of particles for a given pattern
 int

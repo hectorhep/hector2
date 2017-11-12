@@ -41,7 +41,7 @@ namespace Hector
          * \f$
          * assuming \f$ k =  k_{0} \cdot \frac{p_{0}}{p_{0} - \mathrm{d}p} \cdot \frac{q_{\mathrm{particle}}}{q_{\mathrm{beam}}} \f$
          */
-        CLHEP::HepMatrix matrix( float, float, int ) const override;
+        Matrix matrix( float, float, int ) const override;
     };
 
     /// Vertical kicker object builder
@@ -67,7 +67,7 @@ namespace Hector
          * \f$
          * assuming \f$ k =  k_{0} \cdot \frac{p_{0}}{p_{0} - \mathrm{d}p} \cdot \frac{q_{\mathrm{particle}}}{q_{\mathrm{beam}}} \f$
          */
-        CLHEP::HepMatrix matrix( float, float, int ) const override;
+        Matrix matrix( float, float, int ) const override;
     };
   }
 }

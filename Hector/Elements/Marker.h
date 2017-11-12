@@ -17,7 +17,7 @@ namespace Hector
         std::shared_ptr<ElementBase> clone() const override { return std::make_shared<Marker>( *this ); }
         /** \note \f$ \mathbf{M} = \mathbf{I}_6 \f$
          */
-        CLHEP::HepMatrix matrix( float, float, int ) const override;
+        Matrix matrix( float, float, int ) const override;
     };
   }
 }

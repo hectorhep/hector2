@@ -25,7 +25,7 @@ namespace Hector
       /// Build a beamline from a longitudinal size and a interaction point position
       /// \param[in] length Longitudinal length of the beamline
       /// \param[in] ip Position of the interaction point
-      Beamline( float length, const CLHEP::Hep3Vector& ip = CLHEP::Hep3Vector() );
+      Beamline( float length, const ThreeVector& ip = ThreeVector() );
       ~Beamline();
 
       /// Compute all drifts between each element in the beamline
@@ -38,7 +38,7 @@ namespace Hector
       void dump( std::ostream& os = std::cout, bool show_drifts = true ) const;
 
       /// Retrieve the position of the interaction point
-      CLHEP::Hep3Vector interactionPoint() const { return ip_; }
+      ThreeVector interactionPoint() const { return ip_; }
 
       /// Add a new element in the beamline
       /// \param[in] elem Element to be copied and added to the beamline
@@ -81,12 +81,12 @@ namespace Hector
       float maxLength() const { return max_length_; }
 
       /// Offset all elements after a given s-coordinate
-      void offsetElementsAfter( float s, const CLHEP::Hep2Vector& offset );
+      void offsetElementsAfter( float s, const TwoVector& offset );
       /// Tilt all elements after a given s-coordinate
-      void tiltElementsAfter( float s, const CLHEP::Hep2Vector& offset );
+      void tiltElementsAfter( float s, const TwoVector& offset );
 
       /// Total propagation matrix of all combined beamline elements
-      CLHEP::HepMatrix matrix( float, float, int );
+      Matrix matrix( float, float, int );
 
     private:
       /// Copy the list of elements from one beamline to this one
@@ -94,7 +94,7 @@ namespace Hector
       /// Beamline maximal length (in m)
       float max_length_;
       /// Position of the interaction point
-      CLHEP::Hep3Vector ip_;
+      ThreeVector ip_;
 
       /// List of elements defining the beamline
       Elements elements_;

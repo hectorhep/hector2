@@ -3,9 +3,6 @@
 #include "Hector/Elements/Drift.h"
 #include "Hector/Propagator/Particle.h"
 
-#include <CLHEP/Matrix/DiagMatrix.h>
-#include <CLHEP/Vector/ThreeVector.h>
-
 #include <sstream>
 #include <algorithm>
 
@@ -23,7 +20,7 @@ namespace Hector
     if ( copy_elements ) setElements( rhs );
   }
 
-  Beamline::Beamline( float length, const CLHEP::Hep3Vector& ip ) :
+  Beamline::Beamline( float length, const ThreeVector& ip ) :
     max_length_( length+5. ), // artificially increase the size to include next elements
     ip_( ip )
   {}
@@ -129,10 +126,10 @@ namespace Hector
     return 0;
   }
 
-  CLHEP::HepMatrix
+  Matrix
   Beamline::matrix( float eloss, float mp, int qp )
   {
-    CLHEP::HepMatrix out = CLHEP::HepDiagMatrix( 6, 1 );
+    Matrix out = DiagMatrix( 6, 1 );
 
     for ( size_t i = 0; i < elements_.size(); ++i ) {
       const auto elem = elements_.at( i );
@@ -165,7 +162,7 @@ namespace Hector
   }
 
   void
-  Beamline::offsetElementsAfter( float s, const CLHEP::Hep2Vector& offset )
+  Beamline::offsetElementsAfter( float s, const TwoVector& offset )
   {
     for ( auto& elemPtr : elements_ ) {
       if ( elemPtr->s() < s ) continue;
@@ -174,7 +171,7 @@ namespace Hector
   }
 
   void
-  Beamline::tiltElementsAfter( float s, const CLHEP::Hep2Vector& tilt )
+  Beamline::tiltElementsAfter( float s, const TwoVector& tilt )
   {
     for ( auto& elemPtr : elements_ ) {
       if ( elemPtr->s() < s ) continue;

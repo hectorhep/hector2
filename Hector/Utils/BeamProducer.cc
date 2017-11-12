@@ -1,23 +1,15 @@
-#include "Hector/Propagator/BeamProducer.h"
+#include "Hector/Utils/BeamProducer.h"
 #include "Hector/Core/Exception.h"
 
 #include <CLHEP/Random/RandFlat.h>
 #include <CLHEP/Random/RandGauss.h>
-#include <CLHEP/Vector/LorentzVector.h>
 
 namespace Hector
 {
-  /*const float half_crossing_angle = Constants::crossing_angle/2., // urad (at IP)
-              s_ini = 0.,
-              mp = 0.938;
-  // default kinematics parameters
-  CLHEP::Hep2Vector pos_ini( -500., 0. );
-  CLHEP::HepLorentzVector mom_ini( half_crossing_angle, 0., 0., mp );*/
-
   unsigned short
   BeamProducer::LinearScanner::LinearScanner::next()
   {
-    if ( num_gen_>=num_part_ ) {
+    if ( num_gen_ >= num_part_ ) {
       throw Exception( __PRETTY_FUNCTION__, "Too much particles already generated!", JustWarning );
     }
     return num_gen_++;
@@ -29,8 +21,8 @@ namespace Hector
     const float x = p1_.first + LinearScanner::next()*( p1_.second-p1_.first )/( num_part_-1 ),
                 y = p2_.first;
 
-    const CLHEP::Hep2Vector pos_ini( x, y );
-    const CLHEP::HepLorentzVector mom_ini( 0., 0., 0., Parameters::get()->beamEnergy() );
+    const TwoVector pos_ini( x, y );
+    const LorentzVector mom_ini( 0., 0., 0., Parameters::get()->beamEnergy() );
 
     return Particle( StateVector( mom_ini, pos_ini ), s_.first );
   }
@@ -41,8 +33,8 @@ namespace Hector
     const float x = p2_.first,
                 y = p1_.first + LinearScanner::next()*( p1_.second-p1_.first )/( num_part_-1 );
 
-    const CLHEP::Hep2Vector pos_ini( x, y );
-    const CLHEP::HepLorentzVector mom_ini( 0., 0., 0., Parameters::get()->beamEnergy() );
+    const TwoVector pos_ini( x, y );
+    const LorentzVector mom_ini( 0., 0., 0., Parameters::get()->beamEnergy() );
 
     return Particle( StateVector( mom_ini, pos_ini ), s_.first );
   }
@@ -53,7 +45,7 @@ namespace Hector
     const float tx = p1_.first + LinearScanner::next()*( p1_.second-p1_.first )/( num_part_-1 ),
                 ty = p2_.first;
 
-    return Particle( StateVector( CLHEP::Hep2Vector(), CLHEP::Hep2Vector( tx, ty ), e_.first ), s_.first );
+    return Particle( StateVector( TwoVector(), TwoVector( tx, ty ), e_.first ), s_.first );
   }
 
   Particle
@@ -62,7 +54,7 @@ namespace Hector
     const float tx = p2_.first,
                 ty = p1_.first + LinearScanner::next()*( p1_.second-p1_.first )/( num_part_-1 );
 
-    return Particle( StateVector( CLHEP::Hep2Vector(), CLHEP::Hep2Vector( tx, ty ), e_.first ), s_.first );
+    return Particle( StateVector( TwoVector(), TwoVector( tx, ty ), e_.first ), s_.first );
   }
 
   Particle
@@ -70,7 +62,7 @@ namespace Hector
   {
     const float energy = e_.first + LinearScanner::next()*( e_.second-e_.first )/( num_part_-1 ),
                 mom = sqrt( energy*energy-pow( Parameters::get()->beamParticlesMass(), 2 ) );
-    return Particle( StateVector( CLHEP::HepLorentzVector( 0., 0., mom, energy ), CLHEP::Hep2Vector( p1_.first, p2_.first ) ), s_.first );
+    return Particle( StateVector( LorentzVector( 0., 0., mom, energy ), TwoVector( p1_.first, p2_.first ) ), s_.first );
   }
 
   template<>

@@ -1,5 +1,4 @@
 #include "Hector/Propagator/Propagator.h"
-#include "Hector/Propagator/BeamProducer.h"
 
 #include "Hector/Beamline/Beamline.h"
 #include "Hector/Elements/ElementBase.h"
@@ -68,7 +67,7 @@ namespace Hector
         if ( Parameters::get()->computeApertureAcceptance() ) {
           const auto& aper = prev_elem->aperture();
           if ( aper && aper->type() != Aperture::anInvalidAperture ) {
-            const CLHEP::Hep2Vector pos_prev_elem( part.stateVectorAt( prev_elem->s() ).position() );
+            const TwoVector pos_prev_elem( part.stateVectorAt( prev_elem->s() ).position() );
             if ( !aper->contains( pos_prev_elem ) ) {
               std::ostringstream os1, os2, os3;
               os1 << prev_elem->type();
@@ -137,12 +136,12 @@ namespace Hector
       os1 << elem->type(); os2 << elem->matrix( eloss, ini_pos.stateVector().m(), qp );
       PrintInfo( Form( "Propagating through %s element \"%s\" with transfer matrix\n%s", os1.str().c_str(), elem->name().c_str(), os2.str().c_str() ) );*/
 
-      CLHEP::HepVector prop = elem->matrix( eloss, ini_pos.stateVector().m(), qp ) * ( ini_pos.stateVector().vector()-shift.vector() ) + shift.vector();
+      Vector prop = elem->matrix( eloss, ini_pos.stateVector().m(), qp ) * ( ini_pos.stateVector().vector()-shift.vector() ) + shift.vector();
       // perform the propagation (assuming that mass is conserved...)
       StateVector vec( prop, ini_pos.stateVector().m() );
 
       // convert the angles -> tan-1( angle )
-      const CLHEP::Hep2Vector ang_old = vec.angles();
+      const TwoVector ang_old = vec.angles();
       vec.setAngles( math::atan2( ang_old ) );
 
       return Particle::Position( elem->s()+elem->length(), vec );
