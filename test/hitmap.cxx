@@ -2,7 +2,7 @@
 #include "Hector/Core/Exception.h"
 #include "Hector/IO/MADXHandler.h"
 #include "Hector/Propagator/Propagator.h"
-#include "Hector/Propagator/BeamProducer.h"
+#include "Hector/Utils/BeamProducer.h"
 
 #include "utils.h"
 #include "Canvas.h"
@@ -55,7 +55,7 @@ main( int argc, char* argv[] )
   //Hector::BeamProducer::Xscanner gun( num_particles, Hector::Parameters::get()->beamEnergy(), 0., 0.01 );
 
   unsigned short num_stopped = 0;
-  for ( size_t i=0; i!=num_particles; i++ ) {
+  for ( size_t i = 0; i < num_particles; ++i ) {
 
     if ( (int)(i*(double)num_particles/num_particles)%1000==0 ) cout << ">>> Generating particle " << i << " / " << num_particles << endl;
 

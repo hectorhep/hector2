@@ -1,5 +1,4 @@
 #include "Hector/Propagator/Propagator.h"
-#include "Hector/Propagator/BeamProducer.h"
 
 #include "Hector/Beamline/Beamline.h"
 #include "Hector/Elements/ElementBase.h"

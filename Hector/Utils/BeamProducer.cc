@@ -1,4 +1,4 @@
-#include "Hector/Propagator/BeamProducer.h"
+#include "Hector/Utils/BeamProducer.h"
 #include "Hector/Core/Exception.h"
 
 #include <CLHEP/Random/RandFlat.h>
