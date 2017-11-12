@@ -2,13 +2,13 @@
 #include "Hector/Elements/Drift.h"
 #include "Hector/Core/Exception.h"
 
-#include <CLHEP/Matrix/DiagMatrix.h>
+#include "Hector/Core/Algebra.h"
 
 namespace Hector
 {
   namespace Element
   {
-    CLHEP::HepMatrix
+    Matrix
     SectorDipole::matrix( float eloss, float mp, int qp ) const
     {
       if ( !Parameters::get()->enableDipoles() ) return Drift::genericMatrix( length_ );
@@ -25,7 +25,7 @@ namespace Hector
                    c_theta = cos( theta ), s_theta = sin( theta ),
         inv_energy = 1. / Parameters::get()->beamEnergy();
 
-      CLHEP::HepMatrix mat = CLHEP::HepDiagMatrix( 6, 1 );
+      Matrix mat = DiagMatrix( 6, 1 );
 
       mat( 1, 1 ) = c_theta;
       mat( 1, 2 ) = s_theta * radius;
@@ -41,7 +41,7 @@ namespace Hector
       return mat;
     }
 
-    CLHEP::HepMatrix
+    Matrix
     RectangularDipole::matrix( float eloss, float mp, int qp ) const
     {
       if ( !Parameters::get()->enableDipoles() ) return Drift::genericMatrix( length_ );
@@ -60,7 +60,7 @@ namespace Hector
                    simp = 2.*radius*pow( sin( theta*0.5 ), 2 ) * inv_energy;
                    // numerically stable version of ( r/E₀ )*( 1-cos θ )
 
-      CLHEP::HepMatrix mat = CLHEP::HepDiagMatrix( 6, 1 );
+      Matrix mat = DiagMatrix( 6, 1 );
 
       mat( 1, 1 ) = c_theta;
       mat( 1, 2 ) = s_theta * radius;
@@ -73,7 +73,7 @@ namespace Hector
       if ( Parameters::get()->useRelativeEnergy() ) {
         /*throw Exception( __PRETTY_FUNCTION__, "Relative energy mode not yet supported in this version of Hector!\n\t"
                                                 "Please contact the developers for more information.", Fatal );*/
-        CLHEP::HepMatrix ef_matrix = CLHEP::HepDiagMatrix( 6, 1 );
+        Matrix ef_matrix = DiagMatrix( 6, 1 );
         const double t_theta_half_ke = tan( theta*0.5 ) * ke;
         ef_matrix( 2, 1 ) =  t_theta_half_ke;
         ef_matrix( 4, 3 ) = -t_theta_half_ke;

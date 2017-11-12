@@ -1,10 +1,10 @@
 #ifndef Hector_Elements_ElementBase_h
 #define Hector_Elements_ElementBase_h
 
-#include "ApertureBase.h"
-#include "ElementType.h"
+#include "Hector/Core/Algebra.h"
+#include "Hector/Elements/ApertureBase.h"
+#include "Hector/Elements/ElementType.h"
 
-#include <CLHEP/Matrix/Matrix.h>
 #include <memory>
 
 namespace Hector
@@ -39,7 +39,7 @@ namespace Hector
         /// \param[in] eloss Particle energy loss in the element (GeV)
         /// \param[in] mp Particle mass (GeV)
         /// \param[in] qp Particle charge (e)
-        virtual CLHEP::HepMatrix matrix( float eloss, float mp, int qp ) const = 0;
+        virtual Matrix matrix( float eloss, float mp, int qp ) const = 0;
 
         /// Set the name of the element
         void setName( const std::string& name ) { name_ = name; }
@@ -56,25 +56,25 @@ namespace Hector
         float s() const { return s_; }
 
         /// Set the x-y position of the centre of the element
-        void setPosition( const CLHEP::Hep2Vector& pos ) { pos_ = pos; }
+        void setPosition( const TwoVector& pos ) { pos_ = pos; }
         /// Change the x-y position of the element
-        void offset( const CLHEP::Hep2Vector& offset ) {
+        void offset( const TwoVector& offset ) {
           pos_ += offset;
           if ( aperture_ ) aperture_->offset( offset );
         }
         /// x-y position of the element at a given s
-        CLHEP::Hep2Vector position() const { return pos_; }
+        TwoVector position() const { return pos_; }
         /// Horizontal position
         float x() const { return pos_.x(); }
         /// Vertical position
         float y() const { return pos_.y(); }
 
         /// Set the horizontal and vertical angles of the element (computed with respect to the s coordinate)
-        void setAngles( const CLHEP::Hep2Vector& angles ) { angles_ = angles; }
+        void setAngles( const TwoVector& angles ) { angles_ = angles; }
         /// Change the orientation of the element
-        void tilt( const CLHEP::Hep2Vector& tilt ) { angles_ += tilt; }
+        void tilt( const TwoVector& tilt ) { angles_ += tilt; }
         /// Horizontal and vertical tilts of the element (with respect to the s axis)
-        CLHEP::Hep2Vector angles() const { return angles_; }
+        TwoVector angles() const { return angles_; }
         /// Horizontal angle
         float Tx() const { return angles_.x(); }
         /// Vertical angle
@@ -92,19 +92,19 @@ namespace Hector
         float magneticStrength() const { return magnetic_strength_; }
 
         /// Set the beta factor
-        void setBeta( const CLHEP::Hep2Vector& beta ) { beta_ = beta; }
+        void setBeta( const TwoVector& beta ) { beta_ = beta; }
         /// Beta factor
-        CLHEP::Hep2Vector beta() const { return beta_; }
+        TwoVector beta() const { return beta_; }
 
         /// Set the x-y (horizontal and vertical) dispersions
-        void setDispersion( const CLHEP::Hep2Vector& disp ) { disp_ = disp; }
+        void setDispersion( const TwoVector& disp ) { disp_ = disp; }
         /// Horizontal and vertical dispersion
-        CLHEP::Hep2Vector dispersion() const { return disp_; }
+        TwoVector dispersion() const { return disp_; }
 
         /// Set the relative position of the element
-        void setRelativePosition( const CLHEP::Hep2Vector& pos ) { rel_pos_ = pos; };
+        void setRelativePosition( const TwoVector& pos ) { rel_pos_ = pos; };
         /// Relative position of the element
-        CLHEP::Hep2Vector relativePosition() const { return rel_pos_; }
+        TwoVector relativePosition() const { return rel_pos_; }
 
         /// Set the aperture for this element
         void setAperture( const std::shared_ptr<Aperture::ApertureBase> apert );
@@ -129,18 +129,18 @@ namespace Hector
         float magnetic_strength_;
 
         /// x-y position of the element
-        CLHEP::Hep2Vector pos_;
+        TwoVector pos_;
         /// Horizontal and vertical angles of the element
-        CLHEP::Hep2Vector angles_;
+        TwoVector angles_;
         /// Longitudinal position of the element
         float s_;
 
         /// Beta factor
-        CLHEP::Hep2Vector beta_;
+        TwoVector beta_;
         /// Dispersion
-        CLHEP::Hep2Vector disp_;
+        TwoVector disp_;
         /// Relative position of the element
-        CLHEP::Hep2Vector rel_pos_;
+        TwoVector rel_pos_;
     };
 
     /// Sorting methods for the beamline construction (using the s position of each elements)

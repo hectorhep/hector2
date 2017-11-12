@@ -36,16 +36,18 @@ namespace Hector
       bool status = reader_->readEvent();
       if ( !status ) return false;
 
-      for ( int i=0; i<reader_->hepeup.NUP; i++ ) {
+      for ( int i = 0; i < reader_->hepeup.NUP; ++i ) {
         const short status = reader_->hepeup.ISTUP[i],
                     pdg_id = reader_->hepeup.IDUP[i];
 
-        const CLHEP::HepLorentzVector mom( reader_->hepeup.PUP[i][0], reader_->hepeup.PUP[i][1], reader_->hepeup.PUP[i][2], reader_->hepeup.PUP[i][3] );
+        const LorentzVector mom( reader_->hepeup.PUP[i][0], reader_->hepeup.PUP[i][1], reader_->hepeup.PUP[i][2], reader_->hepeup.PUP[i][3] );
 
-        if ( status==-1 and pdg_id!=2212 ) { // only accept protons as primary beam particles (FIXME: use mass to filter?)
+        // only accept protons as primary beam particles
+        // (FIXME: use mass to filter?)
+        if ( status == -1 && pdg_id != 2212 ) {
           const short sign = ( mom.pz()>0. ) ? +1 : -1;
           const double pz = sqrt( pow( Parameters::get()->beamEnergy(), 2 )-pow( Parameters::get()->beamParticlesMass(), 2 ) );
-          CLHEP::HepLorentzVector prim( 0., 0., sign*pz, Parameters::get()->beamEnergy() );
+          LorentzVector prim( 0., 0., sign*pz, Parameters::get()->beamEnergy() );
           Particle part( prim-mom );
           part.setPDGid( 2212 );
           part.firstStateVector().setM( Parameters::get()->beamParticlesMass() );
@@ -55,7 +57,7 @@ namespace Hector
 
         Particle part( mom );
         part.setPDGid( pdg_id );
-        if ( status==2 ) { // keep final-state particles
+        if ( status == 2 ) { // keep final-state particles
           parts.push_back( part );
         }
       }

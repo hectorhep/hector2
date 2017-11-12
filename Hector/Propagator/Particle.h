@@ -37,7 +37,7 @@ namespace Hector
     public:
       Particle();
       /// Construct a particle according to its first state vector's 4-momentum
-      Particle( const CLHEP::HepLorentzVector& mom, int charge = Parameters::get()->beamParticlesCharge(), int pdgid = 2212 ) :
+      Particle( const LorentzVector& mom, int charge = Parameters::get()->beamParticlesCharge(), int pdgid = 2212 ) :
         Particle( StateVector( mom ) ) {
         charge_ = charge;
         pdgId_ = pdgid;
@@ -100,7 +100,7 @@ namespace Hector
       /// Compute the value of the state vector at a given s-position
       StateVector stateVectorAt( double s ) const;
       /// Get the particle's momentum at a given s-position
-      const CLHEP::HepLorentzVector momentumAt( double s ) const;
+      const LorentzVector momentumAt( double s ) const;
 
       /// Let the particle emit a photon
       void emitGamma( double e_gamma, double q2, double phi_min = 0., double phi_max = 2.*M_PI );

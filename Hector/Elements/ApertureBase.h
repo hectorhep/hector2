@@ -1,10 +1,10 @@
 #ifndef Hector_Elements_ApertureBase_h
 #define Hector_Elements_ApertureBase_h
 
-#include "ApertureType.h"
+#include "Hector/Core/Algebra.h"
+#include "Hector/Elements/ApertureType.h"
 
 #include <vector>
-#include <CLHEP/Vector/TwoVector.h>
 #include <memory>
 
 using std::ostream;
@@ -26,7 +26,7 @@ namespace Hector
         /// \param[in] type Aperture type (see Aperture::Type)
         /// \param[in] pos Aperture position
         /// \param[in] param Shape parameters
-        ApertureBase( const Type& type, const CLHEP::Hep2Vector& pos, const std::vector<float>& param );
+        ApertureBase( const Type& type, const TwoVector& pos, const std::vector<float>& param );
         virtual ~ApertureBase();
 
         /// Return a pointer to a clone of the current aperture
@@ -37,9 +37,9 @@ namespace Hector
         bool operator!=( const ApertureBase& rhs ) const { return !( *this==rhs ); }
 
         /// Check if a position is contained in the aperture
-        virtual bool contains( const CLHEP::Hep2Vector& ) const = 0;
+        virtual bool contains( const TwoVector& ) const = 0;
         /// Get the outer boundaries of the aperture
-        virtual CLHEP::Hep2Vector limits() const = 0;
+        virtual TwoVector limits() const = 0;
 
         /// Human-readable printout of the properties of an aperture
         friend std::ostream& operator<<( std::ostream&, const ApertureBase& );
@@ -54,14 +54,14 @@ namespace Hector
         const Parameters& parameters() const { return param_; }
 
         /// Set the transverse position of the aperture barycentre
-        void setPosition( const CLHEP::Hep2Vector& pos ) { pos_ = pos; }
+        void setPosition( const TwoVector& pos ) { pos_ = pos; }
         /// Set the transverse position of the aperture barycentre
-        void setPosition( float x, float y ) { setPosition( CLHEP::Hep2Vector( x, y ) ); }
+        void setPosition( float x, float y ) { setPosition( TwoVector( x, y ) ); }
         /// Change the x-y position of the aperture barycentre
-        void offset( const CLHEP::Hep2Vector& offs ) { pos_ += offs; }
+        void offset( const TwoVector& offs ) { pos_ += offs; }
 
         /// Get the transverse position of the aperture barycentre
-        CLHEP::Hep2Vector position() const { return pos_; }
+        TwoVector position() const { return pos_; }
         /// Get the horizontal position of the aperture barycentre
         float x() const { return pos_.x(); }
         /// Get the vertical position of the aperture barycentre
@@ -71,7 +71,7 @@ namespace Hector
         /// Type of aperture
         Type type_;
         /// Transverse position of the aperture
-        CLHEP::Hep2Vector pos_;
+        TwoVector pos_;
         /// Aperture shape parameters
         Parameters param_;
     };

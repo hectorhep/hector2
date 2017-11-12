@@ -80,7 +80,7 @@ namespace Hector
         float s_offset_;
         bool found_interaction_point_;
         // quantities needed whenever direction == 1 (FIXME)
-        CLHEP::Hep2Vector previous_relpos_, previous_disp_, previous_beta_;
+        TwoVector previous_relpos_, previous_disp_, previous_beta_;
 
         static std::regex rgx_typ_, rgx_hdr_, rgx_elm_hdr_;
         static std::regex rgx_rp_horiz_name_, rgx_rp_vert_name_;

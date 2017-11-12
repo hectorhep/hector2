@@ -356,9 +356,9 @@ namespace Hector
             return 0;
           } break;
           case Element::aDrift: {
-            previous_relpos_ = CLHEP::Hep2Vector( elem_map_floats.get( "x" ), elem_map_floats.get( "y" ) );
-            previous_disp_ = CLHEP::Hep2Vector( elem_map_floats.get( "dx" ), elem_map_floats.get( "dy" ) );
-            previous_beta_ = CLHEP::Hep2Vector( elem_map_floats.get( "betx" ), elem_map_floats.get( "bety" ) );
+            previous_relpos_ = TwoVector( elem_map_floats.get( "x" ), elem_map_floats.get( "y" ) );
+            previous_disp_ = TwoVector( elem_map_floats.get( "dx" ), elem_map_floats.get( "dy" ) );
+            previous_beta_ = TwoVector( elem_map_floats.get( "betx" ), elem_map_floats.get( "bety" ) );
             has_next_element_ = false;
             return 0;
           } break;
@@ -368,12 +368,12 @@ namespace Hector
         // did not successfully create and populate a new element
         if ( !elem ) return elem;
 
-        const CLHEP::Hep2Vector relpos( elem_map_floats.get( "x" ), elem_map_floats.get( "y" ) );
-        //const CLHEP::Hep2Vector relpos;
+        const TwoVector relpos( elem_map_floats.get( "x" ), elem_map_floats.get( "y" ) );
+        //const TwoVector relpos;
         const int direction = 1; //FIXME
         if ( direction<0 ) {
-          const CLHEP::Hep2Vector disp( elem_map_floats.get( "dx" ), elem_map_floats.get( "dy" ) ),
-                                  beta( elem_map_floats.get( "betx" ), elem_map_floats.get( "bety" ) );
+          const TwoVector disp( elem_map_floats.get( "dx" ), elem_map_floats.get( "dy" ) ),
+                          beta( elem_map_floats.get( "betx" ), elem_map_floats.get( "bety" ) );
           elem->setRelativePosition( relpos );
           elem->setDispersion( disp );
           elem->setBeta( beta );

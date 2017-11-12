@@ -2,9 +2,6 @@
 #include "Hector/Core/Utils.h"
 #include "Hector/Core/Parameters.h"
 
-#include <CLHEP/Matrix/DiagMatrix.h>
-#include <CLHEP/Vector/TwoVector.h>
-
 #include <sstream>
 
 namespace Hector

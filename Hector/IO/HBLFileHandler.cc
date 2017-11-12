@@ -91,19 +91,19 @@ namespace Hector
         switch ( ( Aperture::Type )el.aperture_type ) {
           case Aperture::anInvalidAperture: break;
           case Aperture::aRectangularAperture:
-            elem->setAperture( std::make_shared<Aperture::RectangularAperture>( el.aperture_p1, el.aperture_p2, CLHEP::Hep2Vector( el.aperture_x, el.aperture_y ) ) );
+            elem->setAperture( std::make_shared<Aperture::RectangularAperture>( el.aperture_p1, el.aperture_p2, TwoVector( el.aperture_x, el.aperture_y ) ) );
             break;
           case Aperture::anEllipticAperture:
-            elem->setAperture( std::make_shared<Aperture::EllipticAperture>( el.aperture_p1, el.aperture_p2, CLHEP::Hep2Vector( el.aperture_x, el.aperture_y ) ) );
+            elem->setAperture( std::make_shared<Aperture::EllipticAperture>( el.aperture_p1, el.aperture_p2, TwoVector( el.aperture_x, el.aperture_y ) ) );
             break;
           case Aperture::aCircularAperture:
-            elem->setAperture( std::make_shared<Aperture::CircularAperture>( el.aperture_p1, CLHEP::Hep2Vector( el.aperture_x, el.aperture_y ) ) );
+            elem->setAperture( std::make_shared<Aperture::CircularAperture>( el.aperture_p1, TwoVector( el.aperture_x, el.aperture_y ) ) );
             break;
           case Aperture::aRectEllipticAperture:
-            elem->setAperture( std::make_shared<Aperture::RectEllipticAperture>( el.aperture_p1, el.aperture_p2, el.aperture_p3, el.aperture_p4, CLHEP::Hep2Vector( el.aperture_x, el.aperture_y ) ) );
+            elem->setAperture( std::make_shared<Aperture::RectEllipticAperture>( el.aperture_p1, el.aperture_p2, el.aperture_p3, el.aperture_p4, TwoVector( el.aperture_x, el.aperture_y ) ) );
             break;
           case Aperture::aRectCircularAperture:
-            elem->setAperture( std::make_shared<Aperture::RectEllipticAperture>( el.aperture_p1, el.aperture_p2, el.aperture_p3, el.aperture_p3, CLHEP::Hep2Vector( el.aperture_x, el.aperture_y ) ) );
+            elem->setAperture( std::make_shared<Aperture::RectEllipticAperture>( el.aperture_p1, el.aperture_p2, el.aperture_p3, el.aperture_p3, TwoVector( el.aperture_x, el.aperture_y ) ) );
             break;
           //case Aperture::aRaceTrackAperture:
           //case Aperture::anOctagonalAperture:

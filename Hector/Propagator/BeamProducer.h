@@ -157,8 +157,8 @@ namespace Hector
                       tx = T::shoot( tx_.first, tx_.second ),
                       ty = T::shoot( ty_.first, ty_.second ),
                       e = T::shoot( e_.first, e_.second );
-          vec.setPosition( CLHEP::Hep2Vector( x, y ) );
-          vec.setAngles( CLHEP::Hep2Vector( tx, ty ) );
+          vec.setPosition( TwoVector( x, y ) );
+          vec.setAngles( TwoVector( tx, ty ) );
           vec.setM( mass_ );
           vec.setEnergy( e );
 

@@ -4,26 +4,26 @@ namespace Hector
 {
   namespace Aperture
   {
-    RectEllipticAperture::RectEllipticAperture( float rect_size_x, float rect_size_y, float ell_size_x, float ell_size_y, const CLHEP::Hep2Vector& pos ) :
-      ApertureBase( aRectEllipticAperture, pos, std::vector<float>({ rect_size_x, rect_size_y, ell_size_x, ell_size_y }) )
+    RectEllipticAperture::RectEllipticAperture( float rect_size_x, float rect_size_y, float ell_size_x, float ell_size_y, const TwoVector& pos ) :
+      ApertureBase( aRectEllipticAperture, pos, { { rect_size_x, rect_size_y, ell_size_x, ell_size_y } } )
     {}
 
     RectEllipticAperture::~RectEllipticAperture()
     {}
 
     bool
-    RectEllipticAperture::contains( const CLHEP::Hep2Vector& pos ) const
+    RectEllipticAperture::contains( const TwoVector& pos ) const
     {
-      const CLHEP::Hep2Vector vec1( pos-pos_ ),
-                              vec2( vec1.x()/p( 2 ), vec1.y()/p( 3 ) );
-      return ( ( fabs( vec1.x() )<p( 0 ) ) and ( fabs( vec1.y() )<p( 1 ) ) // rectangular part
-           and ( vec2.mag2()<1. ) ); // elliptic part
+      const TwoVector vec1( pos-pos_ ),
+                      vec2( vec1.x()/p( 2 ), vec1.y()/p( 3 ) );
+      return ( ( fabs( vec1.x() ) < p( 0 ) ) && ( fabs( vec1.y() ) < p( 1 ) ) // rectangular part
+            && ( vec2.mag2() < 1. ) ); // elliptic part
     }
 
-    CLHEP::Hep2Vector
+    TwoVector
     RectEllipticAperture::limits() const
     { //FIXME
-      return CLHEP::Hep2Vector( std::min( p( 0 ), p( 2 ) ), std::min( p( 1 ), p( 3 ) ) );
+      return TwoVector( std::min( p( 0 ), p( 2 ) ), std::min( p( 1 ), p( 3 ) ) );
     }
   }
 }
