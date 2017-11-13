@@ -9,15 +9,48 @@
 #include <CLHEP/Vector/ThreeVector.h>
 #include <CLHEP/Vector/LorentzVector.h>
 
+#include <array>
+
 namespace Hector
 {
   typedef CLHEP::HepMatrix Matrix;
   typedef CLHEP::HepDiagMatrix DiagMatrix;
 
-  typedef CLHEP::HepVector Vector;
-  typedef CLHEP::Hep2Vector TwoVector;
-  typedef CLHEP::Hep3Vector ThreeVector;
-  typedef CLHEP::HepLorentzVector LorentzVector;
+  class Vector : public CLHEP::HepVector
+  {
+    public:
+      using CLHEP::HepVector::HepVector;
+      Vector( const CLHEP::HepVector vec ) : CLHEP::HepVector( vec ) {}
+      Vector( const std::vector<double>& vec ) : CLHEP::HepVector( vec.size() ) {
+        unsigned short i = 0;
+        for ( const auto& c : vec ) {
+          operator()( i ) = c;
+          ++i;
+        }
+      }
+  };
+  class TwoVector : public CLHEP::Hep2Vector
+  {
+    public:
+      using CLHEP::Hep2Vector::Hep2Vector;
+      TwoVector( const CLHEP::Hep2Vector& vec ) : CLHEP::Hep2Vector( vec ) {}
+      TwoVector( const std::array<double,2>& vec ) : CLHEP::Hep2Vector( vec[0], vec[1] ) {}
+  };
+  class ThreeVector : public CLHEP::Hep3Vector
+  {
+    public:
+      using CLHEP::Hep3Vector::Hep3Vector;
+      ThreeVector( const CLHEP::Hep3Vector& vec ) : CLHEP::Hep3Vector( vec ) {}
+      ThreeVector( const std::array<double,3>& vec ) : CLHEP::Hep3Vector( vec[0], vec[1], vec[2] ) {}
+  };
+  class LorentzVector : public CLHEP::HepLorentzVector
+  {
+    public:
+      using CLHEP::HepLorentzVector::HepLorentzVector;
+      LorentzVector( const CLHEP::HepLorentzVector& vec ) : CLHEP::HepLorentzVector( vec ) {}
+      LorentzVector( const std::array<double,3>& sp, double t ) : CLHEP::HepLorentzVector( sp[0], sp[1], sp[2], t ) {}
+      LorentzVector( const std::array<double,4> vec ) : CLHEP::HepLorentzVector( vec[0], vec[1], vec[2], vec[3] ) {}
+  };
   
   namespace math
   {

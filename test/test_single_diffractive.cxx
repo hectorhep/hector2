@@ -1,6 +1,6 @@
 #include "Hector/Core/Exception.h"
 #include "Hector/Beamline/Beamline.h"
-#include "Hector/IO/Pythia8Generator.h"
+#include "Hector/Utils/Pythia8Generator.h"
 #include "Hector/IO/MADXHandler.h"
 #include "Hector/Propagator/Propagator.h"
 
@@ -27,21 +27,36 @@ int main( int argc, char* argv[] )
   const double vertex_size = 10.e-6; // in m
 
   Hector::IO::MADX madx( argv[1], "IP5", 1, 250. );
+  //madx.beamline()->offsetElementsAfter( 120., Hector::TwoVector( -0.097, 0. ) );
+
   Hector::Propagator prop( madx.beamline() );
+
   const Hector::Elements rps = madx.romanPots( Hector::IO::MADX::horizontalPots );
-  for ( const auto& rp : rps ) {
+  double max_s = 0.;
+
+  auto h_xi_raw = new TH1D( "xi_raw", "Proton momentum loss #xi\\Events\\?.3f", 250, -0.125, 1.125 ),
+       h_tx_raw = new TH1D( "tx_raw", "#theta_{X}\\Events\\#murad?.1f", 100, -500., 500. ),
+       h_ty_raw = new TH1D( "ty_raw", "#theta_{Y}\\Events\\#murad?.1f", 100, -500., 500. );
+  map<Hector::Element::ElementBase*,TH1D*> h_xi_sp, h_tx_sp, h_ty_sp;
+  map<Hector::Element::ElementBase*,TH2D*> h_hitmap;
+
+  for ( const auto& pot : rps ) {
+    const auto rp = pot.get();
     cout << "--------> " << rp->name() << " at " << rp->s() << " m" << endl;
+    if ( rp->s() > max_s ) max_s = rp->s();
+    h_xi_sp[rp] = ( TH1D* )h_xi_raw->Clone( Form( "xi_scoring_plane_%s", rp->name().c_str() ) );
+    h_tx_sp[rp] = ( TH1D* )h_tx_raw->Clone( Form( "tx_scoring_plane_%s", rp->name().c_str() ) );
+    h_ty_sp[rp] = ( TH1D* )h_ty_raw->Clone( Form( "ty_scoring_plane_%s", rp->name().c_str() ) );
+    h_hitmap[rp] = new TH2D( Form( "hitmap_%s", rp->name().c_str() ), "x (m)\\y (m)", 300, -0.15, 0., 300, -0.03, 0.03 );
   }
-  //const float s_pos = 220.;
-  const float s_pos = (*rps.begin())->s();
 
   Hector::Parameters::get()->setComputeApertureAcceptance( false );
   // number of events to generate
-  const unsigned short num_events = 5000;
+  const unsigned short num_events = 2500;
 
   // configuration shamelessly stolen from CMSSW (9_1_X development cycle)
   vector<string> config{ {
-    //"Next:numberCount = 0", // remove unnecessary output
+    "Next:numberCount = 5000", // remove unnecessary output
     "Next:numberShowEvent = 0", // remove unnecessary output
     "Tune:preferLHAPDF = 2",
     "Main:timesAllowErrors = 10000",
@@ -66,11 +81,6 @@ int main( int argc, char* argv[] )
   } };
   Hector::Pythia8Generator gen( config );
 
-  TH2D h_hitmap( "hitmap", "x (m)\\y (m)", 200, -0.015, 0.015, 200, -0.015, 0.015 );
-  TH1D h_xi_raw( "xi_raw", "Proton momentum loss #xi\\Events\\?.3f", 250, -0.125, 1.125 ), h_xi_sp = *( ( TH1D* )h_xi_raw.Clone( "xi_scoring_plane" ) );
-  TH1D h_tx_raw( "tx_raw", "#theta_{X}\\Events\\rad?.3f", 100, -0.5, 0.5 ), h_tx_sp = *( ( TH1D* )h_tx_raw.Clone( "tx_scoring_plane" ) );
-  TH1D h_ty_raw( "ty_raw", "#theta_{Y}\\Events\\rad?.3f", 100, -0.5, 0.5 ), h_ty_sp = *( ( TH1D* )h_ty_raw.Clone( "ty_scoring_plane" ) );
-
   for ( unsigned short i = 0; i < num_events; ++i ) {
     const double ev_weight = 1./num_events;
     //auto part = gen.diffractiveProton();
@@ -87,19 +97,24 @@ int main( int argc, char* argv[] )
       part.firstStateVector().setAngles( ang );
       part.firstStateVector().setPosition( pos );
 
-      h_xi_raw.Fill( part.firstStateVector().xi(), ev_weight );
-      h_tx_raw.Fill( part.firstStateVector().Tx(), ev_weight );
-      h_ty_raw.Fill( part.firstStateVector().Ty(), ev_weight );
+      h_xi_raw->Fill( part.firstStateVector().xi(), ev_weight );
+      h_tx_raw->Fill( part.firstStateVector().Tx()*1.e6, ev_weight );
+      h_ty_raw->Fill( part.firstStateVector().Ty()*1.e6, ev_weight );
 
       // propagate to the pots position
       try {
-        prop.propagate( part, s_pos );
-        h_xi_sp.Fill( part.firstStateVector().xi(), ev_weight );
-        h_tx_sp.Fill( part.firstStateVector().Tx(), ev_weight );
-        h_ty_sp.Fill( part.firstStateVector().Ty(), ev_weight );
-        const auto pos = part.stateVectorAt( s_pos ).position();
-        h_hitmap.Fill( pos.x(), pos.y() );
-      } catch ( Hector::Exception& e ) { e.dump(); }
+        prop.propagate( part, max_s );
+        for ( const auto& pot : rps ) {
+          const auto rp = pot.get();
+          const auto pos = part.stateVectorAt( rp->s() ).position();
+          h_hitmap[rp]->Fill( pos.x(), pos.y() );
+          h_xi_sp[rp]->Fill( part.firstStateVector().xi(), ev_weight );
+          h_tx_sp[rp]->Fill( part.firstStateVector().Tx()*1.e6, ev_weight );
+          h_ty_sp[rp]->Fill( part.firstStateVector().Ty()*1.e6, ev_weight );
+        }
+      } catch ( Hector::Exception& e ) {
+        //e.dump();
+      }
     }
   }
 
@@ -108,16 +123,26 @@ int main( int argc, char* argv[] )
   gStyle->SetOptStat( 111111 );
   {
     const char* title = Form( "#alpha_{X} = %.2f #murad", crossing_angle*1.e6 );
-    const char* sp_title = Form( "Protons in sc.plane (s = %.2f m)", s_pos );
-    plot_multi( "xi_single_diffr", title, { { "Generated protons", &h_xi_raw }, { sp_title, &h_xi_sp, } }, argv[1] );
-    plot_multi( "tx_single_diffr", title, { { "Generated protons", &h_tx_raw }, { sp_title, &h_tx_sp, } }, argv[1] );
-    plot_multi( "ty_single_diffr", title, { { "Generated protons", &h_ty_raw }, { sp_title, &h_ty_sp, } }, argv[1] );
+    vector<pair<string,TH1*> > gr_xi = { { "Generated protons", h_xi_raw } },
+                               gr_tx = { { "Generated protons", h_tx_raw } },
+                               gr_ty = { { "Generated protons", h_ty_raw } };
+    for ( const auto& pot : rps ) {
+      const auto& rp = pot.get();
+      gr_xi.emplace_back( Form( "Protons in %s", rp->name().c_str() ), h_xi_sp[rp] );
+      gr_tx.emplace_back( Form( "Protons in %s", rp->name().c_str() ), h_tx_sp[rp] );
+      gr_ty.emplace_back( Form( "Protons in %s", rp->name().c_str() ), h_ty_sp[rp] );
+    }
+    const string bottom_label = Form( "%s - N = %d protons", argv[1], num_events );
+    plot_multi( "xi_single_diffr", title, gr_xi, bottom_label.c_str() );
+    plot_multi( "tx_single_diffr", title, gr_tx, bottom_label.c_str() );
+    plot_multi( "ty_single_diffr", title, gr_ty, bottom_label.c_str() );
   }
 
-  {
-    Hector::Canvas c( "hitmap_single_diffr", "" );
-    h_hitmap.Draw( "colz" );
-    c.Prettify( &h_hitmap );
+  for ( const auto& pot : rps ) {
+    const auto& rp = pot.get();
+    Hector::Canvas c( Form( "hitmap_single_diffr_%s", rp->name().c_str() ), "" );
+    h_hitmap[rp]->Draw( "colz" );
+    c.Prettify( h_hitmap[rp] );
     c.Save( "pdf" );
   }
 
@@ -129,12 +154,13 @@ plot_multi( const char* name, const char* title, vector<pair<string,TH1*> > grap
 {
   Hector::Canvas c( name, title );
   THStack st;
-  c.SetLegendX1( 0.2 );
+  c.SetLegendX1( 0.225 );
   unsigned short i = 0;
   for ( auto& gr : graphs ) {
     if ( i == 0 ) {
       st.SetTitle( gr.second->GetTitle() );
       gr.second->SetLineColor( kBlack );
+      gr.second->Fit( "gaus", "+" );
     }
     else gr.second->SetLineColor( kBlack+i );
     c.AddLegendEntry( gr.second, gr.first.c_str(), ( i == 0 ) ? "l" : "lp" );
