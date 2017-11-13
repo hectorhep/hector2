@@ -3,9 +3,9 @@ include_directories(${PROJECT_SOURCE_DIR})
 
 #----- remove the LHEF parser if the required include is not present
 
-file(GLOB lhef_sources LHEHandler.cc)
 if(HEPMC_LIB)
 else()
+  file(GLOB lhef_sources LHEHandler.cc)
   list(REMOVE_ITEM sources ${lhef_sources})
 endif()
 

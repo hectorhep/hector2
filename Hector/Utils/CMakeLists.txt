@@ -6,7 +6,9 @@ include_directories(${PROJECT_SOURCE_DIR})
 
 if(PYTHIA8_FOUND)
   include_directories(${PYTHIA8_INCLUDE_DIRS})
-  list(APPEND sources Pythia8Generator.cc)
+else()
+  file(GLOB py8_sources Pythia8Generator.cc)
+  list(REMOVE_ITEM sources ${py8_sources})
 endif()
 
 #----- build the object

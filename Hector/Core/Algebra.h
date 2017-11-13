@@ -20,6 +20,7 @@ namespace Hector
   {
     public:
       using CLHEP::HepVector::HepVector;
+      Vector() : CLHEP::HepVector() {}
       Vector( const CLHEP::HepVector vec ) : CLHEP::HepVector( vec ) {}
       Vector( const std::vector<double>& vec ) : CLHEP::HepVector( vec.size() ) {
         unsigned short i = 0;
@@ -33,6 +34,7 @@ namespace Hector
   {
     public:
       using CLHEP::Hep2Vector::Hep2Vector;
+      TwoVector() : CLHEP::Hep2Vector() {}
       TwoVector( const CLHEP::Hep2Vector& vec ) : CLHEP::Hep2Vector( vec ) {}
       TwoVector( const std::array<double,2>& vec ) : CLHEP::Hep2Vector( vec[0], vec[1] ) {}
   };
@@ -40,6 +42,7 @@ namespace Hector
   {
     public:
       using CLHEP::Hep3Vector::Hep3Vector;
+      ThreeVector() : CLHEP::Hep3Vector() {}
       ThreeVector( const CLHEP::Hep3Vector& vec ) : CLHEP::Hep3Vector( vec ) {}
       ThreeVector( const std::array<double,3>& vec ) : CLHEP::Hep3Vector( vec[0], vec[1], vec[2] ) {}
   };
@@ -47,6 +50,7 @@ namespace Hector
   {
     public:
       using CLHEP::HepLorentzVector::HepLorentzVector;
+      LorentzVector() : CLHEP::HepLorentzVector() {}
       LorentzVector( const CLHEP::HepLorentzVector& vec ) : CLHEP::HepLorentzVector( vec ) {}
       LorentzVector( const std::array<double,3>& sp, double t ) : CLHEP::HepLorentzVector( sp[0], sp[1], sp[2], t ) {}
       LorentzVector( const std::array<double,4> vec ) : CLHEP::HepLorentzVector( vec[0], vec[1], vec[2], vec[3] ) {}

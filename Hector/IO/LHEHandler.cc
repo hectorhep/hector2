@@ -1,7 +1,7 @@
 #include "Hector/IO/LHEHandler.h"
 
 #ifndef GOOD_HEPMC
-#pragma message "HepMC version 2 was found on your system! Version 3 is required!"
+#pragma message "HepMC version 2 was found on your system! Version 3 is required for LHEF parsing!"
 #else
 
 #include "Hector/Core/Exception.h"

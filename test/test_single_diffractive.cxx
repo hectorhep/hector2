@@ -14,7 +14,7 @@
 
 using namespace std;
 
-void plot_multi( const char* name, const char* title, vector<pair<string,TH1*> > graphs, const char* extra_label = "" );
+void plot_multi( const string name, const string title, vector<pair<string,TH1*> > graphs, const string extra_label = "" );
 
 int main( int argc, char* argv[] )
 {
@@ -40,6 +40,7 @@ int main( int argc, char* argv[] )
   map<Hector::Element::ElementBase*,TH1D*> h_xi_sp, h_tx_sp, h_ty_sp;
   map<Hector::Element::ElementBase*,TH2D*> h_hitmap;
 
+  TH1D h_num_protons( "num_protons", "Proton multiplicity in event\\Events", 10, 0., 10. );
   for ( const auto& pot : rps ) {
     const auto rp = pot.get();
     cout << "--------> " << rp->name() << " at " << rp->s() << " m" << endl;
@@ -84,9 +85,11 @@ int main( int argc, char* argv[] )
   for ( unsigned short i = 0; i < num_events; ++i ) {
     const double ev_weight = 1./num_events;
     //auto part = gen.diffractiveProton();
-    auto parts = gen.generate();
+    auto parts = gen.generate( true );
+    short num_protons = 0;
     for ( auto& part : parts ) {
       if ( part.pdgId() != 2212 ) continue;
+      if ( part.firstStateVector().momentum().pz() < 0. ) continue;
 
       // smear the vertex and divergence ; apply the crossing angle
       auto ang = part.firstStateVector().angles(), pos = part.firstStateVector().position();
@@ -100,6 +103,8 @@ int main( int argc, char* argv[] )
       h_xi_raw->Fill( part.firstStateVector().xi(), ev_weight );
       h_tx_raw->Fill( part.firstStateVector().Tx()*1.e6, ev_weight );
       h_ty_raw->Fill( part.firstStateVector().Ty()*1.e6, ev_weight );
+
+      ++num_protons;
 
       // propagate to the pots position
       try {
@@ -116,13 +121,14 @@ int main( int argc, char* argv[] )
         //e.dump();
       }
     }
+    h_num_protons.Fill( num_protons-0.5 );
   }
 
   cout << "cross section: " << Form( "%.2e +/- %.2e pb", gen.crossSection(), gen.crossSectionError() ) << endl;
 
   gStyle->SetOptStat( 111111 );
   {
-    const char* title = Form( "#alpha_{X} = %.2f #murad", crossing_angle*1.e6 );
+    const string title = Form( "#alpha_{X} = %.2f #murad", crossing_angle*1.e6 );
     vector<pair<string,TH1*> > gr_xi = { { "Generated protons", h_xi_raw } },
                                gr_tx = { { "Generated protons", h_tx_raw } },
                                gr_ty = { { "Generated protons", h_ty_raw } };
@@ -132,10 +138,13 @@ int main( int argc, char* argv[] )
       gr_tx.emplace_back( Form( "Protons in %s", rp->name().c_str() ), h_tx_sp[rp] );
       gr_ty.emplace_back( Form( "Protons in %s", rp->name().c_str() ), h_ty_sp[rp] );
     }
-    const string bottom_label = Form( "%s - N = %d protons", argv[1], num_events );
+    const string bottom_label = Form( "%s - %d single-diffractive events (Pythia8)", argv[1], num_events );
     plot_multi( "xi_single_diffr", title, gr_xi, bottom_label.c_str() );
     plot_multi( "tx_single_diffr", title, gr_tx, bottom_label.c_str() );
     plot_multi( "ty_single_diffr", title, gr_ty, bottom_label.c_str() );
+
+    h_num_protons.GetXaxis()->SetNdivisions( 100 );
+    plot_multi( "proton_mult", title, { { "", &h_num_protons } }, bottom_label.c_str() );
   }
 
   for ( const auto& pot : rps ) {
@@ -150,9 +159,9 @@ int main( int argc, char* argv[] )
 }
 
 void
-plot_multi( const char* name, const char* title, vector<pair<string,TH1*> > graphs, const char* extra_label )
+plot_multi( const string name, const string title, vector<pair<string,TH1*> > graphs, const string extra_label )
 {
-  Hector::Canvas c( name, title );
+  Hector::Canvas c( name.c_str(), title.c_str() );
   THStack st;
   c.SetLegendX1( 0.225 );
   unsigned short i = 0;
@@ -163,7 +172,7 @@ plot_multi( const char* name, const char* title, vector<pair<string,TH1*> > grap
       gr.second->Fit( "gaus", "+" );
     }
     else gr.second->SetLineColor( kBlack+i );
-    c.AddLegendEntry( gr.second, gr.first.c_str(), ( i == 0 ) ? "l" : "lp" );
+    if ( !gr.first.empty() ) c.AddLegendEntry( gr.second, gr.first.c_str(), ( i == 0 ) ? "l" : "lp" );
     gr.second->SetMarkerStyle( 23+i );
     st.Add( gr.second, ( i == 0 ) ? "hist" : "p" );
     ++i;
@@ -171,9 +180,9 @@ plot_multi( const char* name, const char* title, vector<pair<string,TH1*> > grap
   st.Draw( "nostack" );
   c.Prettify( st.GetHistogram() );
   st.SetTitle( "" );
-  if ( strcmp( extra_label, "" ) != 0 ) {
-    auto el = new Hector::Canvas::PaveText( 0.005, 0.05, 0.35, 0.05 );
-    el->AddText( extra_label );
+  if ( !extra_label.empty() ) {
+    auto el = new Hector::Canvas::PaveText( 0., 0.02, 0.35, 0.025 );
+    el->AddText( extra_label.c_str() );
     el->SetTextSize( 0.02 );
     el->Draw();
   }
