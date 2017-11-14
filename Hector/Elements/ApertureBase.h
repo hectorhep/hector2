@@ -41,11 +41,6 @@ namespace Hector
         /// Get the outer boundaries of the aperture
         virtual TwoVector limits() const = 0;
 
-        /// Human-readable printout of the properties of an aperture
-        friend std::ostream& operator<<( std::ostream&, const ApertureBase& );
-        /// Human-readable printout of the properties of an aperture
-        friend std::ostream& operator<<( std::ostream&, const ApertureBase* );
-
         /// Type of aperture (rectangular, elliptic, rect-elliptic, circular)
         Type type() const { return type_; }
 
@@ -76,6 +71,10 @@ namespace Hector
         Parameters param_;
     };
   }
+  /// Human-readable printout of the properties of an aperture
+  std::ostream& operator<<( std::ostream&, const Aperture::ApertureBase& );
+  /// Human-readable printout of the properties of an aperture
+  std::ostream& operator<<( std::ostream&, const Aperture::ApertureBase* );
 }
 
 #endif
