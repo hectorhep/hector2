@@ -20,19 +20,19 @@ void plot_multi( const string name, const string title, vector<pair<string,TH1*>
 
 int main( int argc, char* argv[] )
 {
+  double crossing_angle, beam_divergence, vertex_size;
+  string twiss_file;
+  unsigned int num_events;
+
   Hector::ArgsParser args( argc, argv,
-    { { "--twiss", "beamline Twiss file" } },
+    { { "--twiss", "beamline Twiss file", &twiss_file } },
     {
-      { "--xingangle", "crossing angle (rad)", 180.e-6 },
-      { "--beam-divergence", "beam divergence (rad)", 20.e-6 },
-      { "--vertex-size", "vertex size (m)", 10.e-6 },
-      { "--num-events", "number of events to generate", 2500 },
+      { "--num-events", "number of events to generate", 2500, &num_events },
+      { "--xingangle", "crossing angle (rad)", 180.e-6, &crossing_angle },
+      { "--beam-divergence", "beam divergence (rad)", 20.e-6, &beam_divergence },
+      { "--vertex-size", "vertex size (m)", 10.e-6, &vertex_size },
     }
   );
-  const double crossing_angle = stod( args["--xingangle"] );
-  const double beam_divergence = stod( args["--beam-divergence"] );
-  const double vertex_size = stod( args["--vertex-size"] );
-  const string twiss_file = args["--twiss"];
 
   Hector::IO::MADX madx( twiss_file.c_str(), "IP5", 1, 250. );
   //madx.beamline()->offsetElementsAfter( 120., Hector::TwoVector( -0.097, 0. ) );
@@ -60,8 +60,6 @@ int main( int argc, char* argv[] )
   }
 
   Hector::Parameters::get()->setComputeApertureAcceptance( false );
-  // number of events to generate
-  const unsigned short num_events = 2500;
 
   // configuration shamelessly stolen from CMSSW (9_1_X development cycle)
   vector<string> config{ {

@@ -32,15 +32,24 @@ namespace Hector
         throw Exception( __PRETTY_FUNCTION__, Form( "Invalid value for parameter: %s", par.name.c_str() ), Fatal );
       }
       par.value = *value;
+      if ( par.str_variable ) *par.str_variable = *value;
+      if ( par.float_variable ) *par.float_variable = std::stod( *value );
+      if ( par.int_variable ) *par.int_variable = std::stoi( *value );
+      if ( par.uint_variable ) *par.uint_variable = std::stoi( *value );
     }
     for ( auto& par : optional_params_ ) {
       const auto key = find( args_.begin(), args_.end(), par.name );
-      if ( key == args_.end() ) continue; // Parameter not set
-      const auto value = key + 1;
-      if ( value == args_.end() ) {
-        throw Exception( __PRETTY_FUNCTION__, Form( "Invalid value for parameter: %s", par.name.c_str() ), Fatal );
+      if ( key != args_.end() ) { // Parameter set
+        const auto value = key + 1;
+        if ( value == args_.end() ) {
+          throw Exception( __PRETTY_FUNCTION__, Form( "Invalid value for parameter: %s", par.name.c_str() ), Fatal );
+        }
+        par.value = *value;
       }
-      par.value = *value;
+      if ( par.str_variable ) *par.str_variable = par.value;
+      if ( par.float_variable ) *par.float_variable = std::stod( par.value );
+      if ( par.int_variable ) *par.int_variable = std::stoi( par.value );
+      if ( par.uint_variable ) *par.uint_variable = std::stoi( par.value );
     }
   }
 
