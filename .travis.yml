@@ -4,7 +4,6 @@ sudo: true
 matrix:
   include:
     - os: linux
-      compiler: gcc
       addons:
         apt:
           sources:
@@ -12,8 +11,9 @@ matrix:
           packages:
             - g++-4.9
             - libclhep-dev
+      env:
+         - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
     - os: linux
-      compiler: gcc
       addons:
         apt:
           sources:
@@ -22,6 +22,8 @@ matrix:
             - g++-4.9
             - libclhep-dev
             - libpythia8-dev
+      env:
+         - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
     - os: linux
       compiler: clang
       addons:
@@ -46,6 +48,7 @@ matrix:
 
 before_script:
   - mkdir build
+  - eval "${MATRIX_EVAL}"
   - cd build
   - wget --quiet https://raw.githubusercontent.com/BristolTopGroup/AnalysisSoftware/master/FindROOT.cmake
   - wget --quiet https://gist.githubusercontent.com/forthommel/e6932e25b781710ebe5bd8dc6726dc3c/raw/1d7bd5f2aeff0d50f8e1740d7dcacaf1be006a59/FindCLHEP.cmake
@@ -54,6 +57,7 @@ before_script:
 script:
   - pwd
   - make
+  - curl http://abpdata.web.cern.ch/abpdata/lhc_optics_web/www/opt2017/coll400/twiss_lhcb1.tfs -o twiss_file.tfs && ./hector --twiss-file twiss_file.tfs
 
 #install:
 #  - make install

@@ -22,6 +22,7 @@ int main( int argc, char* argv[] )
     { "--max-s", "maximum arc length s to parse", 250., &max_s },
     { "--num-part", "number of particles to shoot", 10, &num_part },
   } );
+
   Hector::IO::MADX parser( twiss_file.c_str(), ip.c_str(), +1, max_s );
   parser.printInfo();
   parser.beamline()->dump();
