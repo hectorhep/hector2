@@ -72,13 +72,17 @@ namespace Hector
     oss << "Usage: " << command_name_;
     for ( const auto& par : required_params_ ) oss << " " << par.name;
     for ( const auto& par : optional_params_ ) oss << " [" << par.name << "]";
-    oss << "\n required arguments:";
-    for ( const auto& par : required_params_ ) {
-      oss << "\n\t" << std::left << std::setw( 20 ) << par.name << "\t" << std::setw( 40 ) << par.description << std::right;
+    if ( required_params_.size() > 0 ) {
+     oss << "\n required arguments:";
+     for ( const auto& par : required_params_ ) {
+       oss << "\n\t" << std::left << std::setw( 20 ) << par.name << "\t" << std::setw( 40 ) << par.description << std::right;
+     }
     }
-    oss << "\n optional arguments:";
-    for ( const auto& par : optional_params_ ) {
-      oss << "\n\t" << std::left << std::setw( 20 ) << par.name << "\t" << std::setw( 40 ) << par.description << "\tdefault=" << par.value << std::right;
+    if ( optional_params_.size() > 0 ) {
+     oss << "\n optional arguments:";
+     for ( const auto& par : optional_params_ ) {
+       oss << "\n\t" << std::left << std::setw( 20 ) << par.name << "\t" << std::setw( 40 ) << par.description << "\tdefault = '" << par.value << "'" << std::right;
+     }
     }
     oss << std::endl;
     std::cout << oss.str(); 

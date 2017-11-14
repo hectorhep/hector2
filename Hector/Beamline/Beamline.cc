@@ -156,7 +156,7 @@ namespace Hector
        << " elements list: ";
     for ( const auto& elemPtr : elements_ ) {
       if ( !show_drifts && elemPtr->type() == Element::aDrift ) continue;
-      os << "\n  * " << elemPtr;
+      os << "\n  * " << *elemPtr;
     }
     os << "\n";
   }

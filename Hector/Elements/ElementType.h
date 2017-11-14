@@ -5,7 +5,6 @@
 
 namespace Hector
 {
-  /// Collection of beamline elements
   namespace Element
   {
     /// List of types allowed for an element
@@ -33,9 +32,9 @@ namespace Hector
       aSolenoid ///< Solenoid
     };
   }
+  /// Human-readable printout of a element type
+  std::ostream& operator<<( std::ostream&, const Element::Type& );
 }
-/// Human-readable printout of a element type
-std::ostream& operator<<( std::ostream&, const Hector::Element::Type& );
 
 #endif
 

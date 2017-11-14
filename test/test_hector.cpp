@@ -5,22 +5,32 @@
 
 #include "Hector/Propagator/Propagator.h"
 #include "Hector/Utils/BeamProducer.h"
+#include "Hector/Utils/ArgsParser.h"
 
 #include <CLHEP/Random/RandGauss.h>
 
+using namespace std;
+
 int main( int argc, char* argv[] )
 {
-  const char* twiss_file = ( argc>1 ) ? argv[1] : "data/twiss/twiss_coll0p4m_ir5b1_6p5tev.tfs";
-  Hector::IO::MADX parser( twiss_file, "IP5", +1, 250. );
+  string twiss_file, ip;
+  double max_s;
+  unsigned int num_part = 100;
+  Hector::ArgsParser( argc, argv, {}, {
+    { "--twiss-file", "beamline Twiss file", "data/twiss/twiss_coll0p4m_ir5b1_6p5tev.tfs", &twiss_file },
+    { "--interaction-point", "name of the interaction point", "IP5", &ip },
+    { "--max-s", "maximum arc length s to parse", 250., &max_s },
+    { "--num-part", "number of particles to shoot", 10, &num_part },
+  } );
+  Hector::IO::MADX parser( twiss_file.c_str(), ip.c_str(), +1, max_s );
   parser.printInfo();
   parser.beamline()->dump();
 
-  std::cout << "beamline matrix at s = 250 m: " << parser.beamline()->matrix( 100., Hector::Parameters::get()->beamParticlesMass(), +1 ) << std::endl;
+  cout << "beamline matrix at s = " << max_s << " m: " << parser.beamline()->matrix( 100., Hector::Parameters::get()->beamParticlesMass(), +1 ) << endl;
 
   Hector::Propagator prop( parser.beamline() );
   //parser.beamline()->dump();
 
-  const unsigned short num_part = 100;
   Hector::BeamProducer::gaussianParticleGun gun( Hector::Parameters::get()->beamEnergy()/1.25, Hector::Parameters::get()->beamEnergy() );
   //Hector::BeamProducer::TXscanner gun( num_part, Hector::Parameters::get()->beamEnergy(), 0., 1. );
   for ( unsigned int i=0; i<num_part; i++ ) {

@@ -71,7 +71,7 @@ namespace Hector
   operator<<( std::ostream& os, const Element::ElementBase& elem )
   {
     std::ostringstream oss; oss << elem.type();
-    os << Form( "%15s %17s (length = %5.2f m) at %6.2f < s < %6.2f m", oss.str().c_str(), elem.name().c_str(), elem.length(), elem.s(), elem.s()+elem.length() );
+    os << Form( "%-15s %17s (length = %5.2f m) at %6.2f < s < %6.2f m", oss.str().c_str(), elem.name().c_str(), elem.length(), elem.s(), elem.s()+elem.length() );
     if ( elem.aperture() )
       return os << " with aperture: " << elem.aperture();
     return os << " with no aperture restriction";
