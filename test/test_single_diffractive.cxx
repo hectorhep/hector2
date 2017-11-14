@@ -1,8 +1,10 @@
 #include "Hector/Core/Exception.h"
 #include "Hector/Beamline/Beamline.h"
-#include "Hector/Utils/Pythia8Generator.h"
 #include "Hector/IO/MADXHandler.h"
 #include "Hector/Propagator/Propagator.h"
+
+#include "Hector/Utils/ArgsParser.h"
+#include "Hector/Utils/Pythia8Generator.h"
 
 #include "Canvas.h"
 #include "THStack.h"
@@ -18,15 +20,21 @@ void plot_multi( const string name, const string title, vector<pair<string,TH1*>
 
 int main( int argc, char* argv[] )
 {
-  if ( argc < 2 ) {
-    cerr << "Usage: " << argv[0] << " <mad-x twiss file> [crossing angle (urad)]" << endl;
-    return -1;
-  }
-  const double crossing_angle = ( argc > 2 ) ? atof( argv[2] ) : 180.e-6;
-  const double beam_divergence = 20.e-6; // in rad
-  const double vertex_size = 10.e-6; // in m
+  Hector::ArgsParser args( argc, argv,
+    { { "--twiss", "beamline Twiss file" } },
+    {
+      { "--xingangle", "crossing angle (rad)", 180.e-6 },
+      { "--beam-divergence", "beam divergence (rad)", 20.e-6 },
+      { "--vertex-size", "vertex size (m)", 10.e-6 },
+      { "--num-events", "number of events to generate", 2500 },
+    }
+  );
+  const double crossing_angle = stod( args["--xingangle"] );
+  const double beam_divergence = stod( args["--beam-divergence"] );
+  const double vertex_size = stod( args["--vertex-size"] );
+  const string twiss_file = args["--twiss"];
 
-  Hector::IO::MADX madx( argv[1], "IP5", 1, 250. );
+  Hector::IO::MADX madx( twiss_file.c_str(), "IP5", 1, 250. );
   //madx.beamline()->offsetElementsAfter( 120., Hector::TwoVector( -0.097, 0. ) );
 
   Hector::Propagator prop( madx.beamline() );
@@ -138,7 +146,7 @@ int main( int argc, char* argv[] )
       gr_tx.emplace_back( Form( "Protons in %s", rp->name().c_str() ), h_tx_sp[rp] );
       gr_ty.emplace_back( Form( "Protons in %s", rp->name().c_str() ), h_ty_sp[rp] );
     }
-    const string bottom_label = Form( "%s - %d single-diffractive events (Pythia8)", argv[1], num_events );
+    const string bottom_label = Form( "%s - %d single-diffractive events (Pythia8)", twiss_file.c_str(), num_events );
     plot_multi( "xi_single_diffr", title, gr_xi, bottom_label.c_str() );
     plot_multi( "tx_single_diffr", title, gr_tx, bottom_label.c_str() );
     plot_multi( "ty_single_diffr", title, gr_ty, bottom_label.c_str() );
