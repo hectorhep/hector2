@@ -9,13 +9,10 @@
 #define GOOD_HEPMC
 
 #include "Hector/Propagator/Particle.h"
+#include "HepMC/LHEF.h"
 
 namespace Hector
 {
-  namespace LHEF
-  {
-    class Reader;
-  }
   namespace IO
   {
     /// Parsing tool for LHEF files to use as beams of primary particles

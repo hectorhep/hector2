@@ -37,7 +37,7 @@ namespace Hector
     std::regex MADX::rgx_monitor_name_( "BPM.+" );
     std::regex MADX::rgx_rect_coll_name_( "T[C,A].*\\.\\d[L,R]\\d\\.?(B[1-9])?" );
 
-    MADX::MADX( const char* filename, const char* ip_name, int direction, float max_s ) :
+    MADX::MADX( std::string filename, std::string ip_name, int direction, float max_s ) :
       in_file_( filename ),
       dir_( direction/abs( direction ) ),
       ip_name_( ip_name ), s_offset_( 0. ), found_interaction_point_( false ),
@@ -72,6 +72,9 @@ namespace Hector
 
       beamline_ = Beamline::sequencedBeamline( raw_beamline_.get() );
     }
+
+    MADX::MADX( const char* filename, const char* ip_name, int direction, float max_s ) :
+      MADX( std::string( filename ), std::string( ip_name ), direction, max_s ) {}
 
     MADX::MADX( const MADX& rhs ) :
       dir_( rhs.dir_ ), ip_name_( rhs.ip_name_ ), s_offset_( rhs.s_offset_ ),

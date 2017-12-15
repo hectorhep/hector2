@@ -11,16 +11,22 @@ namespace Hector
   {
     public:
       struct Parameter {
-        Parameter( std::string name, std::string description, std::string* var = 0 ) :
-          name( name ), description( description ), value( "" ), str_variable( var ), float_variable( 0 ), int_variable( 0 ), uint_variable( 0 ) {}
         Parameter( std::string name, std::string description = "", std::string value = "", std::string* var = 0 ) :
           name( name ), description( description ), value( value ), str_variable( var ), float_variable( 0 ), int_variable( 0 ), uint_variable( 0 ) {}
+        Parameter( std::string name, std::string description, std::string* var = 0 ) :
+          name( name ), description( description ), value( "" ), str_variable( var ), float_variable( 0 ), int_variable( 0 ), uint_variable( 0 ) {}
         Parameter( std::string name, std::string description, unsigned int default_value, unsigned int* var = 0 ) :
           name( name ), description( description ), value( std::to_string( default_value ) ), str_variable( 0 ), float_variable( 0 ), int_variable( 0 ), uint_variable( var ) {}
+        Parameter( std::string name, std::string description, unsigned int* var = 0 ) :
+          name( name ), description( description ), value( std::to_string( 0 ) ), str_variable( 0 ), float_variable( 0 ), int_variable( 0 ), uint_variable( var ) {}
         Parameter( std::string name, std::string description, int default_value, int* var = 0 ) :
           name( name ), description( description ), value( std::to_string( default_value ) ), str_variable( 0 ), float_variable( 0 ), int_variable( var ), uint_variable( 0 ) {}
+        Parameter( std::string name, std::string description, int* var = 0 ) :
+          name( name ), description( description ), value( std::to_string( 0 ) ), str_variable( 0 ), float_variable( 0 ), int_variable( var ), uint_variable( 0 ) {}
         Parameter( std::string name, std::string description, double default_value, double* var = 0 ) :
           name( name ), description( description ), value( std::to_string( default_value ) ), str_variable( 0 ), float_variable( var ), int_variable( 0 ), uint_variable( 0 ) {}
+        Parameter( std::string name, std::string description, double* var = 0 ) :
+          name( name ), description( description ), value( std::to_string( 0. ) ), str_variable( 0 ), float_variable( var ), int_variable( 0 ), uint_variable( 0 ) {}
         std::string name, description, value;
         std::string* str_variable;
         double* float_variable;

@@ -47,6 +47,7 @@ namespace Hector
     pythia_->next();
     const Pythia8::Event evt = pythia_->event;
 
+evt.list(true,true);
     Particles pout;
     for ( unsigned short i=0; i<evt.size(); i++ ) {
       const Pythia8::Particle part = evt[i];

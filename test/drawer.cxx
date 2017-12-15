@@ -2,8 +2,10 @@
 #include "Hector/IO/MADXHandler.h"
 #include "Hector/Core/Exception.h"
 #include "Hector/Core/Timer.h"
-#include "Hector/Utils/BeamProducer.h"
 #include "Hector/Propagator/Propagator.h"
+
+#include "Hector/Utils/ArgsParser.h"
+#include "Hector/Utils/BeamProducer.h"
 
 #include "utils.h"
 #include "Canvas.h"
@@ -19,20 +21,27 @@
 int
 main( int argc, char* argv[] )
 {
-  if ( argc<3 ) {
-    std::cout << "Usage: " << argv[0] << " [MAD-X output file for beam 1] [MAD-X output file for beam 2]" << std::endl;
-    return -1;
-  }
-  Hector::Parameters::get()->setUseRelativeEnergy( false ); //FIXME
-  //Hector::Parameters::get()->setComputeApertureAcceptance( false ); //FIXME
+  std::string twiss1_filename, twiss2_filename, ip_name;
+  double crossing_angle_x, crossing_angle_y, max_s;
+  unsigned int num_particles;
+
+  Hector::ArgsParser args( argc, argv, {
+    { "--twiss1", "first Twiss file", &twiss1_filename },
+    { "--twiss2", "second Twiss file", &twiss2_filename }
+  }, {
+    { "--num-parts", "number of particles to generate", 1000, &num_particles },
+    { "--ip-name", "name of the interaction point", "IP5", &ip_name },
+    { "--xingangle-x", "crossing angle in the x direction (rad)", 180.e-6, &crossing_angle_x },
+    { "--xingangle-y", "crossing angle in the y direction (rad)", 0., &crossing_angle_y },
+    { "--max-s", "maximal s-coordinate (m)", 250., &max_s }
+  } );
 
   //--- general plotting parameters
-  const float max_s = ( argc > 3 ) ? atof( argv[3] ) : 250.;
-  const unsigned int num_particles = 1000;
+  //Hector::Parameters::get()->setUseRelativeEnergy( true ); //FIXME
+  //Hector::Parameters::get()->setComputeApertureAcceptance( false ); //FIXME
+  //Hector::Parameters::get()->setEnableKickers( false ); //FIXME
 
-  const float crossing_angle_x = 180.e-6, crossing_angle_y = 0.;
-
-  const Hector::IO::MADX parser_beam1( argv[1], "IP5", +1, max_s ), parser_beam2( argv[2], "IP5", -1, max_s );
+  const Hector::IO::MADX parser_beam1( twiss1_filename.c_str(), ip_name.c_str(), +1, max_s ), parser_beam2( twiss2_filename.c_str(), ip_name.c_str(), -1, max_s );
 
   //--- look at both the beamlines
   //parser_beam1.beamline()->dump();

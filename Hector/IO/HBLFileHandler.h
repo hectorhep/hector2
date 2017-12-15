@@ -12,10 +12,12 @@ namespace Hector
     {
       public:
         HBL( const char* );
+        HBL( std::string filename ) : HBL( filename.c_str() ) {}
         ~HBL() {}
 
         void parse( const char* );
         static void write( const Beamline*, const char* filename );
+        static void write( const Beamline* bl, std::string file ) { write( bl, file.c_str() ); }
         Beamline* beamline() const { return bl_.get(); };
 
       private:

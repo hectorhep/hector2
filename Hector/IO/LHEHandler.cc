@@ -6,8 +6,6 @@
 
 #include "Hector/Core/Exception.h"
 
-#include "LHEF.h"
-
 namespace Hector
 {
   namespace IO

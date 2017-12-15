@@ -3,6 +3,7 @@
 #include "Hector/IO/MADXHandler.h"
 #include "Hector/Propagator/Propagator.h"
 #include "Hector/Utils/BeamProducer.h"
+#include "Hector/Utils/ArgsParser.h"
 
 #include "utils.h"
 #include "Canvas.h"
@@ -18,16 +19,25 @@ using namespace std;
 int
 main( int argc, char* argv[] )
 {
-  if ( argc < 3 ) {
-    cout << "Usage: " << argv[0] << " [MAD-X output file] [s position] <IP name> <crossing angle (x)>" << endl;
-    return -1;
-  }
-  const float s_pos = atof( argv[2] );
-  const char* ip = ( argc > 3 ) ? argv[3] : "IP5";
-  const double crossing_angle_x = ( argc > 4 ) ? atof( argv[4] ) : 180.e-6;
-  const double crossing_angle_y = 0.;
+  string twiss_filename, interaction_point;
+  unsigned int num_particles;
+  double crossing_angle_x, crossing_angle_y;
+  double beam_angular_divergence_ip, beam_lateral_width_ip, particles_energy;
+  double s_pos;
 
-  Hector::IO::MADX parser( argv[1], ip, +1, s_pos );
+  Hector::ArgsParser args( argc, argv, {
+    { "--twiss-file", "MAD-X Twiss file", &twiss_filename },
+    { "--s-pos", "s-coordinate (m)", &s_pos }
+  }, {
+    { "--num-parts", "number of particles to generate", 1000, &num_particles },
+    { "--ip-name", "name of the interaction point", "IP5", &interaction_point },
+    { "--xingangle-x", "crossing angle in the x direction (rad)", 180.e-6, &crossing_angle_x },
+    { "--xingangle-y", "crossing angle in the y direction (rad)", 0., &crossing_angle_y },
+    { "--angular-divergence", "beam angular divergence at the interaction point (rad)", 30.23e-6, &beam_angular_divergence_ip },
+    { "--beam-width", "beam lateral width at the interaction point (m)", 13.63e-6, &beam_lateral_width_ip },
+    { "--particles-energy", "beam particles energy (GeV)", 6500., &particles_energy }
+  } );
+  Hector::IO::MADX parser( twiss_filename, interaction_point, +1, s_pos );
   parser.printInfo();
 
   const CLHEP::Hep2Vector offset( -0.097, 0. );
@@ -41,10 +51,6 @@ main( int argc, char* argv[] )
   TH2D hitmap( "hitmap", "x (m)\\y (m)", 200, 0., 0.2, 200, -0.05, 0.05 );
   //TH2D hitmap( "hitmap", "x (m)\\y (m)", 200, 0.08, 0.12, 200, -0.05, 0.05 );
 
-  const unsigned int num_particles = 5000;
-  const float beam_lateral_width_ip = 16.63e-6, // in meters
-              beam_angular_divergence_ip = 30.23e-6, // in radians
-              particles_energy = 6500.; // in GeV
   Hector::BeamProducer::gaussianParticleGun gun;
   //gun.setElimits( particles_energy*0.95, particles_energy );
   gun.setElimits( particles_energy );
@@ -81,8 +87,7 @@ main( int argc, char* argv[] )
     hitmap.Draw( "colz" );
     c.Prettify( &hitmap );
 
-    const string file( argv[1] );
-    Hector::Canvas::PaveText( 0.01, 0., 0.05, 0.05, Form( "#scale[0.3]{Beamline: %s}", file.substr( file.find_last_of( "/\\" )+1 ).c_str() ) ).Draw();
+    Hector::Canvas::PaveText( 0.01, 0., 0.05, 0.05, Form( "#scale[0.3]{Beamline: %s}", twiss_filename.substr( twiss_filename.find_last_of( "/\\" )+1 ).c_str() ) ).Draw();
 
     c.Save( "pdf" );
   }

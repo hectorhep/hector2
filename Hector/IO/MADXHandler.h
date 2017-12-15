@@ -27,6 +27,11 @@ namespace Hector
         /// \param[in] max_s Maximal s-coordinate at which the Twiss file must be parsed
         /// \param[in] filename Path to the MAD-X Twiss file to parse
         /// \param[in] ip_name Name of the interaction point
+        MADX( std::string filename, std::string ip_name, int direction, float max_s=-1. );
+        /// Class constructor
+        /// \param[in] max_s Maximal s-coordinate at which the Twiss file must be parsed
+        /// \param[in] filename Path to the MAD-X Twiss file to parse
+        /// \param[in] ip_name Name of the interaction point
         MADX( const char* filename, const char* ip_name, int direction, float max_s=-1. );
         MADX( const MADX& );
         MADX( MADX& );
