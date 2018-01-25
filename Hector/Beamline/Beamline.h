@@ -34,7 +34,8 @@ namespace Hector
       /// Remove and clean all elements in the beamline
       void clear();
       /// Print all useful information on a beamline and all its enclosing elements
-      /// \param[out] os Output stream where to dump the information
+      /// \param[inout] os Output stream where to dump the information
+      /// \param[in] show_drifts Do we show the intermediate drifts
       void dump( std::ostream& os = std::cout, bool show_drifts = true ) const;
 
       /// Retrieve the position of the interaction point

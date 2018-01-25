@@ -1,4 +1,4 @@
-#include "Hector/IO/Pythia8Generator.h"
+#include "Hector/Utils/Pythia8Generator.h"
 #include "Hector/Core/Parameters.h"
 #include "Hector/Core/Utils.h"
 #include "Hector/Core/Exception.h"
@@ -47,6 +47,7 @@ namespace Hector
     pythia_->next();
     const Pythia8::Event evt = pythia_->event;
 
+evt.list(true,true);
     Particles pout;
     for ( unsigned short i=0; i<evt.size(); i++ ) {
       const Pythia8::Particle part = evt[i];

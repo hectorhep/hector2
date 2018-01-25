@@ -58,9 +58,13 @@ namespace Hector
       void setPosition( const TwoVector& pos ) { setPosition( pos.x(), pos.y() ); }
       /// x-y position of a particle (in m)
       TwoVector position() const;
+      /// Set the horizontal position (in m)
       void setX( double x ) { ( *this )[X] = x; }
+      /// Horizontal position (in m)
       double x() const { return ( *this )[X]; }
+      /// Set the vertical position (in m)
       void setY( double y ) { ( *this )[Y] = y; }
+      /// Vertical position (in m)
       double y() const { return ( *this )[Y]; }
 
       /// Fill the components of a state according to the particle x'-y' angles (in rad)
@@ -69,9 +73,13 @@ namespace Hector
       void setAngles( const TwoVector& angles ) { setAngles( angles.x(), angles.y() ); }
       /// x'-y' polar angles of a particles (in rad)
       TwoVector angles() const;
+      /// Set the horizontal angle (in rad)
       void setTx( double tx ) { ( *this )[TX] = tx; }
+      /// Horizontal angle (in rad)
       double Tx() const { return angles().x(); }
+      /// Set the vertical angle (in rad)
       void setTy( double ty ) { ( *this )[TY] = ty; }
+      /// Vertical angle (in rad)
       double Ty() const { return angles().y(); }
 
       /// Fill the components of a state according to the particle kinematics

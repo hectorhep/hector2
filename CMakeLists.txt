@@ -2,17 +2,16 @@ cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
 project(Hector)
 set(PROJECT_VERSION 2)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -g -std=c++11 -fPIC")
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/cmake)
+
+#----- include external dependencies, prepare the environment
+
+include(SetEnvironment)
 
 #----- define all individual modules to be built beforehand
 
 set(HECTOR_MODULES Core IO Elements Beamline Propagator Utils)
 set(HECTOR_SOURCE_DIR ${PROJECT_SOURCE_DIR}/Hector)
-
-#----- include external dependencies
-
-include(SetEnvironment)
 
 #----- build all the intermediate objects
 

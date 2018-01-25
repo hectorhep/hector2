@@ -21,7 +21,7 @@ namespace Hector
         /// \param[in] name Element name
         /// \param[in] spos s-position of the element in the beamline
         /// \param[in] length Element length (in m)
-        ElementBase( const Type& type, const std::string& name="invalid element", float spos = 0., float length = 0. );
+        ElementBase( const Type& type, const std::string& name = "invalid element", float spos = 0., float length = 0. );
         /// Copy constructor (moving the associated aperture if any)
         ElementBase( ElementBase& elem );
         /// Copy constructor (cloning the associated aperture if any)
@@ -42,13 +42,15 @@ namespace Hector
         virtual Matrix matrix( float eloss, float mp, int qp ) const = 0;
 
         /// Set the name of the element
-        void setName( const std::string& name ) { name_ = name; }
+        void setName( std::string name ) { name_ = name; }
         /// Element name
-        const std::string& name() const { return name_; }
+        const std::string name() const { return name_; }
         /// Set the element type
         void setType( const Type& type ) { type_ = type; }
         /// Element type
         Type type() const { return type_; }
+        /// Human-readable element type
+        const std::string typeName() const;
 
         /// Set the longitudinal position of the entrance of the element
         void setS( float s ) { s_ = s; }
@@ -146,11 +148,19 @@ namespace Hector
     /// Sorting methods for the beamline construction (using the s position of each elements)
     struct ElementsSorter
     {
+      /// Compare the pointers to two elements
+      inline bool operator()( const ElementBase* lhs, const ElementBase* rhs ) const {
+        if ( !lhs || !rhs ) return false;
+        if ( lhs->s() < rhs->s() ) return true;
+        if ( lhs->s() > rhs->s() ) return false;
+        if ( lhs->s()+lhs->length() < rhs->s()+rhs->length() ) return true;
+        return false;
+      }
       /// Compare the references to two elements
       inline bool operator()( const ElementBase& lhs, const ElementBase& rhs ) const {
         return ( &lhs < &rhs );
       }
-      /// Compare the pointers to two elements
+      /// Compare the smart pointers to two elements
       inline bool operator()( const std::shared_ptr<ElementBase> lhs, const std::shared_ptr<ElementBase> rhs ) const {
         if ( lhs->s() < rhs->s() ) return true;
         if ( lhs->s() > rhs->s() ) return false;

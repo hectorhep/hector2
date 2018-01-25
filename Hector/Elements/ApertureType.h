@@ -20,9 +20,9 @@ namespace Hector
       aRaceTrackAperture,
       anOctagonalAperture
     };
-    /// Human-readable printout of an aperture type
-    std::ostream& operator<<( std::ostream&, const Type& );
   }
+  /// Human-readable printout of an aperture type
+  std::ostream& operator<<( std::ostream&, const Aperture::Type& );
 }
 
 #endif

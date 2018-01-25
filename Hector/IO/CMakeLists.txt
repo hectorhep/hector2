@@ -1,19 +1,12 @@
-file(GLOB sources *Handler.cc)
+file(GLOB sources *.cc)
 include_directories(${PROJECT_SOURCE_DIR})
 
 #----- remove the LHEF parser if the required include is not present
 
-file(GLOB lhef_sources LHEHandler.cc)
 if(HEPMC_LIB)
 else()
+  file(GLOB lhef_sources LHEHandler.cc)
   list(REMOVE_ITEM sources ${lhef_sources})
-endif()
-
-#----- include the Pythia8 wrapper if present on the system
-
-if(PYTHIA8_FOUND)
-  include_directories(${PYTHIA8_INCLUDE_DIRS})
-  list(APPEND sources Pythia8Generator.cc)
 endif()
 
 #----- build the object

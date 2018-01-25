@@ -1,23 +1,21 @@
-#include "ApertureType.h"
+#include "Hector/Elements/ApertureType.h"
 
 namespace Hector
 {
-  namespace Aperture
+  std::ostream&
+  operator<<( std::ostream& os, const Aperture::Type& type )
   {
-    std::ostream&
-    operator<<( std::ostream& os, const Type& type )
-    {
-      switch ( type ) {
-        case anInvalidAperture:     os << "invalid"; break;
-        case aRectangularAperture:  os << "rectangular"; break;
-        case aCircularAperture:     os << "circular"; break;
-        case anEllipticAperture:    os << "elliptic"; break;
-        case aRectEllipticAperture: os << "rect-elliptic"; break;
-        case aRectCircularAperture: os << "rect-circular"; break;
-        case aRaceTrackAperture:    os << "race-track"; break;
-        case anOctagonalAperture:   os << "octagonal"; break;
-      }
-      return os;
+    switch ( type ) {
+      case Aperture::anInvalidAperture:     os << "invalid"; break;
+      case Aperture::aRectangularAperture:  os << "rectangular"; break;
+      case Aperture::aCircularAperture:     os << "circular"; break;
+      case Aperture::anEllipticAperture:    os << "elliptic"; break;
+      case Aperture::aRectEllipticAperture: os << "rect-elliptic"; break;
+      case Aperture::aRectCircularAperture: os << "rect-circular"; break;
+      case Aperture::aRaceTrackAperture:    os << "race-track"; break;
+      case Aperture::anOctagonalAperture:   os << "octagonal"; break;
     }
+    return os;
   }
 }
+

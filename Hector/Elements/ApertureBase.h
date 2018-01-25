@@ -41,16 +41,14 @@ namespace Hector
         /// Get the outer boundaries of the aperture
         virtual TwoVector limits() const = 0;
 
-        /// Human-readable printout of the properties of an aperture
-        friend std::ostream& operator<<( std::ostream&, const ApertureBase& );
-        /// Human-readable printout of the properties of an aperture
-        friend std::ostream& operator<<( std::ostream&, const ApertureBase* );
-
         /// Type of aperture (rectangular, elliptic, rect-elliptic, circular)
         Type type() const { return type_; }
+        /// Human-readable aperture type
+        const std::string typeName() const;
 
         /// Retrieve a shape parameter of the aperture
         float p( const size_t& i ) const { return ( i<param_.size() ) ? param_.at( i ) : -1.0; }
+        /// Aperture shape parameters
         const Parameters& parameters() const { return param_; }
 
         /// Set the transverse position of the aperture barycentre
@@ -76,6 +74,10 @@ namespace Hector
         Parameters param_;
     };
   }
+  /// Human-readable printout of the properties of an aperture
+  std::ostream& operator<<( std::ostream&, const Aperture::ApertureBase& );
+  /// Human-readable printout of the properties of an aperture
+  std::ostream& operator<<( std::ostream&, const Aperture::ApertureBase* );
 }
 
 #endif
