@@ -9,17 +9,24 @@ namespace
 {
   namespace py = boost::python;
 
+  struct ElementBaseWrap : Hector::Element::ElementBase, py::wrapper<Hector::Element::ElementBase>
+  {
+    ElementBaseWrap() : Hector::Element::ElementBase( Hector::Element::anInvalidElement ) {}
+    std::shared_ptr<Hector::Element::ElementBase> clone() const override { return this->get_override( "clone" )(); }
+    Hector::Matrix matrix( float eloss, float mp, int qp ) const override { return this->get_override( "matrix" )( eloss, mp, qp ); }
+  };
+
   template<class T>
   void convertElementBase( const char* name )
   {
     struct Wrap : T, py::wrapper<T>
     {
-      std::shared_ptr<Hector::Element::ElementBase> clone() const { return this->get_override( "clone" )(); }
-      Hector::Matrix matrix( float eloss, float mp, int qp ) const { return this->get_override( "matrix" )( eloss, mp, qp ); }
+      using T::T;
+      std::shared_ptr<Hector::Element::ElementBase> clone() const override { return this->get_override( "clone" )(); }
+      Hector::Matrix matrix( float eloss, float mp, int qp ) const override { return this->get_override( "matrix" )( eloss, mp, qp ); }
     };
-    py::class_<Wrap, boost::noncopyable, py::bases<Hector::Element::ElementBase> >( name, py::no_init )
-      //.def( "clone", py::pure_virtual( &Hector::Element::ElementBase::clone ), py::return_value_policy<py::manage_new_object>() )
-      .def( "clone", py::pure_virtual( &Wrap::clone ), py::return_value_policy<py::manage_new_object>() )
+    py::class_<Wrap, std::shared_ptr<Hector::Element::ElementBase>, boost::noncopyable, py::bases<ElementBaseWrap> >( name, py::no_init )
+      .def( "clone", py::pure_virtual( &Hector::Element::ElementBase::clone ), py::return_value_policy<py::return_by_value>() )
       .def( "matrix", py::pure_virtual( &Hector::Element::ElementBase::matrix ) )
     ;
   }
@@ -27,27 +34,13 @@ namespace
   template<class T,class init=py::init<std::string,float,float,float>,class P=Hector::Element::ElementBase>
   void convertElement( const char* name )
   {
+//    py::class_<T, std::shared_ptr<Hector::Element::ElementBase>, py::bases<P> >( name, init() )
     py::class_<T, py::bases<P> >( name, init() )
-      .def( "clone", &T::clone, py::return_value_policy<py::manage_new_object>() )
+      .def( "clone", &T::clone, py::return_value_policy<py::return_by_value>() )
+//      .def( "clone", &T::clone, py::return_value_policy<py::manage_new_object>() )
       .def( "matrix", &T::matrix )
     ;
   }
-
-  /*struct ElementBaseWrap : Hector::Element::ElementBase, py::wrapper<Hector::Element::ElementBase>
-  {
-    ElementBaseWrap() : Hector::Element::ElementBase( Hector::Element::anInvalidElement ) {}
-    std::shared_ptr<Hector::Element::ElementBase> clone() const override { return this->get_override( "clone" )(); }
-    std::shared_ptr<ElementBaseWrap> cloneDef() const { return std::make_shared<ElementBaseWrap>( *this ); }
-    Hector::Matrix matrix( float eloss, float mp, int qp ) const override { return this->get_override( "matrix" )( eloss, mp, qp ); }
-  };*/
-  struct ElementBaseWrap : Hector::Element::ElementBase
-  {
-    ElementBaseWrap( PyObject* self ) :
-      Hector::Element::ElementBase( Hector::Element::anInvalidElement ),
-      self_( self ) {}
-    PyObject* self_;
-    std::shared_ptr<Hector::Element::ElementBase> clone() const { return py::call_method<std::shared_ptr<Hector::Element::ElementBase> >( self_, "clone" ); }
-  };
 }
 
 #endif
