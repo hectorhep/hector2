@@ -46,6 +46,8 @@ namespace Hector
       void addElement( const std::shared_ptr<Element::ElementBase> elem );
       /// Get the full beamline content (vector of elements)
       const Elements& elements() const { return elements_; }
+      /// Get the full beamline content (vector of elements)
+      Elements& elements() { return elements_; }
       /// Retrieve a beamline element given its name
       /// \param[in] name Name of the element to be retrieved
       const std::shared_ptr<Element::ElementBase> getElement( const std::string& name ) const;
