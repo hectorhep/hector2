@@ -14,10 +14,15 @@
 
 #include "Hector/IO/MADXHandler.h"
 
+#include "Hector/Utils/BeamProducer.h"
+#include <CLHEP/Random/RandGauss.h>
+
 #include <boost/python.hpp>
 
 #include <memory>
 #include <map>
+
+//----- FIRST START WITH SOME UTILITIES
 
 namespace
 {
@@ -33,23 +38,61 @@ namespace
     bl.dump( os, true );
     return os.str();
   }
+  //--- helper python <-> C++ converters
   template<class T, class U> py::dict to_python_dict( std::map<T,U>& map ) {
     py::dict dictionary;
     for ( auto& it : map ) dictionary[it.first] = it.second;
     return dictionary;
-  }
-  py::dict particle_positions( Hector::Particle& part ) {
-    return to_python_dict<double,Hector::StateVector>( part.positions() );
   }
   template<class T> py::list to_python_list( std::vector<T>& vec ) {
     py::list list;
     for ( auto& it : vec ) list.append( it );
     return list;
   }
-  py::list beamline_elements( Hector::Beamline& bl ) {
-    return to_python_list<std::shared_ptr<Hector::Element::ElementBase> >( bl.elements() );
-  }
+  template<class T>
+  struct PyMap
+  {
+    PyMap() {}
+    PyMap( py::dict& dict ) { update_map( dict ); }
+    void clear() { map.clear(); }
+    size_t size() const { return map.size(); }
+    void update_map( py::dict& dict ) {
+      py::list keys = dict.keys();
+      // not very C++like, but that's life
+      for ( unsigned short i = 0; i < py::len( keys ); ++i ) {
+        // extract the key
+        py::extract<std::string> extracted_key( keys[i] );
+        std::string key = extracted_key;
+        if ( !extracted_key.check() ) { std::cerr << "Key invalid, map might be incomplete" << std::endl; continue; }
+        // extract the value
+        py::extract<T> extracted_val( dict[key] );
+        if ( !extracted_val.check() ) { std::cerr << "Value invalid, map might be incomplete" << std::endl; continue; }
+        T value = extracted_val;
+        // feed the map
+        map[key] = value;
+      }
+    }
+    py::dict get_dict() const {
+      //return to_python_dict<std::string,T>( map_ );
+      py::dict dictionary;
+      for ( auto& it : map ) dictionary[it.first] = it.second;
+      return dictionary;
+    }
+    std::map<std::string,T> map;
+  };
+  py::dict particle_positions( Hector::Particle& part ) { return to_python_dict<double,Hector::StateVector>( part.positions() ); }
+  py::list beamline_elements( Hector::Beamline& bl ) { return to_python_list<std::shared_ptr<Hector::Element::ElementBase> >( bl.elements() ); }
 
+  struct BeamProducerWrap : PyMap<float>, Hector::BeamProducer::gaussianParticleGun
+  {
+    using Hector::BeamProducer::gaussianParticleGun::gaussianParticleGun;
+    BeamProducerWrap( py::dict& dict ) : PyMap<float>( dict ),
+    Hector::BeamProducer::gaussianParticleGun( map["Emin"], map["Emax"], map["smin"], map["smax"],
+                                               map["xmin"], map["xmax"], map["ymin"], map["ymax"],
+                                               map["Txmin"], map["Txmax"], map["Tymin"], map["Tymax"],
+                                               map["m"], map["q"] ) {}
+  };
+  //--- helper beamline elements definitions
   struct ElementBaseWrap : Hector::Element::ElementBase, py::wrapper<Hector::Element::ElementBase>
   {
     ElementBaseWrap() : Hector::Element::ElementBase( Hector::Element::anInvalidElement ) {}
@@ -67,13 +110,25 @@ namespace
   }
 }
 
+//----- THEN SOME OVERLOADED FUNCTIONS/METHODS HELPERS
+
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS( particle_add_position_pos_overloads, addPosition, 1, 2 )
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS( particle_add_position_vec_overloads, addPosition, 2, 3 )
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS( beamline_dump_overloads, dump, 0, 2 )
 
+//----- AND HERE COMES THE MODULE
+
 BOOST_PYTHON_MODULE( pyhector )
 {
   //----- GENERAL HELPERS
+
+  py::class_<PyMap<float> >( "map", py::init<>() )
+    .def( py::init<py::dict&>() )
+    .def( "update_map", &PyMap<float>::update_map )
+    .def( "clear", &PyMap<float>::clear )
+    .def( "size", &PyMap<float>::size )
+    .def( "to_dict", &PyMap<float>::get_dict )
+  ;
 
   py::class_<Hector::LorentzVector>( "LorentzVector" )
     .def( py::init<double,double,double,double>() )
@@ -141,6 +196,14 @@ BOOST_PYTHON_MODULE( pyhector )
     .def( "positions", particle_positions )
     .def( "addPosition", addPosition_pos, particle_add_position_pos_overloads() )
     .def( "addPosition", addPosition_vec, particle_add_position_vec_overloads() )
+  ;
+
+  //----- BEAM PRODUCERS
+
+  //py::class_<BeamProducerWrap>( "GaussianParticleGun", py::init<py::optional<float,float,float,float,float,float,float,float,float,float,float,float> >() )
+  py::class_<BeamProducerWrap>( "GaussianParticleGun" )
+    .def( py::init<py::dict&>() )
+    .def( "shoot", &Hector::BeamProducer::gaussianParticleGun::shoot )
   ;
 
   //----- BEAMLINE DEFINITION

@@ -47,7 +47,7 @@ target_link_libraries(hector Hector2 ${HECTOR_DEPENDENCIES})
 if(Boost_FOUND)
   find_package(PythonLibs 2.7 REQUIRED)
   include_directories(${Boost_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS})
-  PYTHON_ADD_MODULE(pyhector ${PROJECT_SOURCE_DIR}/Hector/PythonWrapper.cc)
+  PYTHON_ADD_MODULE(pyhector ${HECTOR_SOURCE_DIR}/PythonWrapper.cc)
   target_link_libraries(pyhector Hector2 ${HECTOR_DEPENDENCIES} ${Boost_LIBRARIES})
 endif()
 
