@@ -24,6 +24,16 @@
 
 //----- FIRST START WITH SOME UTILITIES
 
+#if BOOST_VERSION < 105300
+
+// https://github.com/mapnik/mapnik/issues/2022
+namespace boost {
+  template<class T> const T* get_pointer( const std::shared_ptr<T>& p ) { return p.get(); }
+  template<class T> T* get_pointer( std::shared_ptr<T>& p ) { return p.get(); }
+}
+
+#endif
+
 namespace
 {
   namespace py = boost::python;
