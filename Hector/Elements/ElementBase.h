@@ -49,6 +49,7 @@ namespace Hector
         void setType( const Type& type ) { type_ = type; }
         /// Element type
         Type type() const { return type_; }
+        /// Human-readable element type
         const std::string typeName() const;
 
         /// Set the longitudinal position of the entrance of the element
