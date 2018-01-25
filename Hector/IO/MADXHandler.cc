@@ -44,7 +44,7 @@ namespace Hector
       has_next_element_( false )
     {
       if ( !in_file_.is_open() )
-        throw Exception( __PRETTY_FUNCTION__, Form( "Failed to open Twiss file \"%s\"\n\tCheck the path!", filename ), Fatal );
+        throw Exception( __PRETTY_FUNCTION__, Form( "Failed to open Twiss file \"%s\"\n\tCheck the path!", filename.c_str() ), Fatal );
       parseHeader();
 
       raw_beamline_ = std::unique_ptr<Beamline>( new Beamline( max_s ) );
