@@ -53,7 +53,10 @@ namespace
   struct PyMap
   {
     PyMap() {}
-    PyMap( py::dict& dict ) { update_map( dict ); }
+    PyMap( py::dict& dict, std::vector<std::string> keys = std::vector<std::string>{} ) {
+      for ( const auto& k : keys ) map[k] = T();
+      update_map( dict );
+    }
     void clear() { map.clear(); }
     size_t size() const { return map.size(); }
     void update_map( py::dict& dict ) {
@@ -72,25 +75,38 @@ namespace
         map[key] = value;
       }
     }
-    py::dict get_dict() const {
-      //return to_python_dict<std::string,T>( map_ );
-      py::dict dictionary;
-      for ( auto& it : map ) dictionary[it.first] = it.second;
-      return dictionary;
-    }
+    py::dict get_dict() const { py::dict dictionary; for ( auto& it : map ) dictionary[it.first] = it.second; return dictionary; }
     std::map<std::string,T> map;
   };
   py::dict particle_positions( Hector::Particle& part ) { return to_python_dict<double,Hector::StateVector>( part.positions() ); }
   py::list beamline_elements( Hector::Beamline& bl ) { return to_python_list<std::shared_ptr<Hector::Element::ElementBase> >( bl.elements() ); }
 
-  struct BeamProducerWrap : PyMap<float>, Hector::BeamProducer::gaussianParticleGun
+  void translate_exception( const Hector::Exception& e ) {
+    switch ( e.type() ) {
+      case Hector::Fatal: case Hector::Undefined: PyErr_SetString( PyExc_RuntimeError, e.what() ); return;
+      case Hector::JustWarning: PyErr_SetString( PyExc_RuntimeWarning, e.what() ); return;
+      case Hector::Info: PyErr_SetString( PyExc_UserWarning, e.what() ); return;
+    }
+  }
+  /*template <class E, class... Policies, class... Args>
+  py::class_<E, Policies...> exception_(Args&&... args) {
+    py::class_<E, Policies...> cls(std::forward<Args>(args)...);
+    py::register_exception_translator<E>([ptr=cls.ptr()](E const& e){
+        PyErr_SetObject(ptr, py::object(e).ptr());
+    });
+    return cls;
+  }*/
+
+  template<class T>
+  struct BeamProducerWrap : PyMap<float>, T
   {
-    using Hector::BeamProducer::gaussianParticleGun::gaussianParticleGun;
-    BeamProducerWrap( py::dict& dict ) : PyMap<float>( dict ),
-    Hector::BeamProducer::gaussianParticleGun( map["Emin"], map["Emax"], map["smin"], map["smax"],
-                                               map["xmin"], map["xmax"], map["ymin"], map["ymax"],
-                                               map["Txmin"], map["Txmax"], map["Tymin"], map["Tymax"],
-                                               map["m"], map["q"] ) {}
+    using T::T;
+    BeamProducerWrap( py::dict& dict ) :
+      PyMap<float>( dict, { { "Emin", "Emax", "smin", "smax", "xmin", "xmax", "ymin", "ymax", "Txmin", "Txmax", "Tymin", "Tymax", "m", "q" } } ),
+      T( map["Emin"], map["Emax"], map["smin"], map["smax"],
+                                                 map["xmin"], map["xmax"], map["ymin"], map["ymax"],
+                                                 map["Txmin"], map["Txmax"], map["Tymin"], map["Tymax"],
+                                                 map["m"], map["q"] ) {}
   };
   //--- helper beamline elements definitions
   struct ElementBaseWrap : Hector::Element::ElementBase, py::wrapper<Hector::Element::ElementBase>
@@ -122,14 +138,6 @@ BOOST_PYTHON_MODULE( pyhector )
 {
   //----- GENERAL HELPERS
 
-  py::class_<PyMap<float> >( "map", py::init<>() )
-    .def( py::init<py::dict&>() )
-    .def( "update_map", &PyMap<float>::update_map )
-    .def( "clear", &PyMap<float>::clear )
-    .def( "size", &PyMap<float>::size )
-    .def( "to_dict", &PyMap<float>::get_dict )
-  ;
-
   py::class_<Hector::LorentzVector>( "LorentzVector" )
     .def( py::init<double,double,double,double>() )
     .def( py::self_ns::str( py::self_ns::self ) )
@@ -144,12 +152,22 @@ BOOST_PYTHON_MODULE( pyhector )
     .add_property( "e", &Hector::LorentzVector::e, &Hector::LorentzVector::setE )
   ;
 
+  //----- EXCEPTIONS
+
   py::enum_<Hector::ExceptionType>( "ExceptionType" )
     .value( "undefined", Hector::ExceptionType::Undefined )
     .value( "info", Hector::ExceptionType::Info )
     .value( "justWarning", Hector::ExceptionType::JustWarning )
     .value( "fatal", Hector::ExceptionType::Fatal )
   ;
+
+  py::register_exception_translator<Hector::Exception>( &translate_exception );
+  /*exception_<Hector::Exception>( "Exception", py::init<std::string,std::string>() )
+    .add_property( "message", &Hector::Exception::what )
+    //.add_property("extra_data", &MyCPPException::getExtraData)
+  ;*/
+
+  //----- RUN PARAMETERS
 
   py::class_<Hector::Parameters, std::shared_ptr<Hector::Parameters>, boost::noncopyable>( "Parameters", py::init<>() )
     .def( "get", &Hector::Parameters::get ).staticmethod( "get" )
@@ -201,9 +219,15 @@ BOOST_PYTHON_MODULE( pyhector )
   //----- BEAM PRODUCERS
 
   //py::class_<BeamProducerWrap>( "GaussianParticleGun", py::init<py::optional<float,float,float,float,float,float,float,float,float,float,float,float> >() )
-  py::class_<BeamProducerWrap>( "GaussianParticleGun" )
+  py::class_<BeamProducerWrap<Hector::BeamProducer::gaussianParticleGun> >( "GaussianParticleGun" )
     .def( py::init<py::dict&>() )
     .def( "shoot", &Hector::BeamProducer::gaussianParticleGun::shoot )
+    .add_property( "mass", &Hector::BeamProducer::gaussianParticleGun::particleMass, &Hector::BeamProducer::gaussianParticleGun::setParticleMass )
+    .add_property( "charge", &Hector::BeamProducer::gaussianParticleGun::particleCharge, &Hector::BeamProducer::gaussianParticleGun::setParticleCharge )
+    .def( "smearTx", &Hector::BeamProducer::gaussianParticleGun::setTXparams )
+    .def( "smearTy", &Hector::BeamProducer::gaussianParticleGun::setTYparams )
+    .def( "smearX", &Hector::BeamProducer::gaussianParticleGun::setXparams )
+    .def( "smearY", &Hector::BeamProducer::gaussianParticleGun::setYparams )
   ;
 
   //----- BEAMLINE DEFINITION

@@ -204,8 +204,12 @@ namespace Hector
 
         //----- Single particle information
 
+        /// Outgoing particles' mass (in GeV)
+        float particleMass() const { return mass_; }
         /// Set the outgoing particles' mass (in GeV)
         void setParticleMass( float mass ) { mass_ = mass; }
+        /// Outgoing particles' charge (in e)
+        float particleCharge() const { return charge_; }
         /// Set the outgoing particles' charge (in e)
         void setParticleCharge( float q ) { charge_ = q; }
 
