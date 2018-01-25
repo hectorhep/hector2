@@ -175,8 +175,10 @@ main( int argc, char* argv[] )
     //c.SetMargin( 5., 5., 5., 5. );
 
     c.cd();
-    const std::string file1( argv[1] ), file2( argv[2] );
-    auto pt = new Hector::Canvas::PaveText( 0.0, 0.0, 0.15, 0.01, Form( "#scale[0.3]{Beam 1: %s - Beam 2: %s}", file1.substr( file1.find_last_of( "/\\" )+1 ).c_str(), file2.substr( file2.find_last_of( "/\\")+1 ).c_str() ) );
+    const char* label = Form( "#scale[0.3]{Beam 1: %s - Beam 2: %s}",
+                              twiss1_filename.substr( twiss1_filename.find_last_of( "/\\" )+1 ).c_str(),
+                              twiss2_filename.substr( twiss2_filename.find_last_of( "/\\")+1 ).c_str() );
+    auto pt = new Hector::Canvas::PaveText( 0.0, 0.0, 0.15, 0.01, label );
     pt->SetTextAlign( kHAlignLeft+kVAlignBottom );
     pt->Draw();
 

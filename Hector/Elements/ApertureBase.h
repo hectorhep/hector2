@@ -43,6 +43,7 @@ namespace Hector
 
         /// Type of aperture (rectangular, elliptic, rect-elliptic, circular)
         Type type() const { return type_; }
+        const std::string typeName() const;
 
         /// Retrieve a shape parameter of the aperture
         float p( const size_t& i ) const { return ( i<param_.size() ) ? param_.at( i ) : -1.0; }

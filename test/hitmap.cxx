@@ -1,5 +1,5 @@
 #include "Hector/Beamline/Beamline.h"
-#include "Hector/Core/Exception.h"
+#include "Hector/Core/ParticleStoppedException.h"
 #include "Hector/IO/MADXHandler.h"
 #include "Hector/Propagator/Propagator.h"
 #include "Hector/Utils/BeamProducer.h"
@@ -22,6 +22,7 @@ main( int argc, char* argv[] )
   string twiss_filename, interaction_point;
   unsigned int num_particles;
   double crossing_angle_x, crossing_angle_y;
+  double hitmaps_dist;
   double beam_angular_divergence_ip, beam_lateral_width_ip, particles_energy;
   double s_pos;
 
@@ -29,6 +30,7 @@ main( int argc, char* argv[] )
     { "--twiss-file", "MAD-X Twiss file", &twiss_filename },
     { "--s-pos", "s-coordinate (m)", &s_pos }
   }, {
+    { "--show-every", "s-step between two hitmaps", -1, &hitmaps_dist },
     { "--num-parts", "number of particles to generate", 1000, &num_particles },
     { "--ip-name", "name of the interaction point", "IP5", &interaction_point },
     { "--xingangle-x", "crossing angle in the x direction (rad)", 180.e-6, &crossing_angle_x },
@@ -40,16 +42,26 @@ main( int argc, char* argv[] )
   Hector::IO::MADX parser( twiss_filename, interaction_point, +1, s_pos );
   parser.printInfo();
 
-  const CLHEP::Hep2Vector offset( -0.097, 0. );
-  //parser.beamline()->offsetElementsAfter( 120., offset );
+  //const CLHEP::Hep2Vector offset( -0.097, 0. );
+  const CLHEP::Hep2Vector offset( 0., 0. );
+  parser.beamline()->offsetElementsAfter( 120., offset );
   //parser.romanPots()
 
   Hector::Propagator prop( parser.beamline() );
 
   //TH2D hitmap( "hitmap", "x (m)\\y (m)", 200, -0.01, 0.01, 200, -0.01, 0.01 );
   //TH2D hitmap( "hitmap", "x (m)\\y (m)", 200, -0.005, 0.005, 200, -0.005, 0.005 );
-  TH2D hitmap( "hitmap", "x (m)\\y (m)", 200, 0., 0.2, 200, -0.05, 0.05 );
+  TH2D hitmap( "hitmap", "x (m)\\y (m)", 200, 0., 0.02, 200, -0.05, 0.05 );
+  //TH2D hitmap( "hitmap", "x (m)\\y (m)", 200, -1., 1., 200, -1., 1. );
   //TH2D hitmap( "hitmap", "x (m)\\y (m)", 200, 0.08, 0.12, 200, -0.05, 0.05 );
+  map<float,TH2D*> m_hitmaps;
+  if ( hitmaps_dist > 0. ) {
+    double s = 0.;
+    while ( s <= s_pos ) {
+      m_hitmaps[s] = dynamic_cast<TH2D*>( hitmap.Clone( Form( "hitmap_s%.3f", s ) ) );
+      s += hitmaps_dist;
+    }
+  }
 
   Hector::BeamProducer::gaussianParticleGun gun;
   //gun.setElimits( particles_energy*0.95, particles_energy );
@@ -61,34 +73,64 @@ main( int argc, char* argv[] )
   //Hector::BeamProducer::Xscanner gun( num_particles, Hector::Parameters::get()->beamEnergy(), 0., 0.01 );
 
   unsigned short num_stopped = 0;
+  map<const Hector::Element::ElementBase*,unsigned short> stopped_at;
   for ( size_t i = 0; i < num_particles; ++i ) {
 
-    if ( (int)(i*(double)num_particles/num_particles)%1000==0 ) cout << ">>> Generating particle " << i << " / " << num_particles << endl;
+    if ( (int)(i*(double)num_particles/num_particles)%1000 == 0 ) cout << ">>> Generating particle " << i << " / " << num_particles << endl;
 
     // propagation through the beamline
     Hector::Particle p = gun.shoot();
     try {
       prop.propagate( p, s_pos );
       //p.dump();
-      if ( prop.stopped( p, s_pos ) ) { /*cout << "prout" << endl;*/ num_stopped++; continue; }
+      //if ( prop.stopped( p, s_pos ) ) { /*cout << "prout" << endl;*/ num_stopped++; continue; }
       const CLHEP::Hep2Vector pos( p.stateVectorAt( s_pos ).position()-offset );
       cout << s_pos << " -> " << pos << endl;
       hitmap.Fill( pos.x(), pos.y() );
-    } catch ( Hector::Exception& e ) {
-      e.dump();
+    } catch ( Hector::ParticleStoppedException& pse ) {
+      //pse.dump();
+      stopped_at[pse.stoppingElement()]++;
       num_stopped++;
-      continue;
+    }
+    // propagate at every position step
+    for ( auto& hm : m_hitmaps ) {
+      try {
+        p.clear();
+        prop.propagate( p, hm.first );
+        const CLHEP::Hep2Vector pos( p.stateVectorAt( hm.first ).position()-offset );
+        hm.second->Fill( pos.x(), pos.y() );
+      } catch ( Hector::Exception& e ) { continue; }
     }
   }
-  PrintInfo( Form( "%.1f%% of particles (%d/%d) stopped before s = %.2f", 100. * num_stopped/num_particles, num_stopped, num_particles, s_pos ) );
+  std::ostringstream summary;
+  summary << Form( "%.1f%% of particles (%d/%d) stopped before s = %.2f", 100. * num_stopped/num_particles, num_stopped, num_particles, s_pos );
+  for ( const auto& se : stopped_at ) {
+    summary << "\n\t>> " << Form( "%.1f%% of particles (%d/%d) stopped in ", 100. * se.second/num_particles, se.second, num_particles ) << se.first->name() << " " << se.first->typeName();
+  }
+  PrintInfo( summary.str() );
 
+  const string top_label = Form( "s = %.2f m, #alpha_{X} = %.1f #murad", s_pos, crossing_angle_x*1.e6 );
   {
-    Hector::Canvas c( "hitmap", Form( "s = %.2f m, #alpha_{X} = %.1f #murad", s_pos, crossing_angle_x*1.e6 ) );
+    Hector::Canvas c( "hitmap", top_label.c_str() );
     hitmap.Draw( "colz" );
     c.Prettify( &hitmap );
 
     Hector::Canvas::PaveText( 0.01, 0., 0.05, 0.05, Form( "#scale[0.3]{Beamline: %s}", twiss_filename.substr( twiss_filename.find_last_of( "/\\" )+1 ).c_str() ) ).Draw();
 
+    c.Save( "pdf" );
+  }
+  if ( m_hitmaps.size() > 0 ) {
+    Hector::Canvas c( "hitmap_combined", top_label.c_str() );
+    unsigned int num_rows = sqrt( m_hitmaps.size() ), num_cols = m_hitmaps.size()/num_rows + ( m_hitmaps.size() % num_rows == 0 ? 0 : 1 );
+    c.Divide( num_rows, num_cols );
+    c.Pad()->SetTopMargin( 0.2 );
+    unsigned short i = 0;
+    for ( auto& hm : m_hitmaps ) {
+      c.cd( i+1 );
+      hm.second->Draw( "colz" );
+      c.Prettify( hm.second );
+      i++;
+    }
     c.Save( "pdf" );
   }
 

@@ -71,11 +71,8 @@ namespace Hector
       // from that point on, an overlap is detected
       // reduce or separate that element in two sub-parts
 
-      std::ostringstream os_elem; os_elem << elem->type();
-      std::ostringstream os_prevelem; os_prevelem << prev_elem->type();
-
       PrintWarning( Form( "%s (%s) is inside %s (%s)\n\tHector will fix the overlap by splitting the earlier.",
-                          elem->name().c_str(), os_elem.str().c_str(), prev_elem->name().c_str(), os_prevelem.str().c_str() ) );
+                          elem->name().c_str(), elem->typeName().c_str(), prev_elem->name().c_str(), prev_elem->typeName().c_str() ) );
       const float prev_length = prev_elem->length();
       elements_.push_back( elem );
       already_added = true;

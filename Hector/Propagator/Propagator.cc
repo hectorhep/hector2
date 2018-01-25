@@ -4,6 +4,7 @@
 #include "Hector/Elements/ElementBase.h"
 
 #include "Hector/Core/Exception.h"
+#include "Hector/Core/ParticleStoppedException.h"
 #include "Hector/Core/Utils.h"
 
 #include <sstream>
@@ -69,32 +70,26 @@ namespace Hector
           if ( aper && aper->type() != Aperture::anInvalidAperture ) {
             const TwoVector pos_prev_elem( part.stateVectorAt( prev_elem->s() ).position() );
             if ( !aper->contains( pos_prev_elem ) ) {
-              std::ostringstream os1, os2, os3;
-              os1 << prev_elem->type();
-              os2 << pos_prev_elem;
-              os3 << aper->position();
-              throw Exception( __PRETTY_FUNCTION__,
-                               Form( "Particle stopped at the entrance of %s %s.\n\t"
-                                     "Entering at %s, s = %.2f m\n\t"
-                                     "Aperture centre at %s\n\t"
-                                     "Distance to aperture centre: %.2f cm",
-                                     prev_elem->name().c_str(), os1.str().c_str(),
-                                     os2.str().c_str(), prev_elem->s(),
-                                     os3.str().c_str(),
-                                     ( aper->position()-pos_prev_elem ).mag()*1.e2 ),
-                               Info );
+              std::ostringstream os1, os2;
+              os1 << pos_prev_elem;
+              os2 << aper->position();
+              throw ParticleStoppedException( __PRETTY_FUNCTION__, prev_elem.get(), JustWarning,
+                Form( "Entering at %s, s = %.2f m\n\t"
+                      "Aperture centre at %s\n\t"
+                      "Distance to aperture centre: %.2f cm",
+                      os1.str().c_str(), prev_elem->s(),
+                      os2.str().c_str(),
+                      ( aper->position()-pos_prev_elem ).mag()*1.e2 ).c_str() );
             }
             // has passed through the element?
             //std::cout << prev_elem->s()+prev_elem->length() << "\t" << part.stateVectorAt( prev_elem->s()+prev_elem->length() ).position() << std::endl;
             if ( !aper->contains( part.stateVectorAt( prev_elem->s()+prev_elem->length() ).position() ) ) {
-              throw Exception( __PRETTY_FUNCTION__,
-                               Form( "Particle stopped inside %s", prev_elem->name().c_str() ),
-                               JustWarning );
+              throw ParticleStoppedException( __PRETTY_FUNCTION__, prev_elem.get(), JustWarning );
             }
           }
         }
       }
-    } catch ( Exception& e ) { throw e; }
+    } catch ( ... ) { throw; }
 
     // finish by sorting all positions according to their s-coordinate
     //part.sortPositions();
@@ -132,9 +127,8 @@ namespace Hector
     try {
       const StateVector shift( elem->position(), elem->angles(), 0., 0. );
 
-      /*std::ostringstream os1, os2;
-      os1 << elem->type(); os2 << elem->matrix( eloss, ini_pos.stateVector().m(), qp );
-      PrintInfo( Form( "Propagating through %s element \"%s\" with transfer matrix\n%s", os1.str().c_str(), elem->name().c_str(), os2.str().c_str() ) );*/
+      /*std::ostringstream os; os << elem->matrix( eloss, ini_pos.stateVector().m(), qp );
+      PrintInfo( Form( "Propagating through %s element \"%s\" with transfer matrix\n%s", elem->typeString().c_str(), elem->name().c_str(), os.str().c_str() ) );*/
 
       Vector prop = elem->matrix( eloss, ini_pos.stateVector().m(), qp ) * ( ini_pos.stateVector().vector()-shift.vector() ) + shift.vector();
       // perform the propagation (assuming that mass is conserved...)

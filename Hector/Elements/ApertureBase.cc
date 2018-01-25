@@ -1,6 +1,8 @@
 #include "Hector/Elements/ApertureBase.h"
 #include "Hector/Core/Utils.h"
 
+#include <sstream>
+
 namespace Hector
 {
   namespace Aperture
@@ -12,6 +14,14 @@ namespace Hector
     ApertureBase::~ApertureBase()
     {
       param_.clear();
+    }
+
+    const std::string
+    ApertureBase::typeName() const
+    {
+      std::ostringstream os;
+      os << type_;
+      return os.str();
     }
 
     bool
