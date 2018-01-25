@@ -3,6 +3,7 @@
 #include "Hector/Core/ExceptionType.h"
 #include "Hector/Core/Parameters.h"
 
+#include "Hector/Propagator/Propagator.h"
 #include "Hector/Propagator/Particle.h"
 #include "Hector/Propagator/StateVector.h"
 
@@ -159,13 +160,20 @@ BOOST_PYTHON_MODULE( pyhector )
 
   py::class_<Hector::Beamline>( "Beamline" )
     .def( "__str__", &dump_beamline )
-    //.def( "__iter__", py::iterator<std::vector<std::shared_ptr<Hector::Element::ElementBase> > >() )
     .def( "dump", &Hector::Beamline::dump, beamline_dump_overloads() )
-    //.def( "elements", py::range( &Hector::Beamline::begin, &Hector::Beamline::end ) )
     .def( "elements", beamline_elements )
     .def( "sequencedBeamline", &Hector::Beamline::sequencedBeamline ).staticmethod( "sequencedBeamline" )
     .def( "clear", &Hector::Beamline::clear )
     .def( "addElement", &Hector::Beamline::addElement )
+  ;
+
+  //----- PROPAGATOR
+
+  void ( Hector::Propagator::*propagate_single )( Hector::Particle&, float ) const = &Hector::Propagator::propagate;
+  void ( Hector::Propagator::*propagate_multi )( Hector::Particles&, float ) const = &Hector::Propagator::propagate;
+  py::class_<Hector::Propagator>( "Propagator", py::init<const Hector::Beamline*>() )
+    .def( "propagate", propagate_single )
+    .def( "propagate", propagate_multi )
   ;
 
   //----- I/O HANDLERS
