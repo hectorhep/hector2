@@ -100,7 +100,7 @@ namespace
   template<class T>
   struct BeamProducerWrap : PyMap<float>, T
   {
-    using T::T;
+    BeamProducerWrap() : PyMap<float>(), T() {}
     BeamProducerWrap( py::dict& dict ) :
       PyMap<float>( dict, { { "Emin", "Emax", "smin", "smax", "xmin", "xmax", "ymin", "ymax", "Txmin", "Txmax", "Tymin", "Tymax", "m", "q" } } ),
       T( map["Emin"], map["Emax"], map["smin"], map["smax"],
