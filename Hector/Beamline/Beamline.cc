@@ -103,13 +103,22 @@ namespace Hector
   }
 
   const std::shared_ptr<Element::ElementBase>
-  Beamline::getElement( const std::string& name ) const
+  Beamline::getElement( std::string name ) const
   {
     for ( size_t i = 0; i < elements_.size(); ++i ) {
       const auto elem = elements_.at( i );
       if ( elem->name().find( name ) != std::string::npos ) return elem;
     }
     return 0;
+  }
+
+  std::shared_ptr<Element::ElementBase>&
+  Beamline::getElement( std::string name )
+  {
+    for ( auto& elem : elements_ ) {
+      if ( elem->name().find( name ) != std::string::npos ) return elem;
+    }
+    return *elements_.end();
   }
 
   const std::shared_ptr<Element::ElementBase>
@@ -121,6 +130,16 @@ namespace Hector
       if ( elem->s() <= s && elem->s()+elem->length() >= s ) return elem;
     }
     return 0;
+  }
+
+  std::shared_ptr<Element::ElementBase>&
+  Beamline::getElement( float s )
+  {
+    for ( auto& elem : elements_ ) {
+      if ( elem->s() > s ) continue;
+      if ( elem->s() <= s && elem->s()+elem->length() >= s ) return elem;
+    }
+    return *elements_.end();
   }
 
   Matrix

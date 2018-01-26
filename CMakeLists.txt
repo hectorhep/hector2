@@ -49,6 +49,7 @@ if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS})
   PYTHON_ADD_MODULE(pyhector ${HECTOR_SOURCE_DIR}/PythonWrapper.cc)
   target_link_libraries(pyhector Hector2 ${HECTOR_DEPENDENCIES} ${Boost_LIBRARIES})
+  #install(TARGETS pyhector DESTINATION "${PYTHON_INSTALL_PATH}")
 endif()
 
 #----- add the tests

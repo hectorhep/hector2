@@ -50,10 +50,16 @@ namespace Hector
       Elements& elements() { return elements_; }
       /// Retrieve a beamline element given its name
       /// \param[in] name Name of the element to be retrieved
-      const std::shared_ptr<Element::ElementBase> getElement( const std::string& name ) const;
+      std::shared_ptr<Element::ElementBase>& getElement( std::string name );
+      /// Retrieve a beamline element given its name
+      /// \param[in] name Name of the element to be retrieved
+      const std::shared_ptr<Element::ElementBase> getElement( std::string name ) const;
       /// Retrieve a beamline element given its name
       /// \param[in] name Name of the element to be retrieved
       const std::shared_ptr<Element::ElementBase> getElement( const char* name ) const { return getElement( std::string( name ) ); }
+      /// Retrieve a beamline element given its s-position
+      /// \param[in] s s-position of the element (computed wrt the interaction point)
+      std::shared_ptr<Element::ElementBase>& getElement( float s );
       /// Retrieve a beamline element given its s-position
       /// \param[in] s s-position of the element (computed wrt the interaction point)
       const std::shared_ptr<Element::ElementBase> getElement( float s ) const;

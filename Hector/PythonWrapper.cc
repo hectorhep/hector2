@@ -51,19 +51,9 @@ namespace
     return os.str();
   }
   //--- helper python <-> C++ converters
-  template<class T, class U> py::dict to_python_dict( std::map<T,U>& map ) {
-    py::dict dictionary;
-    for ( auto& it : map ) dictionary[it.first] = it.second;
-    return dictionary;
-  }
-  template<class T> py::list to_python_list( std::vector<T>& vec ) {
-    py::list list;
-    for ( auto& it : vec ) list.append( it );
-    return list;
-  }
-  template<class T>
-  struct PyMap
-  {
+  template<class T, class U> py::dict to_python_dict( std::map<T,U>& map ) { py::dict dictionary; for ( auto& it : map ) dictionary[it.first] = it.second; return dictionary; }
+  template<class T> py::list to_python_list( std::vector<T>& vec ) { py::list list; for ( auto& it : vec ) list.append( it ); return list; }
+  template<class T> struct PyMap {
     PyMap() {}
     PyMap( py::dict& dict, std::vector<std::string> keys = std::vector<std::string>{} ) {
       for ( const auto& k : keys ) map[k] = T();
@@ -115,10 +105,7 @@ namespace
     BeamProducerWrap() : PyMap<float>(), T() {}
     BeamProducerWrap( py::dict& dict ) :
       PyMap<float>( dict, { { "Emin", "Emax", "smin", "smax", "xmin", "xmax", "ymin", "ymax", "Txmin", "Txmax", "Tymin", "Tymax", "m", "q" } } ),
-      T( map["Emin"], map["Emax"], map["smin"], map["smax"],
-                                                 map["xmin"], map["xmax"], map["ymin"], map["ymax"],
-                                                 map["Txmin"], map["Txmax"], map["Tymin"], map["Tymax"],
-                                                 map["m"], map["q"] ) {}
+      T( map["Emin"], map["Emax"], map["smin"], map["smax"], map["xmin"], map["xmax"], map["ymin"], map["ymax"], map["Txmin"], map["Txmax"], map["Tymin"], map["Tymax"], map["m"], map["q"] ) {}
   };
   //--- helper beamline elements definitions
   struct ElementBaseWrap : Hector::Element::ElementBase, py::wrapper<Hector::Element::ElementBase>
@@ -150,10 +137,34 @@ BOOST_PYTHON_MODULE( pyhector )
 {
   //----- GENERAL HELPERS
 
+  py::class_<Hector::TwoVector>( "TwoVector" )
+    .def( py::init<double,double>() )
+    .def( py::self_ns::str( py::self_ns::self ) )
+    .def( py::self += py::other<Hector::TwoVector>() ).def( py::self -= py::other<Hector::TwoVector>() )
+    .add_property( "x", &Hector::TwoVector::x, &Hector::TwoVector::setX )
+    .add_property( "y", &Hector::TwoVector::y, &Hector::TwoVector::setY )
+    .add_property( "mag", &Hector::TwoVector::mag, &Hector::TwoVector::setMag )
+    .add_property( "phi", &Hector::TwoVector::phi, &Hector::TwoVector::setPhi )
+  ;
+
+  double ( Hector::ThreeVector::*theta_val )() const = &Hector::ThreeVector::theta;
+  py::class_<Hector::ThreeVector>( "ThreeVector" )
+    .def( py::init<double,double,double>() )
+    .def( py::self_ns::str( py::self_ns::self ) )
+    .def( py::self += py::other<Hector::ThreeVector>() ).def( py::self -= py::other<Hector::ThreeVector>() )
+    .add_property( "x", &Hector::ThreeVector::x, &Hector::ThreeVector::setX )
+    .add_property( "y", &Hector::ThreeVector::y, &Hector::ThreeVector::setY )
+    .add_property( "z", &Hector::ThreeVector::z, &Hector::ThreeVector::setZ )
+    .add_property( "mag", &Hector::ThreeVector::mag, &Hector::ThreeVector::setMag )
+    .add_property( "theta", theta_val, &Hector::ThreeVector::setTheta )
+    .add_property( "phi", &Hector::ThreeVector::phi, &Hector::ThreeVector::setPhi )
+    .def( "deltaR", &Hector::ThreeVector::deltaR )
+  ;
+
   py::class_<Hector::LorentzVector>( "LorentzVector" )
     .def( py::init<double,double,double,double>() )
     .def( py::self_ns::str( py::self_ns::self ) )
-    .def( py::self += py::other<Hector::LorentzVector>() )
+    .def( py::self += py::other<Hector::LorentzVector>() ).def( py::self -= py::other<Hector::LorentzVector>() )
     .add_property( "x", &Hector::LorentzVector::x, &Hector::LorentzVector::setX )
     .add_property( "y", &Hector::LorentzVector::y, &Hector::LorentzVector::setY )
     .add_property( "z", &Hector::LorentzVector::z, &Hector::LorentzVector::setZ )
@@ -162,6 +173,7 @@ BOOST_PYTHON_MODULE( pyhector )
     .add_property( "py", &Hector::LorentzVector::py, &Hector::LorentzVector::setPy )
     .add_property( "pz", &Hector::LorentzVector::pz, &Hector::LorentzVector::setPz )
     .add_property( "e", &Hector::LorentzVector::e, &Hector::LorentzVector::setE )
+    .def( "vect", &Hector::LorentzVector::vect )
   ;
 
   //----- EXCEPTIONS
@@ -275,6 +287,8 @@ BOOST_PYTHON_MODULE( pyhector )
   convertElement<Hector::Element::HorizontalKicker, py::init<std::string,float,float,float> >( "HorizontalKicker" );
   convertElement<Hector::Element::VerticalKicker, py::init<std::string,float,float,float> >( "VerticalKicker" );
 
+  std::shared_ptr<Hector::Element::ElementBase>& ( Hector::Beamline::*get_by_name )( std::string ) = &Hector::Beamline::getElement;
+  std::shared_ptr<Hector::Element::ElementBase>& ( Hector::Beamline::*get_by_spos )( float ) = &Hector::Beamline::getElement;
   py::class_<Hector::Beamline>( "Beamline" )
     .def( "__str__", &dump_beamline )
     .def( "dump", &Hector::Beamline::dump, beamline_dump_overloads() )
@@ -282,6 +296,8 @@ BOOST_PYTHON_MODULE( pyhector )
     .def( "sequencedBeamline", &Hector::Beamline::sequencedBeamline ).staticmethod( "sequencedBeamline" )
     .def( "clear", &Hector::Beamline::clear )
     .def( "addElement", &Hector::Beamline::addElement )
+    .def( "getElement", get_by_name, py::return_value_policy<py::return_by_value>() )
+    .def( "getElement", get_by_spos, py::return_value_policy<py::return_by_value>() )
   ;
 
   //----- PROPAGATOR
