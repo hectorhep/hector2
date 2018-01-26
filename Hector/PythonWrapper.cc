@@ -6,11 +6,18 @@
 #include "Hector/Propagator/StateVector.h"
 
 #include "Hector/Beamline/Beamline.h"
+
 #include "Hector/Elements/ElementBase.h"
 #include "Hector/Elements/Drift.h"
 #include "Hector/Elements/Dipole.h"
 #include "Hector/Elements/Quadrupole.h"
 #include "Hector/Elements/Kicker.h"
+
+#include "Hector/Elements/ApertureBase.h"
+#include "Hector/Elements/CircularAperture.h"
+#include "Hector/Elements/EllipticAperture.h"
+#include "Hector/Elements/RectangularAperture.h"
+#include "Hector/Elements/RectEllipticAperture.h"
 
 #include "Hector/IO/MADXHandler.h"
 
@@ -114,13 +121,25 @@ namespace
     std::shared_ptr<Hector::Element::ElementBase> clone() const override { return this->get_override( "clone" )(); }
     Hector::Matrix matrix( float eloss, float mp, int qp ) const override { return this->get_override( "matrix" )( eloss, mp, qp ); }
   };
-
   template<class T, class init = py::init<std::string,float,float,float> >
   void convertElement( const char* name )
   {
     py::class_<T, py::bases<Hector::Element::ElementBase> >( name, init() )
       .def( "clone", &T::clone, py::return_value_policy<py::return_by_value>() )
       .def( "matrix", &T::matrix )
+    ;
+  }
+
+  struct ApertureBaseWrap : Hector::Aperture::ApertureBase, py::wrapper<Hector::Aperture::ApertureBase>
+  {
+    ApertureBaseWrap() : Hector::Aperture::ApertureBase( Hector::Aperture::anInvalidAperture, Hector::TwoVector(), std::vector<float>{} ) {}
+    std::shared_ptr<Hector::Aperture::ApertureBase> clone() const override { return this->get_override( "clone" )(); }
+  };
+  template<class T, class init>
+  void convertAperture( const char* name )
+  {
+    py::class_<T, py::bases<Hector::Aperture::ApertureBase> >( name, init() )
+      .def( "clone", &T::clone, py::return_value_policy<py::return_by_value>() )
     ;
   }
 }
@@ -254,11 +273,13 @@ BOOST_PYTHON_MODULE( pyhector )
     .def( "smearY", &Hector::BeamProducer::gaussianParticleGun::setYparams )
   ;
 
-  //----- BEAMLINE DEFINITION
+  //----- BEAMLINE ELEMENTS DEFINITION
 
+  void ( Hector::Element::ElementBase::*set_aperture_ptr )( Hector::Aperture::ApertureBase* ) = &Hector::Element::ElementBase::setAperture;
   py::class_<ElementBaseWrap, std::shared_ptr<Hector::Element::ElementBase>, boost::noncopyable>( "Element", py::no_init )
     .def( "matrix", py::pure_virtual( &Hector::Element::ElementBase::matrix ) )
     .def( "clone", py::pure_virtual( &Hector::Element::ElementBase::clone ), py::return_value_policy<py::return_by_value>() )
+    .add_property( "aperture", py::make_function( &Hector::Element::ElementBase::aperture, py::return_value_policy<py::return_by_value>() ), set_aperture_ptr )
     .add_property( "name", &Hector::Element::ElementBase::name, &Hector::Element::ElementBase::setName )
     .add_property( "type", &Hector::Element::ElementBase::type, &Hector::Element::ElementBase::setType )
     .add_property( "s", &Hector::Element::ElementBase::s, &Hector::Element::ElementBase::setS )
@@ -286,6 +307,25 @@ BOOST_PYTHON_MODULE( pyhector )
   //--- kickers
   convertElement<Hector::Element::HorizontalKicker, py::init<std::string,float,float,float> >( "HorizontalKicker" );
   convertElement<Hector::Element::VerticalKicker, py::init<std::string,float,float,float> >( "VerticalKicker" );
+
+  //----- APERTURES DEFINITION
+
+  py::class_<ApertureBaseWrap, std::shared_ptr<Hector::Aperture::ApertureBase>, boost::noncopyable>( "Aperture", py::no_init )
+    .def( "clone", py::pure_virtual( &Hector::Aperture::ApertureBase::clone ), py::return_value_policy<py::return_by_value>() )
+    .add_property( "type", &Hector::Aperture::ApertureBase::type, &Hector::Aperture::ApertureBase::setType )
+    .add_property( "position", &Hector::Aperture::ApertureBase::position, &Hector::Aperture::ApertureBase::setPosition )
+    .add_property( "x", &Hector::Aperture::ApertureBase::x, &Hector::Aperture::ApertureBase::setX )
+    .add_property( "y", &Hector::Aperture::ApertureBase::y, &Hector::Aperture::ApertureBase::setY )
+    .def( "offset", &Hector::Aperture::ApertureBase::offset )
+  ;
+  py::register_ptr_to_python<Hector::Aperture::ApertureBase*>();
+
+  convertAperture<Hector::Aperture::CircularAperture, py::init<float,Hector::TwoVector> >( "CircularAperture" );
+  convertAperture<Hector::Aperture::EllipticAperture, py::init<float,float,Hector::TwoVector> >( "EllipticAperture" );
+  convertAperture<Hector::Aperture::RectangularAperture, py::init<float,float,Hector::TwoVector> >( "RectangularAperture" );
+  convertAperture<Hector::Aperture::RectEllipticAperture, py::init<float,float,float,float,Hector::TwoVector> >( "RectEllipticAperture" );
+
+  //----- BEAMLINE DEFINITION
 
   std::shared_ptr<Hector::Element::ElementBase>& ( Hector::Beamline::*get_by_name )( std::string ) = &Hector::Beamline::getElement;
   std::shared_ptr<Hector::Element::ElementBase>& ( Hector::Beamline::*get_by_spos )( float ) = &Hector::Beamline::getElement;

@@ -51,6 +51,12 @@ namespace Hector
       aperture_ = apert;
     }
 
+    void
+    ElementBase::setAperture( Aperture::ApertureBase* apert )
+    {
+      setAperture( std::shared_ptr<Aperture::ApertureBase>( apert ) ); //FIXME check memory leaks!
+    }
+
     float
     ElementBase::fieldStrength( float eloss, float mp, int qp ) const
     {

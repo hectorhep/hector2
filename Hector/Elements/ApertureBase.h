@@ -41,20 +41,24 @@ namespace Hector
         /// Get the outer boundaries of the aperture
         virtual TwoVector limits() const = 0;
 
+        /// Set the type of aperture
+        void setType( const Type& type ) { type_ = type; } // FIXME checks to ensure the parameters are valid!
         /// Type of aperture (rectangular, elliptic, rect-elliptic, circular)
         Type type() const { return type_; }
         /// Human-readable aperture type
         const std::string typeName() const;
 
         /// Retrieve a shape parameter of the aperture
-        float p( const size_t& i ) const { return ( i<param_.size() ) ? param_.at( i ) : -1.0; }
+        float p( size_t i ) const { return ( i < param_.size() ) ? param_.at( i ) : -1.0; }
         /// Aperture shape parameters
         const Parameters& parameters() const { return param_; }
 
         /// Set the transverse position of the aperture barycentre
         void setPosition( const TwoVector& pos ) { pos_ = pos; }
-        /// Set the transverse position of the aperture barycentre
-        void setPosition( float x, float y ) { setPosition( TwoVector( x, y ) ); }
+        /// Set the horizontal position of the aperture barycentre
+        void setX( float x ) { pos_.setX( x ); }
+        /// Set the vertical position of the aperture barycentre
+        void setY( float y ) { pos_.setY( y ); }
         /// Change the x-y position of the aperture barycentre
         void offset( const TwoVector& offs ) { pos_ += offs; }
 

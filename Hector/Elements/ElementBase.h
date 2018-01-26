@@ -109,6 +109,8 @@ namespace Hector
         TwoVector relativePosition() const { return rel_pos_; }
 
         /// Set the aperture for this element
+        void setAperture( Aperture::ApertureBase* apert );
+        /// Set the aperture for this element
         void setAperture( const std::shared_ptr<Aperture::ApertureBase> apert );
         /// Aperture
         Aperture::ApertureBase* aperture() const { return aperture_.get(); }
