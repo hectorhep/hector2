@@ -11,6 +11,7 @@ matrix:
           packages:
             - g++-4.9
             - libclhep-dev
+            - libboost-python-dev
       env:
          - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
     - os: linux
@@ -22,6 +23,7 @@ matrix:
             - g++-4.9
             - libclhep-dev
             - libpythia8-dev
+            - libboost-python-dev
       env:
          - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
     - os: linux
@@ -34,6 +36,7 @@ matrix:
           packages:
             - clang-3.6
             - libclhep-dev
+            - libboost-python-dev
     - os: linux
       compiler: clang
       addons:
@@ -45,6 +48,7 @@ matrix:
             - clang-3.6
             - libclhep-dev
             - libpythia8-dev
+            - libboost-python-dev
 
 before_script:
   - mkdir build

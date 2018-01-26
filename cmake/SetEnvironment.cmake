@@ -58,3 +58,8 @@ if(HEPMC_LIB)
   list(APPEND HECTOR_DEPENDENCIES ${HEPMC_LIB})
   add_definitions(-DHEPMC)
 endif()
+
+#----- Boost for Python wrapper
+
+find_package(Boost COMPONENTS python QUIET)
+

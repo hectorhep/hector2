@@ -23,7 +23,7 @@ namespace Hector
       bool stopped( Particle&, float s_max=-1. ) const;
 
       /// Propagate a list of particle up to a given position ; maps all state vectors to the intermediate s-coordinates
-      void propagate( Particles&, float s_max=-1. ) const;
+      void propagate( Particles&, float s_max ) const;
 
     private:
       /// Extract a particle position at the exit of an element once it enters it
