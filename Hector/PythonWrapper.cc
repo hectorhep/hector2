@@ -17,10 +17,11 @@
 #include "Hector/Utils/BeamProducer.h"
 #include <CLHEP/Random/RandGauss.h>
 
-#include <boost/python.hpp>
-
-#include <memory>
 #include <map>
+#include <memory>
+
+#include <boost/version.hpp>
+#include <boost/config.hpp>
 
 //----- FIRST START WITH SOME UTILITIES
 
@@ -31,8 +32,9 @@ namespace boost {
   template<class T> const T* get_pointer( const std::shared_ptr<T>& p ) { return p.get(); }
   template<class T> T* get_pointer( std::shared_ptr<T>& p ) { return p.get(); }
 }
-
 #endif
+
+#include <boost/python.hpp>
 
 namespace
 {
