@@ -61,5 +61,5 @@ endif()
 
 #----- Boost for Python wrapper
 
-find_package(Boost REQUIRED COMPONENTS python QUIET)
+find_package(Boost COMPONENTS python QUIET)
 
