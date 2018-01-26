@@ -1,4 +1,5 @@
-#include "Hector/Core/ExceptionType.h"
+#include "Hector/Core/Exception.h"
+#include "Hector/Core/ParticleStoppedException.h"
 #include "Hector/Core/Parameters.h"
 
 #include "Hector/Propagator/Propagator.h"
@@ -90,21 +91,16 @@ namespace
   py::dict particle_positions( Hector::Particle& part ) { return to_python_dict<double,Hector::StateVector>( part.positions() ); }
   py::list beamline_elements( Hector::Beamline& bl ) { return to_python_list<std::shared_ptr<Hector::Element::ElementBase> >( bl.elements() ); }
 
+  PyObject* except_type = nullptr, *ps_except_type = nullptr;
+
   void translate_exception( const Hector::Exception& e ) {
-    switch ( e.type() ) {
-      case Hector::Fatal: case Hector::Undefined: PyErr_SetString( PyExc_RuntimeError, e.what() ); return;
-      case Hector::JustWarning: PyErr_SetString( PyExc_RuntimeWarning, e.what() ); return;
-      case Hector::Info: PyErr_SetString( PyExc_UserWarning, e.what() ); return;
-    }
+    if ( except_type == NULL ) return;
+    PyErr_SetObject( except_type, py::object( e ).ptr() );
   }
-  /*template <class E, class... Policies, class... Args>
-  py::class_<E, Policies...> exception_(Args&&... args) {
-    py::class_<E, Policies...> cls(std::forward<Args>(args)...);
-    py::register_exception_translator<E>([ptr=cls.ptr()](E const& e){
-        PyErr_SetObject(ptr, py::object(e).ptr());
-    });
-    return cls;
-  }*/
+  void translate_ps_exception( const Hector::ParticleStoppedException& e ) {
+    if ( ps_except_type == NULL ) return;
+    PyErr_SetObject( ps_except_type, py::object( e ).ptr() );
+  }
 
   template<class T>
   struct BeamProducerWrap : PyMap<float>, T
@@ -204,11 +200,19 @@ BOOST_PYTHON_MODULE( pyhector )
     .value( "fatal", Hector::ExceptionType::Fatal )
   ;
 
-  py::register_exception_translator<Hector::Exception>( &translate_exception );
-  /*exception_<Hector::Exception>( "Exception", py::init<std::string,std::string>() )
+  py::class_<Hector::Exception> except( "Exception", py::init<const char*,const char*,py::optional<Hector::ExceptionType,int> >() ); except
+    .add_property( "type", &Hector::Exception::type )
     .add_property( "message", &Hector::Exception::what )
-    //.add_property("extra_data", &MyCPPException::getExtraData)
-  ;*/
+    .add_property( "errorNumber", &Hector::Exception::errorNumber )
+    .add_property( "from", &Hector::Exception::from )
+  ;
+  except_type = except.ptr();
+  py::register_exception_translator<Hector::Exception>( &translate_exception );
+  py::class_<Hector::ParticleStoppedException, py::bases<Hector::Exception> > psexcept( "ParticleStoppedException", py::init<const char*,const Hector::Element::ElementBase*,py::optional<Hector::ExceptionType,const char*> >() ); psexcept
+    .add_property( "stoppingElement", py::make_function( &Hector::ParticleStoppedException::stoppingElement, py::return_value_policy<py::reference_existing_object>() ) )
+  ;
+  ps_except_type = psexcept.ptr();
+  py::register_exception_translator<Hector::ParticleStoppedException>( &translate_ps_exception );
 
   //----- RUN PARAMETERS
 
@@ -254,7 +258,7 @@ BOOST_PYTHON_MODULE( pyhector )
     .def( "clear", &Hector::Particle::clear )
     .def( "momentumAt", &Hector::Particle::momentumAt )
     .def( "stateVectorAt", &Hector::Particle::stateVectorAt )
-    .def( "positions", particle_positions )
+    .add_property( "positions", particle_positions )
     .def( "addPosition", addPosition_pos, particle_add_position_pos_overloads() )
     .def( "addPosition", addPosition_vec, particle_add_position_vec_overloads() )
   ;
@@ -291,6 +295,7 @@ BOOST_PYTHON_MODULE( pyhector )
     .add_property( "dispersion", &Hector::Element::ElementBase::dispersion, &Hector::Element::ElementBase::setDispersion )
     .add_property( "relativePosition", &Hector::Element::ElementBase::relativePosition, &Hector::Element::ElementBase::setRelativePosition )
   ;
+  py::register_ptr_to_python<Hector::Element::ElementBase*>();
 
   //--- passive elements
   convertElement<Hector::Element::Drift, py::init<std::string,float,float> >( "Drift" );
@@ -332,7 +337,7 @@ BOOST_PYTHON_MODULE( pyhector )
   py::class_<Hector::Beamline>( "Beamline" )
     .def( "__str__", &dump_beamline )
     .def( "dump", &Hector::Beamline::dump, beamline_dump_overloads() )
-    .def( "elements", beamline_elements )
+    .add_property( "elements", beamline_elements )
     .def( "sequencedBeamline", &Hector::Beamline::sequencedBeamline ).staticmethod( "sequencedBeamline" )
     .def( "clear", &Hector::Beamline::clear )
     .def( "addElement", &Hector::Beamline::addElement )
@@ -352,7 +357,7 @@ BOOST_PYTHON_MODULE( pyhector )
   //----- I/O HANDLERS
 
   py::class_<Hector::IO::MADX>( "MadXparser", py::init<const char*,const char*,int,py::optional<float> >() )
-    .def( "beamline", &Hector::IO::MADX::beamline, py::return_value_policy<py::reference_existing_object>() )
-    .def( "romanPots", &Hector::IO::MADX::romanPots )
+    .add_property( "beamline", py::make_function( &Hector::IO::MADX::beamline, py::return_value_policy<py::reference_existing_object>() ) )
+    .add_property( "romanPots", &Hector::IO::MADX::romanPots )
   ;
 }
