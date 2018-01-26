@@ -51,6 +51,12 @@ namespace Hector
       aperture_ = apert;
     }
 
+    void
+    ElementBase::setAperture( Aperture::ApertureBase* apert )
+    {
+      setAperture( std::shared_ptr<Aperture::ApertureBase>( apert ) ); //FIXME check memory leaks!
+    }
+
     float
     ElementBase::fieldStrength( float eloss, float mp, int qp ) const
     {
@@ -65,13 +71,21 @@ namespace Hector
                   p = sqrt( ( e-mp )*( e+mp ) ); // e^2 - p^2 = mp^2
       return magnetic_strength_*( p0/p )*( qp/Parameters::get()->beamParticlesCharge() );
     }
+
+    const std::string
+    ElementBase::typeName() const
+    {
+      std::ostringstream os;
+      os << type_;
+      return os.str();
+    }
   }
+
   /// Human-readable printout of a beamline element object
   std::ostream&
   operator<<( std::ostream& os, const Element::ElementBase& elem )
   {
-    std::ostringstream oss; oss << elem.type();
-    os << Form( "%-15s %17s (length = %5.2f m) at %6.2f < s < %6.2f m", oss.str().c_str(), elem.name().c_str(), elem.length(), elem.s(), elem.s()+elem.length() );
+    os << Form( "%-15s %17s (length = %5.2f m) at %6.2f < s < %6.2f m", elem.typeName().c_str(), elem.name().c_str(), elem.length(), elem.s(), elem.s()+elem.length() );
     if ( elem.aperture() )
       return os << " with aperture: " << elem.aperture();
     return os << " with no aperture restriction";
@@ -81,6 +95,6 @@ namespace Hector
   std::ostream&
   operator<<( std::ostream& os, const Element::ElementBase* elem )
   {
-    return os << *( elem );
+    return os << *elem;
   }
 }

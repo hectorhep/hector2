@@ -86,6 +86,7 @@ namespace Hector
       /// Last state vector associated to the particle
       const StateVector lastStateVector() const { return positions_.rbegin()->second; }
 
+      PositionsMap& positions() { return positions_; }
       /// Iterator to the first s-position/state vector couple of the particle's trajectory
       PositionsMap::iterator begin() { return positions_.begin(); }
       /// Iterator to the last s-position/state vector couple of the particle's trajectory

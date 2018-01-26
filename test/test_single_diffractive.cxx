@@ -179,7 +179,8 @@ plot_multi( const string name, const string title, vector<pair<string,TH1*> > gr
     }
     else gr.second->SetLineColor( kBlack+i );
     if ( !gr.first.empty() ) c.AddLegendEntry( gr.second, gr.first.c_str(), ( i == 0 ) ? "l" : "lp" );
-    gr.second->SetMarkerStyle( 23+i );
+    gr.second->SetMarkerStyle( 19+i );
+    gr.second->SetMarkerColor( kBlack+i );
     st.Add( gr.second, ( i == 0 ) ? "hist" : "p" );
     ++i;
   }

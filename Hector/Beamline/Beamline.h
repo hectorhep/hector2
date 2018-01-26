@@ -34,7 +34,8 @@ namespace Hector
       /// Remove and clean all elements in the beamline
       void clear();
       /// Print all useful information on a beamline and all its enclosing elements
-      /// \param[out] os Output stream where to dump the information
+      /// \param[inout] os Output stream where to dump the information
+      /// \param[in] show_drifts Do we show the intermediate drifts
       void dump( std::ostream& os = std::cout, bool show_drifts = true ) const;
 
       /// Retrieve the position of the interaction point
@@ -45,12 +46,20 @@ namespace Hector
       void addElement( const std::shared_ptr<Element::ElementBase> elem );
       /// Get the full beamline content (vector of elements)
       const Elements& elements() const { return elements_; }
+      /// Get the full beamline content (vector of elements)
+      Elements& elements() { return elements_; }
       /// Retrieve a beamline element given its name
       /// \param[in] name Name of the element to be retrieved
-      const std::shared_ptr<Element::ElementBase> getElement( const std::string& name ) const;
+      std::shared_ptr<Element::ElementBase>& getElement( std::string name );
+      /// Retrieve a beamline element given its name
+      /// \param[in] name Name of the element to be retrieved
+      const std::shared_ptr<Element::ElementBase> getElement( std::string name ) const;
       /// Retrieve a beamline element given its name
       /// \param[in] name Name of the element to be retrieved
       const std::shared_ptr<Element::ElementBase> getElement( const char* name ) const { return getElement( std::string( name ) ); }
+      /// Retrieve a beamline element given its s-position
+      /// \param[in] s s-position of the element (computed wrt the interaction point)
+      std::shared_ptr<Element::ElementBase>& getElement( float s );
       /// Retrieve a beamline element given its s-position
       /// \param[in] s s-position of the element (computed wrt the interaction point)
       const std::shared_ptr<Element::ElementBase> getElement( float s ) const;

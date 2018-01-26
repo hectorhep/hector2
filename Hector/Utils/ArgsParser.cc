@@ -11,9 +11,19 @@ namespace Hector
     required_params_( required_parameters ), optional_params_( optional_parameters )
   {
     command_name_ = argv[0];
+    std::vector<std::string> args_tmp;
     if ( argc > 1 ) {
-      args_.resize( argc-1 );
-      std::copy( argv+1, argv+argc, args_.begin() );
+      args_tmp.resize( argc-1 );
+      std::copy( argv+1, argv+argc, args_tmp.begin() );
+    }
+    for ( const auto& arg : args_tmp ) {
+      const auto eq_pos = arg.find( '=' );
+      if ( eq_pos == std::string::npos ) {
+        args_.emplace_back( arg );
+        continue;
+      }
+      args_.emplace_back( arg.substr( 0, eq_pos ) );
+      args_.emplace_back( arg.substr( eq_pos+1 ) );
     }
     for ( const auto& str : help_str_ ) {
       if ( find( args_.begin(), args_.end(), str.name ) != args_.end() ) {

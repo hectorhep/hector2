@@ -33,3 +33,9 @@ if(${ROOT_FOUND})
 else()
     message(STATUS "ROOT not found! skipping these tests!")
 endif()
+
+file(GLOB py_tests RELATIVE ${PROJECT_SOURCE_DIR}/test *.py)
+foreach(_files ${py_tests})
+  configure_file(${_files} ${_files} COPYONLY)
+endforeach()
+
