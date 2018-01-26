@@ -4,6 +4,7 @@ sudo: true
 matrix:
   include:
     - os: linux
+      compiler: gcc
       addons:
         apt:
           sources:
@@ -11,10 +12,10 @@ matrix:
           packages:
             - g++-4.9
             - libclhep-dev
-            - libboost-python-dev
       env:
          - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
     - os: linux
+      compiler: gcc
       addons:
         apt:
           sources:
@@ -36,7 +37,6 @@ matrix:
           packages:
             - clang-3.6
             - libclhep-dev
-            - libboost-python-dev
     - os: linux
       compiler: clang
       addons:
