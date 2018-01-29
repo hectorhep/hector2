@@ -324,7 +324,11 @@ BOOST_PYTHON_MODULE( pyhector )
 
   void ( Hector::Element::ElementBase::*set_aperture_ptr )( Hector::Aperture::ApertureBase* ) = &Hector::Element::ElementBase::setAperture;
   py::class_<ElementBaseWrap, std::shared_ptr<Hector::Element::ElementBase>, boost::noncopyable>( "Element", "A base beamline element object", py::no_init )
-    .def( "matrix", py::pure_virtual( &Hector::Element::ElementBase::matrix ) )
+    .def( "matrix", py::pure_virtual( &Hector::Element::ElementBase::matrix ),
+      ( py::arg( "energy loss" ),
+        py::arg( "particle mass (in GeV/c2)" ) = Hector::Parameters::get()->beamParticlesMass(),
+        py::arg( "particle charge (in e)" ) = Hector::Parameters::get()->beamParticlesCharge()
+      ) )
     .def( "clone", py::pure_virtual( &Hector::Element::ElementBase::clone ), py::return_value_policy<py::return_by_value>() )
     .add_property( "aperture", py::make_function( &Hector::Element::ElementBase::aperture, py::return_value_policy<py::return_by_value>() ), set_aperture_ptr )
     .add_property( "name", &Hector::Element::ElementBase::name, &Hector::Element::ElementBase::setName )
