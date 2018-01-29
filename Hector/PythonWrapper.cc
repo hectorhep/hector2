@@ -59,6 +59,12 @@ namespace
     bl.dump( os, true );
     return os.str();
   }
+  Hector::Matrix invert_matrix( const Hector::Matrix& mat ) {
+    int err;
+    Hector::Matrix out = mat.inverse( err );
+    if ( err != 0 ) throw Hector::Exception( __PRETTY_FUNCTION__, "Failed to invert the matrix", Hector::JustWarning );
+    return out;
+  }
   //--- helper python <-> C++ converters
   template<class T, class U> py::dict to_python_dict( std::map<T,U>& map ) { py::dict dictionary; for ( auto& it : map ) dictionary[it.first] = it.second; return dictionary; }
   template<class T> py::list to_python_list( std::vector<T>& vec ) { py::list list; for ( auto& it : vec ) list.append( it ); return list; }
@@ -192,14 +198,14 @@ BOOST_PYTHON_MODULE( pyhector )
     .def( "vect", &Hector::LorentzVector::vect )
   ;
 
-  CLHEP::HepMatrix ( Hector::Matrix::*inverse_except )() const = &CLHEP::HepMatrix::inverse;
   //double& ( Hector::Matrix::*mat_elem )( int i, int j ) = &Hector::Matrix::operator();
   py::class_<Hector::Matrix>( "Matrix", "A generic matrix (often used for propagation)" )
     .def( py::self_ns::str( py::self_ns::self ) )
     .def( py::self += py::other<Hector::Matrix>() ).def( py::self -= py::other<Hector::Matrix>() )
+    .def( py::self *= py::other<double>() ).def( py::self * py::other<Hector::Matrix>() )
     .def( "transpose", &Hector::Matrix::T, "The transposed matrix" )
     //.def( "__getitem__", mat_elem, py::return_value_policy<py::reference_existing_object>() )
-    .add_property( "inverse", inverse_except, "The inversed matrix (when possible)" )
+    .add_property( "inverse", &invert_matrix, "The inversed matrix (when possible)" )
     .add_property( "trace", &Hector::Matrix::trace, "Matrix trace" )
     .add_property( "determinant", &Hector::Matrix::determinant, "Matrix determinant" )
   ;
