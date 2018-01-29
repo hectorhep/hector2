@@ -23,6 +23,7 @@
 #include "Hector/IO/MADXHandler.h"
 
 #include "Hector/Utils/BeamProducer.h"
+#include <CLHEP/Matrix/Matrix.h>
 #include <CLHEP/Random/RandGauss.h>
 
 #include <map>
@@ -189,6 +190,18 @@ BOOST_PYTHON_MODULE( pyhector )
     .add_property( "pz", &Hector::LorentzVector::pz, &Hector::LorentzVector::setPz )
     .add_property( "e", &Hector::LorentzVector::e, &Hector::LorentzVector::setE )
     .def( "vect", &Hector::LorentzVector::vect )
+  ;
+
+  Hector::Matrix ( Hector::Matrix::*inverse_except )() const = &Hector::Matrix::inverse;
+  //double& ( Hector::Matrix::*mat_elem )( int i, int j ) = &Hector::Matrix::operator();
+  py::class_<Hector::Matrix>( "Matrix", "A generic matrix (often used for propagation)" )
+    .def( py::self_ns::str( py::self_ns::self ) )
+    .def( py::self += py::other<Hector::Matrix>() ).def( py::self -= py::other<Hector::Matrix>() )
+    .def( "inverse", inverse_except, "The inversed matrix (when possible)" )
+    .def( "transpose", &Hector::Matrix::T, "The transposed matrix" )
+    //.def( "__getitem__", mat_elem, py::return_value_policy<py::reference_existing_object>() )
+    .add_property( "trace", &Hector::Matrix::trace, "Matrix trace" )
+    .add_property( "determinant", &Hector::Matrix::determinant, "Matrix determinant" )
   ;
 
   //----- EXCEPTIONS
