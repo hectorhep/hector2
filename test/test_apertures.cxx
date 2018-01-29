@@ -7,7 +7,6 @@
 #include "TMultiGraph.h"
 #include "Canvas.h"
 
-#include <sstream>
 #include <iomanip>
 #include <memory>
 
@@ -23,8 +22,7 @@ main()
   Hector::Aperture::RectEllipticAperture aper( 0.35, 0.25, 0.4, 0.2, CLHEP::Hep2Vector( 0.0, 0.0 ) );
   CLHEP::Hep2Vector limits = aper.limits();
   
-  std::ostringstream os; os << "Aperture: " << std::setprecision( 2 ) << aper;
-  std::cout << os.str() << " has limits: " << limits.x() << " / " << limits.y() << std::endl;
+  std::cout << "Aperture has limits: " << limits.x() << " / " << limits.y() << std::endl;
 
   TGraph g_inside, g_outside, g_elliptic, g_rect;
   for ( unsigned short i=0; i<num_steps; i++ ) {

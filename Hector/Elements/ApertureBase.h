@@ -41,10 +41,10 @@ namespace Hector
         /// Get the outer boundaries of the aperture
         virtual TwoVector limits() const = 0;
 
-        /// Set the type of aperture
-        void setType( const Type& type ) { type_ = type; } // FIXME checks to ensure the parameters are valid!
         /// Type of aperture (rectangular, elliptic, rect-elliptic, circular)
         Type type() const { return type_; }
+        /// Set the type of aperture
+        void setType( const Type& type ) { type_ = type; } // FIXME checks to ensure the parameters are valid!
         /// Human-readable aperture type
         const std::string typeName() const;
 
@@ -53,21 +53,22 @@ namespace Hector
         /// Aperture shape parameters
         const Parameters& parameters() const { return param_; }
 
-        /// Set the transverse position of the aperture barycentre
-        void setPosition( const TwoVector& pos ) { pos_ = pos; }
-        /// Set the horizontal position of the aperture barycentre
-        void setX( float x ) { pos_.setX( x ); }
-        /// Set the vertical position of the aperture barycentre
-        void setY( float y ) { pos_.setY( y ); }
-        /// Change the x-y position of the aperture barycentre
-        void offset( const TwoVector& offs ) { pos_ += offs; }
-
         /// Get the transverse position of the aperture barycentre
         TwoVector position() const { return pos_; }
+        /// Set the transverse position of the aperture barycentre
+        void setPosition( const TwoVector& pos ) { pos_ = pos; }
+
         /// Get the horizontal position of the aperture barycentre
         float x() const { return pos_.x(); }
+        /// Set the horizontal position of the aperture barycentre
+        void setX( float x ) { pos_.setX( x ); }
         /// Get the vertical position of the aperture barycentre
         float y() const { return pos_.y(); }
+        /// Set the vertical position of the aperture barycentre
+        void setY( float y ) { pos_.setY( y ); }
+
+        /// Change the x-y position of the aperture barycentre
+        void offset( const TwoVector& offs ) { pos_ += offs; }
 
       protected:
         /// Type of aperture

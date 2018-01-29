@@ -16,7 +16,7 @@ namespace Hector
                    s_omega = sin( omega ), c_omega = cos( omega ),
                    sh_omega = sinh( omega ), ch_omega = cosh( omega );
 
-      Matrix mat = DiagMatrix( 6, 1 );
+      Matrix mat = DiagonalMatrix( 6, 1 );
       // Focussing Twiss matrix
       mat( 1, 1 ) = c_omega;
       mat( 1, 2 ) = s_omega * inv_sq_k;
@@ -41,7 +41,7 @@ namespace Hector
                    s_omega = sin( omega ), c_omega = cos( omega ),
                    sh_omega = sinh( omega ), ch_omega = cosh( omega );
 
-      Matrix mat = DiagMatrix( 6, 1 );
+      Matrix mat = DiagonalMatrix( 6, 1 );
       // Defocussing Twiss matrix
       mat( 1, 1 ) = ch_omega;
       mat( 1, 2 ) = sh_omega * inv_sq_k;

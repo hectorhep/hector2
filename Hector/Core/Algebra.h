@@ -16,7 +16,7 @@ namespace Hector
   /// A generic N-dimensional matrix
   typedef CLHEP::HepMatrix Matrix;
   /// A generic N-dimensional diagonal matrix
-  typedef CLHEP::HepDiagMatrix DiagMatrix;
+  typedef CLHEP::HepDiagMatrix DiagonalMatrix;
 
   /// N-dimensional vector of double-precision floats
   class Vector : public CLHEP::HepVector

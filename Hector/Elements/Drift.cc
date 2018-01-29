@@ -21,7 +21,7 @@ namespace Hector
     Matrix
     Drift::genericMatrix( float length )
     {
-      Matrix mat = DiagMatrix( 6, 1 );
+      Matrix mat = DiagonalMatrix( 6, 1 );
       mat( 1, 2 ) = length;
       mat( 3, 4 ) = length;
       return mat;

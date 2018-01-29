@@ -145,7 +145,7 @@ namespace Hector
   Matrix
   Beamline::matrix( float eloss, float mp, int qp )
   {
-    Matrix out = DiagMatrix( 6, 1 );
+    Matrix out = DiagonalMatrix( 6, 1 );
 
     for ( const auto& elem : elements_ )
       out = out * elem->matrix( eloss, mp, qp );

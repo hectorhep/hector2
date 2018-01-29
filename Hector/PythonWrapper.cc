@@ -13,6 +13,7 @@
 #include "Hector/Elements/Dipole.h"
 #include "Hector/Elements/Quadrupole.h"
 #include "Hector/Elements/Kicker.h"
+#include "Hector/Elements/RectangularCollimator.h"
 
 #include "Hector/Elements/ApertureBase.h"
 #include "Hector/Elements/CircularAperture.h"
@@ -161,27 +162,29 @@ BOOST_PYTHON_MODULE( pyhector )
 {
   //----- GENERAL HELPERS
 
-  py::class_<Hector::TwoVector>( "TwoVector" )
+  py::class_<Hector::TwoVector>( "TwoVector", "A generic 2-vector for planar coordinates" )
     .def( py::init<double,double>() )
     .def( py::self_ns::str( py::self_ns::self ) )
-    .def( py::self += py::other<Hector::TwoVector>() ).def( py::self -= py::other<Hector::TwoVector>() )
-    .add_property( "x", &Hector::TwoVector::x, &Hector::TwoVector::setX )
-    .add_property( "y", &Hector::TwoVector::y, &Hector::TwoVector::setY )
-    .add_property( "mag", &Hector::TwoVector::mag, &Hector::TwoVector::setMag )
-    .add_property( "phi", &Hector::TwoVector::phi, &Hector::TwoVector::setPhi )
+    .def( py::self += py::other<Hector::TwoVector>() )
+    .def( py::self -= py::other<Hector::TwoVector>() )
+    .add_property( "x", &Hector::TwoVector::x, &Hector::TwoVector::setX, "Horizontal coordinate" )
+    .add_property( "y", &Hector::TwoVector::y, &Hector::TwoVector::setY, "Vertical coordinate" )
+    .add_property( "mag", &Hector::TwoVector::mag, &Hector::TwoVector::setMag, "2-vector norm" )
+    .add_property( "phi", &Hector::TwoVector::phi, &Hector::TwoVector::setPhi, "2-vector angle" )
   ;
 
   double ( Hector::ThreeVector::*theta_val )() const = &Hector::ThreeVector::theta;
   py::class_<Hector::ThreeVector>( "ThreeVector", "A generic 3-vector for spatial coordinates" )
     .def( py::init<double,double,double>() )
     .def( py::self_ns::str( py::self_ns::self ) )
-    .def( py::self += py::other<Hector::ThreeVector>() ).def( py::self -= py::other<Hector::ThreeVector>() )
-    .add_property( "x", &Hector::ThreeVector::x, &Hector::ThreeVector::setX )
-    .add_property( "y", &Hector::ThreeVector::y, &Hector::ThreeVector::setY )
-    .add_property( "z", &Hector::ThreeVector::z, &Hector::ThreeVector::setZ )
-    .add_property( "mag", &Hector::ThreeVector::mag, &Hector::ThreeVector::setMag )
-    .add_property( "theta", theta_val, &Hector::ThreeVector::setTheta )
-    .add_property( "phi", &Hector::ThreeVector::phi, &Hector::ThreeVector::setPhi )
+    .def( py::self += py::other<Hector::ThreeVector>() )
+    .def( py::self -= py::other<Hector::ThreeVector>() )
+    .add_property( "x", &Hector::ThreeVector::x, &Hector::ThreeVector::setX, "Horizontal coordinate" )
+    .add_property( "y", &Hector::ThreeVector::y, &Hector::ThreeVector::setY, "Vertical coordinate" )
+    .add_property( "z", &Hector::ThreeVector::z, &Hector::ThreeVector::setZ, "Longitudinal coordinate" )
+    .add_property( "mag", &Hector::ThreeVector::mag, &Hector::ThreeVector::setMag, "3-vector norm" )
+    .add_property( "theta", theta_val, &Hector::ThreeVector::setTheta, "3-vector polar angle" )
+    .add_property( "phi", &Hector::ThreeVector::phi, &Hector::ThreeVector::setPhi, "3-vector azimuthal angle" )
     .def( "deltaR", &Hector::ThreeVector::deltaR )
   ;
 
@@ -189,14 +192,14 @@ BOOST_PYTHON_MODULE( pyhector )
     .def( py::init<double,double,double,double>() )
     .def( py::self_ns::str( py::self_ns::self ) )
     .def( py::self += py::other<Hector::LorentzVector>() ).def( py::self -= py::other<Hector::LorentzVector>() )
-    .add_property( "x", &Hector::LorentzVector::x, &Hector::LorentzVector::setX )
-    .add_property( "y", &Hector::LorentzVector::y, &Hector::LorentzVector::setY )
-    .add_property( "z", &Hector::LorentzVector::z, &Hector::LorentzVector::setZ )
-    .add_property( "t", &Hector::LorentzVector::t, &Hector::LorentzVector::setT )
-    .add_property( "px", &Hector::LorentzVector::px, &Hector::LorentzVector::setPx )
-    .add_property( "py", &Hector::LorentzVector::py, &Hector::LorentzVector::setPy )
-    .add_property( "pz", &Hector::LorentzVector::pz, &Hector::LorentzVector::setPz )
-    .add_property( "e", &Hector::LorentzVector::e, &Hector::LorentzVector::setE )
+    .add_property( "x", &Hector::LorentzVector::x, &Hector::LorentzVector::setX, "Horizontal coordinate" )
+    .add_property( "y", &Hector::LorentzVector::y, &Hector::LorentzVector::setY, "Vertical coordinate" )
+    .add_property( "z", &Hector::LorentzVector::z, &Hector::LorentzVector::setZ, "Longitudinal coordinate" )
+    .add_property( "t", &Hector::LorentzVector::t, &Hector::LorentzVector::setT, "Time coordinate" )
+    .add_property( "px", &Hector::LorentzVector::px, &Hector::LorentzVector::setPx, "Horizontal momentum" )
+    .add_property( "py", &Hector::LorentzVector::py, &Hector::LorentzVector::setPy, "Vertical momentum" )
+    .add_property( "pz", &Hector::LorentzVector::pz, &Hector::LorentzVector::setPz, "Longitudinal momentum" )
+    .add_property( "e", &Hector::LorentzVector::e, &Hector::LorentzVector::setE, "Energy" )
     .def( "vect", &Hector::LorentzVector::vect )
   ;
 
@@ -221,18 +224,22 @@ BOOST_PYTHON_MODULE( pyhector )
     .value( "fatal", Hector::ExceptionType::Fatal )
   ;
 
-  py::class_<Hector::Exception> except( "Exception", py::init<const char*,const char*,py::optional<Hector::ExceptionType,int> >() ); except
+  py::class_<Hector::Exception> except( "Exception", py::init<const char*,const char*,py::optional<Hector::ExceptionType,int> >() );
+  except
     .add_property( "type", &Hector::Exception::type )
     .add_property( "message", &Hector::Exception::what )
     .add_property( "errorNumber", &Hector::Exception::errorNumber )
     .add_property( "from", &Hector::Exception::from )
   ;
-  except_type = except.ptr();
-  py::register_exception_translator<Hector::Exception>( &translate_exception );
-  py::class_<Hector::ParticleStoppedException, py::bases<Hector::Exception> > psexcept( "ParticleStoppedException", py::init<const char*,const Hector::Element::ElementBase*,py::optional<Hector::ExceptionType,const char*> >() ); psexcept
+  py::class_<Hector::ParticleStoppedException, py::bases<Hector::Exception> > psexcept( "ParticleStoppedException", py::init<const char*,const Hector::Element::ElementBase*,py::optional<Hector::ExceptionType,const char*> >() );
+  psexcept
     .add_property( "stoppingElement", py::make_function( &Hector::ParticleStoppedException::stoppingElement, py::return_value_policy<py::reference_existing_object>() ) )
   ;
+
+  // register the exceptions
+  except_type = except.ptr();
   ps_except_type = psexcept.ptr();
+  py::register_exception_translator<Hector::Exception>( &translate_exception );
   py::register_exception_translator<Hector::ParticleStoppedException>( &translate_ps_exception );
 
   //----- RUN PARAMETERS
@@ -345,8 +352,8 @@ BOOST_PYTHON_MODULE( pyhector )
   py::register_ptr_to_python<Hector::Element::ElementBase*>();
 
   //--- passive elements
-  convertElement<Hector::Element::Drift, py::init<std::string,float,float> >( "Drift" );
-  convertElement<Hector::Element::Marker, py::init<std::string,float,float> >( "Marker" );
+  convertElement<Hector::Element::Drift, py::init<std::string,py::optional<float,float> > >( "Drift" );
+  convertElement<Hector::Element::Marker, py::init<std::string,float,py::optional<float> > >( "Marker" );
 
   //--- dipoles
   convertElement<Hector::Element::SectorDipole, py::init<std::string,float,float,float> >( "SectorDipole" );
@@ -359,6 +366,8 @@ BOOST_PYTHON_MODULE( pyhector )
   //--- kickers
   convertElement<Hector::Element::HorizontalKicker, py::init<std::string,float,float,float> >( "HorizontalKicker" );
   convertElement<Hector::Element::VerticalKicker, py::init<std::string,float,float,float> >( "VerticalKicker" );
+
+  convertElement<Hector::Element::RectangularCollimator, py::init<std::string,py::optional<float,float> > >( "RectangularCollimator" );
 
   //----- APERTURES DEFINITION
 
