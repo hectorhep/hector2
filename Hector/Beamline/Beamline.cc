@@ -147,10 +147,8 @@ namespace Hector
   {
     Matrix out = DiagMatrix( 6, 1 );
 
-    for ( size_t i = 0; i < elements_.size(); ++i ) {
-      const auto elem = elements_.at( i );
+    for ( const auto& elem : elements_ )
       out = out * elem->matrix( eloss, mp, qp );
-    }
 
     return out;
   }

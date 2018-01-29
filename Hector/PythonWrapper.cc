@@ -152,6 +152,7 @@ namespace
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS( particle_add_position_pos_overloads, addPosition, 1, 2 )
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS( particle_add_position_vec_overloads, addPosition, 2, 3 )
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS( beamline_dump_overloads, dump, 0, 2 )
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS( beamline_matrix, matrix, 1, 3 )
 
 //----- AND HERE COMES THE MODULE
 
@@ -380,7 +381,7 @@ BOOST_PYTHON_MODULE( pyhector )
     .def( "dump", &Hector::Beamline::dump, beamline_dump_overloads() )
     .add_property( "length", &Hector::Beamline::length, &Hector::Beamline::setLength, "Total beamline length (in metres)" )
     .add_property( "elements", beamline_elements, "Collection of beamline elements" )
-    .def( "matrix", &Hector::Beamline::matrix, "Get the propagation matrix for the full beamline", py::args( "energy loss", "particle mass", "particle charge" ) )
+    .def( "matrix", &Hector::Beamline::matrix, beamline_matrix() )//, "Get the propagation matrix for the full beamline", py::args( "energy loss", "particle mass", "particle charge" ) )
     .def( "sequencedBeamline", &Hector::Beamline::sequencedBeamline, "Get the sequenced (spaces as drifts, propagation-safe) version of the beamline" ).staticmethod( "sequencedBeamline" )
     .def( "clear", &Hector::Beamline::clear, "Clear the beamline from all its elements" )
     .def( "addElement", &Hector::Beamline::addElement, "Add a single element into the beamline collection", py::args( "element to add" ) )
