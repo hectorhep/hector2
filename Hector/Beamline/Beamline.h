@@ -3,7 +3,6 @@
 
 #include "Hector/Elements/ElementBase.h"
 #include "Hector/Elements/Marker.h"
-#include "Hector/Core/Parameters.h"
 
 #include <map>
 #include <memory>

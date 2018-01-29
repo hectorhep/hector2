@@ -45,6 +45,14 @@ namespace boost {
 
 #include <boost/python.hpp>
 
+//----- SOME OVERLOADED FUNCTIONS/METHODS HELPERS
+
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS( particle_add_position_pos_overloads, addPosition, 1, 2 )
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS( particle_add_position_vec_overloads, addPosition, 2, 3 )
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS( beamline_dump_overloads, dump, 0, 2 )
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS( beamline_matrix, matrix, 1, 3 )
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS( element_matrix, matrix, 1, 3 )
+
 namespace
 {
   namespace py = boost::python;
@@ -129,7 +137,7 @@ namespace
   {
     py::class_<T, py::bases<Hector::Element::ElementBase> >( name, init() )
       .def( "clone", &T::clone, py::return_value_policy<py::return_by_value>() )
-      .def( "matrix", &T::matrix )
+      .def( "matrix", &T::matrix, element_matrix() )
     ;
   }
 
@@ -146,13 +154,6 @@ namespace
     ;
   }
 }
-
-//----- THEN SOME OVERLOADED FUNCTIONS/METHODS HELPERS
-
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS( particle_add_position_pos_overloads, addPosition, 1, 2 )
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS( particle_add_position_vec_overloads, addPosition, 2, 3 )
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS( beamline_dump_overloads, dump, 0, 2 )
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS( beamline_matrix, matrix, 1, 3 )
 
 //----- AND HERE COMES THE MODULE
 

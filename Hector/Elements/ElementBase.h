@@ -2,6 +2,7 @@
 #define Hector_Elements_ElementBase_h
 
 #include "Hector/Core/Algebra.h"
+#include "Hector/Core/Parameters.h"
 #include "Hector/Elements/ApertureBase.h"
 #include "Hector/Elements/ElementType.h"
 
@@ -39,7 +40,7 @@ namespace Hector
         /// \param[in] eloss Particle energy loss in the element (GeV)
         /// \param[in] mp Particle mass (GeV)
         /// \param[in] qp Particle charge (e)
-        virtual Matrix matrix( float eloss, float mp, int qp ) const = 0;
+        virtual Matrix matrix( float eloss, float mp = Parameters::get()->beamParticlesMass(), int qp = Parameters::get()->beamParticlesCharge() ) const = 0;
 
         /// Set the name of the element
         void setName( std::string name ) { name_ = name; }
