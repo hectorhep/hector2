@@ -84,7 +84,7 @@ namespace Hector
             // has passed through the element?
             //std::cout << prev_elem->s()+prev_elem->length() << "\t" << part.stateVectorAt( prev_elem->s()+prev_elem->length() ).position() << std::endl;
             if ( !aper->contains( part.stateVectorAt( prev_elem->s()+prev_elem->length() ).position() ) ) {
-              throw ParticleStoppedException( __PRETTY_FUNCTION__, prev_elem.get(), JustWarning );
+              throw ParticleStoppedException( __PRETTY_FUNCTION__, prev_elem.get(), JustWarning, Form( "Did not pass aperture %s", aper->typeName().c_str() ).c_str() );
             }
           }
         }

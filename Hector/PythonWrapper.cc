@@ -163,7 +163,7 @@ BOOST_PYTHON_MODULE( pyhector )
   ;
 
   double ( Hector::ThreeVector::*theta_val )() const = &Hector::ThreeVector::theta;
-  py::class_<Hector::ThreeVector>( "ThreeVector" )
+  py::class_<Hector::ThreeVector>( "ThreeVector", "A generic 3-vector for spatial coordinates" )
     .def( py::init<double,double,double>() )
     .def( py::self_ns::str( py::self_ns::self ) )
     .def( py::self += py::other<Hector::ThreeVector>() ).def( py::self -= py::other<Hector::ThreeVector>() )
@@ -218,10 +218,10 @@ BOOST_PYTHON_MODULE( pyhector )
 
   py::class_<Hector::Parameters, std::shared_ptr<Hector::Parameters>, boost::noncopyable>( "Parameters", py::init<>() )
     .def( "get", &Hector::Parameters::get ).staticmethod( "get" )
-    .add_property( "beamEnergy", &Hector::Parameters::beamEnergy, &Hector::Parameters::setBeamEnergy )
-    .add_property( "beamParticlesMass", &Hector::Parameters::beamParticlesMass, &Hector::Parameters::setBeamParticlesMass )
-    .add_property( "beamParticlesCharge", &Hector::Parameters::beamParticlesCharge, &Hector::Parameters::setBeamParticlesCharge )
-    .add_property( "loggingThreshold", &Hector::Parameters::loggingThreshold, &Hector::Parameters::setLoggingThreshold )
+    .add_property( "beamEnergy", &Hector::Parameters::beamEnergy, &Hector::Parameters::setBeamEnergy, "Default beam energy (in GeV)" )
+    .add_property( "beamParticlesMass", &Hector::Parameters::beamParticlesMass, &Hector::Parameters::setBeamParticlesMass, "Default beam particles mass (in GeV/c2)" )
+    .add_property( "beamParticlesCharge", &Hector::Parameters::beamParticlesCharge, &Hector::Parameters::setBeamParticlesCharge, "Default beam particles charge (in e)" )
+    .add_property( "loggingThreshold", &Hector::Parameters::loggingThreshold, &Hector::Parameters::setLoggingThreshold, "Hector verbosity" )
     .add_property( "useRelativeEnergy", &Hector::Parameters::useRelativeEnergy, &Hector::Parameters::setUseRelativeEnergy )
     .add_property( "correctBeamlineOverlaps", &Hector::Parameters::correctBeamlineOverlaps, &Hector::Parameters::setCorrectBeamlineOverlaps )
     .add_property( "computeApertureAcceptance", &Hector::Parameters::computeApertureAcceptance, &Hector::Parameters::setComputeApertureAcceptance )
@@ -237,14 +237,14 @@ BOOST_PYTHON_MODULE( pyhector )
     .def( py::init<Hector::TwoVector,Hector::TwoVector,double,double>() )
     //.def( py::self += py::other<Hector::StateVector>() )
     .def( py::self_ns::str( py::self_ns::self ) )
-    .add_property( "energy", &Hector::StateVector::energy, &Hector::StateVector::setEnergy )
-    .add_property( "xi", &Hector::StateVector::xi, &Hector::StateVector::setXi )
-    .add_property( "momentum", &Hector::StateVector::momentum, &Hector::StateVector::setMomentum )
-    .add_property( "kick", &Hector::StateVector::kick, &Hector::StateVector::setKick )
-    .add_property( "x", &Hector::StateVector::x, &Hector::StateVector::setX )
-    .add_property( "Tx", &Hector::StateVector::Tx, &Hector::StateVector::setTx )
-    .add_property( "y", &Hector::StateVector::y, &Hector::StateVector::setY )
-    .add_property( "Ty", &Hector::StateVector::Ty, &Hector::StateVector::setTy )
+    .add_property( "energy", &Hector::StateVector::energy, &Hector::StateVector::setEnergy, "Particle energy (in GeV)" )
+    .add_property( "xi", &Hector::StateVector::xi, &Hector::StateVector::setXi, "Particle momentum loss" )
+    .add_property( "momentum", &Hector::StateVector::momentum, &Hector::StateVector::setMomentum, "Particle 4-momentum" )
+    .add_property( "kick", &Hector::StateVector::kick, &Hector::StateVector::setKick, "Kick" )
+    .add_property( "x", &Hector::StateVector::x, &Hector::StateVector::setX, "Particle horizontal coordinate (in metres)" )
+    .add_property( "Tx", &Hector::StateVector::Tx, &Hector::StateVector::setTx, "Particle horizontal scattering angle (in radians)" )
+    .add_property( "y", &Hector::StateVector::y, &Hector::StateVector::setY, "Particle vertical coordinate (in metres)" )
+    .add_property( "Ty", &Hector::StateVector::Ty, &Hector::StateVector::setTy, "Particle vertical scattering angle (in radians)" )
   ;
 
   void ( Hector::Particle::*addPosition_vec )( double, const Hector::StateVector&, bool ) = &Hector::Particle::addPosition;
@@ -268,19 +268,41 @@ BOOST_PYTHON_MODULE( pyhector )
   //py::class_<BeamProducerWrap>( "GaussianParticleGun", py::init<py::optional<float,float,float,float,float,float,float,float,float,float,float,float> >() )
   py::class_<BeamProducerWrap<Hector::BeamProducer::gaussianParticleGun> >( "GaussianParticleGun" )
     .def( py::init<py::dict&>() )
-    .def( "shoot", &Hector::BeamProducer::gaussianParticleGun::shoot )
-    .add_property( "mass", &Hector::BeamProducer::gaussianParticleGun::particleMass, &Hector::BeamProducer::gaussianParticleGun::setParticleMass )
-    .add_property( "charge", &Hector::BeamProducer::gaussianParticleGun::particleCharge, &Hector::BeamProducer::gaussianParticleGun::setParticleCharge )
-    .def( "smearTx", &Hector::BeamProducer::gaussianParticleGun::setTXparams )
-    .def( "smearTy", &Hector::BeamProducer::gaussianParticleGun::setTYparams )
-    .def( "smearX", &Hector::BeamProducer::gaussianParticleGun::setXparams )
-    .def( "smearY", &Hector::BeamProducer::gaussianParticleGun::setYparams )
+    .def( "shoot", &Hector::BeamProducer::gaussianParticleGun::shoot, "Shoot a single particle" )
+    .add_property( "mass", &Hector::BeamProducer::gaussianParticleGun::particleMass, &Hector::BeamProducer::gaussianParticleGun::setParticleMass, "Idividual particles mass (in GeV/c2)" )
+    .add_property( "charge", &Hector::BeamProducer::gaussianParticleGun::particleCharge, &Hector::BeamProducer::gaussianParticleGun::setParticleCharge, "Individual particles charge (in e)" )
+    .def( "smearTx", &Hector::BeamProducer::gaussianParticleGun::setTXparams, "Smear the beam particles horizontal scattering angle (in rad)" )
+    .def( "smearTy", &Hector::BeamProducer::gaussianParticleGun::setTYparams, "Smear the beam particles vertical scattering angle (in rad)" )
+    .def( "smearX", &Hector::BeamProducer::gaussianParticleGun::setXparams, "Smear the beam particles horizontal position (in metres)" )
+    .def( "smearY", &Hector::BeamProducer::gaussianParticleGun::setYparams, "Smear the beam particles vertical position (in metres)" )
   ;
 
   //----- BEAMLINE ELEMENTS DEFINITION
 
+  py::enum_<Hector::Element::Type>( "ElementType" )
+    .value( "invalid", Hector::Element::Type::anInvalidElement )
+    .value( "marker", Hector::Element::Type::aMarker )
+    .value( "drift", Hector::Element::Type::aDrift )
+    .value( "monitor", Hector::Element::Type::aMonitor )
+    .value( "rectangularDipole", Hector::Element::Type::aRectangularDipole )
+    .value( "sectorDipole", Hector::Element::Type::aSectorDipole )
+    .value( "genericQuadrupole", Hector::Element::Type::aGenericQuadrupole )
+    .value( "verticalQuadrupole", Hector::Element::Type::aVerticalQuadrupole )
+    .value( "horizontalQuadrupole", Hector::Element::Type::anHorizontalQuadrupole )
+    .value( "sextupole", Hector::Element::Type::aSextupole )
+    .value( "multipole", Hector::Element::Type::aMultipole )
+    .value( "verticalKicker", Hector::Element::Type::aVerticalKicker )
+    .value( "horizontalKicker", Hector::Element::Type::anHorizontalKicker )
+    .value( "rectangularCollimator", Hector::Element::Type::aRectangularCollimator )
+    .value( "ellipticalCollimator", Hector::Element::Type::anEllipticalCollimator )
+    .value( "circularCollimator", Hector::Element::Type::aCircularCollimator )
+    .value( "placeholder", Hector::Element::Type::aPlaceholder )
+    .value( "instrument", Hector::Element::Type::anInstrument )
+    .value( "solenoid", Hector::Element::Type::aSolenoid )
+  ;
+
   void ( Hector::Element::ElementBase::*set_aperture_ptr )( Hector::Aperture::ApertureBase* ) = &Hector::Element::ElementBase::setAperture;
-  py::class_<ElementBaseWrap, std::shared_ptr<Hector::Element::ElementBase>, boost::noncopyable>( "Element", py::no_init )
+  py::class_<ElementBaseWrap, std::shared_ptr<Hector::Element::ElementBase>, boost::noncopyable>( "Element", "A base beamline element object", py::no_init )
     .def( "matrix", py::pure_virtual( &Hector::Element::ElementBase::matrix ) )
     .def( "clone", py::pure_virtual( &Hector::Element::ElementBase::clone ), py::return_value_policy<py::return_by_value>() )
     .add_property( "aperture", py::make_function( &Hector::Element::ElementBase::aperture, py::return_value_policy<py::return_by_value>() ), set_aperture_ptr )
@@ -315,13 +337,13 @@ BOOST_PYTHON_MODULE( pyhector )
 
   //----- APERTURES DEFINITION
 
-  py::class_<ApertureBaseWrap, std::shared_ptr<Hector::Aperture::ApertureBase>, boost::noncopyable>( "Aperture", py::no_init )
-    .def( "clone", py::pure_virtual( &Hector::Aperture::ApertureBase::clone ), py::return_value_policy<py::return_by_value>() )
-    .add_property( "type", &Hector::Aperture::ApertureBase::type, &Hector::Aperture::ApertureBase::setType )
-    .add_property( "position", &Hector::Aperture::ApertureBase::position, &Hector::Aperture::ApertureBase::setPosition )
-    .add_property( "x", &Hector::Aperture::ApertureBase::x, &Hector::Aperture::ApertureBase::setX )
-    .add_property( "y", &Hector::Aperture::ApertureBase::y, &Hector::Aperture::ApertureBase::setY )
-    .def( "offset", &Hector::Aperture::ApertureBase::offset )
+  py::class_<ApertureBaseWrap, std::shared_ptr<Hector::Aperture::ApertureBase>, boost::noncopyable>( "Aperture", "A base aperture object", py::no_init )
+    .def( "clone", py::pure_virtual( &Hector::Aperture::ApertureBase::clone ), py::return_value_policy<py::return_by_value>(), "Deep copy of this aperture" )
+    .add_property( "type", &Hector::Aperture::ApertureBase::type, &Hector::Aperture::ApertureBase::setType, "Geometrical type" )
+    .add_property( "position", &Hector::Aperture::ApertureBase::position, &Hector::Aperture::ApertureBase::setPosition, "Barycentre position (coordinates in metres)" )
+    .add_property( "x", &Hector::Aperture::ApertureBase::x, &Hector::Aperture::ApertureBase::setX, "Horizontal barycentre coordinate (in metres)" )
+    .add_property( "y", &Hector::Aperture::ApertureBase::y, &Hector::Aperture::ApertureBase::setY, "Vertical barycentre coordinate (in metres)" )
+    .def( "offset", &Hector::Aperture::ApertureBase::offset, "Offset the barycentre by a given vertical-horizontal coordinate" )
   ;
   py::register_ptr_to_python<Hector::Aperture::ApertureBase*>();
 
@@ -334,30 +356,32 @@ BOOST_PYTHON_MODULE( pyhector )
 
   std::shared_ptr<Hector::Element::ElementBase>& ( Hector::Beamline::*get_by_name )( std::string ) = &Hector::Beamline::getElement;
   std::shared_ptr<Hector::Element::ElementBase>& ( Hector::Beamline::*get_by_spos )( float ) = &Hector::Beamline::getElement;
-  py::class_<Hector::Beamline>( "Beamline" )
+  py::class_<Hector::Beamline>( "Beamline", "A collection of elements composing a beamline" )
     .def( "__str__", &dump_beamline )
     .def( "dump", &Hector::Beamline::dump, beamline_dump_overloads() )
-    .add_property( "elements", beamline_elements )
-    .def( "sequencedBeamline", &Hector::Beamline::sequencedBeamline ).staticmethod( "sequencedBeamline" )
-    .def( "clear", &Hector::Beamline::clear )
-    .def( "addElement", &Hector::Beamline::addElement )
-    .def( "getElement", get_by_name, py::return_value_policy<py::return_by_value>() )
-    .def( "getElement", get_by_spos, py::return_value_policy<py::return_by_value>() )
+    .add_property( "length", &Hector::Beamline::length, &Hector::Beamline::setLength, "Total beamline length (in metres)" )
+    .add_property( "elements", beamline_elements, "Collection of beamline elements" )
+    .def( "matrix", &Hector::Beamline::matrix, "Get the propagation matrix for the full beamline", py::args( "energy loss", "particle mass", "particle charge" ) )
+    .def( "sequencedBeamline", &Hector::Beamline::sequencedBeamline, "Get the sequenced (spaces as drifts, propagation-safe) version of the beamline" ).staticmethod( "sequencedBeamline" )
+    .def( "clear", &Hector::Beamline::clear, "Clear the beamline from all its elements" )
+    .def( "addElement", &Hector::Beamline::addElement, "Add a single element into the beamline collection", py::args( "element to add" ) )
+    .def( "getElement", get_by_name, py::return_value_policy<py::return_by_value>(), "Get a beamline element by its name", py::args( "element name" ) )
+    .def( "getElement", get_by_spos, py::return_value_policy<py::return_by_value>(), "Get a beamline element by its s-position", py::args( "element s-position" ) )
   ;
 
   //----- PROPAGATOR
 
   void ( Hector::Propagator::*propagate_single )( Hector::Particle&, float ) const = &Hector::Propagator::propagate;
   void ( Hector::Propagator::*propagate_multi )( Hector::Particles&, float ) const = &Hector::Propagator::propagate;
-  py::class_<Hector::Propagator>( "Propagator", py::init<const Hector::Beamline*>() )
-    .def( "propagate", propagate_single )
-    .def( "propagate", propagate_multi )
+  py::class_<Hector::Propagator>( "Propagator", "Beamline propagation helper class", py::init<const Hector::Beamline*>() )
+    .def( "propagate", propagate_single, "Propagate a single particle into the beamline", py::args( "particle object", "maximal s-position for the propagation" ) )
+    .def( "propagate", propagate_multi, "Propagate a collection of particles into the beamline", py::args( "particles object collection", "maximal s-position for the propagation" ) )
   ;
 
   //----- I/O HANDLERS
 
-  py::class_<Hector::IO::MADX>( "MadXparser", py::init<const char*,const char*,int,py::optional<float> >() )
-    .add_property( "beamline", py::make_function( &Hector::IO::MADX::beamline, py::return_value_policy<py::reference_existing_object>() ) )
-    .add_property( "romanPots", &Hector::IO::MADX::romanPots )
+  py::class_<Hector::IO::MADX>( "MadXparser", "A MadX Twiss files parser", py::init<const char*,const char*,int,py::optional<float> >() )
+    .add_property( "beamline", py::make_function( &Hector::IO::MADX::beamline, py::return_value_policy<py::reference_existing_object>() ), "Beamline object parsed from the MadX Twiss file" )
+    .add_property( "romanPots", &Hector::IO::MADX::romanPots, "List of Roman pots along the beamline" )
   ;
 }
