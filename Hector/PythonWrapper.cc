@@ -192,14 +192,14 @@ BOOST_PYTHON_MODULE( pyhector )
     .def( "vect", &Hector::LorentzVector::vect )
   ;
 
-  CLHEP::HepMatrix ( Hector::Matrix::*inverse_except )() const = &Hector::Matrix::inverse;
+  CLHEP::HepMatrix ( Hector::Matrix::*inverse_except )() const = &CLHEP::HepMatrix::inverse;
   //double& ( Hector::Matrix::*mat_elem )( int i, int j ) = &Hector::Matrix::operator();
   py::class_<Hector::Matrix>( "Matrix", "A generic matrix (often used for propagation)" )
     .def( py::self_ns::str( py::self_ns::self ) )
     .def( py::self += py::other<Hector::Matrix>() ).def( py::self -= py::other<Hector::Matrix>() )
-    .def( "inverse", inverse_except, "The inversed matrix (when possible)" )
     .def( "transpose", &Hector::Matrix::T, "The transposed matrix" )
     //.def( "__getitem__", mat_elem, py::return_value_policy<py::reference_existing_object>() )
+    .add_property( "inverse", inverse_except, "The inversed matrix (when possible)" )
     .add_property( "trace", &Hector::Matrix::trace, "Matrix trace" )
     .add_property( "determinant", &Hector::Matrix::determinant, "Matrix determinant" )
   ;
