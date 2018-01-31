@@ -22,6 +22,7 @@
 #include "Hector/Elements/RectEllipticAperture.h"
 
 #include "Hector/IO/MADXHandler.h"
+#include "Hector/IO/HBLFileHandler.h"
 
 #include "Hector/Utils/BeamProducer.h"
 #include <CLHEP/Matrix/Matrix.h>
@@ -388,8 +389,8 @@ BOOST_PYTHON_MODULE( pyhector )
 
   //----- BEAMLINE DEFINITION
 
-  std::shared_ptr<Hector::Element::ElementBase>& ( Hector::Beamline::*get_by_name )( std::string ) = &Hector::Beamline::getElement;
-  std::shared_ptr<Hector::Element::ElementBase>& ( Hector::Beamline::*get_by_spos )( float ) = &Hector::Beamline::getElement;
+  std::shared_ptr<Hector::Element::ElementBase>& ( Hector::Beamline::*get_by_name )( std::string ) = &Hector::Beamline::get;
+  std::shared_ptr<Hector::Element::ElementBase>& ( Hector::Beamline::*get_by_spos )( float ) = &Hector::Beamline::get;
   py::class_<Hector::Beamline>( "Beamline", "A collection of elements composing a beamline" )
     .def( "__str__", &dump_beamline )
     .def( "dump", &Hector::Beamline::dump, beamline_dump_overloads() )
@@ -398,9 +399,9 @@ BOOST_PYTHON_MODULE( pyhector )
     .def( "matrix", &Hector::Beamline::matrix, beamline_matrix() )//, "Get the propagation matrix for the full beamline", py::args( "energy loss", "particle mass", "particle charge" ) )
     .def( "sequencedBeamline", &Hector::Beamline::sequencedBeamline, "Get the sequenced (spaces as drifts, propagation-safe) version of the beamline" ).staticmethod( "sequencedBeamline" )
     .def( "clear", &Hector::Beamline::clear, "Clear the beamline from all its elements" )
-    .def( "addElement", &Hector::Beamline::addElement, "Add a single element into the beamline collection", py::args( "element to add" ) )
-    .def( "getElement", get_by_name, py::return_value_policy<py::return_by_value>(), "Get a beamline element by its name", py::args( "element name" ) )
-    .def( "getElement", get_by_spos, py::return_value_policy<py::return_by_value>(), "Get a beamline element by its s-position", py::args( "element s-position" ) )
+    .def( "add", &Hector::Beamline::add, "Add a single element into the beamline collection", py::args( "element to add" ) )
+    .def( "get", get_by_name, py::return_value_policy<py::return_by_value>(), "Get a beamline element by its name", py::args( "element name" ) )
+    .def( "get", get_by_spos, py::return_value_policy<py::return_by_value>(), "Get a beamline element by its s-position", py::args( "element s-position" ) )
   ;
 
   //----- PROPAGATOR
@@ -417,5 +418,10 @@ BOOST_PYTHON_MODULE( pyhector )
   py::class_<Hector::IO::MADX>( "MadXparser", "A MadX Twiss files parser", py::init<const char*,const char*,int,py::optional<float> >() )
     .add_property( "beamline", py::make_function( &Hector::IO::MADX::beamline, py::return_value_policy<py::reference_existing_object>() ), "Beamline object parsed from the MadX Twiss file" )
     .add_property( "romanPots", &Hector::IO::MADX::romanPots, "List of Roman pots along the beamline" )
+  ;
+
+  py::class_<Hector::IO::HBL>( "HBLparser", "A HBL files parser", py::init<const char*>() )
+    .add_property( "beamline", py::make_function( &Hector::IO::HBL::beamline, py::return_value_policy<py::reference_existing_object>() ), "Beamline object parsed from the HBL file" )
+    .def( "write", write ).staticmethod( "write" )
   ;
 }

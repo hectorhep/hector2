@@ -236,7 +236,7 @@ namespace Hector
           if ( elem->name() == ip_name_ ) {
             found_interaction_point_ = true;
             s_offset_ = elem->s();
-            raw_beamline_->addElement( elem );
+            raw_beamline_->add( elem );
             return;
           }
         } catch ( Exception& e ) {
@@ -272,7 +272,7 @@ namespace Hector
             if ( has_next_element_ ) throw Exception( __PRETTY_FUNCTION__, "Finished to parse the beamline", Info );
             has_next_element_ = true;
           }
-          raw_beamline_->addElement( elem );
+          raw_beamline_->add( elem );
         } catch ( Exception& e ) {
           if ( e.type() == Info ) break; // finished to parse
           e.dump();

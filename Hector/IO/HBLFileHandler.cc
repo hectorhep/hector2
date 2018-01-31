@@ -23,10 +23,14 @@ namespace Hector
   namespace IO
   {
     HBL::HBL( const char* filename ) :
-      bl_( new Beamline )
+      beamline_( new Beamline )
     {
       parse( filename );
     }
+
+    HBL::HBL( HBL& rhs ) :
+      beamline_( std::move( rhs.beamline_ ) )
+    {}
 
     void
     HBL::parse( const char* filename )
@@ -110,10 +114,10 @@ namespace Hector
           default:
             throw Exception( __PRETTY_FUNCTION__, Form( "Invalid aperture type: %s", (int)el.aperture_type ), Fatal );
         }
-        if ( elem ) bl_->addElement( elem );
+        if ( elem ) beamline_->add( elem );
       }
-      if ( bl_->numElements() != hdr.num_elements )
-        throw Exception( __PRETTY_FUNCTION__, Form( "Expecting %d elements, retrieved %d!", hdr.num_elements, bl_->numElements() ), Fatal );
+      if ( beamline_->numElements() != hdr.num_elements )
+        throw Exception( __PRETTY_FUNCTION__, Form( "Expecting %d elements, retrieved %d!", hdr.num_elements, beamline_->numElements() ), Fatal );
     }
 
     void
