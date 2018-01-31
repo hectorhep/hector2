@@ -349,6 +349,7 @@ BOOST_PYTHON_MODULE( pyhector )
     .add_property( "beta", &Hector::Element::ElementBase::beta, &Hector::Element::ElementBase::setBeta )
     .add_property( "dispersion", &Hector::Element::ElementBase::dispersion, &Hector::Element::ElementBase::setDispersion )
     .add_property( "relativePosition", &Hector::Element::ElementBase::relativePosition, &Hector::Element::ElementBase::setRelativePosition )
+    .def( "offsetS", &Hector::Element::ElementBase::offsetS, "Offset the element longitudinal coordinate by a given distance" )
   ;
   py::register_ptr_to_python<Hector::Element::ElementBase*>();
 
@@ -395,6 +396,7 @@ BOOST_PYTHON_MODULE( pyhector )
     .def( "__str__", &dump_beamline )
     .def( "dump", &Hector::Beamline::dump, beamline_dump_overloads() )
     .add_property( "length", &Hector::Beamline::length, &Hector::Beamline::setLength, "Total beamline length (in metres)" )
+    .add_property( "interactionPoint", &Hector::Beamline::interactionPoint, &Hector::Beamline::setInteractionPoint, "Point of interaction (place where collisions occur)" )
     .add_property( "elements", beamline_elements, "Collection of beamline elements" )
     .def( "matrix", &Hector::Beamline::matrix, beamline_matrix() )//, "Get the propagation matrix for the full beamline", py::args( "energy loss", "particle mass", "particle charge" ) )
     .def( "sequencedBeamline", &Hector::Beamline::sequencedBeamline, "Get the sequenced (spaces as drifts, propagation-safe) version of the beamline" ).staticmethod( "sequencedBeamline" )
@@ -415,7 +417,7 @@ BOOST_PYTHON_MODULE( pyhector )
 
   //----- I/O HANDLERS
 
-  py::class_<Hector::IO::MADX>( "MadXparser", "A MadX Twiss files parser", py::init<const char*,const char*,int,py::optional<float> >() )
+  py::class_<Hector::IO::MADX>( "MadXparser", "A MadX Twiss files parser", py::init<const char*,const char*,int,py::optional<float,float> >() )
     .add_property( "beamline", py::make_function( &Hector::IO::MADX::beamline, py::return_value_policy<py::reference_existing_object>() ), "Beamline object parsed from the MadX Twiss file" )
     .add_property( "romanPots", &Hector::IO::MADX::romanPots, "List of Roman pots along the beamline" )
   ;

@@ -1,5 +1,6 @@
 #include "Hector/IO/MADXHandler.h"
 #include "Hector/Beamline/Beamline.h"
+#include "Hector/Utils/ArgsParser.h"
 
 #include "Canvas.h"
 
@@ -7,8 +8,10 @@
 #include "TMultiGraph.h"
 #include "TLatex.h"
 
+using namespace std;
+
 void
-drawBothGraphs( const char* name, const char* title, const char* axes, TGraph* gr_x, TGraph* gr_y, std::vector<TLatex*> labels, TPave* rp_region, float max_s )
+drawBothGraphs( const char* name, const char* title, const char* axes, TGraph* gr_x, TGraph* gr_y, vector<TLatex*> labels, TPave* rp_region, float max_s )
 {
   TMultiGraph mg;
   mg.Add( gr_x );
@@ -24,7 +27,7 @@ drawBothGraphs( const char* name, const char* title, const char* axes, TGraph* g
   mg.GetXaxis()->SetRangeUser( -max_s, max_s );
 
   for ( unsigned short i=0; i<labels.size(); i++ ) {
-    //std::cout << labels[i] << std::endl;
+    //cout << labels[i] << endl;
     TLatex* lab = dynamic_cast<TLatex*>( labels[i]->Clone() );
     //lab->SetY( mg.GetHistogram()->GetMaximum()/2. );
     lab->SetTextAlign( ( i%2 ) ? 32 : 12 );
@@ -46,21 +49,23 @@ drawBothGraphs( const char* name, const char* title, const char* axes, TGraph* g
 int
 main( int argc, char* argv[] )
 {
-  if ( argc<2 ) {
-    std::cerr << "Usage: " << argv[0] << " <MAD-X output> [maximum s]" << std::endl;
-    exit( 0 );
-  }
+  string twiss_filename;
+  double max_s;
+  Hector::ArgsParser args( argc, argv, {
+    { "--twiss", "Twiss file", &twiss_filename }
+  }, {
+    { "--max-s", "maximal s-coordinate (m)", 250., &max_s }
+  } );
 
-  const float max_s = ( argc>2 ) ? atof( argv[2] ) : 500.;
 
-  Hector::IO::MADX madx( argv[1], "IP5", +1, max_s );
+  Hector::IO::MADX madx( twiss_filename, "IP5", +1, max_s );
   const Hector::Beamline* beamline = madx.rawBeamline();
 
   TGraph gr_betax, gr_betay,
          gr_dispx, gr_dispy,
          gr_relx, gr_rely;
 
-  std::regex rgx_cmspipe( "CMSPIPE[0-9]{1,2}\\.[L,R][0-9]" ),
+  regex rgx_cmspipe( "CMSPIPE[0-9]{1,2}\\.[L,R][0-9]" ),
              rgx_rp( "XRP[V,H]\\.[A-Za-z][0-9][A-Za-z][0-9]\\.B[1,2]" );
 
   TLatex txt;
@@ -69,19 +74,19 @@ main( int argc, char* argv[] )
   txt.SetTextSize( 0.015 );
   txt.SetTextAlign( 12 );
 
-  std::vector<TLatex*> labels;
+  vector<TLatex*> labels;
 
   float min_rp = 999., max_rp = 0.;
 
   for ( const auto& elemPtr : *beamline ) {
     if ( elemPtr->type() == Hector::Element::aDrift ) continue;
-    //std::cout << elemPtr << "::" << elemPtr->dispersion().x() << std::endl;
+    //cout << elemPtr << "::" << elemPtr->dispersion().x() << endl;
     if ( fabs( elemPtr->s() )>max_s && fabs( elemPtr->s()+elemPtr->length() ) > max_s ) continue;
-    if ( elemPtr->type() == Hector::Element::aMarker && !std::regex_match( elemPtr->name(), rgx_cmspipe ) ) {
-      //std::cout << ">>> " << elemPtr->name() << std::endl;
+    if ( elemPtr->type() == Hector::Element::aMarker && !regex_match( elemPtr->name(), rgx_cmspipe ) ) {
+      //cout << ">>> " << elemPtr->name() << endl;
       labels.push_back( txt.DrawLatex( elemPtr->s(), 100., elemPtr->name().c_str() ) );
     }
-    if ( elemPtr->type() == Hector::Element::aRectangularCollimator && std::regex_match( elemPtr->name(), rgx_rp ) ) {
+    if ( elemPtr->type() == Hector::Element::aRectangularCollimator && regex_match( elemPtr->name(), rgx_rp ) ) {
       if ( fabs( elemPtr->s() ) < fabs( min_rp ) ) min_rp = elemPtr->s();
       if ( fabs( elemPtr->s()+elemPtr->length() ) > fabs( max_rp ) ) max_rp = elemPtr->s();
     }

@@ -38,6 +38,8 @@ namespace Hector
       /// \param[in] show_drifts Do we show the intermediate drifts
       void dump( std::ostream& os = std::cout, bool show_drifts = true ) const;
 
+      /// Set the position of the interaction point
+      void setInteractionPoint( ThreeVector ip ) { ip_ = ip; }
       /// Retrieve the position of the interaction point
       ThreeVector interactionPoint() const { return ip_; }
 

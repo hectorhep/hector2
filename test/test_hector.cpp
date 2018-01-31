@@ -14,16 +14,18 @@ using namespace std;
 int main( int argc, char* argv[] )
 {
   string twiss_file, ip;
-  double max_s;
+  double min_s, max_s;
   unsigned int num_part = 100;
-  Hector::ArgsParser( argc, argv, {}, {
-    { "--twiss-file", "beamline Twiss file", "data/twiss/twiss_coll0p4m_ir5b1_6p5tev.tfs", &twiss_file },
+  Hector::ArgsParser( argc, argv, {
+    { "--twiss-file", "beamline Twiss file", &twiss_file }
+  }, {
     { "--interaction-point", "name of the interaction point", "IP5", &ip },
+    { "--min-s", "minimum arc length s to parse", 0., &min_s },
     { "--max-s", "maximum arc length s to parse", 250., &max_s },
     { "--num-part", "number of particles to shoot", 10, &num_part },
   } );
 
-  Hector::IO::MADX parser( twiss_file.c_str(), ip.c_str(), +1, max_s );
+  Hector::IO::MADX parser( twiss_file.c_str(), ip.c_str(), 1, max_s, min_s );
   parser.printInfo();
   parser.beamline()->dump();
 
