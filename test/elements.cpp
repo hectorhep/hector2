@@ -7,8 +7,8 @@ main( int argc, char* argv[] )
   Hector::Beamline line( 10. );
   
   /*Hector::Element::Marker marker( "test" );
-  line.addElement( &marker );*/
-  line.addElement( std::make_shared<Hector::Element::Marker>( "test", 0., 0. ) );
+  line.add( &marker );*/
+  line.add( std::make_shared<Hector::Element::Marker>( "test", 0., 0. ) );
 
   line.dump();
 

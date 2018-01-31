@@ -24,15 +24,17 @@ namespace Hector
     {
       public:
         /// Class constructor
-        /// \param[in] max_s Maximal s-coordinate at which the Twiss file must be parsed
         /// \param[in] filename Path to the MAD-X Twiss file to parse
         /// \param[in] ip_name Name of the interaction point
-        MADX( std::string filename, std::string ip_name, int direction, float max_s=-1. );
+        /// \param[in] min_s Minimal s-coordinate from which the Twiss file must be parsed
+        /// \param[in] max_s Maximal s-coordinate at which the Twiss file must be parsed
+        MADX( std::string filename, std::string ip_name, int direction, float max_s=-1., float min_s = 0. );
         /// Class constructor
-        /// \param[in] max_s Maximal s-coordinate at which the Twiss file must be parsed
         /// \param[in] filename Path to the MAD-X Twiss file to parse
         /// \param[in] ip_name Name of the interaction point
-        MADX( const char* filename, const char* ip_name, int direction, float max_s=-1. );
+        /// \param[in] min_s Minimal s-coordinate from which the Twiss file must be parsed
+        /// \param[in] max_s Maximal s-coordinate at which the Twiss file must be parsed
+        MADX( const char* filename, const char* ip_name, int direction, float max_s=-1., float min_s = 0. );
         MADX( const MADX& );
         MADX( MADX& );
         ~MADX() {}
@@ -79,11 +81,11 @@ namespace Hector
 
         std::unique_ptr<Beamline> beamline_;
         std::unique_ptr<Beamline> raw_beamline_;
+        std::shared_ptr<Element::ElementBase> interaction_point_;
 
         int dir_;
         std::string ip_name_;
-        float s_offset_;
-        bool found_interaction_point_;
+        float min_s_, s_offset_;
         // quantities needed whenever direction == 1 (FIXME)
         TwoVector previous_relpos_, previous_disp_, previous_beta_;
 
@@ -93,8 +95,6 @@ namespace Hector
         static std::regex rgx_quadrup_name_;
         static std::regex rgx_sect_dipole_name_, rgx_rect_dipole_name_;
         static std::regex rgx_rect_coll_name_;
-
-        bool has_next_element_;
     };
   }
 }

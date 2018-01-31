@@ -38,31 +38,33 @@ namespace Hector
       /// \param[in] show_drifts Do we show the intermediate drifts
       void dump( std::ostream& os = std::cout, bool show_drifts = true ) const;
 
+      /// Set the position of the interaction point
+      void setInteractionPoint( ThreeVector ip ) { ip_ = ip; }
       /// Retrieve the position of the interaction point
       ThreeVector interactionPoint() const { return ip_; }
 
       /// Add a new element in the beamline
       /// \param[in] elem Element to be copied and added to the beamline
-      void addElement( const std::shared_ptr<Element::ElementBase> elem );
+      void add( const std::shared_ptr<Element::ElementBase> elem );
       /// Get the full beamline content (vector of elements)
       const Elements& elements() const { return elements_; }
       /// Get the full beamline content (vector of elements)
       Elements& elements() { return elements_; }
       /// Retrieve a beamline element given its name
       /// \param[in] name Name of the element to be retrieved
-      std::shared_ptr<Element::ElementBase>& getElement( std::string name );
+      std::shared_ptr<Element::ElementBase>& get( std::string name );
       /// Retrieve a beamline element given its name
       /// \param[in] name Name of the element to be retrieved
-      const std::shared_ptr<Element::ElementBase> getElement( std::string name ) const;
+      const std::shared_ptr<Element::ElementBase> get( std::string name ) const;
       /// Retrieve a beamline element given its name
       /// \param[in] name Name of the element to be retrieved
-      const std::shared_ptr<Element::ElementBase> getElement( const char* name ) const { return getElement( std::string( name ) ); }
+      const std::shared_ptr<Element::ElementBase> get( const char* name ) const { return get( std::string( name ) ); }
       /// Retrieve a beamline element given its s-position
       /// \param[in] s s-position of the element (computed wrt the interaction point)
-      std::shared_ptr<Element::ElementBase>& getElement( float s );
+      std::shared_ptr<Element::ElementBase>& get( float s );
       /// Retrieve a beamline element given its s-position
       /// \param[in] s s-position of the element (computed wrt the interaction point)
-      const std::shared_ptr<Element::ElementBase> getElement( float s ) const;
+      const std::shared_ptr<Element::ElementBase> get( float s ) const;
       /// Number of elements in the beamline
       unsigned short numElements() const { return elements_.size(); }
 

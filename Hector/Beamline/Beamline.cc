@@ -44,66 +44,73 @@ namespace Hector
   }
 
   void
-  Beamline::addElement( const std::shared_ptr<Element::ElementBase> elem )
+  Beamline::add( const std::shared_ptr<Element::ElementBase> elem )
   {
     const float new_size = elem->s()+elem->length();
-    if ( new_size > max_length_ && max_length_ < 0. ) {
+    if ( new_size > max_length_ && max_length_ < 0. )
       throw Exception( __PRETTY_FUNCTION__, Form( "Element %s is too far away for this beamline!\n"
                                                   "\tBeamline length: %.3f m, this element: %.3f m",
                                                   elem->name().c_str(), max_length_, new_size ), Fatal );
-    }
 
     bool already_added = false;
 
     // check the overlaps before adding
     for ( auto& prev_elem : elements_ ) {
       // first check if the element is already present in the beamline
-      if ( *prev_elem == *elem ) { already_added = true; break; }
+      if ( prev_elem->name() == elem->name() ) {
+        already_added = true;
+        break;
+      }
 
       if ( prev_elem->s() > elem->s() ) break;
       if ( prev_elem->s()+prev_elem->length() <= elem->s() ) continue;
       if ( prev_elem->length() == 0 ) continue;
+      if ( prev_elem->s() == elem->s() && elem->length() == 0 ) continue;
 
-      if ( !Parameters::get()->correctBeamlineOverlaps() ) {
-        throw Exception( __PRETTY_FUNCTION__, Form( "Elements overlap with \"%s\" detected while adding \"%s\"!", prev_elem->name().c_str(), elem->name().c_str() ), Fatal );
-      }
+      if ( !Parameters::get()->correctBeamlineOverlaps() )
+        throw Exception( __PRETTY_FUNCTION__, Form( "Elements overlap with \"%s\" "
+                                                    "detected while adding \"%s\"!",
+                                                    prev_elem->name().c_str(), elem->name().c_str() ), Fatal );
 
       // from that point on, an overlap is detected
       // reduce or separate that element in two sub-parts
 
-      PrintWarning( Form( "%s (%s) is inside %s (%s)\n\tHector will fix the overlap by splitting the earlier.",
-                          elem->name().c_str(), elem->typeName().c_str(), prev_elem->name().c_str(), prev_elem->typeName().c_str() ) );
+      PrintWarning( Form( "%s (%s) is inside %s (%s)\n\t"
+                          "Hector will fix the overlap by splitting the earlier.",
+                          elem->name().c_str(), elem->typeName().c_str(),
+                          prev_elem->name().c_str(), prev_elem->typeName().c_str() ) );
       const float prev_length = prev_elem->length();
-      elements_.push_back( elem );
-      already_added = true;
 
-      const std::string prev_name = prev_elem->name();
-      // add an extra sub-part (leftover from the previous element)
-      auto prev_elem_toedit = prev_elem->clone();
-      prev_elem_toedit->setLength( elem->s()-prev_elem->s() );
-      prev_elem.reset( prev_elem_toedit.get() );
+      prev_elem->setLength( elem->s()-prev_elem->s() );
+
+      std::shared_ptr<Element::ElementBase> next_elem = nullptr;
       // check if one needs to add an extra piece to the previous element
       if ( elem->s()+elem->length() < prev_elem->s()+prev_elem->length() ) {
-        prev_elem_toedit->setName( Form( "%s.part1", prev_name.c_str() ) );
-        auto next_elem = prev_elem->clone();
+        const std::string prev_name = prev_elem->name();
+        prev_elem->setName( Form( "%s.part1", prev_name.c_str() ) );
+        next_elem = prev_elem->clone();
         next_elem->setName( Form( "%s.part2", prev_name.c_str() ) );
         next_elem->setS( elem->s()+elem->length() );
         next_elem->setLength( prev_length-elem->length() );
-        elements_.push_back( next_elem );
       }
+
+      elements_.push_back( elem );
+      already_added = true;
+
+      if ( next_elem ) elements_.push_back( next_elem );
+
       break;
     }
 
-    if ( !already_added ) {
+    if ( !already_added )
       elements_.push_back( elem );
-    }
 
     // sort all beamline elements according to their s-position
     std::sort( elements_.begin(), elements_.end(), Element::ElementsSorter() );
   }
 
   const std::shared_ptr<Element::ElementBase>
-  Beamline::getElement( std::string name ) const
+  Beamline::get( std::string name ) const
   {
     for ( size_t i = 0; i < elements_.size(); ++i ) {
       const auto elem = elements_.at( i );
@@ -113,7 +120,7 @@ namespace Hector
   }
 
   std::shared_ptr<Element::ElementBase>&
-  Beamline::getElement( std::string name )
+  Beamline::get( std::string name )
   {
     for ( auto& elem : elements_ ) {
       if ( elem->name().find( name ) != std::string::npos ) return elem;
@@ -122,7 +129,7 @@ namespace Hector
   }
 
   const std::shared_ptr<Element::ElementBase>
-  Beamline::getElement( float s ) const
+  Beamline::get( float s ) const
   {
     for ( size_t i = 0; i < elements_.size(); ++i ) {
       const auto elem = elements_.at( i );
@@ -133,7 +140,7 @@ namespace Hector
   }
 
   std::shared_ptr<Element::ElementBase>&
-  Beamline::getElement( float s )
+  Beamline::get( float s )
   {
     for ( auto& elem : elements_ ) {
       if ( elem->s() > s ) continue;
@@ -209,17 +216,17 @@ namespace Hector
       const float drift_length = elemPtr->s()-pos;
       if ( drift_length > 0. ) {
         try {
-          tmp->addElement( std::make_shared<Element::Drift>( Form( "drift:%.4E", pos ).c_str(), pos, drift_length ) );
+          tmp->add( std::make_shared<Element::Drift>( Form( "drift:%.4E", pos ).c_str(), pos, drift_length ) );
         } catch ( Exception& e ) { e.dump(); }
       }
-      try { tmp->addElement( elemPtr ); } catch ( Exception& e ) { e.dump(); }
+      try { tmp->add( elemPtr ); } catch ( Exception& e ) { e.dump(); }
       pos = elemPtr->s()+elemPtr->length();
     }
     // add the last drift
     const float drift_length = tmp->length()-pos;
     if ( drift_length > 0 ) {
       try {
-        tmp->addElement( std::make_shared<Element::Drift>( Form( "drift:%.4E", pos ).c_str(), pos, drift_length ) );
+        tmp->add( std::make_shared<Element::Drift>( Form( "drift:%.4E", pos ).c_str(), pos, drift_length ) );
       } catch ( Exception& e ) { e.dump(); }
     }
 
@@ -229,9 +236,7 @@ namespace Hector
   void
   Beamline::setElements( const Beamline& moth_bl )
   {
-    for ( const auto& elem : moth_bl ) {
-      addElement( elem );
-    }
+    for ( const auto& elem : moth_bl ) add( elem );
   }
 }
 

@@ -57,6 +57,8 @@ namespace Hector
         void setS( float s ) { s_ = s; }
         /// Longitudinal position
         float s() const { return s_; }
+        /// Offset the longitudinal position by a given distance (in m)
+        void offsetS( float s_offs ) { s_ += s_offs; }
 
         /// Set the x-y position of the centre of the element
         void setPosition( const TwoVector& pos ) { pos_ = pos; }

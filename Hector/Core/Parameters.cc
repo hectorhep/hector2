@@ -8,7 +8,7 @@ namespace Hector
     beam_particles_charge_( +1 ),
     logging_threshold_( Info ),
     use_relative_energy_( false ),
-    correct_beamline_overlaps_( false ),
+    correct_beamline_overlaps_( true ),
     compute_aperture_acceptance_( true ),
     enable_kickers_( false ),
     enable_dipoles_( true )

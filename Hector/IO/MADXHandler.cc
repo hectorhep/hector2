@@ -37,17 +37,16 @@ namespace Hector
     std::regex MADX::rgx_monitor_name_( "BPM.+" );
     std::regex MADX::rgx_rect_coll_name_( "T[C,A].*\\.\\d[L,R]\\d\\.?(B[1-9])?" );
 
-    MADX::MADX( std::string filename, std::string ip_name, int direction, float max_s ) :
+    MADX::MADX( std::string filename, std::string ip_name, int direction, float max_s, float min_s ) :
       in_file_( filename ),
       dir_( direction/abs( direction ) ),
-      ip_name_( ip_name ), s_offset_( 0. ), found_interaction_point_( false ),
-      has_next_element_( false )
+      ip_name_( ip_name ), min_s_( min_s )
     {
       if ( !in_file_.is_open() )
         throw Exception( __PRETTY_FUNCTION__, Form( "Failed to open Twiss file \"%s\"\n\tCheck the path!", filename.c_str() ), Fatal );
       parseHeader();
 
-      raw_beamline_ = std::unique_ptr<Beamline>( new Beamline( max_s ) );
+      raw_beamline_ = std::unique_ptr<Beamline>( new Beamline( max_s-min_s ) );
       if ( max_s < 0. && header_float_.hasKey( "length" ) ) raw_beamline_->setLength( header_float_.get( "length" ) );
       if ( header_float_.hasKey( "energy" ) && Parameters::get()->beamEnergy() != header_float_.get( "energy" ) ) {
         Parameters::get()->setBeamEnergy( header_float_.get( "energy" ) );
@@ -73,18 +72,18 @@ namespace Hector
       beamline_ = Beamline::sequencedBeamline( raw_beamline_.get() );
     }
 
-    MADX::MADX( const char* filename, const char* ip_name, int direction, float max_s ) :
-      MADX( std::string( filename ), std::string( ip_name ), direction, max_s ) {}
+    MADX::MADX( const char* filename, const char* ip_name, int direction, float max_s, float min_s ) :
+      MADX( std::string( filename ), std::string( ip_name ), direction, max_s, min_s ) {}
 
     MADX::MADX( const MADX& rhs ) :
-      dir_( rhs.dir_ ), ip_name_( rhs.ip_name_ ), s_offset_( rhs.s_offset_ ),
-      found_interaction_point_( rhs.found_interaction_point_ ), has_next_element_( rhs.has_next_element_ )
+      interaction_point_( rhs.interaction_point_ ),
+      dir_( rhs.dir_ ), ip_name_( rhs.ip_name_ ), min_s_( rhs.min_s_ )
     {}
 
     MADX::MADX( MADX& rhs ) :
       beamline_( std::move( rhs.beamline_ ) ), raw_beamline_( std::move( rhs.raw_beamline_ ) ),
-      dir_( rhs.dir_ ), ip_name_( rhs.ip_name_ ), s_offset_( rhs.s_offset_ ),
-      found_interaction_point_( rhs.found_interaction_point_ ), has_next_element_( rhs.has_next_element_ )
+      interaction_point_( rhs.interaction_point_ ),
+      dir_( rhs.dir_ ), ip_name_( rhs.ip_name_ ), min_s_( rhs.min_s_ )
     {}
 
     Beamline*
@@ -223,22 +222,19 @@ namespace Hector
         if ( str.str().length() == 0 ) continue;
         std::string buffer;
         ValuesCollection values;
-        while ( str >> buffer ) { values.push_back( buffer ); }
+        while ( str >> buffer ) values.push_back( buffer );
         // first check if the "correct" number of element properties is parsed
-        if ( values.size()!=elements_fields_.size() ) {
-          throw Exception( __PRETTY_FUNCTION__, Form( "MAD-X output seems corrupted!\n\t"
-                                                      "Element %s has %d fields when %d are expected.",
-                                                      trim( values.at( 0 ) ).c_str(), values.size(), elements_fields_.size() ), Fatal );
-        }
+        if ( values.size() != elements_fields_.size() )
+          throw Exception( __PRETTY_FUNCTION__,
+            Form( "MAD-X output seems corrupted!\n\t"
+                  "Element %s has %d fields when %d are expected.",
+                  trim( values.at( 0 ) ).c_str(), values.size(), elements_fields_.size() ), Fatal );
         try {
           auto elem = parseElement( values );
-          if ( !elem ) continue;
-          if ( elem->name() == ip_name_ ) {
-            found_interaction_point_ = true;
-            s_offset_ = elem->s();
-            raw_beamline_->addElement( elem );
-            return;
-          }
+          if ( !elem || elem->name() != ip_name_ ) continue;
+          interaction_point_ = elem;
+          raw_beamline_->setInteractionPoint( ThreeVector( elem->x(), elem->y(), 0. ) );
+          break;
         } catch ( Exception& e ) {
           e.dump();
           throw Exception( __PRETTY_FUNCTION__, Form( "Failed to retrieve the interaction point with name=\"%s\"", ip_name_.c_str() ), Fatal );
@@ -254,8 +250,12 @@ namespace Hector
       // parse the optics elements and their characteristics
       std::string line;
 
+      if ( !interaction_point_ )
+        throw Exception( __PRETTY_FUNCTION__, Form( "Interaction point \"%s\" has not been found in the beamline!", ip_name_.c_str() ), Fatal );
+
       in_file_.seekg( in_file_lastline_ );
 
+      bool has_next_element = false;
       while ( !in_file_.eof() ) {
         std::getline( in_file_, line );
         std::stringstream str( trim( line ) );
@@ -264,31 +264,38 @@ namespace Hector
         // extract the list of properties
         std::string buffer;
         ValuesCollection values;
-        while ( str >> buffer ) { values.push_back( buffer ); }
+        while ( str >> buffer ) values.push_back( buffer );
         try {
           auto elem = parseElement( values );
           if ( !elem ) continue;
-          if ( fabs( elem->s() )>raw_beamline_->maxLength() ) {
-            if ( has_next_element_ ) throw Exception( __PRETTY_FUNCTION__, "Finished to parse the beamline", Info );
-            has_next_element_ = true;
+          if ( elem->type() == Element::aDrift ) continue;
+          elem->offsetS( -interaction_point_->s() );
+          if ( elem->s() < min_s_ ) continue;
+          if ( elem->s()+elem->length() > raw_beamline_->maxLength() ) {
+            if ( has_next_element )
+              throw Exception( __PRETTY_FUNCTION__, "Finished to parse the beamline", Info, 20001 );
+            if ( elem->type() != Element::anInstrument && elem->type() != Element::aDrift )
+              has_next_element = true;
           }
-          raw_beamline_->addElement( elem );
+          raw_beamline_->add( elem );
         } catch ( Exception& e ) {
-          if ( e.type() == Info ) break; // finished to parse
-          e.dump();
+          if ( e.errorNumber() != 20001 ) e.dump();
+          break; // finished to parse
         }
       }
+      interaction_point_->setS( 0. ); // by convention
+      raw_beamline_->add( interaction_point_ );
     }
 
     std::shared_ptr<Element::ElementBase>
     MADX::parseElement( const ValuesCollection& values )
     {
       // first check if the "correct" number of element properties is parsed
-      if ( values.size() != elements_fields_.size() ) {
-        throw Exception( __PRETTY_FUNCTION__, Form( "MAD-X output seems corrupted!\n\t"
-                                                    "Element %s has %d fields when %d are expected.",
-                                                    trim( values.at( 0 ) ).c_str(), values.size(), elements_fields_.size() ), Fatal );
-      }
+      if ( values.size() != elements_fields_.size() )
+        throw Exception( __PRETTY_FUNCTION__,
+          Form( "MAD-X output seems corrupted!\n\t"
+                "Element %s has %d fields when %d are expected.",
+                trim( values.at( 0 ) ).c_str(), values.size(), elements_fields_.size() ), Fatal );
 
       // then perform the 3-fold matching key <-> value <-> value type
       ParametersMap::Ordered<float> elem_map_floats;
@@ -301,17 +308,16 @@ namespace Hector
           case String: elem_map_str.add( key, value ); break;
           case Float: elem_map_floats.add( key, atof( value.c_str() ) ); break;
           case Unknown: default: {
-            throw Exception( __PRETTY_FUNCTION__, Form( "MAD-X predicts an unknown-type optics element parameter:\n\t (%s) for %s", elements_fields_.key( i ).c_str(), trim( values.at( 0 ) ).c_str() ), JustWarning );
+            throw Exception( __PRETTY_FUNCTION__,
+              Form( "MAD-X predicts an unknown-type optics element parameter:\n\t (%s) for %s",
+                    elements_fields_.key( i ).c_str(), trim( values.at( 0 ) ).c_str() ), JustWarning );
           } break;
         }
       }
 
       const std::string name = trim( elem_map_str.get( "name" ) );
-      const float s_abs = elem_map_floats.get( "s" ),
+      const float s = elem_map_floats.get( "s" ),
                   length = elem_map_floats.get( "l" );
-
-
-      const float s = s_abs-s_offset_-length;
 
       // convert the element type from string to object
       const Element::Type elemtype = ( elem_map_str.hasKey( "keyword" ) )
@@ -324,7 +330,8 @@ namespace Hector
         // create the element
         switch ( elemtype ) {
           case Element::aGenericQuadrupole: {
-            if ( length <= 0. ) throw Exception( __PRETTY_FUNCTION__, Form( "Trying to add a quadrupole with invalid length (l=%.2e m)", length ), JustWarning );
+            if ( length <= 0. ) throw Exception( __PRETTY_FUNCTION__,
+              Form( "Trying to add a quadrupole with invalid length (l=%.2e m)", length ), JustWarning );
 
             const float k1l = elem_map_floats.get( "k1l" ),
                         mag_str_k = -k1l/length;
@@ -368,21 +375,19 @@ namespace Hector
           case Element::aMonitor:
           case Element::anInstrument: {
             raw_beamline_->addMarker( Element::Marker( name, s, length ) );
-            has_next_element_ = false;
-            return 0;
           } break;
           case Element::aDrift: {
             previous_relpos_ = TwoVector( elem_map_floats.get( "x" ), elem_map_floats.get( "y" ) );
             previous_disp_ = TwoVector( elem_map_floats.get( "dx" ), elem_map_floats.get( "dy" ) );
             previous_beta_ = TwoVector( elem_map_floats.get( "betx" ), elem_map_floats.get( "bety" ) );
-            has_next_element_ = false;
-            return 0;
+            elem.reset( new Element::Drift( name, s, length ) );
           } break;
           default: break;
         }
 
         // did not successfully create and populate a new element
-        if ( !elem ) return elem;
+        if ( !elem || elem->type() == Element::anInstrument || elem->type() == Element::aDrift )
+          return elem;
 
         const TwoVector relpos( elem_map_floats.get( "x" ), elem_map_floats.get( "y" ) );
         //const TwoVector relpos;

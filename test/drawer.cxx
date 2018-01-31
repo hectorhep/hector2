@@ -41,7 +41,7 @@ main( int argc, char* argv[] )
   //Hector::Parameters::get()->setComputeApertureAcceptance( false ); //FIXME
   //Hector::Parameters::get()->setEnableKickers( false ); //FIXME
 
-  const Hector::IO::MADX parser_beam1( twiss1_filename.c_str(), ip_name.c_str(), +1, max_s ), parser_beam2( twiss2_filename.c_str(), ip_name.c_str(), -1, max_s );
+  const Hector::IO::MADX parser_beam1( twiss1_filename.c_str(), ip_name.c_str(), +1, max_s ), parser_beam2( twiss2_filename.c_str(), ip_name.c_str(), +1, max_s );
 
   //--- look at both the beamlines
   //parser_beam1.beamline()->dump();
