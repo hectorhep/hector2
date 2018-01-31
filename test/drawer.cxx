@@ -23,6 +23,7 @@ main( int argc, char* argv[] )
 {
   std::string twiss1_filename, twiss2_filename, ip_name;
   double crossing_angle_x, crossing_angle_y, max_s;
+  double scale_x, scale_y;
   unsigned int num_particles;
 
   Hector::ArgsParser args( argc, argv, {
@@ -33,6 +34,8 @@ main( int argc, char* argv[] )
     { "--ip-name", "name of the interaction point", "IP5", &ip_name },
     { "--xingangle-x", "crossing angle in the x direction (rad)", 180.e-6, &crossing_angle_x },
     { "--xingangle-y", "crossing angle in the y direction (rad)", 0., &crossing_angle_y },
+    { "--scale-x", "Horizontal coordinate scaling (m)", 0.1, &scale_x },
+    { "--scale-y", "Vertical coordinate scaling (m)", 0.05, &scale_y },
     { "--max-s", "maximal s-coordinate (m)", 250., &max_s }
   } );
 
@@ -41,7 +44,7 @@ main( int argc, char* argv[] )
   //Hector::Parameters::get()->setComputeApertureAcceptance( false ); //FIXME
   //Hector::Parameters::get()->setEnableKickers( false ); //FIXME
 
-  const Hector::IO::MADX parser_beam1( twiss1_filename.c_str(), ip_name.c_str(), +1, max_s ), parser_beam2( twiss2_filename.c_str(), ip_name.c_str(), +1, max_s );
+  const Hector::IO::MADX parser_beam1( twiss1_filename.c_str(), ip_name.c_str(), 1, max_s ), parser_beam2( twiss2_filename.c_str(), ip_name.c_str(), 1, max_s );
 
   //--- look at both the beamlines
   //parser_beam1.beamline()->dump();
@@ -133,8 +136,6 @@ main( int argc, char* argv[] )
     Hector::Canvas c( "beamline", Form( "E_{p} = %.1f TeV, #alpha_{X} = %.1f #murad", Hector::Parameters::get()->beamEnergy()*CLHEP::GeV/CLHEP::TeV, crossing_angle_x*1.e6 ), true );
     //c.SetGrayscale();
 
-    const float scale_x = 0.1,
-                scale_y = 0.05;
     const bool draw_apertures = false;
 
     c.cd( 1 ); // x-axis
@@ -165,6 +166,8 @@ main( int argc, char* argv[] )
     mg1_y.Draw( "l" );
     mg2_y.Draw( "l" );
     c.Prettify( mg1_y.GetHistogram() );
+    c.GetPad( 1 )->SetGrid( 1, 1 );
+    c.GetPad( 2 )->SetGrid( 1, 1 );
     mg1_y.GetXaxis()->SetLabelSize( 0.055 );
     mg1_y.GetYaxis()->SetLabelSize( 0.055 );
     mg1_y.GetXaxis()->SetTitleSize( 0.1 );

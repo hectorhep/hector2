@@ -25,13 +25,12 @@ namespace Hector
                    c_theta = cos( theta ), s_theta = sin( theta ),
         inv_energy = 1. / Parameters::get()->beamEnergy();
 
-      Matrix mat = DiagonalMatrix( 6, 1 );
+      Matrix mat = Drift::genericMatrix( length_ );
 
       mat( 1, 1 ) = c_theta;
       mat( 1, 2 ) = s_theta * radius;
       mat( 2, 1 ) = s_theta * ( -ke );
       mat( 2, 2 ) = c_theta;
-      mat( 3, 4 ) = length_;
       if ( Parameters::get()->useRelativeEnergy() ) {
         const double simp = 2.*radius*pow( sin( theta*0.5 ), 2 ) * inv_energy;
         // numerically stable version of ( r/E₀ )*( 1-cos θ )
@@ -60,13 +59,12 @@ namespace Hector
                    simp = 2.*radius*pow( sin( theta*0.5 ), 2 ) * inv_energy;
                    // numerically stable version of ( r/E₀ )*( 1-cos θ )
 
-      Matrix mat = DiagonalMatrix( 6, 1 );
+      Matrix mat = Drift::genericMatrix( length_ );
 
       mat( 1, 1 ) = c_theta;
       mat( 1, 2 ) = s_theta * radius;
       mat( 2, 1 ) = s_theta * ( -ke );
       mat( 2, 2 ) = c_theta;
-      mat( 3, 4 ) = length_;
       mat( 1, 5 ) = simp;
       mat( 2, 5 ) = s_theta * inv_energy;
 

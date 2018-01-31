@@ -199,7 +199,6 @@ namespace Hector
       p1->SetTopMargin( TCanvas::GetTopMargin()+0.08 );
       p2->SetBottomMargin( TCanvas::GetBottomMargin()+0.03 );
       p1->SetTicks( 1, 1 ); p2->SetTicks( 1, 1 );
-      p1->SetGrid( 1, 0 ); p2->SetGrid( 1, 0 );
       TCanvas::cd( 1 );
     }
 

@@ -90,7 +90,6 @@ namespace Hector
         TwoVector previous_relpos_, previous_disp_, previous_beta_;
 
         static std::regex rgx_typ_, rgx_hdr_, rgx_elm_hdr_;
-        static std::regex rgx_rp_horiz_name_, rgx_rp_vert_name_;
         static std::regex rgx_drift_name_, rgx_ip_name_, rgx_monitor_name_;
         static std::regex rgx_quadrup_name_;
         static std::regex rgx_sect_dipole_name_, rgx_rect_dipole_name_;

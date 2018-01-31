@@ -135,8 +135,8 @@ namespace Hector
       StateVector vec( prop, ini_pos.stateVector().m() );
 
       // convert the angles -> tan-1( angle )
-      const TwoVector ang_old = vec.angles();
-      vec.setAngles( math::atan2( ang_old ) );
+      //const TwoVector ang_old = vec.angles();
+      //vec.setAngles( math::atan2( ang_old ) );
 
       return Particle::Position( elem->s()+elem->length(), vec );
     } catch ( Exception& e ) { throw e; }

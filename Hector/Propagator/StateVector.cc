@@ -49,22 +49,21 @@ namespace Hector
   void
   StateVector::setAngles( double tx, double ty )
   {
-    // store the tangent of the angles
-    ( *this )[TX] = tan( tx );
-    ( *this )[TY] = tan( ty );
+    ( *this )[TX] = tx;
+    ( *this )[TY] = ty;
   }
 
   TwoVector
   StateVector::angles() const
   {
     // return in rad
-    return math::atan2( TwoVector( ( *this )[TX], ( *this )[TY] ) );
+    return TwoVector( ( *this )[TX], ( *this )[TY] );
   }
 
   void
   StateVector::setMomentum( const LorentzVector& mom )
   {
-    setAngles( atan2( mom.px(), mom.pz() ), atan2( mom.py(), mom.pz() ) );
+    setAngles( mom.px()/mom.pz(), mom.py()/mom.pz() );
     ( *this )[E] = mom.e();
     m_ = mom.m();
   }
@@ -72,7 +71,7 @@ namespace Hector
   void
   StateVector::addMomentum( const LorentzVector& mom )
   {
-    setAngles( angles()+math::atan2( TwoVector( atan2( mom.px(), mom.pz() ), atan2( mom.py(), mom.pz() ) ) ) );
+    setAngles( angles()+TwoVector( mom.px()/mom.pz(), mom.py()/mom.pz() ) );
     ( *this )[E] = mom.e();
     m_ = mom.m();
   }

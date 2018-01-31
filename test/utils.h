@@ -144,8 +144,7 @@ class elementsLegend : public TLegend
         pv->SetFillColorAlpha( elementColour( elemPtr ), alpha );
         pv->SetLineColor( kGray );
         pv->SetLineWidth( 4 );
-        std::ostringstream os; os << type;
-        TLegend::AddEntry( pv, os.str().c_str(), "f" );
+        TLegend::AddEntry( pv, elemPtr->typeName().c_str(), "f" );
         already_in_.insert( std::pair<Hector::Element::Type, TPave*>( type, pv ) );
       }
       if ( already_in_.size()>7 ) TLegend::SetNColumns( 2 );

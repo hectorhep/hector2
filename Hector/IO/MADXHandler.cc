@@ -27,8 +27,6 @@ namespace Hector
     std::regex MADX::rgx_typ_( "^\\%[0-9]{0,}(s|le)$" );
     std::regex MADX::rgx_hdr_( "^\\@ (\\w+) +\\%([0-9]+s|le) +\\\"?([^\"\\n]+)" );
     std::regex MADX::rgx_elm_hdr_( "^\\s{0,}([\\*\\$])(.+)" );
-    std::regex MADX::rgx_rp_vert_name_( "XRPV\\.[0-9a-zA-Z]{4}\\.B[1,2]" );
-    std::regex MADX::rgx_rp_horiz_name_( "XRPH\\.[0-9a-zA-Z]{4}\\.B[1,2]" );
     std::regex MADX::rgx_drift_name_( "DRIFT\\_[0-9]+" );
     std::regex MADX::rgx_quadrup_name_( "M[B,Q]\\w+\\d?\\.\\w?\\d[L,R]\\d(\\.B[1,2])?" );
     std::regex MADX::rgx_sect_dipole_name_( "MB\\.[A-Z][0-9]{1,2}[L,R][0-9]\\.B[1,2]" );
@@ -119,17 +117,13 @@ namespace Hector
         PrintWarning( "Beamline not yet parsed! returning an empty list" );
         return out;
       }
-      for ( const auto& elemPtr : *raw_beamline_ ) {
-        try {
-          if ( std::regex_match( elemPtr->name(), rgx_rp_horiz_name_ ) ) {
-            if ( type == allPots || type == horizontalPots ) out.push_back( elemPtr );
-          }
-          if ( std::regex_match( elemPtr->name(), rgx_rp_vert_name_ ) ) {
-            if ( type == allPots || type == verticalPots ) out.push_back( elemPtr );
-          }
-        } catch ( std::regex_error& e ) {
-          throw Exception( __PRETTY_FUNCTION__, Form( "Error while parsing Roman pots!\n\t%s", e.what() ), Fatal );
-        }
+      if ( type == allPots || type == horizontalPots ) {
+        auto rps = raw_beamline_->find( "XRPH\\.[0-9a-zA-Z]{4}\\.B[1,2]" );
+        out.insert( out.end(), rps.begin(), rps.end() );
+      }
+      if ( type == allPots || type == verticalPots ) {
+        auto rps = raw_beamline_->find( "XRPV\\.[0-9a-zA-Z]{4}\\.B[1,2]" );
+        out.insert( out.end(), rps.begin(), rps.end() );
       }
       return out;
     }
@@ -437,8 +431,6 @@ namespace Hector
         if ( std::regex_match( name, rgx_rect_dipole_name_ ) ) return Element::aRectangularDipole;
         if ( std::regex_match( name,          rgx_ip_name_ ) ) return Element::aMarker;
         if ( std::regex_match( name,     rgx_monitor_name_ ) ) return Element::aMonitor;
-        if ( std::regex_match( name,    rgx_rp_horiz_name_ ) ) return Element::aRectangularCollimator;
-        if ( std::regex_match( name,     rgx_rp_vert_name_ ) ) return Element::aRectangularCollimator;
         if ( std::regex_match( name,   rgx_rect_coll_name_ ) ) return Element::aRectangularCollimator;
       } catch ( std::regex_error& e ) {
         throw Exception( __PRETTY_FUNCTION__, Form( "Error while retrieving the element type!\n\t%s", e.what() ), Fatal );
