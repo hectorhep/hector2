@@ -103,9 +103,6 @@ namespace Hector
       /// Get the particle's momentum at a given s-position
       const LorentzVector momentumAt( double s ) const;
 
-      /// Let the particle emit a photon
-      void emitGamma( double e_gamma, double q2, double phi_min = 0., double phi_max = 2.*M_PI );
-
     private:
       int charge_;
       int pdgId_;

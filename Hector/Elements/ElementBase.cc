@@ -46,7 +46,7 @@ namespace Hector
     }
 
     void
-    ElementBase::setAperture( const std::shared_ptr<Aperture::ApertureBase> apert )
+    ElementBase::setAperture( const std::shared_ptr<Aperture::ApertureBase>& apert )
     {
       aperture_ = apert;
     }

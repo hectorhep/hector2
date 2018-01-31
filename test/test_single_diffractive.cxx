@@ -16,7 +16,7 @@
 
 using namespace std;
 
-void plot_multi( const string name, const string title, vector<pair<string,TH1*> > graphs, const string extra_label = "" );
+void plot_multi( const string& name, const string& title, vector<pair<string,TH1*> > graphs, const string& extra_label = "" );
 
 int main( int argc, char* argv[] )
 {
@@ -145,12 +145,12 @@ int main( int argc, char* argv[] )
       gr_ty.emplace_back( Form( "Protons in %s", rp->name().c_str() ), h_ty_sp[rp] );
     }
     const string bottom_label = Form( "%s - %d single-diffractive events (Pythia8)", twiss_file.c_str(), num_events );
-    plot_multi( "xi_single_diffr", title, gr_xi, bottom_label.c_str() );
-    plot_multi( "tx_single_diffr", title, gr_tx, bottom_label.c_str() );
-    plot_multi( "ty_single_diffr", title, gr_ty, bottom_label.c_str() );
+    plot_multi( "xi_single_diffr", title, gr_xi, bottom_label );
+    plot_multi( "tx_single_diffr", title, gr_tx, bottom_label );
+    plot_multi( "ty_single_diffr", title, gr_ty, bottom_label );
 
     h_num_protons.GetXaxis()->SetNdivisions( 100 );
-    plot_multi( "proton_mult", title, { { "", &h_num_protons } }, bottom_label.c_str() );
+    plot_multi( "proton_mult", title, { { "", &h_num_protons } }, bottom_label );
   }
 
   for ( const auto& pot : rps ) {
@@ -165,7 +165,7 @@ int main( int argc, char* argv[] )
 }
 
 void
-plot_multi( const string name, const string title, vector<pair<string,TH1*> > graphs, const string extra_label )
+plot_multi( const string& name, const string& title, vector<pair<string,TH1*> > graphs, const string& extra_label )
 {
   Hector::Canvas c( name.c_str(), title.c_str() );
   THStack st;

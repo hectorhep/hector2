@@ -139,7 +139,7 @@ namespace Hector
       //vec.setAngles( math::atan2( ang_old ) );
 
       return Particle::Position( elem->s()+elem->length(), vec );
-    } catch ( Exception& e ) { throw e; }
+    } catch ( Exception& e ) { throw; }
   }
 
   void

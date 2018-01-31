@@ -43,7 +43,7 @@ namespace Hector
         virtual Matrix matrix( float eloss, float mp = Parameters::get()->beamParticlesMass(), int qp = Parameters::get()->beamParticlesCharge() ) const = 0;
 
         /// Set the name of the element
-        void setName( std::string name ) { name_ = name; }
+        void setName( const std::string& name ) { name_ = name; }
         /// Element name
         const std::string name() const { return name_; }
         /// Set the element type
@@ -114,7 +114,7 @@ namespace Hector
         /// Set the aperture for this element
         void setAperture( Aperture::ApertureBase* apert );
         /// Set the aperture for this element
-        void setAperture( const std::shared_ptr<Aperture::ApertureBase> apert );
+        void setAperture( const std::shared_ptr<Aperture::ApertureBase>& apert );
         /// Aperture
         Aperture::ApertureBase* aperture() const { return aperture_.get(); }
 
@@ -166,7 +166,7 @@ namespace Hector
         return ( &lhs < &rhs );
       }
       /// Compare the smart pointers to two elements
-      inline bool operator()( const std::shared_ptr<ElementBase> lhs, const std::shared_ptr<ElementBase> rhs ) const {
+      inline bool operator()( const std::shared_ptr<ElementBase>& lhs, const std::shared_ptr<ElementBase>& rhs ) const {
         if ( lhs->s() < rhs->s() ) return true;
         if ( lhs->s() > rhs->s() ) return false;
         if ( lhs->s()+lhs->length() < rhs->s()+rhs->length() ) return true;

@@ -51,7 +51,7 @@ evt.list(true,true);
     Particles pout;
     for ( unsigned short i=0; i<evt.size(); i++ ) {
       const Pythia8::Particle part = evt[i];
-      if ( !stable || ( stable && part.status() > 0 ) ) { // stable particles
+      if ( !stable || part.status() > 0 ) { // stable particles
         pout.emplace_back( LorentzVector( part.px(), part.py(), part.pz(), part.e() ), (int)part.charge(), part.id() );
       }
     }

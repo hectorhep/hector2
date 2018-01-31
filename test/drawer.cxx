@@ -136,7 +136,7 @@ main( int argc, char* argv[] )
     Hector::Canvas c( "beamline", Form( "E_{p} = %.1f TeV, #alpha_{X} = %.1f #murad", Hector::Parameters::get()->beamEnergy()*CLHEP::GeV/CLHEP::TeV, crossing_angle_x*1.e6 ), true );
     //c.SetGrayscale();
 
-    const bool draw_apertures = false;
+    const bool draw_apertures = true;
 
     c.cd( 1 ); // x-axis
     mg1_x.SetTitle( ".\\x (m)" );
@@ -149,6 +149,7 @@ main( int argc, char* argv[] )
     mg1_x.Draw( "l" );
     mg2_x.Draw( "l" );
     c.Prettify( mg1_x.GetHistogram() );
+    c.GetPad( 1 )->SetGrid( 1, 1 );
     mg1_x.GetXaxis()->SetLabelSize( 0.055 );
     mg1_x.GetYaxis()->SetLabelSize( 0.055 );
     mg1_x.GetYaxis()->SetTitleSize( 0.1 );
@@ -166,7 +167,6 @@ main( int argc, char* argv[] )
     mg1_y.Draw( "l" );
     mg2_y.Draw( "l" );
     c.Prettify( mg1_y.GetHistogram() );
-    c.GetPad( 1 )->SetGrid( 1, 1 );
     c.GetPad( 2 )->SetGrid( 1, 1 );
     mg1_y.GetXaxis()->SetLabelSize( 0.055 );
     mg1_y.GetYaxis()->SetLabelSize( 0.055 );

@@ -26,12 +26,12 @@ drawBothGraphs( const char* name, const char* title, const char* axes, TGraph* g
   mg.SetTitle( axes );
   mg.GetXaxis()->SetRangeUser( -max_s, max_s );
 
-  for ( unsigned short i=0; i<labels.size(); i++ ) {
+  for ( unsigned short i = 0; i < labels.size(); ++i ) {
     //cout << labels[i] << endl;
     TLatex* lab = dynamic_cast<TLatex*>( labels[i]->Clone() );
     //lab->SetY( mg.GetHistogram()->GetMaximum()/2. );
     lab->SetTextAlign( ( i%2 ) ? 32 : 12 );
-    lab->SetY( ( i%2 ? -1 : 1 ) * mg.GetHistogram()->GetMaximum()/30. );
+    lab->SetY( ( ( i%2 ) ? -1 : 1 ) * mg.GetHistogram()->GetMaximum()/30. );
     lab->Draw( "same" );
   }
   rp_region->SetY1( mg.GetHistogram()->GetMinimum() );
@@ -52,7 +52,7 @@ main( int argc, char* argv[] )
   string twiss_filename;
   double max_s;
   Hector::ArgsParser args( argc, argv, {
-    { "--twiss", "Twiss file", &twiss_filename }
+    { "--twiss-file", "Twiss file", &twiss_filename }
   }, {
     { "--max-s", "maximal s-coordinate (m)", 250., &max_s }
   } );
