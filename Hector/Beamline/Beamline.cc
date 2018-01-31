@@ -5,6 +5,7 @@
 
 #include <sstream>
 #include <algorithm>
+#include <regex>
 
 namespace Hector
 {
@@ -147,6 +148,21 @@ namespace Hector
       if ( elem->s() <= s && elem->s()+elem->length() >= s ) return elem;
     }
     return *elements_.end();
+  }
+
+  std::vector<std::shared_ptr<Element::ElementBase> >
+  Beamline::find( const char* regex )
+  {
+    try {
+      std::regex rgx_search( regex );
+      std::cmatch m;
+      std::vector<std::shared_ptr<Element::ElementBase> > out;
+      for ( auto& elem : elements_ )
+        if ( std::regex_search( elem->name().c_str(), m, rgx_search ) ) out.emplace_back( elem );
+      return out;
+    } catch ( std::regex_error ) {
+      throw Exception( __PRETTY_FUNCTION__, Form( "Invalid regular expression required:\n\t%s", regex ), Fatal );
+    }
   }
 
   Matrix

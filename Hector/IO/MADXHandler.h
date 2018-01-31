@@ -85,7 +85,7 @@ namespace Hector
 
         int dir_;
         std::string ip_name_;
-        float min_s_, s_offset_;
+        float min_s_;
         // quantities needed whenever direction == 1 (FIXME)
         TwoVector previous_relpos_, previous_disp_, previous_beta_;
 

@@ -78,6 +78,7 @@ namespace
   //--- helper python <-> C++ converters
   template<class T, class U> py::dict to_python_dict( std::map<T,U>& map ) { py::dict dictionary; for ( auto& it : map ) dictionary[it.first] = it.second; return dictionary; }
   template<class T> py::list to_python_list( std::vector<T>& vec ) { py::list list; for ( auto& it : vec ) list.append( it ); return list; }
+  template<class T> py::list to_python_list_c( std::vector<T> vec ) { py::list list; for ( auto& it : vec ) list.append( it ); return list; }
   template<class T> struct PyMap {
     PyMap() {}
     PyMap( py::dict& dict, std::vector<std::string> keys = std::vector<std::string>{} ) {
@@ -107,6 +108,7 @@ namespace
   };
   py::dict particle_positions( Hector::Particle& part ) { return to_python_dict<double,Hector::StateVector>( part.positions() ); }
   py::list beamline_elements( Hector::Beamline& bl ) { return to_python_list<std::shared_ptr<Hector::Element::ElementBase> >( bl.elements() ); }
+  py::list beamline_found_elements( Hector::Beamline& bl, const char* regex ) { return to_python_list_c<std::shared_ptr<Hector::Element::ElementBase> >( bl.find( regex ) ); }
 
   PyObject* except_type = nullptr, *ps_except_type = nullptr;
 
@@ -404,6 +406,7 @@ BOOST_PYTHON_MODULE( pyhector )
     .def( "add", &Hector::Beamline::add, "Add a single element into the beamline collection", py::args( "element to add" ) )
     .def( "get", get_by_name, py::return_value_policy<py::return_by_value>(), "Get a beamline element by its name", py::args( "element name" ) )
     .def( "get", get_by_spos, py::return_value_policy<py::return_by_value>(), "Get a beamline element by its s-position", py::args( "element s-position" ) )
+    .def( "find", beamline_found_elements )
   ;
 
   //----- PROPAGATOR

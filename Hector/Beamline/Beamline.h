@@ -65,6 +65,8 @@ namespace Hector
       /// Retrieve a beamline element given its s-position
       /// \param[in] s s-position of the element (computed wrt the interaction point)
       const std::shared_ptr<Element::ElementBase> get( float s ) const;
+      /// Find an element by name
+      std::vector<std::shared_ptr<Element::ElementBase> > find( const char* );
       /// Number of elements in the beamline
       unsigned short numElements() const { return elements_.size(); }
 

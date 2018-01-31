@@ -49,11 +49,11 @@ main( int argc, char* argv[] )
 
   Hector::Propagator prop( parser.beamline() );
 
-  //TH2D hitmap( "hitmap", "x (m)\\y (m)", 200, -0.01, 0.01, 200, -0.01, 0.01 );
-  //TH2D hitmap( "hitmap", "x (m)\\y (m)", 200, -0.005, 0.005, 200, -0.005, 0.005 );
-  TH2D hitmap( "hitmap", "x (m)\\y (m)", 200, 0., 0.02, 200, -0.05, 0.05 );
-  //TH2D hitmap( "hitmap", "x (m)\\y (m)", 200, -1., 1., 200, -1., 1. );
-  //TH2D hitmap( "hitmap", "x (m)\\y (m)", 200, 0.08, 0.12, 200, -0.05, 0.05 );
+  //TH2D hitmap( "hitmap", "x (mm)\\y (mm)", 200, -10., 10., 200, -10., 10. );
+  //TH2D hitmap( "hitmap", "x (mm)\\y (mm)", 200, -5., 5., 200, -5., 5. );
+  TH2D hitmap( "hitmap", "x (mm)\\y (mm)", 200, -25., 25., 200, -50., 50. );
+  //TH2D hitmap( "hitmap", "x (mm)\\y (mm)", 200, -1., 1., 200, -1., 1. );
+  //TH2D hitmap( "hitmap", "x (mm)\\y (mm)", 200, 80., 120., 200, -50., 50. );
   map<float,TH2D*> m_hitmaps;
   if ( hitmaps_dist > 0. ) {
     double s = 0.;
@@ -86,7 +86,7 @@ main( int argc, char* argv[] )
       //if ( prop.stopped( p, s_pos ) ) { /*cout << "prout" << endl;*/ num_stopped++; continue; }
       const CLHEP::Hep2Vector pos( p.stateVectorAt( s_pos ).position()-offset );
       cout << s_pos << " -> " << pos << endl;
-      hitmap.Fill( pos.x(), pos.y() );
+      hitmap.Fill( pos.x()*1.e3, pos.y()*1.e3 );
     } catch ( Hector::ParticleStoppedException& pse ) {
       //pse.dump();
       stopped_at[pse.stoppingElement()]++;
