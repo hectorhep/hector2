@@ -1,4 +1,5 @@
 #include "Hector/Utils/BeamProducer.h"
+#include "Hector/Utils/Utils.h"
 #include "Hector/Core/Exception.h"
 
 #include <CLHEP/Random/RandFlat.h>
@@ -6,6 +7,10 @@
 
 namespace Hector
 {
+  BeamProducer::Xiscanner::Xiscanner( const unsigned short& num_part, float xi_min, float xi_max, float x, float y, float s_ini ) :
+    LinearScanner( num_part, x, x, y, y, xi_to_e( xi_min ), xi_to_e( xi_max ), s_ini )
+  {}
+
   unsigned short
   BeamProducer::LinearScanner::LinearScanner::next()
   {
@@ -69,5 +74,11 @@ namespace Hector
   BeamProducer::GaussianParticleGun::parameters( float lim1, float lim2 )
   {
     return BeamProducer::params_t( 0.5 * ( lim1+lim2 ), 0.5 * ( lim2-lim1 ) );
+  }
+
+  void
+  BeamProducer::GaussianParticleGun::smearXi( float xi_mean, float xi_sigma )
+  {
+    setEparams( xi_to_e( xi_mean ), xi_to_e( xi_sigma ) );
   }
 }

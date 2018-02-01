@@ -32,6 +32,18 @@ namespace Hector
   }
 
   void
+  StateVector::setXi( double xi )
+  {
+    setEnergy( xi_to_e( xi ) );
+  }
+
+  double
+  StateVector::xi() const
+  {
+    return e_to_xi( energy() );
+  }
+
+  void
   StateVector::setPosition( double x, double y )
   {
     // store in m

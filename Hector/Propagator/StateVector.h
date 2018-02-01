@@ -44,9 +44,9 @@ namespace Hector
       /// Particle energy (in GeV)
       double energy() const { return ( *this )[E]; }
       /// Set the energy loss \f$ \xi \f$
-      void setXi( double xi ) { setEnergy( Parameters::get()->beamEnergy()*( 1.-xi ) ); }
+      void setXi( double xi );
       /// Energy loss \f$ \xi \f$
-      double xi() const { return 1.-energy()/Parameters::get()->beamEnergy(); }
+      double xi() const;
       /// Set the particle kick
       void setKick( double kick ) { ( *this )[K] = kick; }
       /// Particle kick

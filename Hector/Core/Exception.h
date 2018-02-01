@@ -1,7 +1,7 @@
 #ifndef Hector_Core_Exception_h
 #define Hector_Core_Exception_h
 
-#include "Utils.h"
+#include "Hector/Utils/Utils.h"
 #include "Parameters.h"
 
 #include <iomanip>

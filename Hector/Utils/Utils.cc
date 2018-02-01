@@ -1,4 +1,4 @@
-#include "Hector/Core/Utils.h"
+#include "Hector/Utils/Utils.h"
 #include "Hector/Core/Exception.h"
 #include "Hector/Propagator/Particle.h"
 
@@ -99,4 +99,16 @@ namespace Hector
     part.clear();
     part.addPosition( pos_ini, sv_ini );
   }
+
+  double
+  e_to_xi( double energy, double e0 )
+  {
+    return 1.-energy/e0;
+  }
+
+  double xi_to_e( double xi, double e0 )
+  {
+    return e0*( 1.-xi );
+  }
+
 }

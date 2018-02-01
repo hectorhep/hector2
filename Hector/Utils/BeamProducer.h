@@ -124,8 +124,7 @@ namespace Hector
         /// \param[in] x horizontal particle position
         /// \param[in] y vertical particle position
         /// \param[in] s_ini initial s position
-        Xiscanner( const unsigned short& num_part, float xi_min, float xi_max, float x = 0., float y = 0., float s_ini = 0. ) :
-          LinearScanner( num_part, x, x, y, y, Parameters::get()->beamEnergy()*( 1.-xi_min ), Parameters::get()->beamEnergy()*( 1.-xi_max ), s_ini ) {}
+        Xiscanner( const unsigned short& num_part, float xi_min, float xi_max, float x = 0., float y = 0., float s_ini = 0. );
         Particle shoot();
     };
 
@@ -220,8 +219,6 @@ namespace Hector
     /// Beam of particles with flat s, x, y, Tx, Ty and energy distributions
     typedef ParticleGun<CLHEP::RandFlat> FlatParticleGun;
     /// Beam of particles with gaussian s, x, y, Tx, Ty and energy distributions
-    //typedef ParticleGun<CLHEP::RandGauss> GaussianParticleGun;
-
     struct GaussianParticleGun : ParticleGun<CLHEP::RandGauss>
     {
       using ParticleGun<CLHEP::RandGauss>::ParticleGun;
@@ -232,6 +229,7 @@ namespace Hector
       void smearTx( float tx_mean, float tx_sigma ) { setTXparams( tx_mean, tx_sigma ); }
       void smearTy( float ty_mean, float ty_sigma ) { setTYparams( ty_mean, ty_sigma ); }
       void smearEnergy( float e_mean, float e_sigma ) { setEparams( e_mean, e_sigma ); }
+      void smearXi( float xi_mean, float xi_sigma );
     };
   }
 }

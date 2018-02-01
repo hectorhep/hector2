@@ -5,7 +5,8 @@
 
 #include "Hector/Core/Exception.h"
 #include "Hector/Core/ParticleStoppedException.h"
-#include "Hector/Core/Utils.h"
+
+#include "Hector/Utils/Utils.h"
 
 #include <sstream>
 

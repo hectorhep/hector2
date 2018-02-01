@@ -1,11 +1,11 @@
 #include "Hector/Beamline/Beamline.h"
 #include "Hector/IO/MADXHandler.h"
 #include "Hector/Core/ParticleStoppedException.h"
-#include "Hector/Core/Timer.h"
 #include "Hector/Propagator/Propagator.h"
 
 #include "Hector/Utils/ArgsParser.h"
 #include "Hector/Utils/BeamProducer.h"
+#include "Hector/Utils/Timer.h"
 
 #include "utils.h"
 #include "Canvas.h"
