@@ -50,15 +50,22 @@ int main( int argc, char* argv[] )
 
   Hector::BeamProducer::gaussianParticleGun gun( Hector::Parameters::get()->beamEnergy()/1.25, Hector::Parameters::get()->beamEnergy() );
   //Hector::BeamProducer::TXscanner gun( num_part, Hector::Parameters::get()->beamEnergy(), 0., 1. );
-  for ( unsigned int i=0; i<num_part; i++ ) {
+  map<string,unsigned int> stopping_elements;
+  for ( unsigned int i = 0; i < num_part; ++i ) {
     Hector::Particle p = gun.shoot();
     p.setCharge( +1 );
-    try {
-      prop.propagate( p, 203.826 );
+    try { prop.propagate( p, 203.826 ); }
+    catch ( Hector::ParticleStoppedException& e ) {
+      stopping_elements[e.stoppingElement()->name()]++;
+      continue;
     }
-    catch ( Hector::ParticleStoppedException& ) { continue; }
     catch ( Hector::Exception& e ) { e.dump(); }
   }
+
+  ostringstream os; os << "Summary\n\t-------";
+  for ( const auto& el : stopping_elements )
+    os << Hector::Form( "\n\t*) %.2f%% of particles stopped in %s", 100.*el.second/num_part, el.first.c_str() );
+  PrintInfo( os.str().c_str() );
 
   return 0;
 }
