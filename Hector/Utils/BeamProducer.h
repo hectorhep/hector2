@@ -135,16 +135,12 @@ namespace Hector
     {
       public:
         /// Class constructor
-        ParticleGun( float e_min = Parameters::get()->beamEnergy(), float e_max = Parameters::get()->beamEnergy(),
-                     float s_min = 0., float s_max = 0.,
-                     float x_min = 0., float x_max = 0., float y_min = 0., float y_max = 0.,
-                     float tx_min = -M_PI/2., float tx_max = M_PI/2.,
-                     float ty_min = -M_PI/2., float ty_max = M_PI/2.,
-                     float mass = Parameters::get()->beamParticlesMass(), float charge = Parameters::get()->beamParticlesCharge() ) :
-          e_( parameters( e_min, e_max ) ), s_( parameters( s_min, s_max ) ),
-          x_( parameters( x_min, x_max ) ), y_( parameters( y_min, y_max ) ),
-          tx_( parameters( tx_min, tx_max ) ), ty_( parameters( ty_min, ty_max ) ),
-          mass_( mass ), charge_( charge ) {}
+        ParticleGun() :
+          e_( parameters( Parameters::get()->beamEnergy(), Parameters::get()->beamEnergy() ) ),
+          s_( parameters( 0., 0. ) ), x_( parameters( 0., 0. ) ), y_( parameters( 0., 0. ) ),
+          tx_( parameters( 0., 0. ) ), ty_( parameters( 0., 0. ) ),
+          mass_( Parameters::get()->beamParticlesMass() ),
+          charge_( Parameters::get()->beamParticlesCharge() ) {}
 
         /// Generate one particle according to the templated distribution
         Particle shoot() const {
@@ -222,12 +218,22 @@ namespace Hector
     };
 
     /// Beam of particles with flat s, x, y, Tx, Ty and energy distributions
-    typedef ParticleGun<CLHEP::RandFlat> flatParticleGun;
+    typedef ParticleGun<CLHEP::RandFlat> FlatParticleGun;
     /// Beam of particles with gaussian s, x, y, Tx, Ty and energy distributions
-    typedef ParticleGun<CLHEP::RandGauss> gaussianParticleGun;
+    //typedef ParticleGun<CLHEP::RandGauss> GaussianParticleGun;
 
-    /// Specialization for Gaussian parameters
-    template<> params_t gaussianParticleGun::parameters( float lim1, float lim2 );
+    struct GaussianParticleGun : ParticleGun<CLHEP::RandGauss>
+    {
+      using ParticleGun<CLHEP::RandGauss>::ParticleGun;
+      /// Specialization for Gaussian parameters
+      params_t parameters( float lim1, float lim2 );
+      void smearX( float x_mean, float x_sigma ) { setXparams( x_mean, x_sigma ); }
+      void smearY( float y_mean, float y_sigma ) { setYparams( y_mean, y_sigma ); }
+      void smearTx( float tx_mean, float tx_sigma ) { setTXparams( tx_mean, tx_sigma ); }
+      void smearTy( float ty_mean, float ty_sigma ) { setTYparams( ty_mean, ty_sigma ); }
+      void smearEnergy( float e_mean, float e_sigma ) { setEparams( e_mean, e_sigma ); }
+    };
+
   }
 }
 

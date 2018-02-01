@@ -5,27 +5,41 @@
 
 #include "TColor.h"
 
-Color_t
-elementColour( const std::shared_ptr<Hector::Element::ElementBase>& elem )
+void
+elementStyle( const std::shared_ptr<Hector::Element::ElementBase>& elem, Color_t& col, Style_t& style )
 {
+  col = kWhite;
+  style = 1001;
   switch ( elem->type() ) {
-    case Hector::Element::aMarker: return kBlue+3;
-    case Hector::Element::aDrift: return kBlack;
-    case Hector::Element::aRectangularDipole: return kRed;
-    case Hector::Element::aSectorDipole: return kGreen;
+    case Hector::Element::aMarker: col = kBlue+3; break;
+    case Hector::Element::aDrift: col = kBlack; break;
+    case Hector::Element::aRectangularDipole:
+      col = kRed;
+      style = 3004;
+      break;
+    case Hector::Element::aSectorDipole:
+      col = kGreen;
+      style = 3005;
+      break;
     case Hector::Element::aGenericQuadrupole: {
-      return ( elem->magneticStrength() > 0. )
+      col = ( elem->magneticStrength() > 0. )
         ? kYellow // horizontal quadrupole
         : kBlue;  // vertical quadrupole
-    }
-    case Hector::Element::anHorizontalQuadrupole: return kYellow;
-    case Hector::Element::aVerticalQuadrupole: return kBlue;
-    case Hector::Element::aVerticalKicker: return kMagenta;
-    case Hector::Element::anHorizontalKicker: return kCyan;
-    case Hector::Element::aRectangularCollimator: return 8;
-    case Hector::Element::anEllipticalCollimator: return 9;
-    case Hector::Element::aCircularCollimator: return 10;
-    default: return kWhite;
+    } break;
+    case Hector::Element::anHorizontalQuadrupole:
+      col = kYellow;
+      style = 3002;
+      break;
+    case Hector::Element::aVerticalQuadrupole:
+      col = kBlue;
+      style = 3003;
+      break;
+    case Hector::Element::aVerticalKicker: col = kMagenta; break;
+    case Hector::Element::anHorizontalKicker: col = kCyan; break;
+    case Hector::Element::aRectangularCollimator: col = 8; break;
+    case Hector::Element::anEllipticalCollimator: col = 9; break;
+    case Hector::Element::aCircularCollimator: col = 10; break;
+    default: col = kWhite; break;
   }
 }
 
@@ -90,8 +104,11 @@ drawBeamline( const char axis, const Hector::Beamline* bl, const unsigned short 
     auto elem_box = new TPave( pos_x_ini, pos_y_low, pos_x_end, pos_y_high, 1 );
     elem_box->SetLineColor( kGray+1 );
     //elem_box->SetFillStyle( 1001 );
+    short fill_colour, fill_style;
+    elementStyle( elemPtr, fill_colour, fill_style );
     //elem_box->SetFillColorAlpha( elementColour( elemPtr ), alpha );
-    elem_box->SetFillColor( elementColour( elemPtr ) );
+    elem_box->SetFillColor( fill_colour );
+    elem_box->SetFillStyle( fill_style );
     elem_box->Draw();
 
     if ( elemPtr->type() != Hector::Element::aMarker || elemPtr->name() != ip ) {
@@ -148,7 +165,10 @@ class elementsLegend : public TLegend
         if ( already_in_.find( type ) != already_in_.end() ) continue;
 
         auto pv = new TPave( 0., 0., 0., 0., 0 );
-        pv->SetFillColorAlpha( elementColour( elemPtr ), alpha );
+        short fill_colour, fill_style;
+        elementStyle( elemPtr, fill_colour, fill_style );
+        pv->SetFillColorAlpha( fill_colour, alpha );
+        pv->SetFillStyle( fill_style );
         pv->SetLineColor( kGray );
         pv->SetLineWidth( 4 );
         TLegend::AddEntry( pv, elemPtr->typeName().c_str(), "f" );

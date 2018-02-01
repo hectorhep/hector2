@@ -48,7 +48,8 @@ int main( int argc, char* argv[] )
   Hector::Propagator prop( parser.beamline() );
   //parser.beamline()->dump();
 
-  Hector::BeamProducer::gaussianParticleGun gun( Hector::Parameters::get()->beamEnergy()/1.25, Hector::Parameters::get()->beamEnergy() );
+  Hector::BeamProducer::GaussianParticleGun gun;
+  gun.smearEnergy( Hector::Parameters::get()->beamEnergy()/1.25, Hector::Parameters::get()->beamEnergy() );
   //Hector::BeamProducer::TXscanner gun( num_part, Hector::Parameters::get()->beamEnergy(), 0., 1. );
   map<string,unsigned int> stopping_elements;
   for ( unsigned int i = 0; i < num_part; ++i ) {

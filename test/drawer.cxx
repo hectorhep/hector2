@@ -73,11 +73,11 @@ main( int argc, char* argv[] )
 
   const float beam_lateral_width_ip = 16.63e-6, // in meters
               beam_angular_divergence_ip = 30.23e-6; // in radians
-  Hector::BeamProducer::gaussianParticleGun gun;
-  gun.setXparams( 0., beam_lateral_width_ip );
-  gun.setYparams( 0., beam_lateral_width_ip );
-  gun.setTXparams( crossing_angle_x, beam_angular_divergence_ip );
-  gun.setTYparams( crossing_angle_y, beam_angular_divergence_ip );
+  Hector::BeamProducer::GaussianParticleGun gun;
+  gun.smearX( 0., beam_lateral_width_ip );
+  gun.smearY( 0., beam_lateral_width_ip );
+  //gun.smearTx( crossing_angle_x, beam_angular_divergence_ip );
+  gun.smearTy( crossing_angle_y, beam_angular_divergence_ip );
   //Hector::BeamProducer::TYscanner gun( num_particles, Hector::Parameters::get()->beamEnergy(), -1, 1, max_s );
 
   Hector::Timer tmr;
@@ -86,7 +86,7 @@ main( int argc, char* argv[] )
   for ( size_t i = 0; i < num_particles; ++i ) {
     unsigned short j = 0;
     for ( const auto& prop : propagators ) {
-      gun.setTXparams( ( j == 0 ? -1 : +1 )*crossing_angle_x, beam_angular_divergence_ip );
+      gun.smearTx( ( j == 0 ? -1 : +1 )*crossing_angle_x, beam_angular_divergence_ip );
       Hector::Particle p = gun.shoot();
       //----- beamline propagation
       TGraph gr_x, gr_y; // 1 graph for each trajectory

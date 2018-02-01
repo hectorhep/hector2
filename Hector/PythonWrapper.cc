@@ -30,6 +30,7 @@
 
 #include <map>
 #include <memory>
+#include <sstream>
 
 #include <boost/version.hpp>
 #include <boost/config.hpp>
@@ -46,6 +47,7 @@ namespace boost {
 #endif
 
 #include <boost/python.hpp>
+#include <datetime.h>
 
 //----- SOME OVERLOADED FUNCTIONS/METHODS HELPERS
 
@@ -80,39 +82,23 @@ namespace
   template<class T, class U> py::dict to_python_dict_c( std::map<T,U> map ) { py::dict dictionary; for ( auto& it : map ) dictionary[it.first] = it.second; return dictionary; }
   template<class T> py::list to_python_list( std::vector<T>& vec ) { py::list list; for ( auto& it : vec ) list.append( it ); return list; }
   template<class T> py::list to_python_list_c( std::vector<T> vec ) { py::list list; for ( auto& it : vec ) list.append( it ); return list; }
-  template<class T> struct PyMap {
-    PyMap() {}
-    PyMap( py::dict& dict, std::vector<std::string> keys = std::vector<std::string>{} ) {
-      for ( const auto& k : keys ) map[k] = T();
-      update_map( dict );
-    }
-    void clear() { map.clear(); }
-    size_t size() const { return map.size(); }
-    void update_map( py::dict& dict ) {
-      py::list keys = dict.keys();
-      // not very C++like, but that's life
-      for ( unsigned short i = 0; i < py::len( keys ); ++i ) {
-        // extract the key
-        py::extract<std::string> extracted_key( keys[i] );
-        std::string key = extracted_key;
-        if ( !extracted_key.check() ) { std::cerr << "Key invalid, map might be incomplete" << std::endl; continue; }
-        // extract the value
-        py::extract<T> extracted_val( dict[key] );
-        if ( !extracted_val.check() ) { std::cerr << "Value invalid, map might be incomplete" << std::endl; continue; }
-        T value = extracted_val;
-        // feed the map
-        map[key] = value;
-      }
-    }
-    py::dict get_dict() const { py::dict dictionary; for ( auto& it : map ) dictionary[it.first] = it.second; return dictionary; }
-    std::map<std::string,T> map;
-  };
   py::dict particle_positions( Hector::Particle& part ) { return to_python_dict<double,Hector::StateVector>( part.positions() ); }
   py::list beamline_elements( Hector::Beamline& bl ) { return to_python_list<std::shared_ptr<Hector::Element::ElementBase> >( bl.elements() ); }
   py::list beamline_found_elements( Hector::Beamline& bl, const char* regex ) { return to_python_list_c<std::shared_ptr<Hector::Element::ElementBase> >( bl.find( regex ) ); }
+
   py::dict madx_parser_header( Hector::IO::MADX& parser ) {
     py::dict out = to_python_dict_c<std::string,std::string>( parser.headerStrings() );
     out.update( to_python_dict_c<std::string,float>( parser.headerFloats() ) );
+    if ( out.has_key( "date" ) ) {
+      std::string date = py::extract<std::string>( out.get( "date" ) );
+      std::string time = ( out.has_key( "time" ) ) ? py::extract<std::string>( out.get( "time" ) ) : std::string( "00.00.00" );
+      struct std::tm tm;
+      std::istringstream ss( date+" "+time );
+      ss >> std::get_time( &tm, "%d/%m/%y %H.%M.%S" );
+      if ( mktime( &tm ) < 0 ) tm.tm_year += 100; // we assume the Twiss file has been produced after 1970...
+      PyDateTime_IMPORT;
+      out["production_date"] = py::handle<>( PyDateTime_FromDateAndTime( tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec, 0. ) );
+    }
     return out;
   }
 
@@ -127,14 +113,6 @@ namespace
     PyErr_SetObject( ps_except_type, py::object( e ).ptr() );
   }
 
-  template<class T>
-  struct BeamProducerWrap : PyMap<float>, T
-  {
-    BeamProducerWrap() : PyMap<float>(), T() {}
-    BeamProducerWrap( py::dict& dict ) :
-      PyMap<float>( dict, { { "Emin", "Emax", "smin", "smax", "xmin", "xmax", "ymin", "ymax", "Txmin", "Txmax", "Tymin", "Tymax", "m", "q" } } ),
-      T( map["Emin"], map["Emax"], map["smin"], map["smax"], map["xmin"], map["xmax"], map["ymin"], map["ymax"], map["Txmin"], map["Txmax"], map["Tymin"], map["Tymax"], map["m"], map["q"] ) {}
-  };
   //--- helper beamline elements definitions
   struct ElementBaseWrap : Hector::Element::ElementBase, py::wrapper<Hector::Element::ElementBase>
   {
@@ -303,16 +281,14 @@ BOOST_PYTHON_MODULE( pyhector )
 
   //----- BEAM PRODUCERS
 
-  //py::class_<BeamProducerWrap>( "GaussianParticleGun", py::init<py::optional<float,float,float,float,float,float,float,float,float,float,float,float> >() )
-  py::class_<BeamProducerWrap<Hector::BeamProducer::gaussianParticleGun> >( "GaussianParticleGun" )
-    .def( py::init<py::dict&>() )
-    .def( "shoot", &Hector::BeamProducer::gaussianParticleGun::shoot, "Shoot a single particle" )
-    .add_property( "mass", &Hector::BeamProducer::gaussianParticleGun::particleMass, &Hector::BeamProducer::gaussianParticleGun::setParticleMass, "Individual particles mass (in GeV/c2)" )
-    .add_property( "charge", &Hector::BeamProducer::gaussianParticleGun::particleCharge, &Hector::BeamProducer::gaussianParticleGun::setParticleCharge, "Individual particles charge (in e)" )
-    .def( "smearTx", &Hector::BeamProducer::gaussianParticleGun::setTXparams, "Smear the beam particles horizontal scattering angle (in rad)" )
-    .def( "smearTy", &Hector::BeamProducer::gaussianParticleGun::setTYparams, "Smear the beam particles vertical scattering angle (in rad)" )
-    .def( "smearX", &Hector::BeamProducer::gaussianParticleGun::setXparams, "Smear the beam particles horizontal position (in metres)" )
-    .def( "smearY", &Hector::BeamProducer::gaussianParticleGun::setYparams, "Smear the beam particles vertical position (in metres)" )
+  py::class_<Hector::BeamProducer::GaussianParticleGun>( "GaussianParticleGun" )
+    .def( "shoot", &Hector::BeamProducer::GaussianParticleGun::shoot, "Shoot a single particle" )
+    .add_property( "mass", &Hector::BeamProducer::GaussianParticleGun::particleMass, &Hector::BeamProducer::GaussianParticleGun::setParticleMass, "Individual particles mass (in GeV/c2)" )
+    .add_property( "charge", &Hector::BeamProducer::GaussianParticleGun::particleCharge, &Hector::BeamProducer::GaussianParticleGun::setParticleCharge, "Individual particles charge (in e)" )
+    .def( "smearTx", &Hector::BeamProducer::GaussianParticleGun::smearTx, "Smear the beam particles horizontal scattering angle (in rad)" )
+    .def( "smearTy", &Hector::BeamProducer::GaussianParticleGun::smearTy, "Smear the beam particles vertical scattering angle (in rad)" )
+    .def( "smearX", &Hector::BeamProducer::GaussianParticleGun::smearX, "Smear the beam particles horizontal position (in metres)" )
+    .def( "smearY", &Hector::BeamProducer::GaussianParticleGun::smearY, "Smear the beam particles vertical position (in metres)" )
   ;
 
   //----- BEAMLINE ELEMENTS DEFINITION
