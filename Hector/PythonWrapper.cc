@@ -31,7 +31,7 @@
 #include <map>
 #include <memory>
 #include <sstream>
-#include <iomanip>
+#include <time.h>
 
 #include <boost/version.hpp>
 #include <boost/config.hpp>
@@ -94,8 +94,9 @@ namespace
       std::string date = py::extract<std::string>( out.get( "date" ) );
       std::string time = ( out.has_key( "time" ) ) ? py::extract<std::string>( out.get( "time" ) ) : std::string( "00.00.00" );
       struct std::tm tm;
-      std::istringstream ss( date+" "+time );
-      ss >> std::get_time( &tm, "%d/%m/%y %H.%M.%S" );
+      /*std::istringstream ss( date+" "+time );
+      ss >> std::get_time( &tm, "%d/%m/%y %H.%M.%S" );*/ // unfortunately only from gcc 5+...
+      strptime( ( date+" "+time ).c_str(), "%d/%m/%y %H.%M.%S", &tm );
       if ( mktime( &tm ) < 0 ) tm.tm_year += 100; // we assume the Twiss file has been produced after 1970...
       PyDateTime_IMPORT;
       out["production_date"] = py::handle<>( PyDateTime_FromDateAndTime( tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec, 0. ) );
