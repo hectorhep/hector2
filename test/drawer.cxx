@@ -18,18 +18,20 @@
 #include "TAxis.h"
 #include "TStyle.h"
 
+using namespace std;
+
 int
 main( int argc, char* argv[] )
 {
-  std::string twiss1_filename, twiss2_filename, ip_name;
+  string twiss1_filename, twiss2_filename, ip_name;
   double crossing_angle_x, crossing_angle_y, max_s;
   double scale_x, scale_y;
   unsigned int num_particles;
 
   Hector::ArgsParser args( argc, argv, {
     { "--twiss1", "first Twiss file", &twiss1_filename },
-    { "--twiss2", "second Twiss file", &twiss2_filename }
   }, {
+    { "--twiss2", "second Twiss file", "", &twiss2_filename },
     { "--num-parts", "number of particles to generate", 1000, &num_particles },
     { "--ip-name", "name of the interaction point", "IP5", &ip_name },
     { "--xingangle-x", "crossing angle in the x direction (rad)", 180.e-6, &crossing_angle_x },
@@ -44,34 +46,30 @@ main( int argc, char* argv[] )
   //Hector::Parameters::get()->setComputeApertureAcceptance( false ); //FIXME
   //Hector::Parameters::get()->setEnableKickers( false ); //FIXME
 
-  const Hector::IO::MADX parser_beam1( twiss1_filename.c_str(), ip_name.c_str(), 1, max_s ), parser_beam2( twiss2_filename.c_str(), ip_name.c_str(), 1, max_s );
+  //--- define the propagator objects
+  vector<Hector::Propagator> propagators;
 
-  //--- look at both the beamlines
-  //parser_beam1.beamline()->dump();
-  //parser_beam2.beamline()->dump();
+  for ( const auto& fn : vector<string>{ { twiss1_filename, twiss2_filename } } ) {
+    if ( fn == "" ) continue;
+    const Hector::IO::MADX parser( fn, ip_name, 1, max_s );
+    auto bl = new Hector::Beamline( *parser.beamline() );
+    propagators.emplace_back( bl );
 
-  const Hector::Elements rps1 = parser_beam1.romanPots(), rps2 = parser_beam2.romanPots();
-  std::cout << "---> beamline 1 has " << rps1.size() << " roman pots!" << std::endl;
-  for ( unsigned short i = 0; i < rps1.size(); ++i ) {
-    std::cout << " >> Roman pot " << rps1[i]->name() << " at s=" << rps1[i]->s() << " m" << std::endl;
+    //--- look at the beamline(s)
+    //bl->dump();
+    auto rps = bl->find( "XRPH\\." );
+    cout << "---> beamline " << fn << " has " << rps.size() << " roman pots!" << endl;
+    for ( const auto& rp : rps )
+      cout << " >> Roman pot " << rp->name() << " at s=" << rp->s() << " m" << endl;
   }
-  std::cout << "---> beamline 2 has " << rps2.size() << " roman pots!" << std::endl;
-  for ( unsigned short i = 0; i < rps2.size(); ++i ) {
-    std::cout << " >> Roman pot " << rps2[i]->name() << " at s=" << rps2[i]->s() << " m" << std::endl;
-  }
+  vector<TMultiGraph> mg_x( propagators.size() ), mg_y( propagators.size() );
 
   //parser_beam1.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( -0.097, 0. ) );
   //parser_beam2.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( +0.097, 0. ) );
 
-  //--- define the propagator objects
-  const Hector::Propagator prop1( parser_beam1.beamline() ), prop2( parser_beam2.beamline() );
-
   const double mass = Hector::Parameters::get()->beamParticlesMass(),
                energy = Hector::Parameters::get()->beamEnergy();
   const CLHEP::Hep3Vector mom0( 0, 0., sqrt( energy*energy-mass*mass ) );
-
-  TMultiGraph mg1_x, mg2_x,
-              mg1_y, mg2_y;
 
   const float beam_lateral_width_ip = 16.63e-6, // in meters
               beam_angular_divergence_ip = 30.23e-6; // in radians
@@ -85,48 +83,29 @@ main( int argc, char* argv[] )
   Hector::Timer tmr;
   TH1D h_timing( "timing", "Propagation time per element\\Event\\#mus?.2f", 100, 0., 10. );
 
-  const unsigned short num_beamline_elems = parser_beam1.beamline()->numElements();
-
   for ( size_t i = 0; i < num_particles; ++i ) {
-    unsigned short j;
-    { //----- beamline 1 propagation
-      gun.setTXparams( -crossing_angle_x, beam_angular_divergence_ip );
-      Hector::Particle p = gun.shoot();
+    gun.setTXparams( -crossing_angle_x, beam_angular_divergence_ip );
+    Hector::Particle p = gun.shoot();
+    unsigned short j = 0;
+    for ( const auto& prop : propagators ) { //----- beamline propagation
       TGraph gr_x, gr_y;
       try {
         tmr.reset();
-        prop1.propagate( p, max_s );
-        const float prop_time = tmr.elapsed()*1.e6/num_beamline_elems;
+        prop.propagate( p, max_s );
+        const float prop_time = tmr.elapsed()*1.e6;
         h_timing.Fill( prop_time ); // in us
-      } catch ( Hector::ParticleStoppedException& e ) { e.dump(); }
-      j = 0;
+      } catch ( Hector::ParticleStoppedException& e ) { continue; }
+      unsigned short k = 0;
       for ( const auto& pos : p ) {
-        gr_x.SetPoint( j, pos.first, pos.second.position().x() );
-        gr_y.SetPoint( j, pos.first, pos.second.position().y() );
-        j++;
+        gr_x.SetPoint( k, pos.first, pos.second.position().x() );
+        gr_y.SetPoint( k, pos.first, pos.second.position().y() );
+        k++;
       }
-      gr_x.SetLineColor( kBlack );
-      gr_y.SetLineColor( kBlack );
-      mg1_x.Add( dynamic_cast<TGraph*>( gr_x.Clone() ) );
-      mg1_y.Add( dynamic_cast<TGraph*>( gr_y.Clone() ) );
-    }
-    { // beamline 2 propagation
-      gun.setTXparams( crossing_angle_x, beam_angular_divergence_ip );
-      Hector::Particle p = gun.shoot();
-      TGraph gr_x, gr_y;
-      try { prop2.propagate( p, max_s ); } catch ( Hector::Exception& e ) { e.dump(); }
-      j = 0;
-      for ( const auto& pos : p ) {
-        gr_x.SetPoint( j, pos.first, pos.second.position().x() );
-        gr_y.SetPoint( j, pos.first, pos.second.position().y() );
-        j++;
-      }
-      gr_x.SetLineColor( kRed );
-      gr_x.SetLineStyle( 2 );
-      gr_y.SetLineColor( kRed );
-      gr_y.SetLineStyle( 2 );
-      mg2_x.Add( dynamic_cast<TGraph*>( gr_x.Clone() ) );
-      mg2_y.Add( dynamic_cast<TGraph*>( gr_y.Clone() ) );
+      gr_x.SetLineColor( ( j == 0 ) ? kBlack : kRed );
+      gr_y.SetLineColor( ( j == 0 ) ? kBlack : kRed );
+      mg_x[j].Add( dynamic_cast<TGraph*>( gr_x.Clone() ) );
+      mg_y[j].Add( dynamic_cast<TGraph*>( gr_y.Clone() ) );
+      ++j;
     }
   }
 
@@ -139,42 +118,55 @@ main( int argc, char* argv[] )
     const bool draw_apertures = true;
 
     c.cd( 1 ); // x-axis
-    mg1_x.SetTitle( ".\\x (m)" );
-    mg1_x.Draw( "al" );
-    mg2_x.Draw( "l" );
-    mg1_x.GetXaxis()->SetLimits( 0., max_s );
-    mg1_x.GetYaxis()->SetRangeUser( -scale_x, scale_x );
-    drawBeamline( 'x', parser_beam1.beamline(), 0, "IP5", scale_x, 0., max_s, draw_apertures );
-    drawBeamline( 'x', parser_beam2.beamline(), 1, "IP5", scale_x, 0., max_s, draw_apertures );
-    mg1_x.Draw( "l" );
-    mg2_x.Draw( "l" );
-    c.Prettify( mg1_x.GetHistogram() );
+    {
+      auto& first = *mg_x.begin();
+      cout << "haha" << mg_x.size() << endl;
+      first.SetTitle( ".\\x (m)" );
+      first.Draw( "al" );
+      first.GetXaxis()->SetLimits( 0., max_s );
+      first.GetYaxis()->SetRangeUser( -scale_x, scale_x );
+      //c.Prettify( first.GetHistogram() );
+      unsigned short i = 0;
+      for ( const auto& prop : propagators ) {
+        drawBeamline( 'x', prop.beamline(), i, "IP5", scale_x, 0., max_s, draw_apertures );
+        ++i;
+      }
+
+      for ( auto& mg : mg_x ) {
+        mg.Draw( "l,same" );
+        mg.GetXaxis()->SetLabelSize( 0.055 );
+        mg.GetYaxis()->SetLabelSize( 0.055 );
+        mg.GetYaxis()->SetTitleSize( 0.1 );
+        mg.GetYaxis()->SetTitleOffset( 0.65 );
+        mg.GetXaxis()->SetTitle( "" );
+      }
+    }
     c.GetPad( 1 )->SetGrid( 1, 1 );
-    mg1_x.GetXaxis()->SetLabelSize( 0.055 );
-    mg1_x.GetYaxis()->SetLabelSize( 0.055 );
-    mg1_x.GetYaxis()->SetTitleSize( 0.1 );
-    mg1_x.GetYaxis()->SetTitleOffset( 0.65 );
-    mg1_x.GetXaxis()->SetTitle( "" );
 
     c.cd( 2 ); // y-axis
-    mg1_y.SetTitle( "s (m)\\y (m)" );
-    mg1_y.Draw( "al" );
-    mg2_y.Draw( "l" );
-    mg1_y.GetXaxis()->SetLimits( 0., max_s );
-    mg1_y.GetYaxis()->SetRangeUser( -scale_y, scale_y );
-    drawBeamline( 'y', parser_beam1.beamline(), 0, "IP5", scale_y, 0., max_s, draw_apertures );
-    drawBeamline( 'y', parser_beam2.beamline(), 1, "IP5", scale_y, 0., max_s, draw_apertures );
-    mg1_y.Draw( "l" );
-    mg2_y.Draw( "l" );
-    c.Prettify( mg1_y.GetHistogram() );
+    {
+      auto& first = *mg_y.begin();
+      first.SetTitle( "s (m)\\y (m)" );
+      first.Draw( "al" );
+      first.GetXaxis()->SetLimits( 0., max_s );
+      first.GetYaxis()->SetRangeUser( -scale_y, scale_y );
+      //c.Prettify( first.GetHistogram() );
+      unsigned short i = 0;
+      for ( const auto& prop : propagators ) {
+        drawBeamline( 'y', prop.beamline(), i, "IP5", scale_y, 0., max_s, draw_apertures );
+        ++i;
+      }
+      for ( auto& mg : mg_y ) {
+        mg.Draw( "l,same" );
+        mg.GetXaxis()->SetLabelSize( 0.055 );
+        mg.GetYaxis()->SetLabelSize( 0.055 );
+        mg.GetYaxis()->SetTitleSize( 0.1 );
+        mg.GetYaxis()->SetTitleOffset( 0.65 );
+        mg.GetXaxis()->SetTitleOffset( 0.7 );
+        mg.GetXaxis()->SetTitle( "" );
+      }
+    }
     c.GetPad( 2 )->SetGrid( 1, 1 );
-    mg1_y.GetXaxis()->SetLabelSize( 0.055 );
-    mg1_y.GetYaxis()->SetLabelSize( 0.055 );
-    mg1_y.GetXaxis()->SetTitleSize( 0.1 );
-    mg1_y.GetYaxis()->SetTitleSize( 0.1);
-    mg1_y.GetXaxis()->SetTitleOffset( 0.7 );
-    mg1_y.GetYaxis()->SetTitleOffset( 0.65 );
-
     //c.SetMargin( 5., 5., 5., 5. );
 
     c.cd();
@@ -191,8 +183,8 @@ main( int argc, char* argv[] )
     Hector::Canvas c( "beamline_legend" );
     elementsLegend leg;
     gStyle->SetOptStat( 0 );
-    leg.feedBeamline( parser_beam1.beamline() );
-    leg.feedBeamline( parser_beam2.beamline() );
+    for ( const auto& prop : propagators )
+      leg.feedBeamline( prop.beamline() );
     leg.Draw();
     c.Save( "pdf" );
   }

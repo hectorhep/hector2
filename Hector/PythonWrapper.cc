@@ -77,6 +77,7 @@ namespace
   }
   //--- helper python <-> C++ converters
   template<class T, class U> py::dict to_python_dict( std::map<T,U>& map ) { py::dict dictionary; for ( auto& it : map ) dictionary[it.first] = it.second; return dictionary; }
+  template<class T, class U> py::dict to_python_dict_c( std::map<T,U> map ) { py::dict dictionary; for ( auto& it : map ) dictionary[it.first] = it.second; return dictionary; }
   template<class T> py::list to_python_list( std::vector<T>& vec ) { py::list list; for ( auto& it : vec ) list.append( it ); return list; }
   template<class T> py::list to_python_list_c( std::vector<T> vec ) { py::list list; for ( auto& it : vec ) list.append( it ); return list; }
   template<class T> struct PyMap {
@@ -109,6 +110,11 @@ namespace
   py::dict particle_positions( Hector::Particle& part ) { return to_python_dict<double,Hector::StateVector>( part.positions() ); }
   py::list beamline_elements( Hector::Beamline& bl ) { return to_python_list<std::shared_ptr<Hector::Element::ElementBase> >( bl.elements() ); }
   py::list beamline_found_elements( Hector::Beamline& bl, const char* regex ) { return to_python_list_c<std::shared_ptr<Hector::Element::ElementBase> >( bl.find( regex ) ); }
+  py::dict madx_parser_header( Hector::IO::MADX& parser ) {
+    py::dict out = to_python_dict_c<std::string,std::string>( parser.headerStrings() );
+    out.update( to_python_dict_c<std::string,float>( parser.headerFloats() ) );
+    return out;
+  }
 
   PyObject* except_type = nullptr, *ps_except_type = nullptr;
 
@@ -222,6 +228,7 @@ BOOST_PYTHON_MODULE( pyhector )
 
   py::enum_<Hector::ExceptionType>( "ExceptionType" )
     .value( "undefined", Hector::ExceptionType::Undefined )
+    .value( "debug", Hector::ExceptionType::Debug )
     .value( "info", Hector::ExceptionType::Info )
     .value( "justWarning", Hector::ExceptionType::JustWarning )
     .value( "fatal", Hector::ExceptionType::Fatal )
@@ -406,6 +413,7 @@ BOOST_PYTHON_MODULE( pyhector )
     .def( "add", &Hector::Beamline::add, "Add a single element into the beamline collection", py::args( "element to add" ) )
     .def( "get", get_by_name, py::return_value_policy<py::return_by_value>(), "Get a beamline element by its name", py::args( "element name" ) )
     .def( "get", get_by_spos, py::return_value_policy<py::return_by_value>(), "Get a beamline element by its s-position", py::args( "element s-position" ) )
+    .def( "offsetElementsAfter", &Hector::Beamline::offsetElementsAfter )
     .def( "find", beamline_found_elements )
   ;
 
@@ -423,6 +431,7 @@ BOOST_PYTHON_MODULE( pyhector )
   py::class_<Hector::IO::MADX>( "MadXparser", "A MadX Twiss files parser", py::init<const char*,const char*,int,py::optional<float,float> >() )
     .add_property( "beamline", py::make_function( &Hector::IO::MADX::beamline, py::return_value_policy<py::reference_existing_object>() ), "Beamline object parsed from the MadX Twiss file" )
     .add_property( "romanPots", &Hector::IO::MADX::romanPots, "List of Roman pots along the beamline" )
+    .add_property( "header", madx_parser_header )
   ;
 
   py::class_<Hector::IO::HBL>( "HBLparser", "A HBL files parser", py::init<const char*>() )

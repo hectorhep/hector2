@@ -109,6 +109,19 @@ namespace Hector
       PrintInfo( os.str().c_str() );
     }
 
+    std::map<std::string,std::string>
+    MADX::headerStrings() const
+    {
+      return header_str_.asMap();
+    }
+
+    std::map<std::string,float>
+    MADX::headerFloats() const
+    {
+      return header_float_.asMap();
+    }
+
+
     Elements
     MADX::romanPots( const RPType& type ) const
     {

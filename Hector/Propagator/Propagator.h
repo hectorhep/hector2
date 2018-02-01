@@ -17,6 +17,8 @@ namespace Hector
       Propagator( const Beamline* );
       ~Propagator();
 
+      const Beamline* beamline() const { return beamline_; }
+
       /// Propagate a particle up to a given position ; maps all state vectors to the intermediate s-coordinates
       void propagate( Particle&, float ) const;
       /// Check whether the particle has stopped inside a part of the beamline
