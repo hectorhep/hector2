@@ -233,7 +233,6 @@ namespace Hector
       void smearTy( float ty_mean, float ty_sigma ) { setTYparams( ty_mean, ty_sigma ); }
       void smearEnergy( float e_mean, float e_sigma ) { setEparams( e_mean, e_sigma ); }
     };
-
   }
 }
 

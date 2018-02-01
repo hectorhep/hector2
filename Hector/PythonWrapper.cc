@@ -31,6 +31,7 @@
 #include <map>
 #include <memory>
 #include <sstream>
+#include <iomanip>
 
 #include <boost/version.hpp>
 #include <boost/config.hpp>

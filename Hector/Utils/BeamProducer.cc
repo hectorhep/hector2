@@ -65,9 +65,8 @@ namespace Hector
     return Particle( StateVector( LorentzVector( 0., 0., mom, energy ), TwoVector( p1_.first, p2_.first ) ), s_.first );
   }
 
-  template<>
   BeamProducer::params_t
-  BeamProducer::ParticleGun<CLHEP::RandGauss>::parameters( float lim1, float lim2 )
+  BeamProducer::GaussianParticleGun::parameters( float lim1, float lim2 )
   {
     return BeamProducer::params_t( 0.5 * ( lim1+lim2 ), 0.5 * ( lim2-lim1 ) );
   }
