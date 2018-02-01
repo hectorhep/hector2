@@ -111,7 +111,7 @@ namespace Hector
   }
 
   const std::shared_ptr<Element::ElementBase>
-  Beamline::get( std::string name ) const
+  Beamline::get( const char* name ) const
   {
     for ( size_t i = 0; i < elements_.size(); ++i ) {
       const auto elem = elements_.at( i );
@@ -121,7 +121,7 @@ namespace Hector
   }
 
   std::shared_ptr<Element::ElementBase>&
-  Beamline::get( std::string name )
+  Beamline::get( const char* name )
   {
     for ( auto& elem : elements_ ) {
       if ( elem->name().find( name ) != std::string::npos ) return elem;

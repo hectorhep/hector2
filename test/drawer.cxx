@@ -1,6 +1,6 @@
 #include "Hector/Beamline/Beamline.h"
 #include "Hector/IO/MADXHandler.h"
-#include "Hector/Core/Exception.h"
+#include "Hector/Core/ParticleStoppedException.h"
 #include "Hector/Core/Timer.h"
 #include "Hector/Propagator/Propagator.h"
 
@@ -98,7 +98,7 @@ main( int argc, char* argv[] )
         prop1.propagate( p, max_s );
         const float prop_time = tmr.elapsed()*1.e6/num_beamline_elems;
         h_timing.Fill( prop_time ); // in us
-      } catch ( Hector::Exception& e ) { e.dump(); }
+      } catch ( Hector::ParticleStoppedException& e ) { e.dump(); }
       j = 0;
       for ( const auto& pos : p ) {
         gr_x.SetPoint( j, pos.first, pos.second.position().x() );

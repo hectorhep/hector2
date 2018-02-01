@@ -9,9 +9,9 @@ namespace Hector
   unsigned short
   BeamProducer::LinearScanner::LinearScanner::next()
   {
-    if ( num_gen_ >= num_part_ ) {
+    if ( num_gen_ >= num_part_ )
       throw Exception( __PRETTY_FUNCTION__, "Too much particles already generated!", JustWarning );
-    }
+
     return num_gen_++;
   }
 
@@ -66,9 +66,9 @@ namespace Hector
   }
 
   template<>
-  BeamProducer::params
+  BeamProducer::params_t
   BeamProducer::ParticleGun<CLHEP::RandGauss>::parameters( float lim1, float lim2 )
   {
-    return BeamProducer::params( 0.5 * ( lim1+lim2 ), 0.5 * ( lim2-lim1 ) );
+    return BeamProducer::params_t( 0.5 * ( lim1+lim2 ), 0.5 * ( lim2-lim1 ) );
   }
 }

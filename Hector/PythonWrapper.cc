@@ -300,7 +300,7 @@ BOOST_PYTHON_MODULE( pyhector )
   py::class_<BeamProducerWrap<Hector::BeamProducer::gaussianParticleGun> >( "GaussianParticleGun" )
     .def( py::init<py::dict&>() )
     .def( "shoot", &Hector::BeamProducer::gaussianParticleGun::shoot, "Shoot a single particle" )
-    .add_property( "mass", &Hector::BeamProducer::gaussianParticleGun::particleMass, &Hector::BeamProducer::gaussianParticleGun::setParticleMass, "Idividual particles mass (in GeV/c2)" )
+    .add_property( "mass", &Hector::BeamProducer::gaussianParticleGun::particleMass, &Hector::BeamProducer::gaussianParticleGun::setParticleMass, "Individual particles mass (in GeV/c2)" )
     .add_property( "charge", &Hector::BeamProducer::gaussianParticleGun::particleCharge, &Hector::BeamProducer::gaussianParticleGun::setParticleCharge, "Individual particles charge (in e)" )
     .def( "smearTx", &Hector::BeamProducer::gaussianParticleGun::setTXparams, "Smear the beam particles horizontal scattering angle (in rad)" )
     .def( "smearTy", &Hector::BeamProducer::gaussianParticleGun::setTYparams, "Smear the beam particles vertical scattering angle (in rad)" )
@@ -392,7 +392,7 @@ BOOST_PYTHON_MODULE( pyhector )
 
   //----- BEAMLINE DEFINITION
 
-  std::shared_ptr<Hector::Element::ElementBase>& ( Hector::Beamline::*get_by_name )( std::string ) = &Hector::Beamline::get;
+  std::shared_ptr<Hector::Element::ElementBase>& ( Hector::Beamline::*get_by_name )( const char* ) = &Hector::Beamline::get;
   std::shared_ptr<Hector::Element::ElementBase>& ( Hector::Beamline::*get_by_spos )( float ) = &Hector::Beamline::get;
   py::class_<Hector::Beamline>( "Beamline", "A collection of elements composing a beamline" )
     .def( "__str__", &dump_beamline )
