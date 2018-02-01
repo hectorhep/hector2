@@ -9,6 +9,7 @@
 #include <string>
 #include <cstdlib> // exit()
 
+#define PrintDebug(m) Hector::Exception( __PRETTY_FUNCTION__, m, Hector::Debug ).dump();
 #define PrintInfo(m) Hector::Exception( __PRETTY_FUNCTION__, m, Hector::Info ).dump();
 #define PrintWarning(m) Hector::Exception( __PRETTY_FUNCTION__, m, Hector::JustWarning ).dump();
 
