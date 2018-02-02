@@ -90,7 +90,9 @@ namespace Hector
     MADX::beamline() const
     {
       if ( !beamline_ ) {
-        PrintWarning( "Sequenced beamline not computed from the MAD-X Twiss file. Retrieving the raw version. You may encounter some numerical issues." );
+        PrintWarning( "Sequenced beamline not computed from the MAD-X Twiss file. "
+                      "Retrieving the raw version. "
+                      "You may encounter some numerical issues." );
         return raw_beamline_.get();
       }
       return beamline_.get();
@@ -105,8 +107,8 @@ namespace Hector
       if ( header_str_.hasKey( "origin" ) ) os << "\n\t Origin: " << trim( header_str_.get( "origin" ) );
       if ( header_float_.hasKey( "timestamp" ) ) {
         // C implementation for pre-gcc5 compilers
-        time_t time = (long)header_float_.get( "timestamp" );
-        char time_chr[100]; strftime( time_chr, sizeof( time_chr ), "%c", std::localtime( &time ) );
+        time_t time = (long)header_float_.get( "timestamp" ); std::tm tm;
+        char time_chr[100]; strftime( time_chr, sizeof( time_chr ), "%c", localtime_r( &time, &tm ) );
         os << "\n\t Export date: " << time_chr;
       }
       else if ( header_str_.hasKey( "date" ) || header_str_.hasKey( "time" ) )
@@ -172,7 +174,9 @@ namespace Hector
           // keep track of the last line read in the file
           in_file_lastline_ = in_file_.tellg();
         } catch ( std::regex_error& e ) {
-          throw Exception( __PRETTY_FUNCTION__, Form( "Error while parsing the header!\n\t%s", e.what() ), Fatal );
+          throw Exception( __PRETTY_FUNCTION__,
+            Form( "Error at line %d while parsing the header!\n\t%s",
+                  in_file_.tellg(), e.what() ), Fatal );
         }
       }
       // parse the Twiss file production timestamp
@@ -216,7 +220,9 @@ namespace Hector
           }
           in_file_lastline_ = in_file_.tellg();
         } catch ( std::regex_error& e ) {
-          throw Exception( __PRETTY_FUNCTION__, Form( "Error while parsing elements fields!\n\t%s", e.what() ), Fatal );
+          throw Exception( __PRETTY_FUNCTION__,
+            Form( "Error at line %d while parsing elements fields!\n\t%s",
+                  in_file_.tellg(), e.what() ), Fatal );
         }
       }
 
@@ -232,7 +238,9 @@ namespace Hector
           }
           elements_fields_.add( list_names.at( i ), type );
         } catch ( std::regex_error& e ) {
-          throw Exception( __PRETTY_FUNCTION__, Form( "Error while performing the matching name-data!\n\t%s", e.what() ), Fatal );
+          throw Exception( __PRETTY_FUNCTION__,
+            Form( "Error while performing the matching name-data!\n\t%s",
+                  e.what() ), Fatal );
         }
       }
     }
@@ -256,8 +264,9 @@ namespace Hector
         if ( values.size() != elements_fields_.size() )
           throw Exception( __PRETTY_FUNCTION__,
             Form( "MAD-X output seems corrupted!\n\t"
-                  "Element %s has %d fields when %d are expected.",
-                  trim( values.at( 0 ) ).c_str(), values.size(), elements_fields_.size() ), Fatal );
+                  "Element %s at line %d has %d fields when %d are expected.",
+                  trim( values.at( 0 ) ).c_str(), in_file_.tellg(),
+                  values.size(), elements_fields_.size() ), Fatal );
         try {
           auto elem = parseElement( values );
           if ( !elem || elem->name() != ip_name_ ) continue;
@@ -266,7 +275,9 @@ namespace Hector
           break;
         } catch ( Exception& e ) {
           e.dump();
-          throw Exception( __PRETTY_FUNCTION__, Form( "Failed to retrieve the interaction point with name=\"%s\"", ip_name_.c_str() ), Fatal );
+          throw Exception( __PRETTY_FUNCTION__,
+            Form( "Failed to retrieve the interaction point with name=\"%s\"",
+                  ip_name_.c_str() ), Fatal );
         }
       }
     }
@@ -280,7 +291,9 @@ namespace Hector
       std::string line;
 
       if ( !interaction_point_ )
-        throw Exception( __PRETTY_FUNCTION__, Form( "Interaction point \"%s\" has not been found in the beamline!", ip_name_.c_str() ), Fatal );
+        throw Exception( __PRETTY_FUNCTION__,
+          Form( "Interaction point \"%s\" has not been found in the beamline!",
+                ip_name_.c_str() ), Fatal );
 
       in_file_.seekg( in_file_lastline_ );
 
@@ -369,16 +382,28 @@ namespace Hector
           } break;
           case Element::aRectangularDipole: {
             const float k0l = elem_map_floats.get( "k0l" );
-            if ( length <= 0. ) throw Exception( __PRETTY_FUNCTION__, Form( "Trying to add a rectangular dipole with invalid length (l=%.2e m)", length ), JustWarning );
-            if ( k0l == 0. ) throw Exception( __PRETTY_FUNCTION__, Form( "Trying to add a rectangular dipole (%s) with k0l=%.2e", name.c_str(), k0l ), JustWarning );
+            if ( length <= 0. )
+              throw Exception( __PRETTY_FUNCTION__,
+                Form( "Trying to add a rectangular dipole with invalid length (l=%.2e m)", length ),
+                JustWarning );
+            if ( k0l == 0. )
+              throw Exception( __PRETTY_FUNCTION__,
+                Form( "Trying to add a rectangular dipole (%s) with k0l=%.2e", name.c_str(), k0l ),
+                JustWarning );
 
             const float mag_strength = dir_*k0l/length;
             elem.reset( new Element::RectangularDipole( name, s, length, mag_strength ) );
           } break;
           case Element::aSectorDipole: {
             const float k0l = elem_map_floats.get( "k0l" );
-            if ( length <= 0. ) throw Exception( __PRETTY_FUNCTION__, Form( "Trying to add a sector dipole with invalid length (l=%.2e m)", length ), JustWarning );
-            if ( k0l == 0. ) throw Exception( __PRETTY_FUNCTION__, Form( "Trying to add a sector dipole (%s) with k0l=%.2e", name.c_str(), k0l ), JustWarning );
+            if ( length <= 0. )
+              throw Exception( __PRETTY_FUNCTION__,
+                Form( "Trying to add a sector dipole with invalid length (l=%.2e m)", length ),
+                JustWarning );
+            if ( k0l == 0. )
+              throw Exception( __PRETTY_FUNCTION__,
+                Form( "Trying to add a sector dipole (%s) with k0l=%.2e", name.c_str(), k0l ),
+                JustWarning );
 
             const float mag_strength = dir_*k0l/length;
             elem.reset( new Element::SectorDipole( name, s, length, mag_strength ) );
@@ -476,35 +501,35 @@ namespace Hector
     Element::Type
     MADX::findElementTypeByKeyword( std::string keyword )
     {
-      if ( keyword.compare(      "marker" ) == 0 ) return Element::aMarker;
-      if ( keyword.compare(       "drift" ) == 0 ) return Element::aDrift;
-      if ( keyword.compare(     "monitor" ) == 0 ) return Element::aMonitor;
-      if ( keyword.compare(  "quadrupole" ) == 0 ) return Element::aGenericQuadrupole;
-      if ( keyword.compare(   "sextupole" ) == 0 ) return Element::aSextupole;
-      if ( keyword.compare(   "multipole" ) == 0 ) return Element::aMultipole;
-      if ( keyword.compare(       "sbend" ) == 0 ) return Element::aSectorDipole;
-      if ( keyword.compare(       "rbend" ) == 0 ) return Element::aRectangularDipole;
-      if ( keyword.compare(     "hkicker" ) == 0 ) return Element::anHorizontalKicker;
-      if ( keyword.compare(     "vkicker" ) == 0 ) return Element::aVerticalKicker;
-      if ( keyword.compare( "rcollimator" ) == 0 ) return Element::aRectangularCollimator;
-      if ( keyword.compare( "ecollimator" ) == 0 ) return Element::anEllipticalCollimator;
-      if ( keyword.compare( "ccollimator" ) == 0 ) return Element::aCircularCollimator;
-      if ( keyword.compare( "placeholder" ) == 0 ) return Element::aPlaceholder;
-      if ( keyword.compare(  "instrument" ) == 0 ) return Element::anInstrument;
-      if ( keyword.compare(    "solenoid" ) == 0 ) return Element::aSolenoid;
+      if ( keyword ==      "marker" ) return Element::aMarker;
+      if ( keyword ==       "drift" ) return Element::aDrift;
+      if ( keyword ==     "monitor" ) return Element::aMonitor;
+      if ( keyword ==  "quadrupole" ) return Element::aGenericQuadrupole;
+      if ( keyword ==   "sextupole" ) return Element::aSextupole;
+      if ( keyword ==   "multipole" ) return Element::aMultipole;
+      if ( keyword ==       "sbend" ) return Element::aSectorDipole;
+      if ( keyword ==       "rbend" ) return Element::aRectangularDipole;
+      if ( keyword ==     "hkicker" ) return Element::anHorizontalKicker;
+      if ( keyword ==     "vkicker" ) return Element::aVerticalKicker;
+      if ( keyword == "rcollimator" ) return Element::aRectangularCollimator;
+      if ( keyword == "ecollimator" ) return Element::anEllipticalCollimator;
+      if ( keyword == "ccollimator" ) return Element::aCircularCollimator;
+      if ( keyword == "placeholder" ) return Element::aPlaceholder;
+      if ( keyword ==  "instrument" ) return Element::anInstrument;
+      if ( keyword ==    "solenoid" ) return Element::aSolenoid;
       return Element::anInvalidElement;
     }
 
     Aperture::Type
     MADX::findApertureTypeByApertype( std::string apertype )
     {
-      if ( apertype.compare(        "none" ) == 0 ) return Aperture::anInvalidAperture;
-      if ( apertype.compare(   "rectangle" ) == 0 ) return Aperture::aRectangularAperture;
-      if ( apertype.compare(     "ellipse" ) == 0 ) return Aperture::anEllipticAperture;
-      if ( apertype.compare(      "circle" ) == 0 ) return Aperture::aCircularAperture;
-      if ( apertype.compare( "rectellipse" ) == 0 ) return Aperture::aRectEllipticAperture;
-      if ( apertype.compare(   "racetrack" ) == 0 ) return Aperture::aRaceTrackAperture;
-      if ( apertype.compare(     "octagon" ) == 0 ) return Aperture::anOctagonalAperture;
+      if ( apertype ==        "none" ) return Aperture::anInvalidAperture;
+      if ( apertype ==   "rectangle" ) return Aperture::aRectangularAperture;
+      if ( apertype ==     "ellipse" ) return Aperture::anEllipticAperture;
+      if ( apertype ==      "circle" ) return Aperture::aCircularAperture;
+      if ( apertype == "rectellipse" ) return Aperture::aRectEllipticAperture;
+      if ( apertype ==   "racetrack" ) return Aperture::aRaceTrackAperture;
+      if ( apertype ==     "octagon" ) return Aperture::anOctagonalAperture;
       return Aperture::anInvalidAperture;
     }
 

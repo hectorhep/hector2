@@ -26,13 +26,12 @@ drawBothGraphs( const char* name, const char* title, const char* axes, TGraph* g
   mg.SetTitle( axes );
   mg.GetXaxis()->SetRangeUser( -max_s, max_s );
 
-  for ( unsigned short i = 0; i < labels.size(); ++i ) {
-    //cout << labels[i] << endl;
-    auto lab = dynamic_cast<TLatex*>( labels[i]->Clone() );
-    //lab->SetY( mg.GetHistogram()->GetMaximum()/2. );
-    lab->SetTextAlign( ( i%2 ) ? 32 : 12 );
-    lab->SetY( ( ( i%2 ) ? -1 : 1 ) * mg.GetHistogram()->GetMaximum()/30. );
-    lab->Draw( "same" );
+  unsigned short i = 0;
+  for ( auto& lab : labels ) {
+    lab->SetY( mg.GetHistogram()->GetMaximum()/2. );
+    lab->SetTextAngle( ( i%2 ) ? 75 : -75 );
+    lab->DrawClone( "same" );
+    ++i;
   }
   rp_region->SetY1( mg.GetHistogram()->GetMinimum() );
   rp_region->SetY2( mg.GetHistogram()->GetMaximum() );
@@ -69,27 +68,28 @@ main( int argc, char* argv[] )
          gr_relx, gr_rely;
 
   regex rgx_cmspipe( "CMSPIPE[0-9]{1,2}\\.[L,R][0-9]" ),
-             rgx_rp( "XRP[V,H]\\.[A-Za-z][0-9][A-Za-z][0-9]\\.B[1,2]" );
+        rgx_rp( "XRP[V,H]\\.[A-Za-z][0-9][A-Za-z][0-9]\\.B[1,2]" );
 
   TLatex txt;
   txt.SetTextFont( 130+2 );
-  txt.SetTextAngle( 90 );
-  txt.SetTextSize( 0.015 );
-  txt.SetTextAlign( 12 );
+  txt.SetTextAngle( 60 );
+  txt.SetTextSize( 0.012 );
+  txt.SetTextAlign( 11 );
 
   vector<TLatex*> labels;
 
   float min_rp = 999., max_rp = 0.;
 
   for ( const auto& elemPtr : *beamline ) {
-    if ( elemPtr->type() == Hector::Element::aDrift ) continue;
-    //cout << elemPtr << "::" << elemPtr->dispersion().x() << endl;
+    //if ( elemPtr->type() == Hector::Element::aDrift ) continue;
+    cout << elemPtr->name() << "::" << elemPtr->dispersion().x() << endl;
     if ( fabs( elemPtr->s() )>max_s && fabs( elemPtr->s()+elemPtr->length() ) > max_s ) continue;
-    if ( elemPtr->type() == Hector::Element::aMarker && !regex_match( elemPtr->name(), rgx_cmspipe ) ) {
+    if ( elemPtr->type() == Hector::Element::aDrift && !regex_match( elemPtr->name(), rgx_cmspipe ) ) {
       //cout << ">>> " << elemPtr->name() << endl;
       labels.push_back( txt.DrawLatex( elemPtr->s(), 100., elemPtr->name().c_str() ) );
     }
-    if ( elemPtr->type() == Hector::Element::aRectangularCollimator && regex_match( elemPtr->name(), rgx_rp ) ) {
+    if ( regex_match( elemPtr->name(), rgx_rp ) ) {
+      labels.push_back( txt.DrawLatex( elemPtr->s(), 100., elemPtr->name().c_str() ) );
       if ( fabs( elemPtr->s() ) < fabs( min_rp ) ) min_rp = elemPtr->s();
       if ( fabs( elemPtr->s()+elemPtr->length() ) > fabs( max_rp ) ) max_rp = elemPtr->s();
     }
@@ -108,7 +108,7 @@ main( int argc, char* argv[] )
   gr_relx.SetTitle( "relative X" );
   gr_rely.SetTitle( "relative Y" );
 
-  TPave* rp_region = new TPave( min_rp, 0., max_rp, 1., 3 );
+  auto rp_region = new TPave( min_rp, 0., max_rp, 1., 3 );
   rp_region->SetFillColorAlpha( kGray, 0.5 );
   rp_region->SetLineColor( kBlack );
 
