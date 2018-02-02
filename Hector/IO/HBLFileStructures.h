@@ -26,7 +26,7 @@ namespace Hector
     {
       /// HBL element default constructor
       HBLElement() :
-        element_type( -1 ), element_name( "\0" ),
+        element_type( -1 ), element_name{ 0 },
         element_s( 0. ), element_length( 0. ),
         element_magnetic_strength( 0. ),
         aperture_type( -1 ),
