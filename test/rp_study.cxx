@@ -1,5 +1,6 @@
 #include "Hector/IO/MADXHandler.h"
 #include "Hector/Core/Exception.h"
+#include "Hector/Core/ParticleStoppedException.h"
 #include "Hector/Beamline/Beamline.h"
 #include "Hector/Propagator/Propagator.h"
 //#include "Hector/Propagator/BeamProducer.h"
@@ -18,13 +19,17 @@ int
 main( int argc, char* argv[] )
 {
   string twiss_file, ip_name;
+  int dir;
+  double max_s;
   Hector::ArgsParser( argc, argv, {
-    { "--twiss-file", "beamline Twiss file", &twiss_file }
+    { "twiss-file", "beamline Twiss file", &twiss_file, 'i' }
   }, {
-    { "--interaction-point", "name of the interaction point", "IP5", &ip_name },
+    { "ip-name", "name of the interaction point", "IP5", &ip_name, 'c' },
+    { "direction", "Twiss file parsing direction", +1, &dir, 'd' },
+    { "max-s", "maximal s-coordinate (m)", 250., &max_s },
   } );
 
-  Hector::IO::MADX parser( twiss_file, ip_name, +1, 250. );
+  Hector::IO::MADX parser( twiss_file, ip_name, dir, max_s );
   parser.printInfo();
   //parser.beamline()->dump();
   //parser.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( -0.097, 0. ) );
@@ -72,7 +77,9 @@ main( int argc, char* argv[] )
     prop.propagate( p, rp->s() );
     pos_rp0 = p.stateVectorAt( rp->s() ).position();
     cout << "pos_0: " << pos_rp0 << endl;
-  } catch ( Hector::Exception& e ) {}
+  }
+  catch ( Hector::ParticleStoppedException& e ) {}
+  catch ( Hector::Exception& e ) {}
 
 
   const vector<double> xi_values = { { 0.01, 0.05, 0.1, 0.15 } };

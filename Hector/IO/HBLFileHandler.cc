@@ -124,29 +124,33 @@ namespace Hector
     HBL::write( const Beamline* bl, const char* filename )
     {
       std::ofstream file( filename, std::ios::binary | std::ios::out );
-      HBLHeader hdr;
-      hdr.magic = magic_number;
-      hdr.version = version;
-      hdr.num_elements = bl->numElements();
-      file.write( reinterpret_cast<char*>( &hdr ), sizeof( HBLHeader ) );
-
-      for ( const auto& elem : *bl ) {
-        HBLElement el;
-        el.element_type = elem->type();
-        std::copy( elem->name().begin(), elem->name().end(), el.element_name );
-        el.element_s = elem->s();
-        el.element_length = elem->length();
-        el.element_magnetic_strength = elem->magneticStrength();
-        if ( elem->aperture() ) {
-          el.aperture_type = elem->aperture()->type();
-          if ( elem->aperture()->parameters().size() > 0 ) el.aperture_p1 = elem->aperture()->p( 0 );
-          if ( elem->aperture()->parameters().size() > 1 ) el.aperture_p2 = elem->aperture()->p( 1 );
-          if ( elem->aperture()->parameters().size() > 2 ) el.aperture_p3 = elem->aperture()->p( 2 );
-          if ( elem->aperture()->parameters().size() > 3 ) el.aperture_p4 = elem->aperture()->p( 3 );
-          el.aperture_x = elem->aperture()->x();
-          el.aperture_y = elem->aperture()->y();
+      { // start by writing the file header
+        HBLHeader hdr;
+        hdr.magic = magic_number;
+        hdr.version = version;
+        hdr.num_elements = bl->numElements();
+        file.write( reinterpret_cast<char*>( &hdr ), sizeof( HBLHeader ) );
+      }
+      { // then add all individual elements
+        for ( const auto& elem : *bl ) {
+          HBLElement el;
+          el.element_type = elem->type();
+          if ( !elem->name().empty() )
+            elem->name().copy( el.element_name, sizeof( el.element_name ) );
+          el.element_s = elem->s();
+          el.element_length = elem->length();
+          el.element_magnetic_strength = elem->magneticStrength();
+          if ( elem->aperture() ) {
+            el.aperture_type = elem->aperture()->type();
+            if ( elem->aperture()->parameters().size() > 0 ) el.aperture_p1 = elem->aperture()->p( 0 );
+            if ( elem->aperture()->parameters().size() > 1 ) el.aperture_p2 = elem->aperture()->p( 1 );
+            if ( elem->aperture()->parameters().size() > 2 ) el.aperture_p3 = elem->aperture()->p( 2 );
+            if ( elem->aperture()->parameters().size() > 3 ) el.aperture_p4 = elem->aperture()->p( 3 );
+            el.aperture_x = elem->aperture()->x();
+            el.aperture_y = elem->aperture()->y();
+          }
+          file.write( reinterpret_cast<char*>( &el ), sizeof( HBLElement ) );
         }
-        file.write( reinterpret_cast<char*>( &el ), sizeof( HBLElement ) );
       }
     }
   }

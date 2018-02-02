@@ -28,7 +28,7 @@ drawBothGraphs( const char* name, const char* title, const char* axes, TGraph* g
 
   for ( unsigned short i = 0; i < labels.size(); ++i ) {
     //cout << labels[i] << endl;
-    TLatex* lab = dynamic_cast<TLatex*>( labels[i]->Clone() );
+    auto lab = dynamic_cast<TLatex*>( labels[i]->Clone() );
     //lab->SetY( mg.GetHistogram()->GetMaximum()/2. );
     lab->SetTextAlign( ( i%2 ) ? 32 : 12 );
     lab->SetY( ( ( i%2 ) ? -1 : 1 ) * mg.GetHistogram()->GetMaximum()/30. );
@@ -49,16 +49,19 @@ drawBothGraphs( const char* name, const char* title, const char* axes, TGraph* g
 int
 main( int argc, char* argv[] )
 {
-  string twiss_filename;
+  string twiss_filename, ip_name;
   double max_s;
+  int dir;
   Hector::ArgsParser args( argc, argv, {
-    { "--twiss-file", "Twiss file", &twiss_filename }
+    { "twiss-file", "Twiss file", &twiss_filename, 'i' }
   }, {
-    { "--max-s", "maximal s-coordinate (m)", 250., &max_s }
+    { "ip-name", "name of the interaction point", "IP5", &ip_name, 'c' },
+    { "max-s", "maximal s-coordinate (m)", 250., &max_s, 's' },
+    { "direction", "Twiss file parsing direction", +1, &dir, 'd' }
   } );
 
 
-  Hector::IO::MADX madx( twiss_filename, "IP5", +1, max_s );
+  Hector::IO::MADX madx( twiss_filename, ip_name, dir, max_s );
   const Hector::Beamline* beamline = madx.rawBeamline();
 
   TGraph gr_betax, gr_betay,

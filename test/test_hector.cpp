@@ -18,12 +18,12 @@ int main( int argc, char* argv[] )
   double min_s, max_s;
   unsigned int num_part = 100;
   Hector::ArgsParser( argc, argv, {
-    { "--twiss-file", "beamline Twiss file", &twiss_file }
+    { "twiss-file", "beamline Twiss file", &twiss_file, 'i' }
   }, {
-    { "--interaction-point", "name of the interaction point", "IP5", &ip },
-    { "--min-s", "minimum arc length s to parse", 0., &min_s },
-    { "--max-s", "maximum arc length s to parse", 250., &max_s },
-    { "--num-part", "number of particles to shoot", 10, &num_part },
+    { "interaction-point", "name of the interaction point", "IP5", &ip, 'c' },
+    { "min-s", "minimum arc length s to parse (m)", 0., &min_s },
+    { "max-s", "maximum arc length s to parse (m)", 250., &max_s },
+    { "num-part", "number of particles to shoot", 10, &num_part, 'n' },
   } );
 
   Hector::IO::MADX parser( twiss_file.c_str(), ip.c_str(), 1, max_s, min_s );

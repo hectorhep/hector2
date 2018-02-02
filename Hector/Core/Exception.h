@@ -26,15 +26,15 @@ namespace Hector
       /// \param[in] desc Error message
       /// \param[in] type Type of exception encountered
       /// \param[in] id Error code associated to the exception
-      inline Exception( const char* from, const std::string& desc, ExceptionType type = Undefined, int id = 0 ) :
+      inline Exception( const char* from, const std::string& desc, ExceptionType type = Undefined, int id = -1 ) :
         std::runtime_error( desc ), from_( from ), type_( type ), error_num_( id ) {}
       /// Construct an exception from a char* description
-      inline Exception( const char* from, const char* desc, ExceptionType type = Undefined, int id = 0 ) :
+      inline Exception( const char* from, const char* desc, ExceptionType type = Undefined, int id = -1 ) :
         std::runtime_error( desc ), from_( from ), type_( type ), error_num_( id ) {}
 
       /// Destruct the exception (and terminate the program execution if fatal)
       inline ~Exception() {
-        if ( type_ == Fatal ) exit( 0 ); // we stop the execution of this process on fatal exception
+        if ( type_ == Fatal ) exit( error_num_ ); // we stop the execution of this process on fatal exception
       }
 
       /// Method/function that raised the exception

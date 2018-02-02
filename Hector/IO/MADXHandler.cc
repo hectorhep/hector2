@@ -165,7 +165,7 @@ namespace Hector
 
           const std::string key = lowercase( match.str( 1 ) );
           if ( match.str( 2 ) == "le" )
-            header_float_.add( key, atof( match.str( 3 ).c_str() ) );
+            header_float_.add( key, std::stod( match.str( 3 ) ) );
           else
             header_str_.add( key, match.str( 3 ) );
 
@@ -181,11 +181,12 @@ namespace Hector
         std::string time = trim( ( header_str_.hasKey( "time" ) )
           ? header_str_.get( "time" )
           : "00.00.00" );
-        struct std::tm tm;
+        struct std::tm tm = { 0 }; // fixes https://stackoverflow.com/questions/9037631
         //std::istringstream ss( date+" "+time ); ss >> std::get_time( &tm, "%d/%m/%y %H.%M.%S" ); // unfortunately only from gcc 5+...
-        strptime( ( date+" "+time+" CET" ).c_str(), "%d/%m/%y %H.%M.%S %z", &tm ); // Geneva time
-        if ( mktime( &tm ) < 0 ) tm.tm_year += 100; // we assume the Twiss file has been produced after 1970...
-        header_float_.add( "timestamp", float( mktime( &tm ) ) );
+        if ( strptime( ( date+" "+time+" CET" ).c_str(), "%d/%m/%y %H.%M.%S %z", &tm ) == nullptr ) {
+          if ( mktime( &tm ) < 0 ) tm.tm_year += 100; // strong assumption that the Twiss file has been produced after 1970...
+          header_float_.add( "timestamp", float( mktime( &tm ) ) );
+        }
       }
     }
 
@@ -334,7 +335,7 @@ namespace Hector
         const ValueType type = elements_fields_.value( i );
         switch ( type ) {
           case String: elem_map_str.add( key, value ); break;
-          case Float: elem_map_floats.add( key, atof( value.c_str() ) ); break;
+          case Float: elem_map_floats.add( key, std::stod( value ) ); break;
           case Unknown: default: {
             throw Exception( __PRETTY_FUNCTION__,
               Form( "MAD-X predicts an unknown-type optics element parameter:\n\t (%s) for %s",

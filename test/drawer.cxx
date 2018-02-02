@@ -29,19 +29,21 @@ main( int argc, char* argv[] )
   double beam_lateral_width_ip, beam_angular_divergence_ip;
   double scale_x, scale_y;
   unsigned int num_particles;
+  int dir;
 
   Hector::ArgsParser args( argc, argv, {
-    { "--twiss-files", "Twiss file(s)", &twiss_filenames },
+    { "twiss-files", "beamline(s) Twiss file(s)", &twiss_filenames, 'i' },
   }, {
-    { "--num-parts", "number of particles to generate", 1000, &num_particles },
-    { "--ip-name", "name of the interaction point", "IP5", &ip_name },
-    { "--xingangle-x", "crossing angle in the x direction (rad)", 180.e-6, &crossing_angle_x },
-    { "--xingangle-y", "crossing angle in the y direction (rad)", 0., &crossing_angle_y },
-    { "--scale-x", "Horizontal coordinate scaling (m)", 0.1, &scale_x },
-    { "--scale-y", "Vertical coordinate scaling (m)", 0.05, &scale_y },
-    { "--beam-divergence", "Beam angular divergence (rad)", 30.23e-6, &beam_angular_divergence_ip },
-    { "--beam-width", "Beam transverse width (m)", 16.63e-6, &beam_lateral_width_ip },
-    { "--max-s", "maximal s-coordinate (m)", 250., &max_s }
+    { "ip-name", "name of the interaction point", "IP5", &ip_name, 'c' },
+    { "direction", "Twiss file parsing direction", +1, &dir, 'd' },
+    { "max-s", "maximal s-coordinate (m)", 250., &max_s },
+    { "num-parts", "number of particles to generate", 1000, &num_particles, 'n' },
+    { "alpha-x", "crossing angle in the x direction (rad)", 180.e-6, &crossing_angle_x, 'x' },
+    { "alpha-y", "crossing angle in the y direction (rad)", 0., &crossing_angle_y, 'y' },
+    { "scale-x", "Horizontal coordinate scaling (m)", 0.1, &scale_x },
+    { "scale-y", "Vertical coordinate scaling (m)", 0.05, &scale_y },
+    { "beam-divergence", "Beam angular divergence (rad)", 30.23e-6, &beam_angular_divergence_ip, 'r' },
+    { "beam-width", "Beam transverse width (m)", 16.63e-6, &beam_lateral_width_ip, 'w' },
   } );
 
   //--- general plotting parameters
@@ -54,7 +56,7 @@ main( int argc, char* argv[] )
 
   for ( const auto& fn : twiss_filenames ) {
     if ( fn == "" ) continue;
-    const Hector::IO::MADX parser( fn, ip_name, 1, max_s );
+    const Hector::IO::MADX parser( fn, ip_name, dir, max_s );
     auto bl = new Hector::Beamline( *parser.beamline() );
     propagators.emplace_back( bl );
 
