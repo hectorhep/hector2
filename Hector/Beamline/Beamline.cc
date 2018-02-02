@@ -167,7 +167,7 @@ namespace Hector
   }
 
   Matrix
-  Beamline::matrix( float eloss, float mp, int qp )
+  Beamline::matrix( float eloss, float mp, int qp ) const
   {
     Matrix out = DiagonalMatrix( 6, 1 );
 

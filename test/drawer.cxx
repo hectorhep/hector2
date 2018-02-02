@@ -20,6 +20,9 @@
 
 using namespace std;
 
+//TGraphErrors mean_trajectory( const TMultiGraph* );
+TGraphErrors mean_trajectory( const vector<TGraph>& );
+
 int
 main( int argc, char* argv[] )
 {
@@ -27,6 +30,7 @@ main( int argc, char* argv[] )
   string ip_name;
   double crossing_angle_x, crossing_angle_y, max_s;
   double beam_lateral_width_ip, beam_angular_divergence_ip;
+  double xi;
   double scale_x, scale_y;
   unsigned int num_particles;
   int dir;
@@ -38,6 +42,7 @@ main( int argc, char* argv[] )
     { "direction", "Twiss file parsing direction", +1, &dir, 'd' },
     { "max-s", "maximal s-coordinate (m)", 250., &max_s },
     { "num-parts", "number of particles to generate", 1000, &num_particles, 'n' },
+    { "xi", "particles momentum loss", 0.1, &xi },
     { "alpha-x", "crossing angle in the x direction (rad)", 180.e-6, &crossing_angle_x, 'x' },
     { "alpha-y", "crossing angle in the y direction (rad)", 0., &crossing_angle_y, 'y' },
     { "scale-x", "Horizontal coordinate scaling (m)", 0.1, &scale_x },
@@ -46,10 +51,11 @@ main( int argc, char* argv[] )
     { "beam-width", "Beam transverse width (m)", 16.63e-6, &beam_lateral_width_ip, 'w' },
   } );
 
-  //--- general plotting parameters
+  //--- general propagation parameters
   //Hector::Parameters::get()->setUseRelativeEnergy( true ); //FIXME
   //Hector::Parameters::get()->setComputeApertureAcceptance( false ); //FIXME
   //Hector::Parameters::get()->setEnableKickers( false ); //FIXME
+  Hector::Parameters::get()->setEnableDipoles( false ); //FIXME
 
   //--- define the propagator objects
   vector<Hector::Propagator> propagators;
@@ -61,13 +67,13 @@ main( int argc, char* argv[] )
     propagators.emplace_back( bl );
 
     //--- look at the beamline(s)
-    //bl->dump();
+    bl->dump();
     auto rps = bl->find( "XRPH\\." );
     cout << "---> beamline " << fn << " has " << rps.size() << " roman pots!" << endl;
     for ( const auto& rp : rps )
       cout << " >> Roman pot " << rp->name() << " at s=" << rp->s() << " m" << endl;
   }
-  vector<TMultiGraph*> mg_x( propagators.size(), new TMultiGraph() ), mg_y( propagators.size(), new TMultiGraph() );
+  vector<TGraph> mg_x[2], mg_y[2];
 
   //parser_beam1.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( -0.097, 0. ) );
   //parser_beam2.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( +0.097, 0. ) );
@@ -79,7 +85,6 @@ main( int argc, char* argv[] )
   Hector::BeamProducer::GaussianParticleGun gun;
   gun.smearX( 0., beam_lateral_width_ip );
   gun.smearY( 0., beam_lateral_width_ip );
-  //gun.smearTx( crossing_angle_x, beam_angular_divergence_ip );
   gun.smearTy( crossing_angle_y, beam_angular_divergence_ip );
   //Hector::BeamProducer::TYscanner gun( num_particles, Hector::Parameters::get()->beamEnergy(), -1, 1, max_s );
 
@@ -87,10 +92,16 @@ main( int argc, char* argv[] )
   TH1D h_timing( "timing", "Propagation time\\Event\\ms?.2f", 100, 0., 10. );
 
   for ( size_t i = 0; i < num_particles; ++i ) {
+    if ( num_particles > 100 && i % ( num_particles / 10 ) == 0 )
+      cout << "> event " << i << " / " << num_particles << endl;
+
     unsigned short j = 0;
     for ( const auto& prop : propagators ) {
       gun.smearTx( ( j == 0 ? -1 : +1 )*crossing_angle_x, beam_angular_divergence_ip );
       Hector::Particle p = gun.shoot();
+      p.firstStateVector().setXi( xi );
+//      p.firstStateVector().setKick( 0. );
+//      cout << p.firstStateVector().kick() << endl;
       //----- beamline propagation
       TGraph gr_x, gr_y; // 1 graph for each trajectory
       try {
@@ -99,18 +110,12 @@ main( int argc, char* argv[] )
         const float prop_time = tmr.elapsed()*1.e6;
         h_timing.Fill( prop_time*1.e-3 ); // in ms
       } catch ( Hector::ParticleStoppedException& e ) { }
-      unsigned short k = 0;
       for ( const auto& pos : p ) {
-        gr_x.SetPoint( k, pos.first, pos.second.position().x() );
-        gr_y.SetPoint( k, pos.first, pos.second.position().y() );
-        k++;
+        gr_x.SetPoint( gr_x.GetN(), pos.first, pos.second.position().x() );
+        gr_y.SetPoint( gr_y.GetN(), pos.first, pos.second.position().y() );
       }
-      gr_x.SetLineColor( ( j == 0 ) ? kBlack : kRed );
-      gr_y.SetLineColor( ( j == 0 ) ? kBlack : kRed );
-      gr_x.SetLineStyle( ( j == 0 ) ? 1 : 2 );
-      gr_y.SetLineStyle( ( j == 0 ) ? 1 : 2 );
-      mg_x[j]->Add( dynamic_cast<TGraph*>( gr_x.Clone() ) );
-      mg_y[j]->Add( dynamic_cast<TGraph*>( gr_y.Clone() ) );
+      mg_x[j].emplace_back( gr_x );
+      mg_y[j].emplace_back( gr_y );
       ++j;
     }
   }
@@ -119,52 +124,63 @@ main( int argc, char* argv[] )
 
   {
     Hector::Canvas c( "beamline", Form( "E_{p} = %.1f TeV, #alpha_{X} = %.1f #murad", Hector::Parameters::get()->beamEnergy()*CLHEP::GeV/CLHEP::TeV, crossing_angle_x*1.e6 ), true );
+    c.SetWindowSize( 800, 800 );
     //c.SetGrayscale();
 
     const bool draw_apertures = true;
 
     c.cd( 1 ); // x-axis
-    if ( mg_x.size() > 0 ) {
-      auto& first = mg_x[0];
-      first->SetTitle( ".\\x (m)" );
-      first->Draw( "a" );
-      first->GetXaxis()->SetLimits( 0., max_s );
-      first->GetYaxis()->SetRangeUser( -scale_x, scale_x );
-      c.Prettify( first->GetHistogram() );
+    if ( propagators.size() > 0 ) {
+      auto mg = new TMultiGraph;
+      for ( unsigned short j = 0; j < propagators.size(); ++j ) {
+        TGraphErrors g_mean = mean_trajectory( mg_x[j] );
+        g_mean.SetLineColor( ( j == 0 ) ? kBlack : kRed );
+        g_mean.SetFillColorAlpha( ( j == 0 ) ? kBlack : kRed, 0.5 );
+        mg->Add( (TGraph*)g_mean.Clone() );
+      }
+      mg->Draw( "a2" );
+      mg->SetTitle( ".\\x (m)" );
+      mg->GetXaxis()->SetLimits( 0., max_s );
+      mg->GetYaxis()->SetRangeUser( -scale_x, scale_x );
+      c.Prettify( mg->GetHistogram() );
 
-      unsigned short i = 0;
-      for ( const auto& prop : propagators )
-        drawBeamline( 'x', prop.beamline(), i++, "IP5", scale_x, 0., max_s, draw_apertures );
-      for ( auto& mg : mg_x ) mg->Draw( "l" );
+      for ( unsigned short i = 0; i < propagators.size(); ++i )
+        drawBeamline( 'x', propagators[i].beamline(), i, ip_name.c_str(), scale_x, 0., max_s, draw_apertures );
 
-      first->GetXaxis()->SetLabelSize( 0.055 );
-      first->GetYaxis()->SetLabelSize( 0.055 );
-      first->GetYaxis()->SetTitleSize( 0.1 );
-      first->GetYaxis()->SetTitleOffset( 0.65 );
-      first->GetXaxis()->SetTitle( "" );
+      mg->Draw( "l3" );
+      mg->GetXaxis()->SetLabelSize( 0.055 );
+      mg->GetYaxis()->SetLabelSize( 0.055 );
+      mg->GetYaxis()->SetTitleSize( 0.1 );
+      mg->GetYaxis()->SetTitleOffset( 0.65 );
+      mg->GetXaxis()->SetTitle( "" );
     }
     c.GetPad( 1 )->SetGrid( 1, 1 );
 
     c.cd( 2 ); // y-axis
-    if ( mg_y.size() > 0 ) {
-      auto& first = *mg_y.begin();
-      first->SetTitle( "s (m)\\y (m)" );
-      first->Draw( "a" );
-      first->GetXaxis()->SetLimits( 0., max_s );
-      first->GetYaxis()->SetRangeUser( -scale_y, scale_y );
-      c.Prettify( first->GetHistogram() );
+    if ( propagators.size() > 0 ) {
+      auto mg = new TMultiGraph;
+      for ( unsigned short j = 0; j < propagators.size(); ++j ) {
+        TGraphErrors g_mean = mean_trajectory( mg_y[j] );
+        g_mean.SetLineColor( ( j == 0 ) ? kBlack : kRed );
+        g_mean.SetFillColorAlpha( ( j == 0 ) ? kBlack : kRed, 0.5 );
+        mg->Add( (TGraph*)g_mean.Clone() );
+      }
+      mg->Draw( "a2" );
+      mg->SetTitle( "s (m)\\y (m)" );
+      mg->GetXaxis()->SetLimits( 0., max_s );
+      mg->GetYaxis()->SetRangeUser( -scale_y, scale_y );
+      c.Prettify( mg->GetHistogram() );
 
-      unsigned short i = 0;
-      for ( const auto& prop : propagators )
-        drawBeamline( 'y', prop.beamline(), i++, "IP5", scale_y, 0., max_s, draw_apertures );
-      for ( auto& mg : mg_y ) mg->Draw( "l" );
+      for ( unsigned short i = 0; i < propagators.size(); ++i )
+        drawBeamline( 'y', propagators[i].beamline(), i, ip_name.c_str(), scale_y, 0., max_s, draw_apertures );
 
-      first->GetXaxis()->SetLabelSize( 0.055 );
-      first->GetYaxis()->SetLabelSize( 0.055 );
-      first->GetXaxis()->SetTitleSize( 0.1 );
-      first->GetXaxis()->SetTitleOffset( 0.7 );
-      first->GetYaxis()->SetTitleSize( 0.1 );
-      first->GetYaxis()->SetTitleOffset( 0.65 );
+      mg->Draw( "l3" );
+      mg->GetXaxis()->SetLabelSize( 0.055 );
+      mg->GetYaxis()->SetLabelSize( 0.055 );
+      mg->GetXaxis()->SetTitleSize( 0.1 );
+      mg->GetXaxis()->SetTitleOffset( 0.7 );
+      mg->GetYaxis()->SetTitleSize( 0.1 );
+      mg->GetYaxis()->SetTitleOffset( 0.65 );
     }
     c.GetPad( 2 )->SetGrid( 1, 1 );
     //c.SetMargin( 5., 5., 5., 5. );
@@ -178,7 +194,7 @@ main( int argc, char* argv[] )
          << Form( "%s", fn.substr( fn.find_last_of( "/\\" )+1 ).c_str() );
       ++i;
     }
-    const char* label = Form( "#scale[0.3]{%s}", os.str().c_str() );
+    const char* label = Form( "#scale[0.33]{%s}", os.str().c_str() );
     auto pt = new Hector::Canvas::PaveText( 0.0, 0.0, 0.15, 0.01, label );
     pt->SetTextAlign( kHAlignLeft+kVAlignBottom );
     pt->Draw();
@@ -204,3 +220,32 @@ main( int argc, char* argv[] )
 
   return 0;
 }
+
+TGraphErrors
+//mean_trajectory( const TMultiGraph* amg )
+mean_trajectory( const vector<TGraph>& amg )
+{
+  map<double,double> mean_val; map<double,unsigned int> num_vals;
+  // first loop to extract the mean and number of points
+  for ( const auto& gr : amg )
+    for ( int i = 0; i < gr.GetN(); ++i ) { double x, y; gr.GetPoint( i, x, y ); mean_val[x] += y; num_vals[x]++; }
+
+  for ( auto& v : mean_val ) v.second /= num_vals[v.first]; // extract the mean
+
+  // second loop to extract the variance
+  map<double,double> err_val;
+
+  for ( const auto& gr : amg )
+    for ( int i = 0; i < gr.GetN(); ++i ) { double x, y; gr.GetPoint( i, x, y ); err_val[x] += pow( y-mean_val[x], 2 ); }
+
+  for ( auto& v : err_val ) v.second = sqrt( v.second )/num_vals[v.first];
+  assert( err_val.size() == mean_val.size() );
+
+  //for ( const auto& v : num_vals ) cout << v.first << "|" << v.second << "|" << mean_val[v.first] << endl;
+  TGraphErrors out;
+  unsigned short i;
+  i = 0; for ( const auto& v : mean_val ) { out.SetPoint( i, v.first, v.second ); i++; }
+  i = 0; for ( const auto& v : err_val ) { out.SetPointError( i, 0., v.second ); i++; }
+  return out;
+}
+

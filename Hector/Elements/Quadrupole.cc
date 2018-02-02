@@ -8,11 +8,12 @@ namespace Hector
     Matrix
     HorizontalQuadrupole::matrix( float eloss, float mp, int qp ) const
     {
-      const float ke = fabs( fieldStrength( eloss, mp, qp ) );
-      if ( ke == 0. ) return Drift::genericMatrix( length_ ); // simple drift matrix
+      const float ke = fabs( fieldStrength( eloss, mp, qp ) ); // should be negative
+      if ( ke == 0. ) // simple drift matrix
+        return Drift::genericMatrix( length_ );
 
       const double sq_k = sqrt( ke ), inv_sq_k = 1./sq_k,
-                   omega = sqrt( fabs( ke ) )*length_,
+                   omega = sq_k*length_,
                    s_omega = sin( omega ), c_omega = cos( omega ),
                    sh_omega = sinh( omega ), ch_omega = cosh( omega );
 
@@ -34,10 +35,11 @@ namespace Hector
     VerticalQuadrupole::matrix( float eloss, float mp, int qp ) const
     {
       const float ke = fieldStrength( eloss, mp, qp );
-      if ( ke == 0. ) return Drift::genericMatrix( length_ ); // simple drift matrix
+      if ( ke == 0. ) // simple drift matrix
+        return Drift::genericMatrix( length_ );
 
       const double sq_k = sqrt( ke ), inv_sq_k = 1./sq_k,
-                   omega = sqrt( fabs( ke ) )*length_,
+                   omega = sq_k*length_,
                    s_omega = sin( omega ), c_omega = cos( omega ),
                    sh_omega = sinh( omega ), ch_omega = cosh( omega );
 

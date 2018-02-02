@@ -14,7 +14,7 @@ namespace Hector
   class Parameters
   {
     public:
-      static std::shared_ptr<Parameters> get() { return std::shared_ptr<Parameters>( new Parameters ); }
+      static std::shared_ptr<Parameters> get();
       Parameters();
 
       /// Energy of the primary particles in the beam (in GeV)

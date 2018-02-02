@@ -70,7 +70,7 @@ drawBeamline( const char axis, const Hector::Beamline* bl, const unsigned short 
   for ( const auto& elemPtr : *bl ) {
     if ( elemPtr->type() == Hector::Element::aDrift ) continue; //FIXME
     if ( min_s != -999. && elemPtr->s() < min_s ) continue;
-    if ( max_s != +999. && elemPtr->s() > max_s ) continue;
+    if ( max_s != +999. && elemPtr->s() > max_s ) break;
     //if ( elemPtr->type() == Hector::Element::ElementBase::Marker && elemPtr->name() != ip ) continue;
 
     // introduce a x- and y-offset for drawing purposes
@@ -82,7 +82,7 @@ drawBeamline( const char axis, const Hector::Beamline* bl, const unsigned short 
     const float pos_rel = ( axis=='x' ) ? elemPtr->x() : elemPtr->y(),
                 pos_x_ini = elemPtr->s(),
                 pos_x_end = pos_x_ini + elemPtr->length(),
-                pos_y_low = ( ( beam == 0 ) ? -1 : 0 ) * ( size_y ) + pos_rel*scale_y /*+ offset*size_y*/,
+                pos_y_low = ( ( beam == 0 ) ? -1 : 0 ) * size_y + pos_rel*scale_y /*+ offset*size_y*/,
                 pos_y_high = pos_y_low+size_y;
     if ( draw_apertures ) {
       const auto& aper = elemPtr->aperture();

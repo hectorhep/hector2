@@ -37,11 +37,15 @@ namespace Hector
       const auto skey = find( args_.begin(), args_.end(), "-"+std::string( 1, par.sname ) );
       if ( key == args_.end() && skey == args_.end() ) {
         print_help();
-        throw Exception( __PRETTY_FUNCTION__, Form( "The following parameter was not set: %s", par.name.c_str() ), Fatal, 64 );
+        throw Exception( __PRETTY_FUNCTION__,
+                         Form( "The following parameter was not set: %s", par.name.c_str() ),
+                         Fatal, 64 );
       }
       const auto value = ( key != args_.end() ) ? key + 1 : skey + 1;
       if ( value == args_.end() )
-        throw Exception( __PRETTY_FUNCTION__, Form( "Invalid value for parameter: %s", par.name.c_str() ), Fatal, 64 );
+        throw Exception( __PRETTY_FUNCTION__,
+                         Form( "Invalid value for parameter: %s", par.name.c_str() ),
+                         Fatal, 64 );
 
       par.value = *value;
       if ( par.str_variable ) *par.str_variable = *value;
@@ -51,18 +55,20 @@ namespace Hector
       if ( par.vec_str_variable ) {
         std::istringstream iss( par.value ); std::string token;
         std::vector<std::string> vec_var;
-        while ( std::getline( iss, token, ',' ) ) vec_var.emplace_back( token );
+        while ( std::getline( iss, token, ',' ) )
+          vec_var.emplace_back( token );
         *par.vec_str_variable = vec_var;
       }
     }
     for ( auto& par : optional_params_ ) {
       const auto key = find( args_.begin(), args_.end(), "--"+par.name );
       const auto skey = find( args_.begin(), args_.end(), "-"+std::string( 1, par.sname ) );
-      if ( key != args_.end() ) { // Parameter set
+      if ( key != args_.end() || skey != args_.end() ) { // Parameter set
         const auto value = ( key != args_.end() ) ? key + 1 : skey + 1;
-        if ( value == args_.end() ) {
-          throw Exception( __PRETTY_FUNCTION__, Form( "Invalid value for parameter: %s", par.name.c_str() ), Fatal );
-        }
+        if ( value == args_.end() )
+          throw Exception( __PRETTY_FUNCTION__,
+                           Form( "Invalid value for parameter: %s", par.name.c_str() ),
+                           Fatal );
         par.value = *value;
       }
       if ( par.str_variable ) *par.str_variable = par.value;
@@ -72,7 +78,8 @@ namespace Hector
       if ( par.vec_str_variable ) {
         std::istringstream iss( par.value ); std::string token;
         std::vector<std::string> vec_var;
-        while ( std::getline( iss, token, ',' ) ) vec_var.emplace_back( token );
+        while ( std::getline( iss, token, ',' ) )
+          vec_var.emplace_back( token );
         *par.vec_str_variable = vec_var;
       }
     }
@@ -91,7 +98,9 @@ namespace Hector
       if ( par.sname != '\0' && "-"+std::string( 1, par.sname ) == name )
         return par.value;
     }
-    throw Exception( __PRETTY_FUNCTION__, Form( "The parameter \"%s\" was not declared in the arguments parser constructor!", name.c_str() ), Fatal );
+    throw Exception( __PRETTY_FUNCTION__,
+                     Form( "The parameter \"%s\" was not declared in the arguments parser constructor!", name.c_str() ),
+                     Fatal );
   }
 
   void
@@ -128,9 +137,9 @@ namespace Hector
     std::cout << oss.str(); 
   }
 
-  ArgsParser::Parameter::Parameter( std::string name, std::string description, std::string value, std::string* var, char sname ) :
+  ArgsParser::Parameter::Parameter( std::string name, std::string description, std::string default_value, std::string* var, char sname ) :
     name( name ), sname( sname ), description( description ),
-    value( value ),
+    value( default_value ),
     str_variable( var ), float_variable( nullptr ),
     int_variable( nullptr ), uint_variable( nullptr ),
     vec_str_variable( nullptr )

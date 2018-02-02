@@ -76,7 +76,7 @@ namespace Hector
   StateVector::setMomentum( const LorentzVector& mom )
   {
     setAngles( mom.px()/mom.pz(), mom.py()/mom.pz() );
-    ( *this )[E] = mom.e();
+    setEnergy( mom.e() );
     m_ = mom.m();
   }
 

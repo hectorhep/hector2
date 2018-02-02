@@ -96,7 +96,7 @@ namespace Hector
       void tiltElementsAfter( float s, const TwoVector& offset );
 
       /// Total propagation matrix of all combined beamline elements
-      Matrix matrix( float eloss, float mp = Parameters::get()->beamParticlesMass(), int qp = Parameters::get()->beamParticlesCharge() );
+      Matrix matrix( float eloss, float mp = Parameters::get()->beamParticlesMass(), int qp = Parameters::get()->beamParticlesCharge() ) const;
 
     private:
       /// Copy the list of elements from one beamline to this one

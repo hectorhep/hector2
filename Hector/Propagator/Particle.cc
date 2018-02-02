@@ -17,6 +17,11 @@ namespace Hector
     addPosition( s0, sv0 );
   }
 
+  Particle::Particle( const LorentzVector& mom, int charge, int pdgid ) :
+    charge_( charge ), pdgId_( pdgid ), stopped_( false )
+  {
+    addPosition( 0., StateVector( mom ) );
+  }
 
   Particle::~Particle()
   {}

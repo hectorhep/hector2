@@ -14,8 +14,8 @@ namespace Hector
   {
     public:
       /// Construct the object for a given beamline
-      Propagator( const Beamline* );
-      ~Propagator();
+      Propagator( const Beamline* bl ) : beamline_( bl ) {}
+      ~Propagator() {}
 
       const Beamline* beamline() const { return beamline_; }
 
