@@ -90,14 +90,9 @@ namespace
   py::dict madx_parser_header( Hector::IO::MADX& parser ) {
     py::dict out = to_python_dict_c<std::string,std::string>( parser.headerStrings() );
     out.update( to_python_dict_c<std::string,float>( parser.headerFloats() ) );
-    if ( out.has_key( "date" ) ) {
-      std::string date = py::extract<std::string>( out.get( "date" ) );
-      std::string time = ( out.has_key( "time" ) ) ? py::extract<std::string>( out.get( "time" ) ) : std::string( "00.00.00" );
-      struct std::tm tm;
-      /*std::istringstream ss( date+" "+time );
-      ss >> std::get_time( &tm, "%d/%m/%y %H.%M.%S" );*/ // unfortunately only from gcc 5+...
-      strptime( ( date+" "+time ).c_str(), "%d/%m/%y %H.%M.%S", &tm );
-      if ( mktime( &tm ) < 0 ) tm.tm_year += 100; // we assume the Twiss file has been produced after 1970...
+    if ( out.has_key( "timestamp" ) ) {
+      time_t dt = static_cast<long>( py::extract<float>( out.get( "timestamp" ) ) );
+      std::tm tm = *localtime( &dt );
       PyDateTime_IMPORT;
       out["production_date"] = py::handle<>( PyDateTime_FromDateAndTime( tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec, 0. ) );
     }

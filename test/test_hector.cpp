@@ -28,19 +28,19 @@ int main( int argc, char* argv[] )
 
   Hector::IO::MADX parser( twiss_file.c_str(), ip.c_str(), 1, max_s, min_s );
   parser.printInfo();
-  cout << "+-------------------- + --------------------+-----------------------" << endl;
-  cout << Hector::Form( "|%20s | %-20s %22s", "Name", "Type", "Position along s (m)" ) << endl;
-  cout << "+-------------------- + --------------------+-----------------------" << endl;
+  cout << "+---------------------+--------------------+----------------------" << endl;
+  cout << Hector::Form( "| %-19s | %-18s | %20s|", "Name", "Type", "Position along s (m)" ) << endl;
+  cout << "+---------------------+--------------------+----------------------" << endl;
   for ( const auto& elem : parser.beamline()->elements() ) {
     //if ( elem->type() == Hector::Element::aDrift ) continue;
-    cout << Hector::Form( "|%20s | %-20s [ ", elem->name().c_str(), elem->typeName().c_str() );
+    cout << Hector::Form( "|%20s | %-18s [ ", elem->name().c_str(), ( elem->type() != Hector::Element::aDrift ) ? elem->typeName().c_str() : "" );
     string pos_ini = Hector::Form( "%7s", Hector::Form( "%#0.3f", elem->s() ).c_str() );
     if ( elem->length() > 0. ) cout << Hector::Form( "%.7s → %7s m", pos_ini.c_str(), Hector::Form( "%#0.3f", elem->s()+elem->length() ).c_str() );
     else cout << Hector::Form( "%17s m", pos_ini.c_str() );
     cout << " ]";
     cout << endl;
   }
-  cout << "+-------------------- + --------------------------------------------" << endl;
+  cout << "+---------------------+-------------------------------------------" << endl;
   //parser.beamline()->dump();
 
   cout << "beamline matrix at s = " << max_s << " m: " << parser.beamline()->matrix( 100., Hector::Parameters::get()->beamParticlesMass(), +1 ) << endl;

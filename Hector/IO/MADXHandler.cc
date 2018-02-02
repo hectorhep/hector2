@@ -15,6 +15,8 @@
 #include "Hector/Elements/RectangularAperture.h"
 #include "Hector/Elements/RectEllipticAperture.h"
 
+#include <time.h>
+
 namespace Hector
 {
 /*  namespace ParametersMap
@@ -101,7 +103,14 @@ namespace Hector
       os << "MAD-X output successfully parsed. Metadata:";
       if ( header_str_.hasKey( "title" ) ) os << "\n\t Title: " << header_str_.get( "title" );
       if ( header_str_.hasKey( "origin" ) ) os << "\n\t Origin: " << trim( header_str_.get( "origin" ) );
-      if ( header_str_.hasKey( "date" ) or header_str_.hasKey( "time" ) ) os << "\n\t Export date: " << trim( header_str_.get( "date" ) ) << " @ " << trim( header_str_.get( "time" ) );
+      if ( header_float_.hasKey( "timestamp" ) ) {
+        // C implementation for pre-gcc5 compilers
+        time_t time = (long)header_float_.get( "timestamp" );
+        char time_chr[100]; strftime( time_chr, sizeof( time_chr ), "%c", std::localtime( &time ) );
+        os << "\n\t Export date: " << time_chr;
+      }
+      else if ( header_str_.hasKey( "date" ) || header_str_.hasKey( "time" ) )
+        os << "\n\t Export date: " << trim( header_str_.get( "date" ) ) << " @ " << trim( header_str_.get( "time" ) );
       if ( header_float_.hasKey( "energy" ) ) os << "\n\t Simulated single beam energy: " << header_float_.get( "energy" ) << " GeV";
       if ( header_str_.hasKey( "sequence" ) ) os << "\n\t Sequence: " << header_str_.get( "sequence" );
       if ( header_str_.hasKey( "particle" ) ) os << "\n\t Beam particles: " << header_str_.get( "particle" );
@@ -152,7 +161,7 @@ namespace Hector
 
         try {
           std::smatch match;
-          if ( !std::regex_search( line, match, rgx_hdr_ ) ) return;
+          if ( !std::regex_search( line, match, rgx_hdr_ ) ) break;
 
           const std::string key = lowercase( match.str( 1 ) );
           if ( match.str( 2 ) == "le" )
@@ -165,6 +174,18 @@ namespace Hector
         } catch ( std::regex_error& e ) {
           throw Exception( __PRETTY_FUNCTION__, Form( "Error while parsing the header!\n\t%s", e.what() ), Fatal );
         }
+      }
+      // parse the Twiss file production timestamp
+      if ( header_str_.hasKey( "date" ) ) {
+        std::string date = trim( header_str_.get( "date" ) );
+        std::string time = trim( ( header_str_.hasKey( "time" ) )
+          ? header_str_.get( "time" )
+          : "00.00.00" );
+        struct std::tm tm;
+        //std::istringstream ss( date+" "+time ); ss >> std::get_time( &tm, "%d/%m/%y %H.%M.%S" ); // unfortunately only from gcc 5+...
+        strptime( ( date+" "+time+" CET" ).c_str(), "%d/%m/%y %H.%M.%S %z", &tm ); // Geneva time
+        if ( mktime( &tm ) < 0 ) tm.tm_year += 100; // we assume the Twiss file has been produced after 1970...
+        header_float_.add( "timestamp", float( mktime( &tm ) ) );
       }
     }
 

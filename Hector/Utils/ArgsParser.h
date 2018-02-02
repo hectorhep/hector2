@@ -15,30 +15,39 @@ namespace Hector
     public:
       /// A parameter parsed from user's input
       struct Parameter {
+
+        //----- string
+
         /// An optional string parameter
-        Parameter( std::string name, std::string description = "", std::string value = "", std::string* var = 0 ) :
-          name( name ), description( description ), value( value ), str_variable( var ), float_variable( 0 ), int_variable( 0 ), uint_variable( 0 ) {}
+        Parameter( std::string name, std::string description = "", std::string value = "", std::string* var = 0 );
         /// A string parameter
-        Parameter( std::string name, std::string description, std::string* var = 0 ) :
-          name( name ), description( description ), value( "" ), str_variable( var ), float_variable( 0 ), int_variable( 0 ), uint_variable( 0 ) {}
+        Parameter( std::string name, std::string description, std::string* var = 0 );
+
+        //----- integers
+
         /// An optional unsigned integer parameter
-        Parameter( std::string name, std::string description, unsigned int default_value, unsigned int* var = 0 ) :
-          name( name ), description( description ), value( std::to_string( default_value ) ), str_variable( 0 ), float_variable( 0 ), int_variable( 0 ), uint_variable( var ) {}
+        Parameter( std::string name, std::string description, unsigned int default_value, unsigned int* var = 0 );
         /// An unsigned integer parameter
-        Parameter( std::string name, std::string description, unsigned int* var = 0 ) :
-          name( name ), description( description ), value( std::to_string( 0 ) ), str_variable( 0 ), float_variable( 0 ), int_variable( 0 ), uint_variable( var ) {}
+        Parameter( std::string name, std::string description, unsigned int* var = 0 );
         /// An optional integer parameter
-        Parameter( std::string name, std::string description, int default_value, int* var = 0 ) :
-          name( name ), description( description ), value( std::to_string( default_value ) ), str_variable( 0 ), float_variable( 0 ), int_variable( var ), uint_variable( 0 ) {}
+        Parameter( std::string name, std::string description, int default_value, int* var = 0 );
         /// An integer parameter
-        Parameter( std::string name, std::string description, int* var = 0 ) :
-          name( name ), description( description ), value( std::to_string( 0 ) ), str_variable( 0 ), float_variable( 0 ), int_variable( var ), uint_variable( 0 ) {}
+        Parameter( std::string name, std::string description, int* var = 0 );
+
+        //----- floats
+
         /// An optional double-precision floating point parameter
-        Parameter( std::string name, std::string description, double default_value, double* var = 0 ) :
-          name( name ), description( description ), value( std::to_string( default_value ) ), str_variable( 0 ), float_variable( var ), int_variable( 0 ), uint_variable( 0 ) {}
+        Parameter( std::string name, std::string description, double default_value, double* var = 0 );
         /// A double-precision floating point parameter
-        Parameter( std::string name, std::string description, double* var = 0 ) :
-          name( name ), description( description ), value( std::to_string( 0. ) ), str_variable( 0 ), float_variable( var ), int_variable( 0 ), uint_variable( 0 ) {}
+        Parameter( std::string name, std::string description, double* var = 0 );
+
+        //----- complex formats
+
+        /// An optional vector of strings parameter
+        Parameter( std::string name, std::string description, std::vector<std::string> default_value, std::vector<std::string>* var = 0 );
+        /// A vector of strings parameter
+        Parameter( std::string name, std::string description, std::vector<std::string>* var = 0 );
+
         /// Parameter computer-readable name
         std::string name;
         /// User-friendly parameter description
@@ -53,6 +62,8 @@ namespace Hector
         int* int_variable;
         /// Pointer to an unsigned integer variable possibly handled by this parameter
         unsigned int* uint_variable;
+        /// Pointer to a vector of string variables possibly handled by this parameter
+        std::vector<std::string>* vec_str_variable;
       };
       /// A collection of parameters
       typedef std::vector<Parameter> ParametersList;

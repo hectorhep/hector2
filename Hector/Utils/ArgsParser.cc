@@ -46,6 +46,12 @@ namespace Hector
       if ( par.float_variable ) *par.float_variable = std::stod( *value );
       if ( par.int_variable ) *par.int_variable = std::stoi( *value );
       if ( par.uint_variable ) *par.uint_variable = std::stoi( *value );
+      if ( par.vec_str_variable ) {
+        std::istringstream iss( par.value ); std::string token;
+        std::vector<std::string> vec_var;
+        while ( std::getline( iss, token, ',' ) ) vec_var.emplace_back( token );
+        *par.vec_str_variable = vec_var;
+      }
     }
     for ( auto& par : optional_params_ ) {
       const auto key = find( args_.begin(), args_.end(), par.name );
@@ -60,6 +66,12 @@ namespace Hector
       if ( par.float_variable ) *par.float_variable = std::stod( par.value );
       if ( par.int_variable ) *par.int_variable = std::stoi( par.value );
       if ( par.uint_variable ) *par.uint_variable = std::stoi( par.value );
+      if ( par.vec_str_variable ) {
+        std::istringstream iss( par.value ); std::string token;
+        std::vector<std::string> vec_var;
+        while ( std::getline( iss, token, ',' ) ) vec_var.emplace_back( token );
+        *par.vec_str_variable = vec_var;
+      }
     }
   }
 
@@ -83,13 +95,13 @@ namespace Hector
     for ( const auto& par : required_params_ ) oss << " " << par.name;
     for ( const auto& par : optional_params_ ) oss << " [" << par.name << "]";
     if ( required_params_.size() > 0 ) {
-     oss << "\n required arguments:";
+     oss << "\n required argument" << ( ( required_params_.size() > 1 ) ? "s" : "" ) << ":";
      for ( const auto& par : required_params_ ) {
        oss << "\n\t" << std::left << std::setw( 20 ) << par.name << "\t" << std::setw( 40 ) << par.description << std::right;
      }
     }
     if ( optional_params_.size() > 0 ) {
-     oss << "\n optional arguments:";
+     oss << "\n optional argument" << ( ( optional_params_.size() > 1 ) ? "s" : "" ) << ":";
      for ( const auto& par : optional_params_ ) {
        oss << "\n\t" << std::left << std::setw( 20 ) << par.name << "\t" << std::setw( 40 ) << par.description << "\tdefault = '" << par.value << "'" << std::right;
      }
@@ -97,5 +109,79 @@ namespace Hector
     oss << std::endl;
     std::cout << oss.str(); 
   }
+
+  ArgsParser::Parameter::Parameter( std::string name, std::string description, std::string value, std::string* var ) :
+    name( name ), description( description ), value( value ),
+    str_variable( var ), float_variable( nullptr ),
+    int_variable( nullptr ), uint_variable( nullptr ),
+    vec_str_variable( nullptr )
+  {}
+
+  ArgsParser::Parameter::Parameter( std::string name, std::string description, std::string* var ) :
+    name( name ), description( description ), value( "" ),
+    str_variable( var ), float_variable( nullptr ),
+    int_variable( nullptr ), uint_variable( nullptr ),
+    vec_str_variable( nullptr )
+  {}
+
+  ArgsParser::Parameter::Parameter( std::string name, std::string description, unsigned int default_value, unsigned int* var ) :
+    name( name ), description( description ), value( std::to_string( default_value ) ),
+    str_variable( nullptr ), float_variable( nullptr ),
+    int_variable( nullptr ), uint_variable( var ),
+    vec_str_variable( nullptr )
+  {}
+
+  ArgsParser::Parameter::Parameter( std::string name, std::string description, unsigned int* var ) :
+    name( name ), description( description ), value( std::to_string( 0 ) ),
+    str_variable( nullptr ), float_variable( nullptr ),
+    int_variable( nullptr ), uint_variable( var ),
+    vec_str_variable( nullptr )
+  {}
+
+  ArgsParser::Parameter::Parameter( std::string name, std::string description, int default_value, int* var ) :
+    name( name ), description( description ), value( std::to_string( default_value ) ),
+    str_variable( nullptr ), float_variable( nullptr ),
+    int_variable( var ), uint_variable( nullptr ),
+    vec_str_variable( nullptr )
+  {}
+
+  ArgsParser::Parameter::Parameter( std::string name, std::string description, int* var ) :
+    name( name ), description( description ), value( std::to_string( 0 ) ),
+    str_variable( nullptr ), float_variable( nullptr ),
+    int_variable( var ), uint_variable( nullptr ),
+    vec_str_variable( nullptr )
+  {}
+
+  ArgsParser::Parameter::Parameter( std::string name, std::string description, double default_value, double* var ) :
+    name( name ), description( description ), value( Form( "%.5e", default_value ) ),
+    str_variable( nullptr ), float_variable( var ),
+    int_variable( nullptr ), uint_variable( nullptr ),
+    vec_str_variable( nullptr )
+  {}
+
+  ArgsParser::Parameter::Parameter( std::string name, std::string description, double* var ) :
+    name( name ), description( description ), value( std::to_string( 0. ) ),
+    str_variable( nullptr ), float_variable( var ),
+    int_variable( nullptr ), uint_variable( nullptr ),
+    vec_str_variable( nullptr )
+  {}
+
+  ArgsParser::Parameter::Parameter( std::string name, std::string description, std::vector<std::string> default_value, std::vector<std::string>* var ) :
+    name( name ), description( description ), value( "" ),
+    str_variable( nullptr ), float_variable( nullptr ),
+    int_variable( nullptr ), uint_variable( nullptr ),
+    vec_str_variable( var )
+  {
+    for ( const auto& str : default_value )
+      value += ( ( ( str != default_value.front() ) ? "," : "" )+str );
+  }
+
+  ArgsParser::Parameter::Parameter( std::string name, std::string description, std::vector<std::string>* var ) :
+    name( name ), description( description ), value( std::to_string( 0 ) ),
+    str_variable( nullptr ), float_variable( nullptr ),
+    int_variable( nullptr ), uint_variable( nullptr ),
+    vec_str_variable( var )
+  {}
+
 }
 
