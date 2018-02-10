@@ -103,7 +103,7 @@ namespace Hector
 
         /// Set the x-y (horizontal and vertical) dispersions
         void setDispersion( const TwoVector& disp ) { disp_ = disp; }
-        /// Horizontal and vertical dispersion
+        /// Horizontal and vertical dispersions
         TwoVector dispersion() const { return disp_; }
 
         /// Set the relative position of the element

@@ -25,6 +25,8 @@ namespace Hector
           return map::size();
         }
 
+        std::map<std::string,T> asMap() const { return *this; }
+
         /// Does the map have this key?
         bool hasKey( const char* key ) const {
           return map::find( std::string( key ) ) != map::end();

@@ -20,27 +20,29 @@ void plot_multi( const string& name, const string& title, vector<pair<string,TH1
 
 int main( int argc, char* argv[] )
 {
-  double crossing_angle, beam_divergence, vertex_size;
+  double crossing_angle_x, beam_divergence, vertex_size, max_s;
   string twiss_file;
   unsigned int num_events;
+  int dir;
 
   Hector::ArgsParser args( argc, argv,
-    { { "--twiss", "beamline Twiss file", &twiss_file } },
+    { { "twiss-file", "beamline Twiss file", &twiss_file, 'i' } },
     {
-      { "--num-events", "number of events to generate", 2500, &num_events },
-      { "--xingangle", "crossing angle (rad)", 180.e-6, &crossing_angle },
-      { "--beam-divergence", "beam divergence (rad)", 20.e-6, &beam_divergence },
-      { "--vertex-size", "vertex size (m)", 10.e-6, &vertex_size },
+      { "direction", "Twiss file parsing direction", +1, &dir, 'd' },
+      { "max-s", "maximal s-coordinate (m)", 250., &max_s },
+      { "num-parts", "number of particles to generate", 2500, &num_events },
+      { "alpha-x", "crossing angle in the x direction (rad)", 180.e-6, &crossing_angle_x, 'x' },
+      { "beam-divergence", "beam angular divergence (rad)", 20.e-6, &beam_divergence, 'r' },
+      { "vertex-size", "vertex size (m)", 10.e-6, &vertex_size },
     }
   );
 
-  Hector::IO::MADX madx( twiss_file.c_str(), "IP5", 1, 250. );
+  Hector::IO::MADX madx( twiss_file.c_str(), "IP5", dir, max_s );
   //madx.beamline()->offsetElementsAfter( 120., Hector::TwoVector( -0.097, 0. ) );
 
   Hector::Propagator prop( madx.beamline() );
 
   const Hector::Elements rps = madx.romanPots( Hector::IO::MADX::horizontalPots );
-  double max_s = 0.;
 
   auto h_xi_raw = new TH1D( "xi_raw", "Proton momentum loss #xi\\Events\\?.3f", 250, -0.125, 1.125 ),
        h_tx_raw = new TH1D( "tx_raw", "#theta_{X}\\Events\\#murad?.1f", 100, -500., 500. ),
@@ -49,10 +51,11 @@ int main( int argc, char* argv[] )
   map<Hector::Element::ElementBase*,TH2D*> h_hitmap;
 
   TH1D h_num_protons( "num_protons", "Proton multiplicity in event\\Events", 10, 0., 10. );
+  double max_rp_s = 0.;
   for ( const auto& pot : rps ) {
     const auto rp = pot.get();
     cout << "--------> " << rp->name() << " at " << rp->s() << " m" << endl;
-    if ( rp->s() > max_s ) max_s = rp->s();
+    if ( rp->s() > max_rp_s ) max_rp_s = rp->s();
     h_xi_sp[rp] = ( TH1D* )h_xi_raw->Clone( Form( "xi_scoring_plane_%s", rp->name().c_str() ) );
     h_tx_sp[rp] = ( TH1D* )h_tx_raw->Clone( Form( "tx_scoring_plane_%s", rp->name().c_str() ) );
     h_ty_sp[rp] = ( TH1D* )h_ty_raw->Clone( Form( "ty_scoring_plane_%s", rp->name().c_str() ) );
@@ -98,8 +101,9 @@ int main( int argc, char* argv[] )
       if ( part.firstStateVector().momentum().pz() < 0. ) continue;
 
       // smear the vertex and divergence ; apply the crossing angle
-      auto ang = part.firstStateVector().angles(), pos = part.firstStateVector().position();
-      ang[CLHEP::Hep2Vector::X] += CLHEP::RandGauss::shoot( crossing_angle, beam_divergence );
+      auto& ang = part.firstStateVector().angles();
+      auto& pos = part.firstStateVector().position();
+      ang[CLHEP::Hep2Vector::X] += CLHEP::RandGauss::shoot( crossing_angle_x, beam_divergence );
       ang[CLHEP::Hep2Vector::Y] += CLHEP::RandGauss::shoot( 0., beam_divergence );
       pos[CLHEP::Hep2Vector::X] += CLHEP::RandGauss::shoot( 0., vertex_size );
       pos[CLHEP::Hep2Vector::Y] += CLHEP::RandGauss::shoot( 0., vertex_size );
@@ -114,7 +118,7 @@ int main( int argc, char* argv[] )
 
       // propagate to the pots position
       try {
-        prop.propagate( part, max_s );
+        prop.propagate( part, max_rp_s );
         for ( const auto& pot : rps ) {
           const auto rp = pot.get();
           const auto pos = part.stateVectorAt( rp->s() ).position();
@@ -134,7 +138,7 @@ int main( int argc, char* argv[] )
 
   gStyle->SetOptStat( 111111 );
   {
-    const string title = Form( "#alpha_{X} = %.2f #murad", crossing_angle*1.e6 );
+    const string title = Form( "#alpha_{X} = %.2f #murad", crossing_angle_x*1.e6 );
     vector<pair<string,TH1*> > gr_xi = { { "Generated protons", h_xi_raw } },
                                gr_tx = { { "Generated protons", h_tx_raw } },
                                gr_ty = { { "Generated protons", h_ty_raw } };

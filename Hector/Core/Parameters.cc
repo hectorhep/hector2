@@ -13,4 +13,11 @@ namespace Hector
     enable_kickers_( false ),
     enable_dipoles_( true )
   {}
+
+  std::shared_ptr<Parameters>
+  Parameters::get()
+  {
+    static std::shared_ptr<Parameters> params( new Parameters );
+    return params;
+  }
 }

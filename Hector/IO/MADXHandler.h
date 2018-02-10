@@ -1,8 +1,8 @@
 #ifndef Hector_IO_MADXParser_h
 #define Hector_IO_MADXParser_h
 
-#include "Hector/Core/OrderedParametersMap.h"
-#include "Hector/Core/UnorderedParametersMap.h"
+#include "Hector/Utils/OrderedParametersMap.h"
+#include "Hector/Utils/UnorderedParametersMap.h"
 
 #include "Hector/Elements/ElementBase.h"
 #include "Hector/Elements/ApertureType.h"
@@ -56,6 +56,8 @@ namespace Hector
 
         /// Print all useful information parsed from the MAD-X Twiss file
         void printInfo() const;
+        std::map<std::string,std::string> headerStrings() const;
+        std::map<std::string,float> headerFloats() const;
 
       private:
         /// A collection of values to be propagated through this parser

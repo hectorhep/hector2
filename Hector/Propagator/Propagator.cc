@@ -5,31 +5,19 @@
 
 #include "Hector/Core/Exception.h"
 #include "Hector/Core/ParticleStoppedException.h"
-#include "Hector/Core/Utils.h"
+
+#include "Hector/Utils/Utils.h"
 
 #include <sstream>
 
 namespace Hector
 {
-  Propagator::Propagator( const Beamline* beamline ) :
-    beamline_( beamline )
-  {}
-
-  Propagator::~Propagator()
-  {}
-
   void
   Propagator::propagate( Particle& part, float s_max ) const
   {
     part.clear();
-    /*if ( Parameters::get()->useRelativeEnergy() ) {
-      part.firstStateVector().setEnergy( part.firstStateVector().energy()-Parameters::get()->beamEnergy() );
-    }*/
-    const bool non_linear = true;
-    const double energy_loss = ( non_linear )
-      ? Parameters::get()->beamEnergy()-part.lastStateVector().energy()
-      : 0.;
-    //part.firstStateVector().setEnergy( energy_loss );
+
+    const double energy_loss = Parameters::get()->beamEnergy()-part.lastStateVector().energy();
     const float first_s = part.firstS();
 
     try {
@@ -47,8 +35,14 @@ namespace Hector
         // between two elements
         if ( first_s > prev_elem->s() && first_s < elem->s() ) {
           switch ( prev_elem->type() ) {
-            case Element::aDrift: { PrintInfo( Form( "Path start inside element %s", prev_elem->name().c_str() ) ); } break;
-            default:              { PrintInfo( Form( "Path start inside drift %s", prev_elem->name().c_str() ) ); } break;
+            case Element::aDrift:
+              PrintInfo( Form( "Path starts inside element %s",
+                               prev_elem->name().c_str() ) );
+              break;
+            default:
+              PrintInfo( Form( "Path starts inside drift %s",
+                               prev_elem->name().c_str() ) );
+              break;
           }
 
           // build a temporary element mimicking the drift effect
@@ -58,10 +52,11 @@ namespace Hector
           out_pos = propagateThrough( in_pos, elem_tmp, energy_loss, part.charge() );
         }
         // before one element
-        if ( first_s <= elem->s() ) {
+        if ( first_s <= elem->s() )
           out_pos = propagateThrough( in_pos, elem, energy_loss, part.charge() );
-        }
-        if ( out_pos.s() < 0. ) continue; // no new point to add to the particle's trajectory
+
+        if ( out_pos.s() < 0. )
+          continue; // no new point to add to the particle's trajectory
 
         part.addPosition( out_pos.s(), out_pos.stateVector() );
 
@@ -83,13 +78,15 @@ namespace Hector
             }
             // has passed through the element?
             //std::cout << prev_elem->s()+prev_elem->length() << "\t" << part.stateVectorAt( prev_elem->s()+prev_elem->length() ).position() << std::endl;
-            if ( !aper->contains( part.stateVectorAt( prev_elem->s()+prev_elem->length() ).position() ) ) {
-              throw ParticleStoppedException( __PRETTY_FUNCTION__, prev_elem.get(), JustWarning, Form( "Did not pass aperture %s", aper->typeName().c_str() ).c_str() );
-            }
+            if ( !aper->contains( part.stateVectorAt( prev_elem->s()+prev_elem->length() ).position() ) )
+              throw ParticleStoppedException( __PRETTY_FUNCTION__, prev_elem.get(), JustWarning,
+                                              Form( "Did not pass aperture %s", aper->typeName().c_str() ).c_str() );
           }
         }
       }
-    } catch ( ... ) { throw; }
+    }
+    catch ( const ParticleStoppedException& ) { throw; }
+    catch ( const Exception& ) { throw; }
 
     // finish by sorting all positions according to their s-coordinate
     //part.sortPositions();
@@ -101,21 +98,17 @@ namespace Hector
     for ( Elements::const_iterator it = beamline_->begin()+1; it != beamline_->end(); ++it ) {
       // extract the previous and the current element in the beamline
       const auto prev_elem = *( it-1 ), elem = *it;
-      if ( s_max>0 && elem->s() > s_max ) return false;
+      if ( s_max>0 && elem->s() > s_max )
+        return false;
 
       const auto& aper = prev_elem->aperture();
       if ( aper && aper->type() != Aperture::anInvalidAperture ) {
-
         // has passed the element entrance?
-        if ( !aper->contains( part.stateVectorAt( prev_elem->s() ).position() ) ) {
-          //PrintInfo( Form( "Particle stopped at the entrance of %s", prev_elem->name().c_str() ) );
+        if ( !aper->contains( part.stateVectorAt( prev_elem->s() ).position() ) )
           return true;
-        }
         // has passed through the element?
-        if ( !aper->contains( part.stateVectorAt( prev_elem->s()+prev_elem->length() ).position() ) ) {
-          //PrintInfo( Form( "Particle stopped inside %s", prev_elem->name().c_str() ) );
+        if ( !aper->contains( part.stateVectorAt( prev_elem->s()+prev_elem->length() ).position() ) )
           return true;
-        }
       }
     }
     return false;
@@ -145,9 +138,8 @@ namespace Hector
   void
   Propagator::propagate( Particles& beam, float s_max ) const
   {
-    for ( auto& part : beam ) {
+    for ( auto& part : beam )
       propagate( part, s_max );
-    }
   }
 }
 

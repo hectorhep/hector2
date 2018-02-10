@@ -5,27 +5,41 @@
 
 #include "TColor.h"
 
-Color_t
-elementColour( const std::shared_ptr<Hector::Element::ElementBase>& elem )
+void
+elementStyle( const std::shared_ptr<Hector::Element::ElementBase>& elem, Color_t& col, Style_t& style )
 {
+  col = kWhite;
+  style = 1001;
   switch ( elem->type() ) {
-    case Hector::Element::aMarker: return kBlue+3;
-    case Hector::Element::aDrift: return kBlack;
-    case Hector::Element::aRectangularDipole: return kRed;
-    case Hector::Element::aSectorDipole: return kGreen;
+    case Hector::Element::aMarker: col = kBlue+3; break;
+    case Hector::Element::aDrift: col = kBlack; break;
+    case Hector::Element::aRectangularDipole:
+      col = kRed;
+      style = 3004;
+      break;
+    case Hector::Element::aSectorDipole:
+      col = kGreen;
+      style = 3005;
+      break;
     case Hector::Element::aGenericQuadrupole: {
-      return ( elem->magneticStrength() > 0. )
+      col = ( elem->magneticStrength() > 0. )
         ? kYellow // horizontal quadrupole
         : kBlue;  // vertical quadrupole
-    }
-    case Hector::Element::anHorizontalQuadrupole: return kYellow;
-    case Hector::Element::aVerticalQuadrupole: return kBlue;
-    case Hector::Element::aVerticalKicker: return kMagenta;
-    case Hector::Element::anHorizontalKicker: return kCyan;
-    case Hector::Element::aRectangularCollimator: return 8;
-    case Hector::Element::anEllipticalCollimator: return 9;
-    case Hector::Element::aCircularCollimator: return 10;
-    default: return kWhite;
+    } break;
+    case Hector::Element::anHorizontalQuadrupole:
+      col = kYellow;
+      style = 3002;
+      break;
+    case Hector::Element::aVerticalQuadrupole:
+      col = kBlue;
+      style = 3003;
+      break;
+    case Hector::Element::aVerticalKicker: col = kMagenta; break;
+    case Hector::Element::anHorizontalKicker: col = kCyan; break;
+    case Hector::Element::aRectangularCollimator: col = 8; break;
+    case Hector::Element::anEllipticalCollimator: col = 9; break;
+    case Hector::Element::aCircularCollimator: col = 10; break;
+    default: col = kWhite; break;
   }
 }
 
@@ -33,6 +47,7 @@ elementColour( const std::shared_ptr<Hector::Element::ElementBase>& elem )
 #include "TLatex.h"
 #include "TMarker.h"
 #include "TArrow.h"
+#include "TGraph.h"
 
 static const float alpha = 0.8;
 
@@ -49,11 +64,13 @@ drawBeamline( const char axis, const Hector::Beamline* bl, const unsigned short 
 
   TLatex txt;
   txt.SetTextFont( 130+2 );
+  auto g_aper = new TGraph;
+  const float aper_arr_len = 0.999;
 
   for ( const auto& elemPtr : *bl ) {
     if ( elemPtr->type() == Hector::Element::aDrift ) continue; //FIXME
     if ( min_s != -999. && elemPtr->s() < min_s ) continue;
-    if ( max_s != +999. && elemPtr->s() > max_s ) continue;
+    if ( max_s != +999. && elemPtr->s() > max_s ) break;
     //if ( elemPtr->type() == Hector::Element::ElementBase::Marker && elemPtr->name() != ip ) continue;
 
     // introduce a x- and y-offset for drawing purposes
@@ -65,33 +82,40 @@ drawBeamline( const char axis, const Hector::Beamline* bl, const unsigned short 
     const float pos_rel = ( axis=='x' ) ? elemPtr->x() : elemPtr->y(),
                 pos_x_ini = elemPtr->s(),
                 pos_x_end = pos_x_ini + elemPtr->length(),
-                pos_y_low = ( ( beam == 0 ) ? -1 : 0 ) * ( size_y ) + pos_rel*scale_y /*+ offset*size_y*/,
+                pos_y_low = ( ( beam == 0 ) ? -1 : 0 ) * size_y + pos_rel*scale_y /*+ offset*size_y*/,
                 pos_y_high = pos_y_low+size_y;
     if ( draw_apertures ) {
-      const Hector::Aperture::ApertureBase* aper = elemPtr->aperture();
+      const auto& aper = elemPtr->aperture();
       if ( aper ) {
         const CLHEP::Hep2Vector aper_lim = aper->limits();
         const float pos_aper = ( axis == 'x' ) ? aper->x() : aper->y(),
                     half_len_aper = ( axis == 'x' ) ? aper_lim.x() : aper_lim.y();
-        auto arr1 = new TArrow( elemPtr->s(), ( pos_aper+half_len_aper )*0.95, elemPtr->s(), pos_aper+half_len_aper, 0.01, "-|" ),
-             arr2 = new TArrow( elemPtr->s(), pos_aper-half_len_aper, elemPtr->s(), ( pos_aper-half_len_aper )*0.95, 0.01, "|-" );
+        const float min_pos = pos_rel+pos_aper-half_len_aper, max_pos = pos_rel+pos_aper+half_len_aper;
+        auto arr1 = new TArrow( elemPtr->s(), max_pos*aper_arr_len, elemPtr->s(), max_pos, 0.01, "-|" ),
+             arr2 = new TArrow( elemPtr->s(), min_pos, elemPtr->s(), min_pos*aper_arr_len, 0.01, "|-" );
+        arr1->SetLineColor( kGray+2 ); arr2->SetLineColor( kGray+2 );
         if ( fabs( pos_aper+half_len_aper ) < scale ) arr1->Draw();
         if ( fabs( pos_aper-half_len_aper ) < scale ) arr2->Draw();
+        g_aper->SetPoint( g_aper->GetN(), elemPtr->s(), ( axis == 'x' ) ? aper_lim.x() : aper_lim.y() );
       }
     }
 
     // ROOT and its brilliant memory management...
     auto elem_box = new TPave( pos_x_ini, pos_y_low, pos_x_end, pos_y_high, 1 );
-    elem_box->SetLineColor( kGray );
+    elem_box->SetLineColor( kGray+1 );
     //elem_box->SetFillStyle( 1001 );
-    elem_box->SetFillColorAlpha( elementColour( elemPtr ), alpha );
+    short fill_colour, fill_style;
+    elementStyle( elemPtr, fill_colour, fill_style );
+    //elem_box->SetFillColorAlpha( elementColour( elemPtr ), alpha );
+    elem_box->SetFillColor( fill_colour );
+    elem_box->SetFillStyle( fill_style );
     elem_box->Draw();
 
     if ( elemPtr->type() != Hector::Element::aMarker || elemPtr->name() != ip ) {
-      txt.SetTextSize( 0.015 );
+      txt.SetTextSize( 0.012 );
       txt.SetTextAngle( 90. );
       txt.SetTextAlign( 22 );
-      txt.DrawLatex( elemPtr->s()+elemPtr->length()/2., 3.* ( ( beam == 0 ) ? -1 : +1 ) * ( size_y ), elemPtr->name().c_str() );
+      txt.DrawLatex( elemPtr->s()+elemPtr->length()/2., 3.6* ( ( beam == 0 ) ? -1 : +1 ) * size_y, elemPtr->name().c_str() );
     }
     else {
       txt.SetTextSize( 0.035 );
@@ -99,8 +123,11 @@ drawBeamline( const char axis, const Hector::Beamline* bl, const unsigned short 
       txt.SetTextAngle( 45. );
       txt.DrawLatex( pos_x_ini, 0., elemPtr->name().c_str() );
     }
-
   }
+  /*if ( draw_apertures ) {
+    g_aper->Draw( "l" );
+    g_aper->SetLineColor( kGray );
+  }*/
   /*for ( Hector::Beamline::MarkersMap::const_iterator it=bl->markers_begin(); it!=bl->markers_end(); it++ ) {
     txt.SetTextSize( 0.01 );
     txt.SetTextAngle( 90. );
@@ -116,22 +143,19 @@ class elementsLegend : public TLegend
 {
   public:
     elementsLegend( const Hector::Beamline* bl = 0, float xmin = 0.07, float ymin = 0.07, float xmax = 0.93, float ymax = 0.93 ) :
-      TLegend( xmin, ymin, xmax, ymax )
-    {
+      TLegend( xmin, ymin, xmax, ymax ) {
       if ( bl ) feedBeamline( bl );
       TLegend::SetTextFont( font_type( 2 ) );
       TLegend::SetHeader( "Elements legend" );
     }
-    ~elementsLegend()
-    {
+    ~elementsLegend() {
       for ( auto& ai : already_in_ ) {
         if ( ai.second ) delete ai.second;
       }
       already_in_.clear();
     }
 
-    void feedBeamline( const Hector::Beamline* bl )
-    {
+    void feedBeamline( const Hector::Beamline* bl ) {
       for ( const auto& elemPtr : *bl ) {
         const Hector::Element::Type type = elemPtr->type();
         // skip the markers and drifts
@@ -140,16 +164,19 @@ class elementsLegend : public TLegend
         // skip the elements already added
         if ( already_in_.find( type ) != already_in_.end() ) continue;
 
-        TPave* pv = new TPave( 0., 0., 0., 0., 0 );
-        pv->SetFillColorAlpha( elementColour( elemPtr ), alpha );
+        auto pv = new TPave( 0., 0., 0., 0., 0 );
+        short fill_colour, fill_style;
+        elementStyle( elemPtr, fill_colour, fill_style );
+        pv->SetFillColorAlpha( fill_colour, alpha );
+        pv->SetFillStyle( fill_style );
         pv->SetLineColor( kGray );
         pv->SetLineWidth( 4 );
         TLegend::AddEntry( pv, elemPtr->typeName().c_str(), "f" );
         already_in_.insert( std::pair<Hector::Element::Type, TPave*>( type, pv ) );
       }
-      if ( already_in_.size()>7 ) TLegend::SetNColumns( 2 );
-
+      if ( already_in_.size() > 7 ) TLegend::SetNColumns( 2 );
     }
+
   private:
     std::map<Hector::Element::Type, TPave*> already_in_;
 };

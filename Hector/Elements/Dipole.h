@@ -39,7 +39,7 @@ namespace Hector
          * \end{array}
          * \right)
          * \f$
-         * assuming \f$\theta = L/r\f$, \f$ 1/r \equiv k = k_{0} \cdot \frac{p_{0}}{p_{0} - \mathrm{d}p} \cdot \frac{q_{\mathrm{part}}}{q_{\mathrm{b}}} \f$, and \f$ E_{\mathrm{b}}\f$ = 7000 GeV.
+         * assuming \f$\theta = {L\over r}\f$, \f$ {1\over r} \equiv k = k_{0} \cdot \frac{p_{0}}{p_{0} - \mathrm{d}p} \cdot \frac{q_{\mathrm{part}}}{q_{\mathrm{b}}} \f$, and \f$ E_{\mathrm{b}}\f$ = 7000 GeV.
          */
         /// \note Numerical sensitivity (~\f$10^{-8}\f$ relative precision on a 64-bit Intel machine) expected with \f$ \frac{r}{E_{\mathrm{b}}} \left(1-\cos{\theta}\right)\f$.
         ///  Using \f$ \cos{2x} = 1-2\sin^{2}{x} \f$ to transform this term (see the variable called "simp")
@@ -80,7 +80,7 @@ namespace Hector
          * \end{array}
          * \right)
          * \f$
-         * assuming \f$\theta = L/r\f$, \f$ \frac{1}{r} \equiv k =  k_{0} \cdot \frac{p_{0}}{p_{0} - \mathrm{d}p} \cdot \frac{q_{\mathrm{part}}}{q_{\mathrm{b}}} \f$
+         * assuming \f$\theta = {L\over r}\f$, \f$ {1\over r} \equiv k =  k_{0} \cdot \frac{p_{0}}{p_{0} - \mathrm{d}p} \cdot \frac{q_{\mathrm{part}}}{q_{\mathrm{b}}} \f$
          */
         Matrix matrix( float, float mp = Parameters::get()->beamParticlesMass(), int qp = Parameters::get()->beamParticlesCharge() ) const override;
     };

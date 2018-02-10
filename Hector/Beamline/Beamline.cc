@@ -51,7 +51,7 @@ namespace Hector
     if ( new_size > max_length_ && max_length_ < 0. )
       throw Exception( __PRETTY_FUNCTION__, Form( "Element %s is too far away for this beamline!\n"
                                                   "\tBeamline length: %.3f m, this element: %.3f m",
-                                                  elem->name().c_str(), max_length_, new_size ), Fatal );
+                                                  elem->name().c_str(), max_length_, new_size ), Debug );
 
     bool already_added = false;
 
@@ -76,29 +76,30 @@ namespace Hector
       // from that point on, an overlap is detected
       // reduce or separate that element in two sub-parts
 
-      PrintWarning( Form( "%s (%s) is inside %s (%s)\n\t"
-                          "Hector will fix the overlap by splitting the earlier.",
-                          elem->name().c_str(), elem->typeName().c_str(),
-                          prev_elem->name().c_str(), prev_elem->typeName().c_str() ) );
+      PrintDebug( Form( "%s (%s) is inside %s (%s)\n\t"
+                        "Hector will fix the overlap by splitting the earlier.",
+                        elem->name().c_str(), elem->typeName().c_str(),
+                        prev_elem->name().c_str(), prev_elem->typeName().c_str() ) );
       const float prev_length = prev_elem->length();
-
-      prev_elem->setLength( elem->s()-prev_elem->s() );
 
       std::shared_ptr<Element::ElementBase> next_elem = nullptr;
       // check if one needs to add an extra piece to the previous element
       if ( elem->s()+elem->length() < prev_elem->s()+prev_elem->length() ) {
         const std::string prev_name = prev_elem->name();
-        prev_elem->setName( Form( "%s.part1", prev_name.c_str() ) );
+        prev_elem->setName( Form( "%s/1", prev_name.c_str() ) );
         next_elem = prev_elem->clone();
-        next_elem->setName( Form( "%s.part2", prev_name.c_str() ) );
+        next_elem->setName( Form( "%s/2", prev_name.c_str() ) );
         next_elem->setS( elem->s()+elem->length() );
         next_elem->setLength( prev_length-elem->length() );
       }
 
+      prev_elem->setLength( elem->s()-prev_elem->s() );
+
       elements_.push_back( elem );
       already_added = true;
 
-      if ( next_elem ) elements_.push_back( next_elem );
+      if ( next_elem != nullptr )
+        elements_.push_back( next_elem );
 
       break;
     }
@@ -111,7 +112,7 @@ namespace Hector
   }
 
   const std::shared_ptr<Element::ElementBase>
-  Beamline::get( std::string name ) const
+  Beamline::get( const char* name ) const
   {
     for ( size_t i = 0; i < elements_.size(); ++i ) {
       const auto elem = elements_.at( i );
@@ -121,7 +122,7 @@ namespace Hector
   }
 
   std::shared_ptr<Element::ElementBase>&
-  Beamline::get( std::string name )
+  Beamline::get( const char* name )
   {
     for ( auto& elem : elements_ ) {
       if ( elem->name().find( name ) != std::string::npos ) return elem;
@@ -166,7 +167,7 @@ namespace Hector
   }
 
   Matrix
-  Beamline::matrix( float eloss, float mp, int qp )
+  Beamline::matrix( float eloss, float mp, int qp ) const
   {
     Matrix out = DiagonalMatrix( 6, 1 );
 

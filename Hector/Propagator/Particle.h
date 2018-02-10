@@ -31,19 +31,15 @@ namespace Hector
           /// State vector components
           const StateVector stateVector() const { return this->second; }
           /// A pair of longitudinal position/state vector
-          const std::pair<double,StateVector>& pair() const { return ( *this ); }
+          const std::pair<double,StateVector>& pair() const { return *this; }
       };
 
     public:
       Particle();
-      /// Construct a particle according to its first state vector's 4-momentum
-      Particle( const LorentzVector& mom, int charge = Parameters::get()->beamParticlesCharge(), int pdgid = 2212 ) :
-        Particle( StateVector( mom ) ) {
-        charge_ = charge;
-        pdgId_ = pdgid;
-      }
       /// Construct a particle according to its first state vector/s-position couple
       Particle( const StateVector&, double s0 = 0. );
+      /// Construct a particle according to its first state vector's 4-momentum
+      Particle( const LorentzVector& mom, int charge = Parameters::get()->beamParticlesCharge(), int pdgid = 2212 );
       ~Particle();
 
       /// Build a Particle object from a mass and electric charge

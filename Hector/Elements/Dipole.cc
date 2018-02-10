@@ -11,7 +11,8 @@ namespace Hector
     Matrix
     SectorDipole::matrix( float eloss, float mp, int qp ) const
     {
-      if ( !Parameters::get()->enableDipoles() ) return Drift::genericMatrix( length_ );
+      if ( Parameters::get()->enableDipoles() == false )
+        return Drift::genericMatrix( length_ );
 
       const float ke = fieldStrength( eloss, mp, qp ); //FIXME
 
@@ -43,9 +44,11 @@ namespace Hector
     Matrix
     RectangularDipole::matrix( float eloss, float mp, int qp ) const
     {
-      if ( !Parameters::get()->enableDipoles() ) return Drift::genericMatrix( length_ );
+      if ( Parameters::get()->enableDipoles() == false )
+        return Drift::genericMatrix( length_ );
 
       const float ke = fieldStrength( eloss, mp, qp ); //FIXME
+      //std::cout << ">>" << ke << std::endl;
 
       if ( ke == 0. ) { // simple drift matrix
         Exception( __PRETTY_FUNCTION__, Form( "Dipole %s has no effect. Treating it as a drift.", name_.c_str() ), JustWarning ).dump();
@@ -69,8 +72,8 @@ namespace Hector
       mat( 2, 5 ) = s_theta * inv_energy;
 
       if ( Parameters::get()->useRelativeEnergy() ) {
-        /*throw Exception( __PRETTY_FUNCTION__, "Relative energy mode not yet supported in this version of Hector!\n\t"
-                                                "Please contact the developers for more information.", Fatal );*/
+        throw Exception( __PRETTY_FUNCTION__, "Relative energy mode not yet supported in this version of Hector!\n\t"
+                                              "Please contact the developers for more information.", Fatal );
         Matrix ef_matrix = DiagonalMatrix( 6, 1 );
         const double t_theta_half_ke = tan( theta*0.5 ) * ke;
         ef_matrix( 2, 1 ) =  t_theta_half_ke;

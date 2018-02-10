@@ -1,7 +1,7 @@
 #ifndef Hector_Core_Exception_h
 #define Hector_Core_Exception_h
 
-#include "Utils.h"
+#include "Hector/Utils/Utils.h"
 #include "Parameters.h"
 
 #include <iomanip>
@@ -9,6 +9,7 @@
 #include <string>
 #include <cstdlib> // exit()
 
+#define PrintDebug(m) Hector::Exception( __PRETTY_FUNCTION__, m, Hector::Debug ).dump();
 #define PrintInfo(m) Hector::Exception( __PRETTY_FUNCTION__, m, Hector::Info ).dump();
 #define PrintWarning(m) Hector::Exception( __PRETTY_FUNCTION__, m, Hector::JustWarning ).dump();
 
@@ -33,7 +34,7 @@ namespace Hector
 
       /// Destruct the exception (and terminate the program execution if fatal)
       inline ~Exception() {
-        if ( type_ == Fatal ) exit( 0 ); // we stop the execution of this process on fatal exception
+        if ( type_ == Fatal ) exit( error_num_ ); // we stop the execution of this process on fatal exception
       }
 
       /// Method/function that raised the exception

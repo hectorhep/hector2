@@ -1,6 +1,7 @@
 #include "Hector/Elements/ElementBase.h"
-#include "Hector/Core/Utils.h"
+#include "Hector/Utils/Utils.h"
 #include "Hector/Core/Parameters.h"
+#include "Hector/Core/Exception.h"
 
 #include <sstream>
 
@@ -69,6 +70,9 @@ namespace Hector
                   e = eini-eloss;
       const float p0 = sqrt( ( eini-mp0 )*( eini+mp0 ) ), // e_ini^2 - p_0^2 = mp0^2
                   p = sqrt( ( e-mp )*( e+mp ) ); // e^2 - p^2 = mp^2
+      if ( p == 0 )
+        throw Exception( __PRETTY_FUNCTION__, "Invalid particle momentum", JustWarning );
+
       return magnetic_strength_*( p0/p )*( qp/Parameters::get()->beamParticlesCharge() );
     }
 

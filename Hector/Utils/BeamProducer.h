@@ -17,7 +17,7 @@ namespace Hector
   namespace BeamProducer
   {
     /// Lower and upper limits
-    typedef std::pair<float, float> params;
+    typedef std::pair<float, float> params_t;
     /// Generic scanner for a given granularity of a parameter
     class LinearScanner
     {
@@ -25,11 +25,9 @@ namespace Hector
         /// Class constructor
         LinearScanner( const unsigned short& num_part, float p1_ini, float p1_end, float p2_ini, float p2_end = 999., float e_ini = 0., float e_end = 0., float s_ini = 0. ) :
           num_part_( num_part ), num_gen_( 0 ),
-          p1_( p1_ini, p1_end ), p2_( p2_ini, p2_end ),
-          e_( e_ini, e_end ), s_( s_ini, s_ini )
-        {
-          if ( p2_.second == 999. ) { p2_.second = p2_.first; }
-        }
+          p1_( p1_ini, ( p1_end == 999. ) ? p1_ini : p1_end ),
+          p2_( p2_ini, ( p2_end == 999. ) ? p2_ini : p2_end ),
+          e_( e_ini, e_end ), s_( s_ini, s_ini ) {}
         /// Get the next event number to scan
         unsigned short next();
         /// Number of particles to generate to perform a full scan
@@ -43,13 +41,13 @@ namespace Hector
         /// Number of particles already generated in the scan
         unsigned short num_gen_;
         /// Lower and upper limits for the first scan parameter
-        params p1_;
+        params_t p1_;
         /// Lower and upper limits for the second scan parameter
-        params p2_;
+        params_t p2_;
         /// Lower and upper limits on the beam energy
-        params e_;
+        params_t e_;
         /// Lower and upper limits for the s coordinate to generate
-        params s_;
+        params_t s_;
     };
 
     /// Beam of particles to scan the optics following the x axis
@@ -126,8 +124,7 @@ namespace Hector
         /// \param[in] x horizontal particle position
         /// \param[in] y vertical particle position
         /// \param[in] s_ini initial s position
-        Xiscanner( const unsigned short& num_part, float xi_min, float xi_max, float x = 0., float y = 0., float s_ini = 0. ) :
-          LinearScanner( num_part, x, x, y, y, Parameters::get()->beamEnergy()*( 1.-xi_min ), Parameters::get()->beamEnergy()*( 1.-xi_max ), s_ini ) {}
+        Xiscanner( const unsigned short& num_part, float xi_min, float xi_max, float x = 0., float y = 0., float s_ini = 0. );
         Particle shoot();
     };
 
@@ -137,16 +134,12 @@ namespace Hector
     {
       public:
         /// Class constructor
-        ParticleGun( float e_min = Parameters::get()->beamEnergy(), float e_max = Parameters::get()->beamEnergy(),
-                     float s_min = 0., float s_max = 0.,
-                     float x_min = 0., float x_max = 0., float y_min = 0., float y_max = 0.,
-                     float tx_min = -M_PI/2., float tx_max = M_PI/2.,
-                     float ty_min = -M_PI/2., float ty_max = M_PI/2.,
-                     float mass = Parameters::get()->beamParticlesMass(), float charge = Parameters::get()->beamParticlesCharge() ) :
-          e_( parameters( e_min, e_max ) ), s_( parameters( s_min, s_max ) ),
-          x_( parameters( x_min, x_max ) ), y_( parameters( y_min, y_max ) ),
-          tx_( parameters( tx_min, tx_max ) ), ty_( parameters( ty_min, ty_max ) ),
-          mass_( mass ), charge_( charge ) {}
+        ParticleGun() :
+          e_( parameters( Parameters::get()->beamEnergy(), Parameters::get()->beamEnergy() ) ),
+          s_( parameters( 0., 0. ) ), x_( parameters( 0., 0. ) ), y_( parameters( 0., 0. ) ),
+          tx_( parameters( 0., 0. ) ), ty_( parameters( 0., 0. ) ),
+          mass_( Parameters::get()->beamParticlesMass() ),
+          charge_( Parameters::get()->beamParticlesCharge() ) {}
 
         /// Generate one particle according to the templated distribution
         Particle shoot() const {
@@ -170,7 +163,7 @@ namespace Hector
         //----- Full beam information
 
         /// Set the parameters to the initial beam energy distribution
-        void setEparams( float e1, float e2 ) { e_ = params( e1, e2 ); }
+        void setEparams( float e1, float e2 ) { e_ = params_t( e1, e2 ); }
         /// Set the lower and upper limits to the initial beam energy distribution
         void setElimits( float e1, float e2=-1. ) {
           if ( e2 < 0 ) e2 = e1; // energies are supposingly positive
@@ -178,27 +171,27 @@ namespace Hector
         }
 
         /// Set the parameters to the initial longitudinal beam position distribution
-        void setSparams( float s1, float s2 ) { s_ = params( s1, s2 ); }
+        void setSparams( float s1, float s2 ) { s_ = params_t( s1, s2 ); }
         /// Set the lower and upper limits to the initial longitudinal beam position distribution
         void setSlimits( float s1, float s2 ) { s_ = parameters( s1, s2 ); }
 
         /// Set the parameters to the horizontal beam position distribution
-        void setXparams( float x1, float x2 ) { x_ = params( x1, x2 ); }
+        void setXparams( float x1, float x2 ) { x_ = params_t( x1, x2 ); }
         /// Set the lower and upper limits to the horizontal beam position distribution
         void setXlimits( float x1, float x2 ) { x_ = parameters( x1, x2 ); }
 
         /// Set the parameters to the vertical beam position distribution
-        void setYparams( float y1, float y2 ) { y_ = params( y1, y2 ); }
+        void setYparams( float y1, float y2 ) { y_ = params_t( y1, y2 ); }
         /// Set the lower and upper limits to the vertical beam position distribution
         void setYlimits( float y1, float y2 ) { y_ = parameters( y1, y2 ); }
 
         /// Set the parameters to the horizontal angular distribution
-        void setTXparams( float tx1, float tx2 ) { tx_ = params( tx1, tx2 ); }
+        void setTXparams( float tx1, float tx2 ) { tx_ = params_t( tx1, tx2 ); }
         /// Set the lower and upper limits to the horizontal angular distribution
         void setTXlimits( float tx1, float tx2 ) { tx_ = parameters( tx1, tx2 ); }
 
         /// Set the parameters to the vertical angular distribution
-        void setTYparams( float ty1, float ty2 ) { ty_ = params( ty1, ty2 ); }
+        void setTYparams( float ty1, float ty2 ) { ty_ = params_t( ty1, ty2 ); }
         /// Set the lower and upper limits to the vertical angular parameter distribution
         void setTYlimits( float ty1, float ty2 ) { ty_ = parameters( ty1, ty2 ); }
 
@@ -215,21 +208,29 @@ namespace Hector
 
       private:
         /// Translate lower and upper limits into parameters to give to the random generator
-        params parameters( float lim1, float lim2 ) { return params( lim1, lim2 ); }
+        params_t parameters( float lim1, float lim2 ) { return params_t( lim1, lim2 ); }
 
-        params e_, s_;
-        params x_, y_;
-        params tx_, ty_;
+        params_t e_, s_;
+        params_t x_, y_;
+        params_t tx_, ty_;
         float mass_, charge_;
     };
 
     /// Beam of particles with flat s, x, y, Tx, Ty and energy distributions
-    typedef ParticleGun<CLHEP::RandFlat> flatParticleGun;
+    typedef ParticleGun<CLHEP::RandFlat> FlatParticleGun;
     /// Beam of particles with gaussian s, x, y, Tx, Ty and energy distributions
-    typedef ParticleGun<CLHEP::RandGauss> gaussianParticleGun;
-
-    /// Specialization for Gaussian parameters
-    template<> params gaussianParticleGun::parameters( float lim1, float lim2 );
+    struct GaussianParticleGun : ParticleGun<CLHEP::RandGauss>
+    {
+      using ParticleGun<CLHEP::RandGauss>::ParticleGun;
+      /// Specialization for Gaussian parameters
+      params_t parameters( float lim1, float lim2 );
+      void smearX( float x_mean, float x_sigma ) { setXparams( x_mean, x_sigma ); }
+      void smearY( float y_mean, float y_sigma ) { setYparams( y_mean, y_sigma ); }
+      void smearTx( float tx_mean, float tx_sigma ) { setTXparams( tx_mean, tx_sigma ); }
+      void smearTy( float ty_mean, float ty_sigma ) { setTYparams( ty_mean, ty_sigma ); }
+      void smearEnergy( float e_mean, float e_sigma ) { setEparams( e_mean, e_sigma ); }
+      void smearXi( float xi_mean, float xi_sigma );
+    };
   }
 }
 

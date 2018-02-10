@@ -2,7 +2,7 @@
 #define Hector_Core_UnorderedParametersMap_h
 
 #include "Hector/Core/Exception.h"
-#include "Hector/Core/Utils.h"
+#include "Hector/Utils/Utils.h"
 
 #include <vector>
 #include <string>

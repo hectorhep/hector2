@@ -32,6 +32,18 @@ namespace Hector
   }
 
   void
+  StateVector::setXi( double xi )
+  {
+    setEnergy( xi_to_e( xi ) );
+  }
+
+  double
+  StateVector::xi() const
+  {
+    return e_to_xi( energy() );
+  }
+
+  void
   StateVector::setPosition( double x, double y )
   {
     // store in m
@@ -64,7 +76,7 @@ namespace Hector
   StateVector::setMomentum( const LorentzVector& mom )
   {
     setAngles( mom.px()/mom.pz(), mom.py()/mom.pz() );
-    ( *this )[E] = mom.e();
+    setEnergy( mom.e() );
     m_ = mom.m();
   }
 

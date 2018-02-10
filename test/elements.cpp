@@ -2,7 +2,7 @@
 #include "Hector/Elements/Marker.h"
 
 int
-main( int argc, char* argv[] )
+main()
 {
   Hector::Beamline line( 10. );
   
@@ -11,8 +11,6 @@ main( int argc, char* argv[] )
   line.add( std::make_shared<Hector::Element::Marker>( "test", 0., 0. ) );
 
   line.dump();
-
-  //std::cout << "haha" << std::endl;
 
   return 0;
 }

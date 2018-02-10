@@ -1,4 +1,5 @@
 #include "Hector/Utils/BeamProducer.h"
+#include "Hector/Utils/Utils.h"
 #include "Hector/Core/Exception.h"
 
 #include <CLHEP/Random/RandFlat.h>
@@ -6,12 +7,16 @@
 
 namespace Hector
 {
+  BeamProducer::Xiscanner::Xiscanner( const unsigned short& num_part, float xi_min, float xi_max, float x, float y, float s_ini ) :
+    LinearScanner( num_part, x, x, y, y, xi_to_e( xi_min ), xi_to_e( xi_max ), s_ini )
+  {}
+
   unsigned short
   BeamProducer::LinearScanner::LinearScanner::next()
   {
-    if ( num_gen_ >= num_part_ ) {
+    if ( num_gen_ >= num_part_ )
       throw Exception( __PRETTY_FUNCTION__, "Too much particles already generated!", JustWarning );
-    }
+
     return num_gen_++;
   }
 
@@ -65,10 +70,15 @@ namespace Hector
     return Particle( StateVector( LorentzVector( 0., 0., mom, energy ), TwoVector( p1_.first, p2_.first ) ), s_.first );
   }
 
-  template<>
-  BeamProducer::params
-  BeamProducer::ParticleGun<CLHEP::RandGauss>::parameters( float lim1, float lim2 )
+  BeamProducer::params_t
+  BeamProducer::GaussianParticleGun::parameters( float lim1, float lim2 )
   {
-    return BeamProducer::params( 0.5 * ( lim1+lim2 ), 0.5 * ( lim2-lim1 ) );
+    return BeamProducer::params_t( 0.5 * ( lim1+lim2 ), 0.5 * ( lim2-lim1 ) );
+  }
+
+  void
+  BeamProducer::GaussianParticleGun::smearXi( float xi_mean, float xi_sigma )
+  {
+    setEparams( xi_to_e( xi_mean ), xi_to_e( xi_sigma ) );
   }
 }

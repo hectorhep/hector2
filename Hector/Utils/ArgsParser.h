@@ -15,36 +15,56 @@ namespace Hector
     public:
       /// A parameter parsed from user's input
       struct Parameter {
+
+        //----- parameters constructors
+
+        //--- string
+
         /// An optional string parameter
-        Parameter( std::string name, std::string description = "", std::string value = "", std::string* var = 0 ) :
-          name( name ), description( description ), value( value ), str_variable( var ), float_variable( 0 ), int_variable( 0 ), uint_variable( 0 ) {}
+        Parameter( std::string name, std::string description = "", std::string default_value = "", std::string* var = nullptr, char sname = '\0' );
         /// A string parameter
-        Parameter( std::string name, std::string description, std::string* var = 0 ) :
-          name( name ), description( description ), value( "" ), str_variable( var ), float_variable( 0 ), int_variable( 0 ), uint_variable( 0 ) {}
+        Parameter( std::string name, std::string description, std::string* var = nullptr, char sname = '\0' );
+        /// Smallest string parameter
+        Parameter( std::string name, char sname = '\0' ) : Parameter( name, "", ( std::string* )nullptr, sname ) {}
+
+        //----- unsigned/signed integers
+
         /// An optional unsigned integer parameter
-        Parameter( std::string name, std::string description, unsigned int default_value, unsigned int* var = 0 ) :
-          name( name ), description( description ), value( std::to_string( default_value ) ), str_variable( 0 ), float_variable( 0 ), int_variable( 0 ), uint_variable( var ) {}
+        Parameter( std::string name, std::string description, unsigned int default_value, unsigned int* var = nullptr, char sname = '\0' );
         /// An unsigned integer parameter
-        Parameter( std::string name, std::string description, unsigned int* var = 0 ) :
-          name( name ), description( description ), value( std::to_string( 0 ) ), str_variable( 0 ), float_variable( 0 ), int_variable( 0 ), uint_variable( var ) {}
+        Parameter( std::string name, std::string description, unsigned int* var = nullptr, char sname = '\0' );
         /// An optional integer parameter
-        Parameter( std::string name, std::string description, int default_value, int* var = 0 ) :
-          name( name ), description( description ), value( std::to_string( default_value ) ), str_variable( 0 ), float_variable( 0 ), int_variable( var ), uint_variable( 0 ) {}
+        Parameter( std::string name, std::string description, int default_value, int* var = nullptr, char sname = '\0' );
         /// An integer parameter
-        Parameter( std::string name, std::string description, int* var = 0 ) :
-          name( name ), description( description ), value( std::to_string( 0 ) ), str_variable( 0 ), float_variable( 0 ), int_variable( var ), uint_variable( 0 ) {}
+        Parameter( std::string name, std::string description, int* var = nullptr, char sname = '\0' );
+
+        //--- floats
+
         /// An optional double-precision floating point parameter
-        Parameter( std::string name, std::string description, double default_value, double* var = 0 ) :
-          name( name ), description( description ), value( std::to_string( default_value ) ), str_variable( 0 ), float_variable( var ), int_variable( 0 ), uint_variable( 0 ) {}
+        Parameter( std::string name, std::string description, double default_value, double* var = nullptr, char sname = '\0' );
         /// A double-precision floating point parameter
-        Parameter( std::string name, std::string description, double* var = 0 ) :
-          name( name ), description( description ), value( std::to_string( 0. ) ), str_variable( 0 ), float_variable( var ), int_variable( 0 ), uint_variable( 0 ) {}
-        /// Parameter computer-readable name
+        Parameter( std::string name, std::string description, double* var = nullptr, char sname = '\0' );
+
+        //--- complex formats
+
+        /// An optional vector of strings parameter
+        Parameter( std::string name, std::string description, std::vector<std::string> default_value, std::vector<std::string>* var = nullptr, char sname = '\0');
+        /// A vector of strings parameter
+        Parameter( std::string name, std::string description, std::vector<std::string>* var = nullptr, char sname = '\0' );
+
+        //----- parameters attributes
+
+        /// Computer-readable name
         std::string name;
+        /// Short computer-readable name
+        char sname;
         /// User-friendly parameter description
         std::string description;
-        /// Parameter value (or default value)
+        /// Value (or default value)
         std::string value;
+
+        //----- parameters containers
+
         /// Pointer to a string variable possibly handled by this parameter
         std::string* str_variable;
         /// Pointer to a double-precision floating point variable possibly handled by this parameter
@@ -53,6 +73,8 @@ namespace Hector
         int* int_variable;
         /// Pointer to an unsigned integer variable possibly handled by this parameter
         unsigned int* uint_variable;
+        /// Pointer to a vector of string variables possibly handled by this parameter
+        std::vector<std::string>* vec_str_variable;
       };
       /// A collection of parameters
       typedef std::vector<Parameter> ParametersList;
