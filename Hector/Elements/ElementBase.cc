@@ -55,25 +55,26 @@ namespace Hector
     void
     ElementBase::setAperture( Aperture::ApertureBase* apert )
     {
-      setAperture( std::shared_ptr<Aperture::ApertureBase>( apert ) ); //FIXME check memory leaks!
+      setAperture( std::shared_ptr<Aperture::ApertureBase>( apert ) );
     }
 
     float
-    ElementBase::fieldStrength( float eloss, float mp, int qp ) const
+    ElementBase::fieldStrength( float e_loss, float mp, int qp ) const
     {
       // only act on charged particles
-      if ( qp == 0 ) return 0.;
+      if ( qp == 0 )
+        return 0.;
 
       // reweight the field strength by the particle charge and momentum
-      const float eini = Parameters::get()->beamEnergy(),
+      const float e_ini = Parameters::get()->beamEnergy(),
                   mp0 = Parameters::get()->beamParticlesMass(),
-                  e = eini-eloss;
-      const float p0 = sqrt( ( eini-mp0 )*( eini+mp0 ) ), // e_ini^2 - p_0^2 = mp0^2
-                  p = sqrt( ( e-mp )*( e+mp ) ); // e^2 - p^2 = mp^2
-      if ( p == 0 )
+                  e_out = e_ini-e_loss;
+      const float p_ini = sqrt( ( e_ini-mp0 )*( e_ini+mp0 ) ), // e_ini^2 - p_ini^2 = mp0^2
+                  p_out = sqrt( ( e_out-mp  )*( e_out+mp  ) ); // e_out^2 - p_out^2 = mp^2
+      if ( p_out == 0 )
         throw Exception( __PRETTY_FUNCTION__, "Invalid particle momentum", JustWarning );
 
-      return magnetic_strength_*( p0/p )*( qp/Parameters::get()->beamParticlesCharge() );
+      return magnetic_strength_*( p_ini/p_out )*( qp/Parameters::get()->beamParticlesCharge() );
     }
 
     const std::string

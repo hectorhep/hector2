@@ -26,11 +26,12 @@ namespace Hector
         TPaveText( x1, y1, x2, y2, "NDC" )
       {
         TPaveText::SetTextAlign( 13 );
-        if ( strcmp( text, "" )!=0 ) {
+        if ( strcmp( text, "" ) != 0 ) {
           TString txt = text;
-          if ( txt.Contains( "\\" ) ) {
-            TObjArray* tok = txt.Tokenize( "\\" );
-            for ( int i=0; i<tok->GetEntries(); i++ ) { TPaveText::AddText( dynamic_cast<TObjString*>( tok->At( i ) )->String() ); }
+          if ( txt.Contains( "@@" ) ) {
+            TObjArray* tok = txt.Tokenize( "@@" );
+            for ( int i=0; i<tok->GetEntries(); i++ )
+              TPaveText::AddText( dynamic_cast<TObjString*>( tok->At( i ) )->String() );
           }
           else TPaveText::AddText( text );
         }
@@ -39,18 +40,19 @@ namespace Hector
         TPaveText::SetLineColor( 0 );
         TPaveText::SetLineWidth( 0 );
         TPaveText::SetShadowColor( 0 );
+        TPaveText::SetTextAlign( kHAlignLeft+kVAlignTop );
         TPaveText::SetTextFont( font_type( 2 ) );
         TPaveText::SetTextSize( 0.058 );
       }
     };
 
    public:
-    inline Canvas( const char* name, const char* title = "", bool ratio = false ) :
+    inline Canvas( const char* name, const char* title = "", bool ratio = false, bool draw_logo = true ) :
       //TCanvas( name, "", 450, 450 ),
-      TCanvas( name, "", 600, 600 ),
+      TCanvas( name, "", 800, 800 ),
       fTitle( title ),
       fLegX1( 0.5 ), fLegY1( 0.75 ),
-      fRatio( ratio )
+      fRatio( ratio ), fDrawLogo( draw_logo )
     {
       Build();
     }
@@ -77,8 +79,8 @@ namespace Hector
       }
       // axis titles
       TString ttle = obj->GetTitle();
-      if ( ttle.Contains( "\\" ) ) {
-        TObjArray* tok = ttle.Tokenize( "\\" );
+      if ( ttle.Contains( "@@" ) ) {
+        TObjArray* tok = ttle.Tokenize( "@@" );
         TString x_title, y_title, unit, form_spec, distrib;
         if ( tok->GetEntries() > 0 ) x_title = dynamic_cast<TObjString*>( tok->At( 0 ) )->String();
         if ( tok->GetEntries() > 1 ) y_title = dynamic_cast<TObjString*>( tok->At( 1 ) )->String();
@@ -174,12 +176,14 @@ namespace Hector
       TCanvas::SetTicks( 1, 1 );
 
       TCanvas::cd();
-      fTopLogo = std::make_unique<PaveText>( 0.12, 0.95, 0.5, 0.96 );
-      fTopLogo->SetTextSize( 0.04 );
-      fTopLogo->SetTextFont( font_type( -108 ) );
-      fTopLogo->AddText( "Hector simulation" );
-      fTopLogo->SetTextAlign( kHAlignLeft+kVAlignBottom );
-
+      if ( fDrawLogo ) {
+        fTopLogo = std::make_unique<PaveText>( 0.14, 0.94, 0.2, 1. );
+        fTopLogo->SetTextSize( 0.04 );
+        fTopLogo->SetTextFont( font_type( 2 ) );
+        fTopLogo->SetTextAlign( kHAlignLeft+kVAlignTop );
+        fTopLogo->AddText( "#font[32]{Hector}" );
+        fTopLogo->AddText( "#scale[0.66]{simulation}" );
+      }
       SetTopLabel();
       if ( fRatio ) DivideCanvas();
     }
@@ -204,8 +208,8 @@ namespace Hector
 
     inline void BuildTopLabel() {
       TCanvas::cd();
-      fTopLabel = std::make_unique<PaveText>( 0.5, 0.95, 0.915, 0.96 );
-      fTopLabel->SetTextSize( 0.04 );
+      fTopLabel = std::make_unique<PaveText>( 0.5, 0.945, 0.925, 0.96 );
+      fTopLabel->SetTextSize( 0.035 );
       fTopLabel->SetTextAlign( kHAlignRight+kVAlignBottom );
     }
 
@@ -228,7 +232,7 @@ namespace Hector
     std::unique_ptr<PaveText> fTopLabel, fTopLogo;
     std::unique_ptr<TLegend> fLeg;
     double fLegX1, fLegY1;
-    bool fRatio;
+    bool fRatio, fDrawLogo;
   };
 }
 

@@ -112,9 +112,9 @@ main( int argc, char* argv[] )
   rp_region->SetFillColorAlpha( kGray, 0.5 );
   rp_region->SetLineColor( kBlack );
 
-  drawBothGraphs( "beta", "Beta-s dependence", "s (m)\\#beta (m)", &gr_betax, &gr_betay, labels, rp_region, max_s );
-  drawBothGraphs( "disp", "Dispersion-s dependence", "s (m)\\D (m)", &gr_dispx, &gr_dispy, labels, rp_region, max_s );
-  drawBothGraphs( "relat_align", "Relative alignment-s dependence", "s (m)\\Relative distance (m)", &gr_relx, &gr_rely, labels, rp_region, max_s );
+  drawBothGraphs( "beta", "Beta-s dependence", "s (m)@@#beta (m)", &gr_betax, &gr_betay, labels, rp_region, max_s );
+  drawBothGraphs( "disp", "Dispersion-s dependence", "s (m)@@D (m)", &gr_dispx, &gr_dispy, labels, rp_region, max_s );
+  drawBothGraphs( "relat_align", "Relative alignment-s dependence", "s (m)@@Relative distance (m)", &gr_relx, &gr_rely, labels, rp_region, max_s );
 
   return 0;
 }

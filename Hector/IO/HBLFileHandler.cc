@@ -52,10 +52,10 @@ namespace Hector
       while ( file.read( reinterpret_cast<char*>( &el ), sizeof( HBLElement ) ) ) {
         if ( Parameters::get()->loggingThreshold() > JustWarning ) {
           std::ostringstream os; os << ( Element::Type )el.element_type;
-          Exception( __PRETTY_FUNCTION__, Form( "Retrieved a %s element\n\t"
-                                                "with name %s\n\tat s=%f m\n\t"
-                                                "with length=%f m (magnetic strength=%f)",
-                                                os.str().c_str(), el.element_name, el.element_s, el.element_length, el.element_magnetic_strength ), Info ).dump();
+          PrintInfo( Form( "Retrieved a %s element\n\t"
+                           "with name %s\n\tat s=%f m\n\t"
+                           "with length=%f m (magnetic strength=%f)",
+                           os.str().c_str(), el.element_name, el.element_s, el.element_length, el.element_magnetic_strength ) );
         }
         switch ( ( Element::Type )el.element_type ) {
           case Element::aMarker:

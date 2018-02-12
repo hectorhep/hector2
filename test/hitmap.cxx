@@ -49,11 +49,11 @@ main( int argc, char* argv[] )
 
   Hector::Propagator prop( parser.beamline() );
 
-  //TH2D hitmap( "hitmap", "x (mm)\\y (mm)", 200, -10., 10., 200, -10., 10. );
-  //TH2D hitmap( "hitmap", "x (mm)\\y (mm)", 200, -5., 5., 200, -5., 5. );
-  TH2D hitmap( "hitmap", "x (mm)\\y (mm)", 200, -25., 25., 200, -50., 50. );
-  //TH2D hitmap( "hitmap", "x (mm)\\y (mm)", 200, -1., 1., 200, -1., 1. );
-  //TH2D hitmap( "hitmap", "x (mm)\\y (mm)", 200, 80., 120., 200, -50., 50. );
+  //TH2D hitmap( "hitmap", "x (mm)@@y (mm)", 200, -10., 10., 200, -10., 10. );
+  //TH2D hitmap( "hitmap", "x (mm)@@y (mm)", 200, -5., 5., 200, -5., 5. );
+  TH2D hitmap( "hitmap", "x (mm)@@y (mm)", 200, -25., 25., 200, -50., 50. );
+  //TH2D hitmap( "hitmap", "x (mm)@@y (mm)", 200, -1., 1., 200, -1., 1. );
+  //TH2D hitmap( "hitmap", "x (mm)@@y (mm)", 200, 80., 120., 200, -50., 50. );
   map<float,TH2D*> m_hitmaps;
   if ( hitmaps_dist > 0. ) {
     double s = 0.;

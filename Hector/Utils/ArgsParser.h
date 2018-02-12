@@ -37,6 +37,10 @@ namespace Hector
         Parameter( std::string name, std::string description, int default_value, int* var = nullptr, char sname = '\0' );
         /// An integer parameter
         Parameter( std::string name, std::string description, int* var = nullptr, char sname = '\0' );
+        /// An optional boolean parameter
+        Parameter( std::string name, std::string description, bool default_value, bool* var = nullptr, char sname = '\0' );
+        /// A boolean parameter
+        Parameter( std::string name, std::string description, bool* var = nullptr, char sname = '\0' );
 
         //--- floats
 
@@ -51,6 +55,10 @@ namespace Hector
         Parameter( std::string name, std::string description, std::vector<std::string> default_value, std::vector<std::string>* var = nullptr, char sname = '\0');
         /// A vector of strings parameter
         Parameter( std::string name, std::string description, std::vector<std::string>* var = nullptr, char sname = '\0' );
+        /// An optional vector of floating point parameter
+        Parameter( std::string name, std::string description, std::vector<double> default_value, std::vector<double>* var = nullptr, char sname = '\0');
+        /// A vector of floating point parameter
+        Parameter( std::string name, std::string description, std::vector<double>* var = nullptr, char sname = '\0' );
 
         //----- parameters attributes
 
@@ -73,8 +81,12 @@ namespace Hector
         int* int_variable;
         /// Pointer to an unsigned integer variable possibly handled by this parameter
         unsigned int* uint_variable;
+        /// Pointer to a boolean variable possibly handled by this parameter
+        bool* bool_variable;
         /// Pointer to a vector of string variables possibly handled by this parameter
         std::vector<std::string>* vec_str_variable;
+        /// Pointer to a vector of floating point variables possibly handled by this parameter
+        std::vector<double>* vec_float_variable;
       };
       /// A collection of parameters
       typedef std::vector<Parameter> ParametersList;
