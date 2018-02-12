@@ -55,7 +55,7 @@ main( int argc, char* argv[] )
   //Hector::Parameters::get()->setUseRelativeEnergy( true ); //FIXME
   //Hector::Parameters::get()->setComputeApertureAcceptance( false ); //FIXME
   //Hector::Parameters::get()->setEnableKickers( false ); //FIXME
-  Hector::Parameters::get()->setEnableDipoles( false ); //FIXME
+  //Hector::Parameters::get()->setEnableDipoles( false ); //FIXME
 
   //--- define the propagator objects
   vector<Hector::Propagator> propagators;
@@ -69,7 +69,7 @@ main( int argc, char* argv[] )
     //--- look at the beamline(s)
     bl->dump();
     auto rps = bl->find( "XRPH\\." );
-    cout << "---> beamline " << fn << " has " << rps.size() << " roman pots!" << endl;
+    cout << "---> beamline " << fn << " has " << rps.size() << " horizontal Roman pots!" << endl;
     for ( const auto& rp : rps )
       cout << " >> Roman pot " << rp->name() << " at s=" << rp->s() << " m" << endl;
   }
