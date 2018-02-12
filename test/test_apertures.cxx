@@ -70,7 +70,7 @@ main()
   mg.Draw( "ap" );
   mg.GetXaxis()->SetLimits( -0.5, 0.5 );
   mg.GetYaxis()->SetRangeUser( -0.4, 0.5 );
-  mg.GetHistogram()->SetTitle( "x (arb. unit)\\y (arb. units)" );
+  mg.GetHistogram()->SetTitle( "x (arb. unit)@@y (arb. units)" );
   c.Prettify( mg.GetHistogram() );
   c.Save( "pdf" );
   return 0;

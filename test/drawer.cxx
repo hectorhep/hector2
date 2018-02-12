@@ -20,22 +20,22 @@
 
 using namespace std;
 
-//TGraphErrors mean_trajectory( const TMultiGraph* );
-TGraphErrors mean_trajectory( const vector<TGraph>& );
+TGraphErrors mean_trajectory( const TMultiGraph& );
 
 int
 main( int argc, char* argv[] )
 {
   vector<string> twiss_filenames;
   string ip_name;
-  double crossing_angle_x, crossing_angle_y, max_s;
+  vector<double> crossing_angles_x, crossing_angles_y;
+  double max_s;
   double beam_lateral_width_ip, beam_angular_divergence_ip;
   double xi;
   double scale_x, scale_y;
   unsigned int num_particles;
   int dir;
 
-  Hector::ArgsParser args( argc, argv, {
+  Hector::ArgsParser( argc, argv, {
     { "twiss-files", "beamline(s) Twiss file(s)", &twiss_filenames, 'i' },
   }, {
     { "ip-name", "name of the interaction point", "IP5", &ip_name, 'c' },
@@ -43,14 +43,15 @@ main( int argc, char* argv[] )
     { "max-s", "maximal s-coordinate (m)", 250., &max_s },
     { "num-parts", "number of particles to generate", 1000, &num_particles, 'n' },
     { "xi", "particles momentum loss", 0.1, &xi },
-    { "alpha-x", "crossing angle in the x direction (rad)", 180.e-6, &crossing_angle_x, 'x' },
-    { "alpha-y", "crossing angle in the y direction (rad)", 0., &crossing_angle_y, 'y' },
+    { "alpha-x", "crossing angle in the x direction (rad)", vector<double>{ 180.e-6 }, &crossing_angles_x, 'x' },
+    { "alpha-y", "crossing angle in the y direction (rad)", vector<double>{ 0. }, &crossing_angles_y, 'y' },
     { "scale-x", "Horizontal coordinate scaling (m)", 0.1, &scale_x },
     { "scale-y", "Vertical coordinate scaling (m)", 0.05, &scale_y },
     { "beam-divergence", "Beam angular divergence (rad)", 30.23e-6, &beam_angular_divergence_ip, 'r' },
     { "beam-width", "Beam transverse width (m)", 16.63e-6, &beam_lateral_width_ip, 'w' },
   } );
 
+  for ( const auto& x : crossing_angles_x ) cout << x << endl;
   //--- general propagation parameters
   //Hector::Parameters::get()->setUseRelativeEnergy( true ); //FIXME
   //Hector::Parameters::get()->setComputeApertureAcceptance( false ); //FIXME
@@ -73,31 +74,28 @@ main( int argc, char* argv[] )
     for ( const auto& rp : rps )
       cout << " >> Roman pot " << rp->name() << " at s=" << rp->s() << " m" << endl;
   }
-  vector<TGraph> mg_x[2], mg_y[2];
+  TMultiGraph mg_x[2], mg_y[2];
 
   //parser_beam1.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( -0.097, 0. ) );
   //parser_beam2.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( +0.097, 0. ) );
 
-  const double mass = Hector::Parameters::get()->beamParticlesMass(),
-               energy = Hector::Parameters::get()->beamEnergy();
-  const CLHEP::Hep3Vector mom0( 0, 0., sqrt( energy*energy-mass*mass ) );
-
   Hector::BeamProducer::GaussianParticleGun gun;
   gun.smearX( 0., beam_lateral_width_ip );
   gun.smearY( 0., beam_lateral_width_ip );
-  gun.smearTy( crossing_angle_y, beam_angular_divergence_ip );
-  //Hector::BeamProducer::TYscanner gun( num_particles, Hector::Parameters::get()->beamEnergy(), -1, 1, max_s );
 
   Hector::Timer tmr;
-  TH1D h_timing( "timing", "Propagation time\\Event\\ms?.2f", 100, 0., 10. );
+  TH1D h_timing( "timing", "Propagation time@@Event@@ms?.2f", 100, 0., 10. );
 
   for ( size_t i = 0; i < num_particles; ++i ) {
-    if ( num_particles > 100 && i % ( num_particles / 10 ) == 0 )
+    if ( num_particles > 10 && i % ( num_particles / 10 ) == 0 )
       cout << "> event " << i << " / " << num_particles << endl;
 
     unsigned short j = 0;
     for ( const auto& prop : propagators ) {
-      gun.smearTx( ( j == 0 ? -1 : +1 )*crossing_angle_x, beam_angular_divergence_ip );
+      const double crossing_angle_x = ( crossing_angles_x.size() == propagators.size() ) ? crossing_angles_x[j] : crossing_angles_x[0];
+      const double crossing_angle_y = ( crossing_angles_y.size() == propagators.size() ) ? crossing_angles_y[j] : crossing_angles_y[0];
+      gun.smearTx( crossing_angle_x, beam_angular_divergence_ip );
+      gun.smearTy( crossing_angle_y, beam_angular_divergence_ip );
       Hector::Particle p = gun.shoot();
       p.firstStateVector().setXi( xi );
 //      p.firstStateVector().setKick( 0. );
@@ -114,8 +112,12 @@ main( int argc, char* argv[] )
         gr_x.SetPoint( gr_x.GetN(), pos.first, pos.second.position().x() );
         gr_y.SetPoint( gr_y.GetN(), pos.first, pos.second.position().y() );
       }
-      mg_x[j].emplace_back( gr_x );
-      mg_y[j].emplace_back( gr_y );
+      gr_x.SetLineColor( kGray );
+      gr_y.SetLineColor( kGray );
+      gr_x.SetLineWidth( 1 );
+      gr_y.SetLineWidth( 1 );
+      mg_x[j].Add( (TGraph*)gr_x.Clone() );
+      mg_y[j].Add( (TGraph*)gr_y.Clone() );
       ++j;
     }
   }
@@ -123,7 +125,12 @@ main( int argc, char* argv[] )
   // drawing part
 
   {
-    Hector::Canvas c( "beamline", Form( "E_{p} = %.1f TeV, #alpha_{X} = %.1f #murad", Hector::Parameters::get()->beamEnergy()*CLHEP::GeV/CLHEP::TeV, crossing_angle_x*1.e6 ), true );
+    ostringstream os_xa;
+    for ( unsigned short i = 0; i < crossing_angles_x.size(); ++i ) {
+      if ( i > 0 ) os_xa << "/";
+      os_xa << Form( "%.1f", crossing_angles_x[i]*1.e6 );
+    }
+    Hector::Canvas c( "beamline", Form( "E_{p} = %.1f TeV, #alpha_{X} = %s #murad", Hector::Parameters::get()->beamEnergy()*CLHEP::GeV/CLHEP::TeV, os_xa.str().c_str() ), true );
     c.SetWindowSize( 800, 800 );
     //c.SetGrayscale();
 
@@ -136,10 +143,11 @@ main( int argc, char* argv[] )
         TGraphErrors g_mean = mean_trajectory( mg_x[j] );
         g_mean.SetLineColor( ( j == 0 ) ? kBlack : kRed );
         g_mean.SetFillColorAlpha( ( j == 0 ) ? kBlack : kRed, 0.5 );
+        //mg->Add( &mg_x[j] );
         mg->Add( (TGraph*)g_mean.Clone() );
       }
       mg->Draw( "a2" );
-      mg->SetTitle( ".\\x (m)" );
+      mg->SetTitle( ".@@x (m)" );
       mg->GetXaxis()->SetLimits( 0., max_s );
       mg->GetYaxis()->SetRangeUser( -scale_x, scale_x );
       c.Prettify( mg->GetHistogram() );
@@ -163,10 +171,11 @@ main( int argc, char* argv[] )
         TGraphErrors g_mean = mean_trajectory( mg_y[j] );
         g_mean.SetLineColor( ( j == 0 ) ? kBlack : kRed );
         g_mean.SetFillColorAlpha( ( j == 0 ) ? kBlack : kRed, 0.5 );
+        //mg->Add( &mg_y[j] );
         mg->Add( (TGraph*)g_mean.Clone() );
       }
       mg->Draw( "a2" );
-      mg->SetTitle( "s (m)\\y (m)" );
+      mg->SetTitle( "s (m)@@y (m)" );
       mg->GetXaxis()->SetLimits( 0., max_s );
       mg->GetYaxis()->SetRangeUser( -scale_y, scale_y );
       c.Prettify( mg->GetHistogram() );
@@ -202,7 +211,7 @@ main( int argc, char* argv[] )
     c.Save( "pdf" );
   }
   { // draw the legend
-    Hector::Canvas c( "beamline_legend" );
+    Hector::Canvas c( "beamline_legend", "", false, false );
     elementsLegend leg;
     gStyle->SetOptStat( 0 );
     for ( const auto& prop : propagators )
@@ -222,23 +231,26 @@ main( int argc, char* argv[] )
 }
 
 TGraphErrors
-//mean_trajectory( const TMultiGraph* amg )
-mean_trajectory( const vector<TGraph>& amg )
+mean_trajectory( const TMultiGraph& amg )
 {
   map<double,double> mean_val; map<double,unsigned int> num_vals;
   // first loop to extract the mean and number of points
-  for ( const auto& gr : amg )
-    for ( int i = 0; i < gr.GetN(); ++i ) { double x, y; gr.GetPoint( i, x, y ); mean_val[x] += y; num_vals[x]++; }
+  for ( const auto& obj : *amg.GetListOfGraphs() ) {
+    const auto gr = dynamic_cast<TGraph*>( obj );
+    for ( int i = 0; i < gr->GetN(); ++i ) { double x, y; gr->GetPoint( i, x, y ); mean_val[x] += y; num_vals[x]++; }
+  }
 
   for ( auto& v : mean_val ) v.second /= num_vals[v.first]; // extract the mean
 
   // second loop to extract the variance
   map<double,double> err_val;
 
-  for ( const auto& gr : amg )
-    for ( int i = 0; i < gr.GetN(); ++i ) { double x, y; gr.GetPoint( i, x, y ); err_val[x] += pow( y-mean_val[x], 2 ); }
+  for ( const auto& obj : *amg.GetListOfGraphs() ) {
+    const auto gr = dynamic_cast<TGraph*>( obj );
+    for ( int i = 0; i < gr->GetN(); ++i ) { double x, y; gr->GetPoint( i, x, y ); err_val[x] += pow( y-mean_val[x], 2 )/num_vals[x]; }
+  }
 
-  for ( auto& v : err_val ) v.second = sqrt( v.second )/num_vals[v.first];
+  for ( auto& v : err_val ) v.second = sqrt( v.second );
   assert( err_val.size() == mean_val.size() );
 
   //for ( const auto& v : num_vals ) cout << v.first << "|" << v.second << "|" << mean_val[v.first] << endl;

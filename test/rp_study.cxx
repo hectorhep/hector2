@@ -103,13 +103,13 @@ main( int argc, char* argv[] )
     c.cd( 1 );
     gr_x_vs_xi.Draw( "alp" );
     gr_x_vs_xi.SetMarkerStyle( 24 );
-    gr_x_vs_xi.SetTitle( "#xi\\x (mm)" );
+    gr_x_vs_xi.SetTitle( "#xi@@x (mm)" );
     c.Prettify( gr_x_vs_xi.GetHistogram() );
     ( (TPad*)c.GetPad( 1 ) )->SetGrid( 1, 1 );
     c.cd( 2 );
     gr_y_vs_xi.Draw( "alp" );
     gr_y_vs_xi.SetMarkerStyle( 24 );
-    gr_y_vs_xi.SetTitle( "#xi\\y (mm)" );
+    gr_y_vs_xi.SetTitle( "#xi@@y (mm)" );
     c.Prettify( gr_y_vs_xi.GetHistogram() );
     ( (TPad*)c.GetPad( 2 ) )->SetGrid( 1, 1 );
     c.Save( "pdf" );

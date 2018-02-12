@@ -44,13 +44,13 @@ int main( int argc, char* argv[] )
 
   const Hector::Elements rps = madx.romanPots( Hector::IO::MADX::horizontalPots );
 
-  auto h_xi_raw = new TH1D( "xi_raw", "Proton momentum loss #xi\\Events\\?.3f", 250, -0.125, 1.125 ),
-       h_tx_raw = new TH1D( "tx_raw", "#theta_{X}\\Events\\#murad?.1f", 100, -500., 500. ),
-       h_ty_raw = new TH1D( "ty_raw", "#theta_{Y}\\Events\\#murad?.1f", 100, -500., 500. );
+  auto h_xi_raw = new TH1D( "xi_raw", "Proton momentum loss #xi@@Events@@?.3f", 250, -0.125, 1.125 ),
+       h_tx_raw = new TH1D( "tx_raw", "#theta_{X}@@Events@@#murad?.1f", 100, -500., 500. ),
+       h_ty_raw = new TH1D( "ty_raw", "#theta_{Y}@@Events@@#murad?.1f", 100, -500., 500. );
   map<Hector::Element::ElementBase*,TH1D*> h_xi_sp, h_tx_sp, h_ty_sp;
   map<Hector::Element::ElementBase*,TH2D*> h_hitmap;
 
-  TH1D h_num_protons( "num_protons", "Proton multiplicity in event\\Events", 10, 0., 10. );
+  TH1D h_num_protons( "num_protons", "Proton multiplicity in event@@Events", 10, 0., 10. );
   double max_rp_s = 0.;
   for ( const auto& pot : rps ) {
     const auto rp = pot.get();
@@ -59,7 +59,7 @@ int main( int argc, char* argv[] )
     h_xi_sp[rp] = ( TH1D* )h_xi_raw->Clone( Form( "xi_scoring_plane_%s", rp->name().c_str() ) );
     h_tx_sp[rp] = ( TH1D* )h_tx_raw->Clone( Form( "tx_scoring_plane_%s", rp->name().c_str() ) );
     h_ty_sp[rp] = ( TH1D* )h_ty_raw->Clone( Form( "ty_scoring_plane_%s", rp->name().c_str() ) );
-    h_hitmap[rp] = new TH2D( Form( "hitmap_%s", rp->name().c_str() ), "x (m)\\y (m)", 300, -0.15, 0., 300, -0.03, 0.03 );
+    h_hitmap[rp] = new TH2D( Form( "hitmap_%s", rp->name().c_str() ), "x (m)@@y (m)", 300, -0.15, 0., 300, -0.03, 0.03 );
   }
 
   Hector::Parameters::get()->setComputeApertureAcceptance( false );

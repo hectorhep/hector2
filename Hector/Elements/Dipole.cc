@@ -11,22 +11,21 @@ namespace Hector
     Matrix
     SectorDipole::matrix( float eloss, float mp, int qp ) const
     {
+      Matrix mat = Drift::genericMatrix( length_ );
+
       if ( Parameters::get()->enableDipoles() == false )
-        return Drift::genericMatrix( length_ );
+        return mat;
 
-      const float ke = fieldStrength( eloss, mp, qp ); //FIXME
-
+      const float ke = fieldStrength( eloss, mp, qp );
       if ( ke == 0. ) { // simple drift matrix
-        Exception( __PRETTY_FUNCTION__, Form( "Dipole %s has no effect. Treating it as a drift.", name_.c_str() ), JustWarning ).dump();
-        return Drift::genericMatrix( length_ );
+        PrintWarning( Form( "Dipole %s has no effect. Treating it as a drift.", name_.c_str() ) );
+        return mat;
       }
 
       const double radius = 1./ke,
                    theta = length_*ke,
                    c_theta = cos( theta ), s_theta = sin( theta ),
-        inv_energy = 1. / Parameters::get()->beamEnergy();
-
-      Matrix mat = Drift::genericMatrix( length_ );
+                   inv_energy = 1. / Parameters::get()->beamEnergy();
 
       mat( 1, 1 ) = c_theta;
       mat( 1, 2 ) = s_theta * radius;
@@ -44,25 +43,23 @@ namespace Hector
     Matrix
     RectangularDipole::matrix( float eloss, float mp, int qp ) const
     {
+      Matrix mat = Drift::genericMatrix( length_ );
+
       if ( Parameters::get()->enableDipoles() == false )
-        return Drift::genericMatrix( length_ );
+        return mat;
 
-      const float ke = fieldStrength( eloss, mp, qp ); //FIXME
-      //std::cout << ">>" << ke << std::endl;
-
+      const float ke = fieldStrength( eloss, mp, qp );
       if ( ke == 0. ) { // simple drift matrix
-        Exception( __PRETTY_FUNCTION__, Form( "Dipole %s has no effect. Treating it as a drift.", name_.c_str() ), JustWarning ).dump();
-        return Drift::genericMatrix( length_ );
+        PrintWarning( Form( "Dipole %s has no effect. Treating it as a drift.", name_.c_str() ) );
+        return mat;
       }
 
       const double radius = 1./ke,
                    theta = length_*ke,
                    s_theta = sin( theta ), c_theta = cos( theta ),
                    inv_energy = 1. / Parameters::get()->beamEnergy(),
-                   simp = 2.*radius*pow( sin( theta*0.5 ), 2 ) * inv_energy;
                    // numerically stable version of ( r/E₀ )*( 1-cos θ )
-
-      Matrix mat = Drift::genericMatrix( length_ );
+                   simp = 2.*radius*pow( sin( theta*0.5 ), 2 ) * inv_energy;
 
       mat( 1, 1 ) = c_theta;
       mat( 1, 2 ) = s_theta * radius;
@@ -74,12 +71,12 @@ namespace Hector
       if ( Parameters::get()->useRelativeEnergy() ) {
         throw Exception( __PRETTY_FUNCTION__, "Relative energy mode not yet supported in this version of Hector!\n\t"
                                               "Please contact the developers for more information.", Fatal );
-        Matrix ef_matrix = DiagonalMatrix( 6, 1 );
+        /*Matrix ef_matrix = DiagonalMatrix( 6, 1 );
         const double t_theta_half_ke = tan( theta*0.5 ) * ke;
         ef_matrix( 2, 1 ) =  t_theta_half_ke;
         ef_matrix( 4, 3 ) = -t_theta_half_ke;
 
-        return ef_matrix * mat * ef_matrix;
+        return ef_matrix * mat * ef_matrix;*/
       }
 
       return mat;

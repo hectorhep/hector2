@@ -28,16 +28,22 @@ elementStyle( const std::shared_ptr<Hector::Element::ElementBase>& elem, Color_t
     } break;
     case Hector::Element::anHorizontalQuadrupole:
       col = kYellow;
-      style = 3002;
+      style = 3001;
       break;
     case Hector::Element::aVerticalQuadrupole:
       col = kBlue;
-      style = 3003;
+      style = 3002;
       break;
     case Hector::Element::aVerticalKicker: col = kMagenta; break;
     case Hector::Element::anHorizontalKicker: col = kCyan; break;
-    case Hector::Element::aRectangularCollimator: col = 8; break;
-    case Hector::Element::anEllipticalCollimator: col = 9; break;
+    case Hector::Element::aRectangularCollimator:
+      col = 8;
+      style = 3006;
+      break;
+    case Hector::Element::anEllipticalCollimator:
+      col = 9;
+      style = 3007;
+      break;
     case Hector::Element::aCircularCollimator: col = 10; break;
     default: col = kWhite; break;
   }
@@ -49,7 +55,8 @@ elementStyle( const std::shared_ptr<Hector::Element::ElementBase>& elem, Color_t
 #include "TArrow.h"
 #include "TGraph.h"
 
-static const float alpha = 0.8;
+//static const float alpha = 0.8;
+static const float alpha = 1.0;
 
 void
 drawBeamline( const char axis, const Hector::Beamline* bl, const unsigned short beam,
@@ -146,7 +153,7 @@ class elementsLegend : public TLegend
       TLegend( xmin, ymin, xmax, ymax ) {
       if ( bl ) feedBeamline( bl );
       TLegend::SetTextFont( font_type( 2 ) );
-      TLegend::SetHeader( "Elements legend" );
+      TLegend::SetHeader( "#font[32]{Elements legend}" );
     }
     ~elementsLegend() {
       for ( auto& ai : already_in_ ) {
