@@ -34,6 +34,7 @@ main( int argc, char* argv[] )
   double scale_x, scale_y;
   unsigned int num_particles;
   int dir;
+  bool show_paths;
 
   Hector::ArgsParser( argc, argv, {
     { "twiss-files", "beamline(s) Twiss file(s)", &twiss_filenames, 'i' },
@@ -49,6 +50,7 @@ main( int argc, char* argv[] )
     { "scale-y", "Vertical coordinate scaling (m)", 0.05, &scale_y },
     { "beam-divergence", "Beam angular divergence (rad)", 30.23e-6, &beam_angular_divergence_ip, 'r' },
     { "beam-width", "Beam transverse width (m)", 16.63e-6, &beam_lateral_width_ip, 'w' },
+    { "show-paths", "Show individual particle paths", false, &show_paths },
   } );
 
   for ( const auto& x : crossing_angles_x ) cout << x << endl;
@@ -143,7 +145,8 @@ main( int argc, char* argv[] )
         TGraphErrors g_mean = mean_trajectory( mg_x[j] );
         g_mean.SetLineColor( ( j == 0 ) ? kBlack : kRed );
         g_mean.SetFillColorAlpha( ( j == 0 ) ? kBlack : kRed, 0.5 );
-        //mg->Add( &mg_x[j] );
+        if ( show_paths )
+          mg->Add( &mg_x[j] );
         mg->Add( (TGraph*)g_mean.Clone() );
       }
       mg->Draw( "a2" );
@@ -171,7 +174,8 @@ main( int argc, char* argv[] )
         TGraphErrors g_mean = mean_trajectory( mg_y[j] );
         g_mean.SetLineColor( ( j == 0 ) ? kBlack : kRed );
         g_mean.SetFillColorAlpha( ( j == 0 ) ? kBlack : kRed, 0.5 );
-        //mg->Add( &mg_y[j] );
+        if ( show_paths )
+          mg->Add( &mg_y[j] );
         mg->Add( (TGraph*)g_mean.Clone() );
       }
       mg->Draw( "a2" );

@@ -73,8 +73,14 @@ namespace Hector
       const auto skey = find( args_.begin(), args_.end(), "-"+std::string( 1, par.sname ) );
       if ( key != args_.end() || skey != args_.end() ) { // Parameter set
         const auto value = ( key != args_.end() ) ? key + 1 : skey + 1;
-        if ( value != args_.end() )
+        if ( value != args_.end() ) {
+          for ( const auto& par2 : optional_params_ )
+            if ( *value == "--"+par2.name || *value == "-"+std::string( 1, par.sname ) )
+              throw Exception( __PRETTY_FUNCTION__,
+                 Form( "Invalid value for parameter: %s", par.name.c_str() ),
+                 Fatal );
           par.value = *value;
+        }
         else if ( par.bool_variable )
           par.value = "1"; // if the flag is set, enabled by default
         else
