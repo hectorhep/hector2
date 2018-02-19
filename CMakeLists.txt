@@ -35,7 +35,7 @@ add_library(Hector2 SHARED $<TARGET_OBJECTS:HectorCore>
 set_target_properties(Hector2 PROPERTIES LINKER_LANGUAGE CXX)
 
 install(TARGETS Hector2 DESTINATION lib)
-install(DIRECTORY ${HECTOR_MODULES} DESTINATION include FILES_MATCHING PATTERN "*.h")
+install(DIRECTORY Hector DESTINATION include FILES_MATCHING PATTERN "*.h")
 
 #----- test executable
 
@@ -49,7 +49,7 @@ if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS})
   PYTHON_ADD_MODULE(pyhector ${HECTOR_SOURCE_DIR}/PythonWrapper.cc)
   target_link_libraries(pyhector Hector2 ${HECTOR_DEPENDENCIES} ${Boost_LIBRARIES})
-  #install(TARGETS pyhector DESTINATION "${PYTHON_INSTALL_PATH}")
+  #install(TARGETS pyhector DESTINATION ${PYTHON_INSTALL_PATH})
 endif()
 
 #----- add the tests
