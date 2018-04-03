@@ -15,12 +15,20 @@ namespace Hector
     LHE::LHE( const char* filename )
 #ifdef GOOD_HEPMC
       : reader_( new LHEF::Reader( filename ) )
+    {}
 #else
 #  ifdef PYTHIA8
       : pythia_( new Pythia8::Pythia )
+    {
+      pythia_->settings.mode( "Next:numberCount", 0 ); // disabling unnecessary output
+      pythia_->settings.mode( "Beams:frameType", 4 ); // LHEF input
+      pythia_->settings.word( "Beams:LHEF", filename );
+      pythia_->init();
+    }
+#  else
+    {}
 #  endif
 #endif
-    {}
 
     LHE::~LHE()
     {}
@@ -68,6 +76,23 @@ namespace Hector
           parts.push_back( part );
         }
       }
+#else
+#  ifdef PYTHIA8
+      while ( true ) {
+        if ( !pythia_->next() )
+          continue;
+        for ( int i = 0; i < pythia_->event.size(); ++i ) {
+          const Pythia8::Particle& pyp = pythia_->event[i];
+          if ( pyp.status() > 0 ) {
+            const LorentzVector mom( pyp.px(), pyp.py(), pyp.pz(), pyp.e() );
+            Particle part( mom );
+            part.setPDGid( pyp.id() );
+            parts.emplace_back( part );
+          }
+        }
+        return true;
+      }
+#  endif
 #endif
       return true;
     }

@@ -13,7 +13,7 @@ main( int argc, char* argv[] )
     { "lhe-file", "input LHE file", &lhe_file, 'i' },
   }, {} );
 
-  Hector::IO::LHE parser( lhe_file );
+  Hector::IO::LHE parser( lhe_file.c_str() );
 
   parser.printInfo();
 
