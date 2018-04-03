@@ -375,13 +375,15 @@ namespace Hector
             if ( length <= 0. ) throw Exception( __PRETTY_FUNCTION__,
               Form( "Trying to add a quadrupole with invalid length (l=%.2e m)", length ), JustWarning );
 
-            const float k1l = elem_map_floats.get( "k1l" ),
-                        mag_str_k = -k1l/length;
-            if ( k1l > 0 ) { elem.reset( new Element::HorizontalQuadrupole( name, s, length, mag_str_k ) ); }
-            else           { elem.reset( new Element::VerticalQuadrupole( name, s, length, mag_str_k ) ); }
+            const double k1l = elem_map_floats.get( "k1l" );
+            const double mag_str_k = -k1l/length;
+            if ( k1l > 0 )
+              elem.reset( new Element::HorizontalQuadrupole( name, s, length, mag_str_k ) );
+            else
+              elem.reset( new Element::VerticalQuadrupole( name, s, length, mag_str_k ) );
           } break;
           case Element::aRectangularDipole: {
-            const float k0l = elem_map_floats.get( "k0l" );
+            const double k0l = elem_map_floats.get( "k0l" );
             if ( length <= 0. )
               throw Exception( __PRETTY_FUNCTION__,
                 Form( "Trying to add a rectangular dipole with invalid length (l=%.2e m)", length ),
@@ -391,11 +393,11 @@ namespace Hector
                 Form( "Trying to add a rectangular dipole (%s) with k0l=%.2e", name.c_str(), k0l ),
                 JustWarning );
 
-            const float mag_strength = dir_*k0l/length;
+            const double mag_strength = dir_*k0l/length;
             elem.reset( new Element::RectangularDipole( name, s, length, mag_strength ) );
           } break;
           case Element::aSectorDipole: {
-            const float k0l = elem_map_floats.get( "k0l" );
+            const double k0l = elem_map_floats.get( "k0l" );
             if ( length <= 0. )
               throw Exception( __PRETTY_FUNCTION__,
                 Form( "Trying to add a sector dipole with invalid length (l=%.2e m)", length ),
@@ -405,31 +407,33 @@ namespace Hector
                 Form( "Trying to add a sector dipole (%s) with k0l=%.2e", name.c_str(), k0l ),
                 JustWarning );
 
-            const float mag_strength = dir_*k0l/length;
+            const double mag_strength = dir_*k0l/length;
             elem.reset( new Element::SectorDipole( name, s, length, mag_strength ) );
           } break;
           case Element::anHorizontalKicker: {
-            const float hkick = elem_map_floats.get( "hkick" );
+            const double hkick = elem_map_floats.get( "hkick" );
             //if ( hkick == 0. ) throw Exception( __PRETTY_FUNCTION__, Form( "Trying to add a horizontal kicker (%s) with kick=%.2e", name.c_str(), hkick ), JustWarning );
-            if ( hkick == 0. ) return 0;
-
+            if ( hkick == 0. )
+              return 0;
             elem.reset( new Element::HorizontalKicker( name, s, length, hkick ) );
           } break;
           case Element::aVerticalKicker: {
-            const float vkick = elem_map_floats.get( "vkick" );
+            const double vkick = elem_map_floats.get( "vkick" );
             //if ( vkick == 0. ) throw Exception( __PRETTY_FUNCTION__, Form( "Trying to add a vertical kicker (%s) with kick=%.2e", name.c_str(), vkick ), JustWarning );
-            if ( vkick == 0. ) return 0;
-
+            if ( vkick == 0. )
+              return 0;
             elem.reset( new Element::VerticalKicker( name, s, length, vkick ) );
           } break;
-          case Element::aRectangularCollimator: {
+          case Element::aRectangularCollimator:
             elem.reset( new Element::RectangularCollimator( name, s, length ) );
-          } break;
-          case Element::aMarker: { elem.reset( new Element::Marker( name, s, length ) ); } break;
+            break;
+          case Element::aMarker:
+            elem.reset( new Element::Marker( name, s, length ) );
+            break;
           case Element::aMonitor:
-          case Element::anInstrument: {
+          case Element::anInstrument:
             raw_beamline_->addMarker( Element::Marker( name, s, length ) );
-          } break;
+            break;
           case Element::aDrift: {
             previous_relpos_ = TwoVector( elem_map_floats.get( "x" ), elem_map_floats.get( "y" ) );
             previous_disp_ = TwoVector( elem_map_floats.get( "dx" ), elem_map_floats.get( "dy" ) );
@@ -463,10 +467,10 @@ namespace Hector
         if ( elem_map_str.hasKey( "apertype" ) ) {
           const std::string aper_type = lowercase( trim( elem_map_str.get( "apertype" ) ) );
           const Aperture::Type apertype = findApertureTypeByApertype( aper_type );
-          const float aper_1 = elem_map_floats.get( "aper_1" ),
-                      aper_2 = elem_map_floats.get( "aper_2" ),
-                      aper_3 = elem_map_floats.get( "aper_3" ),
-                      aper_4 = elem_map_floats.get( "aper_4" ); // MAD-X provides it in m
+          const double aper_1 = elem_map_floats.get( "aper_1" ),
+                       aper_2 = elem_map_floats.get( "aper_2" ),
+                       aper_3 = elem_map_floats.get( "aper_3" ),
+                       aper_4 = elem_map_floats.get( "aper_4" ); // MAD-X provides it in m
           switch ( apertype ) {
             case Aperture::aRectEllipticAperture: { elem->setAperture( std::make_shared<Aperture::RectEllipticAperture>( aper_1, aper_2, aper_3, aper_4, relpos ) ); } break;
             case Aperture::aRectCircularAperture: { elem->setAperture( std::make_shared<Aperture::RectEllipticAperture>( aper_1, aper_2, aper_3, aper_3, relpos ) ); } break;

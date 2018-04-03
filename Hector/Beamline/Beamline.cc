@@ -21,7 +21,7 @@ namespace Hector
     if ( copy_elements ) setElements( rhs );
   }
 
-  Beamline::Beamline( float length, const ThreeVector& ip ) :
+  Beamline::Beamline( double length, const ThreeVector& ip ) :
     max_length_( length+5. ), // artificially increase the size to include next elements
     ip_( ip )
   {}
@@ -41,13 +41,13 @@ namespace Hector
   void
   Beamline::addMarker( const Element::Marker& marker )
   {
-    markers_.insert( std::pair<float,Element::Marker>( marker.s(), marker ) );
+    markers_.insert( std::pair<double,Element::Marker>( marker.s(), marker ) );
   }
 
   void
   Beamline::add( const std::shared_ptr<Element::ElementBase> elem )
   {
-    const float new_size = elem->s()+elem->length();
+    const double new_size = elem->s()+elem->length();
     if ( new_size > max_length_ && max_length_ < 0. )
       throw Exception( __PRETTY_FUNCTION__, Form( "Element %s is too far away for this beamline!\n"
                                                   "\tBeamline length: %.3f m, this element: %.3f m",
@@ -80,7 +80,7 @@ namespace Hector
                         "Hector will fix the overlap by splitting the earlier.",
                         elem->name().c_str(), elem->typeName().c_str(),
                         prev_elem->name().c_str(), prev_elem->typeName().c_str() ) );
-      const float prev_length = prev_elem->length();
+      const double prev_length = prev_elem->length();
 
       std::shared_ptr<Element::ElementBase> next_elem = nullptr;
       // check if one needs to add an extra piece to the previous element
@@ -131,7 +131,7 @@ namespace Hector
   }
 
   const std::shared_ptr<Element::ElementBase>
-  Beamline::get( float s ) const
+  Beamline::get( double s ) const
   {
     for ( size_t i = 0; i < elements_.size(); ++i ) {
       const auto elem = elements_.at( i );
@@ -142,7 +142,7 @@ namespace Hector
   }
 
   std::shared_ptr<Element::ElementBase>&
-  Beamline::get( float s )
+  Beamline::get( double s )
   {
     for ( auto& elem : elements_ ) {
       if ( elem->s() > s ) continue;
@@ -167,7 +167,7 @@ namespace Hector
   }
 
   Matrix
-  Beamline::matrix( float eloss, float mp, int qp ) const
+  Beamline::matrix( double eloss, double mp, int qp ) const
   {
     Matrix out = DiagonalMatrix( 6, 1 );
 
@@ -177,7 +177,7 @@ namespace Hector
     return out;
   }
 
-  float
+  double
   Beamline::length() const
   {
     if ( elements_.empty() ) return 0.;
@@ -200,7 +200,7 @@ namespace Hector
   }
 
   void
-  Beamline::offsetElementsAfter( float s, const TwoVector& offset )
+  Beamline::offsetElementsAfter( double s, const TwoVector& offset )
   {
     for ( auto& elemPtr : elements_ ) {
       if ( elemPtr->s() < s ) continue;
@@ -209,7 +209,7 @@ namespace Hector
   }
 
   void
-  Beamline::tiltElementsAfter( float s, const TwoVector& tilt )
+  Beamline::tiltElementsAfter( double s, const TwoVector& tilt )
   {
     for ( auto& elemPtr : elements_ ) {
       if ( elemPtr->s() < s ) continue;
@@ -221,7 +221,7 @@ namespace Hector
   Beamline::sequencedBeamline( const Beamline* beamline )
   {
     // add the drifts between optical elements
-    float pos = 0.;
+    double pos = 0.;
     // brand new beamline to populate
     std::unique_ptr<Beamline> tmp( new Beamline( *beamline, false ) );
 
@@ -230,7 +230,7 @@ namespace Hector
       // skip the markers
       if ( elemPtr->type() == Element::aMarker && elemPtr->s() != beamline->interactionPoint().z() ) continue;
       // add a drift whenever there is a gap in s
-      const float drift_length = elemPtr->s()-pos;
+      const double drift_length = elemPtr->s()-pos;
       if ( drift_length > 0. ) {
         try {
           tmp->add( std::make_shared<Element::Drift>( Form( "drift:%.4E", pos ).c_str(), pos, drift_length ) );
@@ -240,7 +240,7 @@ namespace Hector
       pos = elemPtr->s()+elemPtr->length();
     }
     // add the last drift
-    const float drift_length = tmp->length()-pos;
+    const double drift_length = tmp->length()-pos;
     if ( drift_length > 0 ) {
       try {
         tmp->add( std::make_shared<Element::Drift>( Form( "drift:%.4E", pos ).c_str(), pos, drift_length ) );

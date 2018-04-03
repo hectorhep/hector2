@@ -89,7 +89,7 @@ drawBeamline( const char axis, const Hector::Beamline* bl, const unsigned short 
     const float pos_rel = ( axis=='x' ) ? elemPtr->x() : elemPtr->y(),
                 pos_x_ini = elemPtr->s(),
                 pos_x_end = pos_x_ini + elemPtr->length(),
-                pos_y_low = ( ( beam == 0 ) ? -1 : 0 ) * size_y + pos_rel*scale_y /*+ offset*size_y*/,
+                pos_y_low = ( ( beam == 1 ) ? -1 : 0 ) * size_y + pos_rel*scale_y /*+ offset*size_y*/,
                 pos_y_high = pos_y_low+size_y;
     if ( draw_apertures ) {
       const auto& aper = elemPtr->aperture();

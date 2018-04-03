@@ -2,14 +2,14 @@
 #define Hector_IO_LHEParser_h
 
 #ifdef HEPMC
-
-#include "HepMC/Version.h"
-
-#ifdef HEPMC_VERSION_CODE // HepMC v3+
-#define GOOD_HEPMC
+#  include "HepMC/Version.h"
+#  ifdef HEPMC_VERSION_CODE // HepMC v3+
+#    define GOOD_HEPMC
+#    include "HepMC/LHEF.h"
+#  endif
+#endif
 
 #include "Hector/Propagator/Particle.h"
-#include "HepMC/LHEF.h"
 
 namespace Hector
 {
@@ -47,12 +47,12 @@ namespace Hector
         float beam2Energy() const;
 
       private:
+#ifdef GOOD_HEPMC
         std::unique_ptr<LHEF::Reader> reader_;
+#endif
     };
   }
 }
-#endif
 
 #endif
 
-#endif

@@ -9,23 +9,22 @@ namespace Hector
   namespace Element
   {
     Matrix
-    SectorDipole::matrix( float eloss, float mp, int qp ) const
+    SectorDipole::matrix( double eloss, double mp, int qp ) const
     {
       Matrix mat = Drift::genericMatrix( length_ );
 
       if ( Parameters::get()->enableDipoles() == false )
         return mat;
 
-      const float ke = fieldStrength( eloss, mp, qp );
+      const double ke = fieldStrength( eloss, mp, qp );
       if ( ke == 0. ) { // simple drift matrix
-        PrintWarning( Form( "Dipole %s has no effect. Treating it as a drift.", name_.c_str() ) );
+        PrintDebug( Form( "Dipole %s has no effect. Treating it as a drift.", name_.c_str() ) );
         return mat;
       }
 
-      const double radius = 1./ke,
-                   theta = length_*ke,
-                   c_theta = cos( theta ), s_theta = sin( theta ),
-                   inv_energy = 1. / Parameters::get()->beamEnergy();
+      const double radius = 1./ke;
+      const double theta = length_*ke, s_theta = sin( theta ), c_theta = cos( theta );
+      const double inv_energy = 1. / Parameters::get()->beamEnergy();
 
       mat( 1, 1 ) = c_theta;
       mat( 1, 2 ) = s_theta * radius;
@@ -41,25 +40,25 @@ namespace Hector
     }
 
     Matrix
-    RectangularDipole::matrix( float eloss, float mp, int qp ) const
+    RectangularDipole::matrix( double eloss, double mp, int qp ) const
     {
       Matrix mat = Drift::genericMatrix( length_ );
 
       if ( Parameters::get()->enableDipoles() == false )
         return mat;
 
-      const float ke = fieldStrength( eloss, mp, qp );
+      const double ke = fieldStrength( eloss, mp, qp );
       if ( ke == 0. ) { // simple drift matrix
-        PrintWarning( Form( "Dipole %s has no effect. Treating it as a drift.", name_.c_str() ) );
+        PrintDebug( Form( "Dipole %s has no effect. Treating it as a drift.", name_.c_str() ) );
         return mat;
       }
 
-      const double radius = 1./ke,
-                   theta = length_*ke,
-                   s_theta = sin( theta ), c_theta = cos( theta ),
-                   inv_energy = 1. / Parameters::get()->beamEnergy(),
-                   // numerically stable version of ( r/E₀ )*( 1-cos θ )
-                   simp = 2.*radius*pow( sin( theta*0.5 ), 2 ) * inv_energy;
+      const double radius = 1./ke;
+      const double theta = length_*ke, s_theta = sin( theta ), c_theta = cos( theta );
+      //std::cout << name_ << "|" << eloss << "|" << radius << "|" << ke << "|" << theta << "|" << s_theta << "|" << c_theta << std::endl;
+      const double inv_energy = 1. / Parameters::get()->beamEnergy();
+      // numerically stable version of ( r/E₀ )*( 1-cos θ )
+      const double simp = 2.*radius*pow( sin( theta*0.5 ), 2 ) * inv_energy;
 
       mat( 1, 1 ) = c_theta;
       mat( 1, 2 ) = s_theta * radius;
@@ -83,3 +82,4 @@ namespace Hector
     }
   }
 }
+

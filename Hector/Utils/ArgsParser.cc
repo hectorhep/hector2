@@ -78,7 +78,7 @@ namespace Hector
             if ( *value == "--"+par2.name || *value == "-"+std::string( 1, par.sname ) )
               throw Exception( __PRETTY_FUNCTION__,
                  Form( "Invalid value for parameter: %s", par.name.c_str() ),
-                 Fatal );
+                 Fatal, 64 );
           par.value = *value;
         }
         else if ( par.bool_variable )
@@ -86,7 +86,7 @@ namespace Hector
         else
           throw Exception( __PRETTY_FUNCTION__,
                            Form( "Invalid value for parameter: %s", par.name.c_str() ),
-                           Fatal );
+                           Fatal, 64 );
       }
       if ( par.str_variable != nullptr ) *par.str_variable = par.value;
       else if ( par.float_variable != nullptr ) *par.float_variable = std::stod( par.value );
@@ -125,7 +125,7 @@ namespace Hector
     }
     throw Exception( __PRETTY_FUNCTION__,
                      Form( "The parameter \"%s\" was not declared in the arguments parser constructor!", name.c_str() ),
-                     Fatal );
+                     Fatal, 64 );
   }
 
   void

@@ -2,16 +2,20 @@
 
 #ifndef GOOD_HEPMC
 #pragma message "HepMC version 2 was found on your system! Version 3 is required for LHEF parsing!"
-#else
+#endif
 
 #include "Hector/Core/Exception.h"
+
+#include <sstream>
 
 namespace Hector
 {
   namespace IO
   {
-    LHE::LHE( const char* filename ) :
-      reader_( new LHEF::Reader( filename ) )
+    LHE::LHE( const char* filename )
+#ifdef GOOD_HEPMC
+      : reader_( new LHEF::Reader( filename ) )
+#endif
     {}
 
     LHE::~LHE()
@@ -31,6 +35,7 @@ namespace Hector
     LHE::nextEvent( Particles& parts )
     {
       parts.clear();
+#ifdef GOOD_HEPMC
       bool status = reader_->readEvent();
       if ( !status ) return false;
 
@@ -59,45 +64,69 @@ namespace Hector
           parts.push_back( part );
         }
       }
+#endif
       return true;
     }
 
     float
     LHE::crossSection() const
     {
+#ifdef GOOD_HEPMC
       return *( reader_->heprup.XSECUP.begin() );
+#else
+      return -1.;
+#endif
     }
 
     float
     LHE::crossSectionError() const
     {
+#ifdef GOOD_HEPMC
       return *( reader_->heprup.XERRUP.begin() );
+#else
+      return -1.;
+#endif
     }
 
     int
     LHE::beam1PDGId() const
     {
+#ifdef GOOD_HEPMC
       return reader_->heprup.IDBMUP.first;
+#else
+      return 0;
+#endif
     }
 
     int
     LHE::beam2PDGid() const
     {
+#ifdef GOOD_HEPMC
       return reader_->heprup.IDBMUP.second;
+#else
+      return 0;
+#endif
     }
 
     float
     LHE::beam1Energy() const
     {
+#ifdef GOOD_HEPMC
       return reader_->heprup.EBMUP.first;
+#else
+      return -1.;
+#endif
     }
 
     float
     LHE::beam2Energy() const
     {
+#ifdef GOOD_HEPMC
       return reader_->heprup.EBMUP.second;
+#else
+      return -1.;
+#endif
     }
   }
 }
 
-#endif

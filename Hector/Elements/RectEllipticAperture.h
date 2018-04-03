@@ -12,7 +12,7 @@ namespace Hector
     {
       public:
         /// Class constructor
-        RectEllipticAperture( float, float, float, float, const TwoVector& pos = TwoVector() );
+        RectEllipticAperture( double, double, double, double, const TwoVector& pos = TwoVector() );
         ~RectEllipticAperture();
 
         std::shared_ptr<ApertureBase> clone() const override { return std::make_shared<RectEllipticAperture>( *this ); }

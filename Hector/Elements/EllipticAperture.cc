@@ -4,7 +4,7 @@ namespace Hector
 {
   namespace Aperture
   {
-    EllipticAperture::EllipticAperture( float ell_length, float ell_height, const TwoVector& pos ) :
+    EllipticAperture::EllipticAperture( double ell_length, double ell_height, const TwoVector& pos ) :
       ApertureBase( anEllipticAperture, pos, { { ell_length, ell_height, 0.f, 0.f } } )
     {}
 

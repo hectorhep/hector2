@@ -13,7 +13,7 @@ namespace Hector
     {
       public:
         /// Class constructor
-        RectangularCollimator( const std::string& name, float spos=0., float length=0. ) :
+        RectangularCollimator( const std::string& name, double spos = 0., double length = 0. ) :
           Drift( name, aRectangularCollimator, spos, length ) {}
 
         std::shared_ptr<ElementBase> clone() const override { return std::make_shared<RectangularCollimator>( *this ); }

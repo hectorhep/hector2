@@ -9,7 +9,7 @@ namespace Hector
 {
   namespace Element
   {
-    ElementBase::ElementBase( const Type& type, const std::string& name, float spos, float length ) :
+    ElementBase::ElementBase( const Type& type, const std::string& name, double spos, double length ) :
       type_( type ), name_( name ),
       length_( length ), magnetic_strength_( 0. ), s_( spos )
     {}
@@ -58,19 +58,19 @@ namespace Hector
       setAperture( std::shared_ptr<Aperture::ApertureBase>( apert ) );
     }
 
-    float
-    ElementBase::fieldStrength( float e_loss, float mp, int qp ) const
+    double
+    ElementBase::fieldStrength( double e_loss, double mp, int qp ) const
     {
       // only act on charged particles
       if ( qp == 0 )
         return 0.;
 
       // reweight the field strength by the particle charge and momentum
-      const float e_ini = Parameters::get()->beamEnergy(),
-                  mp0 = Parameters::get()->beamParticlesMass(),
-                  e_out = e_ini-e_loss;
-      const float p_ini = sqrt( ( e_ini-mp0 )*( e_ini+mp0 ) ), // e_ini^2 - p_ini^2 = mp0^2
-                  p_out = sqrt( ( e_out-mp  )*( e_out+mp  ) ); // e_out^2 - p_out^2 = mp^2
+      const double e_ini = Parameters::get()->beamEnergy(),
+                   mp0 = Parameters::get()->beamParticlesMass(),
+                   e_out = e_ini-e_loss;
+      const double p_ini = sqrt( ( e_ini-mp0 )*( e_ini+mp0 ) ), // e_ini^2 - p_ini^2 = mp0^2
+                   p_out = sqrt( ( e_out-mp  )*( e_out+mp  ) ); // e_out^2 - p_out^2 = mp^2
       if ( p_out == 0 )
         throw Exception( __PRETTY_FUNCTION__, "Invalid particle momentum", JustWarning );
 

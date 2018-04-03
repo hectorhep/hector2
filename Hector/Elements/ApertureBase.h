@@ -19,14 +19,14 @@ namespace Hector
     {
       public:
         /// Collection of shape parameters for this aperture
-        typedef std::vector<float> Parameters;
+        typedef std::vector<double> Parameters;
 
       public:
         /// Build a new aperture to an element
         /// \param[in] type Aperture type (see Aperture::Type)
         /// \param[in] pos Aperture position
         /// \param[in] param Shape parameters
-        ApertureBase( const Type& type, const TwoVector& pos, const std::vector<float>& param );
+        ApertureBase( const Type& type, const TwoVector& pos, const std::vector<double>& param );
         virtual ~ApertureBase();
 
         /// Return a pointer to a clone of the current aperture
@@ -49,7 +49,7 @@ namespace Hector
         const std::string typeName() const;
 
         /// Retrieve a shape parameter of the aperture
-        float p( size_t i ) const { return ( i < param_.size() ) ? param_.at( i ) : -1.0; }
+        double p( size_t i ) const { return ( i < param_.size() ) ? param_.at( i ) : -1.0; }
         /// Aperture shape parameters
         const Parameters& parameters() const { return param_; }
 
@@ -59,13 +59,13 @@ namespace Hector
         void setPosition( const TwoVector& pos ) { pos_ = pos; }
 
         /// Get the horizontal position of the aperture barycentre
-        float x() const { return pos_.x(); }
+        double x() const { return pos_.x(); }
         /// Set the horizontal position of the aperture barycentre
-        void setX( float x ) { pos_.setX( x ); }
+        void setX( double x ) { pos_.setX( x ); }
         /// Get the vertical position of the aperture barycentre
-        float y() const { return pos_.y(); }
+        double y() const { return pos_.y(); }
         /// Set the vertical position of the aperture barycentre
-        void setY( float y ) { pos_.setY( y ); }
+        void setY( double y ) { pos_.setY( y ); }
 
         /// Change the x-y position of the aperture barycentre
         void offset( const TwoVector& offs ) { pos_ += offs; }

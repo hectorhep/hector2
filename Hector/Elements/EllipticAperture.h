@@ -12,7 +12,7 @@ namespace Hector
     {
       public:
         /// Class constructor
-        EllipticAperture( float, float, const TwoVector& pos = TwoVector() );
+        EllipticAperture( double, double, const TwoVector& pos = TwoVector() );
         ~EllipticAperture();
 
         std::shared_ptr<ApertureBase> clone() const override { return std::make_shared<EllipticAperture>( *this ); }

@@ -6,7 +6,7 @@ namespace Hector
     beam_energy_( 6500. ), // in GeV
     beam_particles_mass_( 0.938272046 ), // in GeV
     beam_particles_charge_( +1 ),
-    logging_threshold_( Info ),
+    logging_threshold_( JustWarning ),
     use_relative_energy_( false ),
     correct_beamline_overlaps_( true ),
     compute_aperture_acceptance_( true ),

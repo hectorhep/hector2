@@ -22,7 +22,7 @@ namespace Hector
         /// \param[in] name Element name
         /// \param[in] spos s-position of the element in the beamline
         /// \param[in] length Element length (in m)
-        ElementBase( const Type& type, const std::string& name = "invalid element", float spos = 0., float length = 0. );
+        ElementBase( const Type& type, const std::string& name = "invalid element", double spos = 0., double length = 0. );
         /// Copy constructor (moving the associated aperture if any)
         ElementBase( ElementBase& elem );
         /// Copy constructor (cloning the associated aperture if any)
@@ -40,7 +40,7 @@ namespace Hector
         /// \param[in] eloss Particle energy loss in the element (GeV)
         /// \param[in] mp Particle mass (GeV)
         /// \param[in] qp Particle charge (e)
-        virtual Matrix matrix( float eloss, float mp = Parameters::get()->beamParticlesMass(), int qp = Parameters::get()->beamParticlesCharge() ) const = 0;
+        virtual Matrix matrix( double eloss, double mp = Parameters::get()->beamParticlesMass(), int qp = Parameters::get()->beamParticlesCharge() ) const = 0;
 
         /// Set the name of the element
         void setName( const std::string& name ) { name_ = name; }
@@ -54,11 +54,11 @@ namespace Hector
         const std::string typeName() const;
 
         /// Set the longitudinal position of the entrance of the element
-        void setS( float s ) { s_ = s; }
+        void setS( double s ) { s_ = s; }
         /// Longitudinal position
-        float s() const { return s_; }
+        double s() const { return s_; }
         /// Offset the longitudinal position by a given distance (in m)
-        void offsetS( float s_offs ) { s_ += s_offs; }
+        void offsetS( double s_offs ) { s_ += s_offs; }
 
         /// Set the x-y position of the centre of the element
         void setPosition( const TwoVector& pos ) { pos_ = pos; }
@@ -70,9 +70,9 @@ namespace Hector
         /// x-y position of the element at a given s
         TwoVector position() const { return pos_; }
         /// Horizontal position
-        float x() const { return pos_.x(); }
+        double x() const { return pos_.x(); }
         /// Vertical position
-        float y() const { return pos_.y(); }
+        double y() const { return pos_.y(); }
 
         /// Set the horizontal and vertical angles of the element (computed with respect to the s coordinate)
         void setAngles( const TwoVector& angles ) { angles_ = angles; }
@@ -81,20 +81,20 @@ namespace Hector
         /// Horizontal and vertical tilts of the element (with respect to the s axis)
         TwoVector angles() const { return angles_; }
         /// Horizontal angle
-        float Tx() const { return angles_.x(); }
+        double Tx() const { return angles_.x(); }
         /// Vertical angle
-        float Ty() const { return angles_.y(); }
+        double Ty() const { return angles_.y(); }
 
         /// Set the element length (m)
-        void setLength( float length ) { length_ = length; }
+        void setLength( double length ) { length_ = length; }
         /// Element length (m)
-        float length() const { return length_; }
+        double length() const { return length_; }
 
         /// Set the element magnetic field strength
         /// \note Strength \f$ k = \frac{e}{p}\frac{\partial B}{\partial x} \f$
-        void setMagneticStrength( float k ) { magnetic_strength_ = k; }
+        void setMagneticStrength( double k ) { magnetic_strength_ = k; }
         /// Magnetic field strength
-        float magneticStrength() const { return magnetic_strength_; }
+        double magneticStrength() const { return magnetic_strength_; }
 
         /// Set the beta factor
         void setBeta( const TwoVector& beta ) { beta_ = beta; }
@@ -120,7 +120,7 @@ namespace Hector
 
         /// Compute the modified field strength of the element for a given energy loss of a particle of given mass and charge
         /// \note \f$ k_e = k \cdot \frac{p}{p-\mathrm{d}p} \cdot \frac{q_{\mathrm{part}}}{q_{\mathrm{b}}} \f$
-        float fieldStrength( float, float, int ) const;
+        double fieldStrength( double, double, int ) const;
 
       protected:
         /// Element type
@@ -131,16 +131,16 @@ namespace Hector
         std::shared_ptr<Aperture::ApertureBase> aperture_;
 
         /// Element longitudinal length
-        float length_;
+        double length_;
         /// Magnetic strength of the object
-        float magnetic_strength_;
+        double magnetic_strength_;
 
         /// x-y position of the element
         TwoVector pos_;
         /// Horizontal and vertical angles of the element
         TwoVector angles_;
         /// Longitudinal position of the element
-        float s_;
+        double s_;
 
         /// Beta factor
         TwoVector beta_;

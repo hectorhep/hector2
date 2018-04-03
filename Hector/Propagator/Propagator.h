@@ -20,16 +20,16 @@ namespace Hector
       const Beamline* beamline() const { return beamline_; }
 
       /// Propagate a particle up to a given position ; maps all state vectors to the intermediate s-coordinates
-      void propagate( Particle&, float ) const;
+      void propagate( Particle&, double ) const;
       /// Check whether the particle has stopped inside a part of the beamline
-      bool stopped( Particle&, float s_max=-1. ) const;
+      bool stopped( Particle&, double s_max = -1. ) const;
 
       /// Propagate a list of particle up to a given position ; maps all state vectors to the intermediate s-coordinates
-      void propagate( Particles&, float s_max ) const;
+      void propagate( Particles&, double s_max ) const;
 
     private:
       /// Extract a particle position at the exit of an element once it enters it
-      Particle::Position propagateThrough( const Particle::Position& ini_pos, const std::shared_ptr<Element::ElementBase> ele, float eloss, int qp ) const;
+      Particle::Position propagateThrough( const Particle::Position& ini_pos, const std::shared_ptr<Element::ElementBase> ele, double eloss, int qp ) const;
 
       const Beamline* beamline_;
   };
