@@ -34,12 +34,18 @@ endif()
 set(HECTOR_DEPENDENCIES ${CLHEP_LIB})
 include_directories(${CLHEP_INCLUDE})
 
-#----- Pythia 8 for physics samples generation
+#----- Pythia 8 for physics samples generation and/or LHE files parsing
 
-find_package(Pythia8 QUIET)
+if(LXPLUS)
+  set(BASE_DIR "/afs/cern.ch/sw/lcg/external")
+  set(PYTHIA8_DIR "${BASE_DIR}/MCGenerators_lcgcmt67c/pythia8/230/x86_64-slc6-gcc48-opt/")
+endif()
+find_library(PYTHIA8 pythia8 HINTS $ENV{PYTHIA8_DIR} ${PYTHIA8_DIR} PATH_SUFFIXES lib)
+find_path(PYTHIA8_INCLUDE Pythia8 HINTS $ENV{PYTHIA8_DIR} ${PYTHIA8_DIR} PATH_SUFFIXES include)
 
-if(PYTHIA8_FOUND)
-  list(APPEND HECTOR_DEPENDENCIES ${PYTHIA8_LIBRARY})
+if(PYTHIA8)
+  message(STATUS "Pythia8 found in ${PYTHIA8}")
+  list(APPEND HECTOR_DEPENDENCIES ${PYTHIA8})
   find_library(LHAPDF LHAPDF)
   if(LHAPDF)
     list(APPEND HECTOR_DEPENDENCIES ${LHAPDF})

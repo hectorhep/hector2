@@ -15,6 +15,10 @@ namespace Hector
     LHE::LHE( const char* filename )
 #ifdef GOOD_HEPMC
       : reader_( new LHEF::Reader( filename ) )
+#else
+#  ifdef PYTHIA8
+      : pythia_( new Pythia8::Pythia )
+#  endif
 #endif
     {}
 

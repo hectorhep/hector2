@@ -7,6 +7,10 @@
 #    define GOOD_HEPMC
 #    include "HepMC/LHEF.h"
 #  endif
+#else
+#  ifdef PYTHIA8
+#    include <Pythia8/Pythia.h>
+#  endif
 #endif
 
 #include "Hector/Propagator/Particle.h"
@@ -49,6 +53,10 @@ namespace Hector
       private:
 #ifdef GOOD_HEPMC
         std::unique_ptr<LHEF::Reader> reader_;
+#else
+#  ifdef PYTHIA8
+        std::unique_ptr<Pythia8::Pythia> pythia_;
+#  endif
 #endif
     };
   }
