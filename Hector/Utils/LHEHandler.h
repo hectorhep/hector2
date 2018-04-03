@@ -7,7 +7,8 @@
 #    define GOOD_HEPMC
 #    include "HepMC/LHEF.h"
 #  endif
-#else
+#endif
+#ifndef GOOD_HEPMC
 #  ifdef PYTHIA8
 #    include <Pythia8/Pythia.h>
 #  endif

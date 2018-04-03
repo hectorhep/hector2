@@ -101,8 +101,8 @@ int main( int argc, char* argv[] )
       if ( part.firstStateVector().momentum().pz() < 0. ) continue;
 
       // smear the vertex and divergence ; apply the crossing angle
-      auto& ang = part.firstStateVector().angles();
-      auto& pos = part.firstStateVector().position();
+      auto ang = part.firstStateVector().angles();
+      auto pos = part.firstStateVector().position();
       ang[CLHEP::Hep2Vector::X] += CLHEP::RandGauss::shoot( crossing_angle_x, beam_divergence );
       ang[CLHEP::Hep2Vector::Y] += CLHEP::RandGauss::shoot( 0., beam_divergence );
       pos[CLHEP::Hep2Vector::X] += CLHEP::RandGauss::shoot( 0., vertex_size );

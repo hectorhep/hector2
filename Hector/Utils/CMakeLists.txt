@@ -4,9 +4,7 @@ include_directories(${PROJECT_SOURCE_DIR})
 
 #----- include the Pythia8 wrapper if present on the system
 
-if(PYTHIA8_FOUND)
-  include_directories(${PYTHIA8_INCLUDE_DIRS})
-  message(STATUS "Pythia found")
+if(PYTHIA8)
   add_definitions(-DPYTHIA8)
 else()
   file(GLOB py8_sources Pythia8Generator.cc)
