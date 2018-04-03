@@ -1,7 +1,9 @@
 #include "Hector/Utils/LHEHandler.h"
 
 #ifndef GOOD_HEPMC
-#pragma message "HepMC version 2 was found on your system! Version 3 is required for LHEF parsing!"
+#  ifndef PYTHIA8
+#    pragma message "No HepMC v3+ nor Pythia8 release was found on your system! Disabling LHEF parsing!"
+#  endif
 #endif
 
 #include "Hector/Core/Exception.h"
