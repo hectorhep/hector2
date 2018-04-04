@@ -14,6 +14,7 @@
 #include <CLHEP/Units/SystemOfUnits.h>
 
 #include "TGraph.h"
+#include "THStack.h"
 #include "TMultiGraph.h"
 #include "TAxis.h"
 #include "TStyle.h"
@@ -28,7 +29,7 @@ main( int argc, char* argv[] )
   //Hector::Parameters::get()->setLoggingThreshold( Hector::Info );
 
   vector<string> twiss_filenames, meas_filenames;
-  vector<int> dir;
+  vector<int> dir, colours;
   string ip_name;
   vector<double> crossing_angles_x, crossing_angles_y;
   double max_s;
@@ -55,6 +56,7 @@ main( int argc, char* argv[] )
     { "show-paths", "Show individual particle paths", false, &show_paths },
     { "simulate-dipoles", "Simulate the dipole effects?", true, &dipoles_enable },
     { "meas-files", "list of measurements files", vector<string>{}, &meas_filenames, 'm' },
+    { "colours", "Beam colours", vector<int>{ kBlue+1, kRed+1 }, &colours },
   } );
 
   //for ( const auto& x : crossing_angles_x ) cout << x << endl;
@@ -88,13 +90,14 @@ main( int argc, char* argv[] )
     ++i;
   }
 
-
   Hector::BeamProducer::GaussianParticleGun gun;
   gun.smearX( 0., beam_lateral_width_ip );
   gun.smearY( 0., beam_lateral_width_ip );
 
   Hector::Timer tmr;
-  TH1D h_timing( "timing", "Propagation time@@Event@@ms?.2f", 100, 0., 10. );
+  vector<TH1D*> h_timing;
+  for ( const auto& fn : twiss_filenames )
+    h_timing.emplace_back( new TH1D( ( "timing"+fn ).c_str(), "Propagation time@@Event@@ms?.2f", 100, 0., 10. ) );
 
   for ( size_t i = 0; i < num_particles; ++i ) {
     if ( num_particles > 10 && i % ( num_particles / 10 ) == 0 )
@@ -113,12 +116,11 @@ main( int argc, char* argv[] )
 //      cout << p.firstStateVector().kick() << endl;
       //----- beamline propagation
       TGraph gr_x, gr_y; // 1 graph for each trajectory
+      tmr.reset();
       try {
-        tmr.reset();
         prop.propagate( p, max_s );
-        const float prop_time = tmr.elapsed()*1.e6;
-        h_timing.Fill( prop_time*1.e-3 ); // in ms
-      } catch ( Hector::ParticleStoppedException& e ) { }
+      } catch ( Hector::ParticleStoppedException& e ) {}
+      h_timing[j]->Fill( tmr.elapsed()*1.e3 ); // in ms
       for ( const auto& pos : p ) {
         gr_x.SetPoint( gr_x.GetN(), pos.first, pos.second.position().x() );
         gr_y.SetPoint( gr_y.GetN(), pos.first, pos.second.position().y() );
@@ -195,8 +197,8 @@ main( int argc, char* argv[] )
       auto mg = new TMultiGraph;
       for ( unsigned short j = 0; j < propagators.size(); ++j ) {
         TGraphErrors g_mean = mean_trajectory( *plt.gr[j] );
-        g_mean.SetLineColor( ( j == 0 ) ? kBlack : kRed );
-        g_mean.SetFillColorAlpha( ( j == 0 ) ? kBlack : kRed, 0.5 );
+        g_mean.SetLineColor( colours[j] );
+        g_mean.SetFillColorAlpha( colours[j], 0.3 );
         if ( show_paths )
           mg->Add( plt.gr[j] );
         mg->Add( (TGraph*)g_mean.Clone() );
@@ -235,7 +237,7 @@ main( int argc, char* argv[] )
     unsigned short j = 1;
     for ( const auto& fn : twiss_filenames ) {
       os << ( ( j == 1 ) ? "" : " - " )
-         << "Beam " << j << ": "
+         << "#color[" << colours[j-1] << "]{Beam " << j << "}: "
          << Form( "%s", fn.substr( fn.find_last_of( "/\\" )+1 ).c_str() );
       ++j;
     }
@@ -258,8 +260,20 @@ main( int argc, char* argv[] )
   {
     Hector::Canvas c( "propagation_time", Form( "%d events, s_{max} = %.1f m", num_particles, max_s ) );
     gStyle->SetOptStat( 1111 );
-    h_timing.Draw();
-    c.Prettify( &h_timing );
+    THStack hs;
+    unsigned short i = 0;
+    for ( auto& h : h_timing ) {
+      if ( i == 0 ) hs.SetTitle( h->GetTitle() );
+      h->SetLineColor( colours[i] );
+      h->SetFillColor( colours[i] );
+      h->SetFillStyle( 3004+i );
+      c.AddLegendEntry( h, Form( "Beam %d", ++i ), "f" );
+      hs.Add( h );
+    }
+    hs.Draw( "h,nostack" );
+    c.Prettify( hs.GetHistogram() );
+    hs.SetTitle( "" );
+    c.SetLogy();
     c.Save( "pdf" );
   }
 
@@ -273,7 +287,12 @@ mean_trajectory( const TMultiGraph& amg )
   // first loop to extract the mean and number of points
   for ( const auto& obj : *amg.GetListOfGraphs() ) {
     const auto gr = dynamic_cast<TGraph*>( obj );
-    for ( int i = 0; i < gr->GetN(); ++i ) { double x, y; gr->GetPoint( i, x, y ); mean_val[x] += y; num_vals[x]++; }
+    for ( int i = 0; i < gr->GetN(); ++i ) {
+      double x, y;
+      gr->GetPoint( i, x, y );
+      mean_val[x] += y;
+      num_vals[x]++;
+    }
   }
 
   for ( auto& v : mean_val ) v.second /= num_vals[v.first]; // extract the mean
@@ -283,17 +302,24 @@ mean_trajectory( const TMultiGraph& amg )
 
   for ( const auto& obj : *amg.GetListOfGraphs() ) {
     const auto gr = dynamic_cast<TGraph*>( obj );
-    for ( int i = 0; i < gr->GetN(); ++i ) { double x, y; gr->GetPoint( i, x, y ); err_val[x] += pow( y-mean_val[x], 2 )/num_vals[x]; }
+    for ( int i = 0; i < gr->GetN(); ++i ) {
+      double x, y;
+      gr->GetPoint( i, x, y );
+      err_val[x] += pow( y-mean_val[x], 2 )/num_vals[x];
+    }
   }
 
-  for ( auto& v : err_val ) v.second = sqrt( v.second );
+  for ( auto& v : err_val )
+    v.second = sqrt( v.second );
   assert( err_val.size() == mean_val.size() );
 
   //for ( const auto& v : num_vals ) cout << v.first << "|" << v.second << "|" << mean_val[v.first] << endl;
   TGraphErrors out;
-  unsigned short i;
-  i = 0; for ( const auto& v : mean_val ) { out.SetPoint( i, v.first, v.second ); i++; }
-  i = 0; for ( const auto& v : err_val ) { out.SetPointError( i, 0., v.second ); i++; }
+  unsigned short i = 0, j = 0;
+  for ( const auto& v : mean_val )
+    out.SetPoint( i++, v.first, v.second );
+  for ( const auto& v : err_val )
+    out.SetPointError( j++, 0., v.second );
   return out;
 }
 

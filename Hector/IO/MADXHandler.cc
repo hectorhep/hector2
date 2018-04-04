@@ -430,36 +430,43 @@ namespace Hector
           return elem;
 
         const TwoVector relpos( elem_map_floats.get( "x" ), elem_map_floats.get( "y" ) );
-        //const TwoVector relpos;
-        const int direction = 1; //FIXME
-        if ( direction < 0 ) {
-          const TwoVector disp( elem_map_floats.get( "dx" ), elem_map_floats.get( "dy" ) ),
-                          beta( elem_map_floats.get( "betx" ), elem_map_floats.get( "bety" ) );
-          elem->setRelativePosition( relpos );
-          elem->setDispersion( disp );
-          elem->setBeta( beta );
-        }
-        else {
-          elem->setRelativePosition( previous_relpos_ );
-          elem->setDispersion( previous_disp_ );
-          elem->setBeta( previous_beta_ );
-        }
+        const TwoVector disp( elem_map_floats.get( "dx" ), elem_map_floats.get( "dy" ) );
+        const TwoVector beta( elem_map_floats.get( "betx" ), elem_map_floats.get( "bety" ) );
+        elem->setRelativePosition( relpos );
+        elem->setDispersion( disp );
+        elem->setBeta( beta );
+        /*elem->setRelativePosition( previous_relpos_ );
+        elem->setDispersion( previous_disp_ );
+        elem->setBeta( previous_beta_ );*/
 
         // associate the aperture type to the element
         if ( elem_map_str.hasKey( "apertype" ) ) {
           const std::string aper_type = lowercase( trim( elem_map_str.get( "apertype" ) ) );
           const Aperture::Type apertype = findApertureTypeByApertype( aper_type );
-          const double aper_1 = elem_map_floats.get( "aper_1" ),
-                       aper_2 = elem_map_floats.get( "aper_2" ),
-                       aper_3 = elem_map_floats.get( "aper_3" ),
-                       aper_4 = elem_map_floats.get( "aper_4" ); // MAD-X provides it in m
+          const double aper_1 = elem_map_floats.get( "aper_1" );
+          const double aper_2 = elem_map_floats.get( "aper_2" );
+          // MAD-X provides it in m
           switch ( apertype ) {
-            case Aperture::aRectEllipticAperture: { elem->setAperture( std::make_shared<Aperture::RectEllipticAperture>( aper_1, aper_2, aper_3, aper_4, relpos ) ); } break;
-            case Aperture::aRectCircularAperture: { elem->setAperture( std::make_shared<Aperture::RectEllipticAperture>( aper_1, aper_2, aper_3, aper_3, relpos ) ); } break;
-            case Aperture::aCircularAperture:     { elem->setAperture( std::make_shared<Aperture::CircularAperture>( aper_1, relpos ) ); } break;
-            case Aperture::aRectangularAperture:  { elem->setAperture( std::make_shared<Aperture::RectangularAperture>( aper_1, aper_2, relpos ) ); } break;
-            case Aperture::anEllipticAperture:    { elem->setAperture( std::make_shared<Aperture::EllipticAperture>( aper_1, aper_2, relpos ) ); } break;
-            default: break;
+            case Aperture::aCircularAperture:
+              elem->setAperture( std::make_shared<Aperture::CircularAperture>( aper_1, relpos ) );
+              break;
+            case Aperture::aRectangularAperture:
+              elem->setAperture( std::make_shared<Aperture::RectangularAperture>( aper_1, aper_2, relpos ) );
+              break;
+            case Aperture::anEllipticAperture:
+              elem->setAperture( std::make_shared<Aperture::EllipticAperture>( aper_1, aper_2, relpos ) );
+              break;
+            case Aperture::aRectEllipticAperture: {
+              const double aper_3 = elem_map_floats.get( "aper_3" );
+              const double aper_4 = elem_map_floats.get( "aper_4" );
+              elem->setAperture( std::make_shared<Aperture::RectEllipticAperture>( aper_1, aper_2, aper_3, aper_4, relpos ) );
+            } break;
+            case Aperture::aRectCircularAperture: {
+              const double aper_3 = elem_map_floats.get( "aper_3" );
+              elem->setAperture( std::make_shared<Aperture::RectEllipticAperture>( aper_1, aper_2, aper_3, aper_3, relpos ) );
+            } break;
+            default:
+              break;
           }
         }
 
