@@ -15,6 +15,7 @@
 
 #include "TGraph.h"
 #include "THStack.h"
+#include "TH2.h"
 #include "TMultiGraph.h"
 #include "TAxis.h"
 #include "TStyle.h"
@@ -37,7 +38,7 @@ main( int argc, char* argv[] )
   double xi;
   double scale_x, scale_y;
   unsigned int num_particles;
-  bool show_paths, dipoles_enable;
+  bool show_paths, dipoles_enable, draw_monitors;
 
   Hector::ArgsParser( argc, argv, {
     { "twiss-files", "beamline(s) Twiss file(s)", &twiss_filenames, 'i' },
@@ -49,14 +50,15 @@ main( int argc, char* argv[] )
     { "xi", "particles momentum loss", 0.1, &xi },
     { "alpha-x", "crossing angle in the x direction (rad)", vector<double>( 2, 180.e-6 ), &crossing_angles_x, 'x' },
     { "alpha-y", "crossing angle in the y direction (rad)", vector<double>( 2, 0. ), &crossing_angles_y, 'y' },
-    { "scale-x", "Horizontal coordinate scaling (m)", 0.1, &scale_x },
-    { "scale-y", "Vertical coordinate scaling (m)", 0.05, &scale_y },
-    { "beam-divergence", "Beam angular divergence (rad)", 30.23e-6, &beam_angular_divergence_ip, 'r' },
-    { "beam-width", "Beam transverse width (m)", 16.63e-6, &beam_lateral_width_ip, 'w' },
-    { "show-paths", "Show individual particle paths", false, &show_paths },
+    { "scale-x", "horizontal coordinate scaling (m)", 0.1, &scale_x },
+    { "scale-y", "vertical coordinate scaling (m)", 0.05, &scale_y },
+    { "beam-divergence", "beam angular divergence (rad)", 30.23e-6, &beam_angular_divergence_ip, 'r' },
+    { "beam-width", "beam transverse width (m)", 16.63e-6, &beam_lateral_width_ip, 'w' },
+    { "show-paths", "show individual particle paths", false, &show_paths },
     { "simulate-dipoles", "Simulate the dipole effects?", true, &dipoles_enable },
     { "meas-files", "list of measurements files", vector<string>{}, &meas_filenames, 'm' },
-    { "colours", "Beam colours", vector<int>{ kBlue+1, kRed+1 }, &colours },
+    { "draw-monitors", "show monitors output", false, &draw_monitors },
+    { "colours", "beam colours", vector<int>{ kBlue+1, kRed+1 }, &colours },
   } );
 
   //for ( const auto& x : crossing_angles_x ) cout << x << endl;
@@ -69,6 +71,12 @@ main( int argc, char* argv[] )
   vector<Hector::Propagator> propagators;
 
   vector<TMultiGraph*> mg_x, mg_y;
+  vector<TH1D*> h_timing;
+  vector<map<Hector::Element::ElementBase*,TH2D*> > monitors_plts( twiss_filenames.size() );
+
+  for ( const auto& fn : twiss_filenames )
+    h_timing.emplace_back( new TH1D( ( "timing"+fn ).c_str(), "Propagation time@@Event@@ms?.2f", 100, 0., 10. ) );
+
   unsigned short i = 0;
   for ( const auto& fn : twiss_filenames ) {
     if ( fn == "" ) continue;
@@ -80,6 +88,14 @@ main( int argc, char* argv[] )
     propagators.emplace_back( bl );
     mg_x.emplace_back( new TMultiGraph );
     mg_y.emplace_back( new TMultiGraph );
+
+    if ( draw_monitors ) {
+      for ( const auto& elemPtr : bl->elements() ) {
+        if ( elemPtr->type() != Hector::Element::aMonitor )
+          continue;
+        monitors_plts[i][elemPtr.get()] = new TH2D( Form( "bl%d_%s", i, elemPtr->name().c_str() ), Form( "%s (s=%.2fm);x (mm);y (mm)", elemPtr->name().c_str(), elemPtr->s() ), 100, -25., 25., 100, -25., 25. );
+      }
+    }
 
     //--- look at the beamline(s)
 //    bl->dump();
@@ -95,9 +111,6 @@ main( int argc, char* argv[] )
   gun.smearY( 0., beam_lateral_width_ip );
 
   Hector::Timer tmr;
-  vector<TH1D*> h_timing;
-  for ( const auto& fn : twiss_filenames )
-    h_timing.emplace_back( new TH1D( ( "timing"+fn ).c_str(), "Propagation time@@Event@@ms?.2f", 100, 0., 10. ) );
 
   for ( size_t i = 0; i < num_particles; ++i ) {
     if ( num_particles > 10 && i % ( num_particles / 10 ) == 0 )
@@ -124,6 +137,16 @@ main( int argc, char* argv[] )
       for ( const auto& pos : p ) {
         gr_x.SetPoint( gr_x.GetN(), pos.first, pos.second.position().x() );
         gr_y.SetPoint( gr_y.GetN(), pos.first, pos.second.position().y() );
+      }
+      if ( draw_monitors ) {
+        for ( const auto& elemPtr : prop.beamline()->elements() ) {
+          if ( elemPtr->type() != Hector::Element::aMonitor )
+            continue;
+          try {
+            const auto sv_mon = p.stateVectorAt( elemPtr->s()+0.5*elemPtr->length() );
+            monitors_plts[j][elemPtr.get()]->Fill( sv_mon.x()*1.e3, sv_mon.y()*1.e3 );
+          } catch ( Hector::Exception& ) {}
+        }
       }
       gr_x.SetLineColor( kGray );
       gr_y.SetLineColor( kGray );
@@ -256,6 +279,22 @@ main( int argc, char* argv[] )
       leg.feedBeamline( prop.beamline() );
     leg.Draw();
     c.Save( "pdf" );
+  }
+  if ( draw_monitors ) {
+    unsigned short i = 0;
+    for ( auto& mp : monitors_plts ) {
+      Hector::Canvas c( Form( "monitors_bl%d", i+1 ), Form( "Beam %d", i+1 ) );
+      const unsigned short num_x = ceil( sqrt( mp.size() ) ), num_y = ceil( mp.size()*1./num_x );
+      c.Divide( num_x, num_y );
+      unsigned short j = 0;
+      for ( auto& plt : mp ) {
+        c.cd( ++j );
+        plt.second->Draw( "colz" );
+        //c.Prettify( plt.second );
+      }
+      c.Save( "pdf" );
+      ++i;
+    }
   }
   {
     Hector::Canvas c( "propagation_time", Form( "%d events, s_{max} = %.1f m", num_particles, max_s ) );

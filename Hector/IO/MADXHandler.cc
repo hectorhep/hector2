@@ -413,6 +413,8 @@ namespace Hector
             elem.reset( new Element::Marker( name, s, length ) );
             break;
           case Element::aMonitor:
+            elem.reset( new Element::Marker( name, s, length, Element::aMonitor ) );
+            break;
           case Element::anInstrument:
             raw_beamline_->addMarker( Element::Marker( name, s, length ) );
             break;

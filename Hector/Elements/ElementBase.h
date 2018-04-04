@@ -157,7 +157,6 @@ namespace Hector
       inline bool operator()( const ElementBase* lhs, const ElementBase* rhs ) const {
         if ( !lhs || !rhs ) return false;
         if ( lhs->s() < rhs->s() ) return true;
-        if ( lhs->s() > rhs->s() ) return false;
         if ( lhs->s()+lhs->length() < rhs->s()+rhs->length() ) return true;
         return false;
       }
@@ -168,7 +167,6 @@ namespace Hector
       /// Compare the smart pointers to two elements
       inline bool operator()( const std::shared_ptr<ElementBase>& lhs, const std::shared_ptr<ElementBase>& rhs ) const {
         if ( lhs->s() < rhs->s() ) return true;
-        if ( lhs->s() > rhs->s() ) return false;
         if ( lhs->s()+lhs->length() < rhs->s()+rhs->length() ) return true;
         return false;
       }

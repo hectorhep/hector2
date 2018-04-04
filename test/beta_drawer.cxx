@@ -87,9 +87,8 @@ main( int argc, char* argv[] )
   float min_rp = 999., max_rp = 0.;
 
   for ( const auto& elemPtr : *beamline ) {
-    //if ( elemPtr->type() == Hector::Element::aDrift ) continue;
-    cout << elemPtr->name() << "::" << elemPtr->beta().x() << endl;
-    if ( fabs( elemPtr->s() )>max_s && fabs( elemPtr->s()+elemPtr->length() ) > max_s ) continue;
+    cout << elemPtr->name() << "::" << elemPtr->beta() << endl;
+    if ( fabs( elemPtr->s() ) > max_s && fabs( elemPtr->s()+elemPtr->length() ) > max_s ) continue;
     if ( elemPtr->type() == Hector::Element::aDrift && !regex_match( elemPtr->name(), rgx_cmspipe ) ) {
       //cout << ">>> " << elemPtr->name() << endl;
       labels.push_back( txt.DrawLatex( elemPtr->s(), 100., elemPtr->name().c_str() ) );
@@ -100,6 +99,7 @@ main( int argc, char* argv[] )
       if ( fabs( elemPtr->s()+elemPtr->length() ) > fabs( max_rp ) ) max_rp = elemPtr->s();
     }
 
+    //if ( elemPtr->type() == Hector::Element::aDrift ) continue;
     gr_betax.SetPoint( gr_betax.GetN(), elemPtr->s(), elemPtr->beta().x() );
     gr_betay.SetPoint( gr_betay.GetN(), elemPtr->s(), elemPtr->beta().y() );
     gr_dispx.SetPoint( gr_dispx.GetN(), elemPtr->s(), elemPtr->dispersion().x() );
