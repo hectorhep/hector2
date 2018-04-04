@@ -404,7 +404,6 @@ BOOST_PYTHON_MODULE( pyhector )
 
   py::class_<Hector::IO::MADX>( "MadXparser", "A MadX Twiss files parser", py::init<const char*,const char*,int,py::optional<double,double> >() )
     .add_property( "beamline", py::make_function( &Hector::IO::MADX::beamline, py::return_value_policy<py::reference_existing_object>() ), "Beamline object parsed from the MadX Twiss file" )
-    .add_property( "romanPots", &Hector::IO::MADX::romanPots, "List of Roman pots along the beamline" )
     .add_property( "header", madx_parser_header )
   ;
 

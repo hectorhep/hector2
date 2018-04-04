@@ -42,7 +42,7 @@ int main( int argc, char* argv[] )
 
   Hector::Propagator prop( madx.beamline() );
 
-  const Hector::Elements rps = madx.romanPots( Hector::IO::MADX::horizontalPots );
+  const auto& rps = madx.beamline()->find( "XRPH\\." );
 
   auto h_xi_raw = new TH1D( "xi_raw", "Proton momentum loss #xi@@Events@@?.3f", 250, -0.125, 1.125 ),
        h_tx_raw = new TH1D( "tx_raw", "#theta_{X}@@Events@@#murad?.1f", 100, -500., 500. ),
@@ -52,14 +52,13 @@ int main( int argc, char* argv[] )
 
   TH1D h_num_protons( "num_protons", "Proton multiplicity in event@@Events", 10, 0., 10. );
   double max_rp_s = 0.;
-  for ( const auto& pot : rps ) {
-    const auto rp = pot.get();
+  for ( const auto& rp : rps ) {
     cout << "--------> " << rp->name() << " at " << rp->s() << " m" << endl;
     if ( rp->s() > max_rp_s ) max_rp_s = rp->s();
-    h_xi_sp[rp] = ( TH1D* )h_xi_raw->Clone( Form( "xi_scoring_plane_%s", rp->name().c_str() ) );
-    h_tx_sp[rp] = ( TH1D* )h_tx_raw->Clone( Form( "tx_scoring_plane_%s", rp->name().c_str() ) );
-    h_ty_sp[rp] = ( TH1D* )h_ty_raw->Clone( Form( "ty_scoring_plane_%s", rp->name().c_str() ) );
-    h_hitmap[rp] = new TH2D( Form( "hitmap_%s", rp->name().c_str() ), "x (m)@@y (m)", 300, -0.15, 0., 300, -0.03, 0.03 );
+    h_xi_sp[rp.get()] = ( TH1D* )h_xi_raw->Clone( Form( "xi_scoring_plane_%s", rp->name().c_str() ) );
+    h_tx_sp[rp.get()] = ( TH1D* )h_tx_raw->Clone( Form( "tx_scoring_plane_%s", rp->name().c_str() ) );
+    h_ty_sp[rp.get()] = ( TH1D* )h_ty_raw->Clone( Form( "ty_scoring_plane_%s", rp->name().c_str() ) );
+    h_hitmap[rp.get()] = new TH2D( Form( "hitmap_%s", rp->name().c_str() ), "x (m)@@y (m)", 300, -0.15, 0., 300, -0.03, 0.03 );
   }
 
   Hector::Parameters::get()->setComputeApertureAcceptance( false );
@@ -142,11 +141,10 @@ int main( int argc, char* argv[] )
     vector<pair<string,TH1*> > gr_xi = { { "Generated protons", h_xi_raw } },
                                gr_tx = { { "Generated protons", h_tx_raw } },
                                gr_ty = { { "Generated protons", h_ty_raw } };
-    for ( const auto& pot : rps ) {
-      const auto& rp = pot.get();
-      gr_xi.emplace_back( Form( "Protons in %s", rp->name().c_str() ), h_xi_sp[rp] );
-      gr_tx.emplace_back( Form( "Protons in %s", rp->name().c_str() ), h_tx_sp[rp] );
-      gr_ty.emplace_back( Form( "Protons in %s", rp->name().c_str() ), h_ty_sp[rp] );
+    for ( const auto& rp : rps ) {
+      gr_xi.emplace_back( Form( "Protons in %s", rp->name().c_str() ), h_xi_sp[rp.get()] );
+      gr_tx.emplace_back( Form( "Protons in %s", rp->name().c_str() ), h_tx_sp[rp.get()] );
+      gr_ty.emplace_back( Form( "Protons in %s", rp->name().c_str() ), h_ty_sp[rp.get()] );
     }
     const string bottom_label = Form( "%s - %d single-diffractive events (Pythia8)", twiss_file.c_str(), num_events );
     plot_multi( "xi_single_diffr", title, gr_xi, bottom_label );
@@ -157,11 +155,10 @@ int main( int argc, char* argv[] )
     plot_multi( "proton_mult", title, { { "", &h_num_protons } }, bottom_label );
   }
 
-  for ( const auto& pot : rps ) {
-    const auto& rp = pot.get();
+  for ( const auto& rp : rps ) {
     Hector::Canvas c( Form( "hitmap_single_diffr_%s", rp->name().c_str() ), "" );
-    h_hitmap[rp]->Draw( "colz" );
-    c.Prettify( h_hitmap[rp] );
+    h_hitmap[rp.get()]->Draw( "colz" );
+    c.Prettify( h_hitmap[rp.get()] );
     c.Save( "pdf" );
   }
 

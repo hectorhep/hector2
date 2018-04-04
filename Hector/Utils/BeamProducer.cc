@@ -7,7 +7,7 @@
 
 namespace Hector
 {
-  BeamProducer::Xiscanner::Xiscanner( const unsigned short& num_part, float xi_min, float xi_max, float x, float y, float s_ini ) :
+  BeamProducer::Xiscanner::Xiscanner( unsigned short num_part, float xi_min, float xi_max, float x, float y, float s_ini ) :
     LinearScanner( num_part, x, x, y, y, xi_to_e( xi_min ), xi_to_e( xi_max ), s_ini )
   {}
 

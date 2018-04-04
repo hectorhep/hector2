@@ -15,6 +15,7 @@ namespace Hector
     public:
       /// Particle trajectory holder ; map of state vectors indexed to the s-position
       typedef std::map<double,StateVector> PositionsMap;
+      /// Pair of s-position and state vector defining the particle kinematics
       class Position : private std::pair<double,StateVector>
       {
         public:

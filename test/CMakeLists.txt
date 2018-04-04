@@ -6,7 +6,7 @@ file(GLOB executables_root RELATIVE ${PROJECT_SOURCE_DIR}/test *.cxx)
 #----- build all tests and link them to the core library
 
 foreach(exec_src ${executables_noroot})
-    string(REPLACE ".cpp" "" exec_bin ${exec_src})
+    string(REGEX REPLACE "(test_|.cpp)" "" exec_bin ${exec_src})
     add_executable(${exec_bin} ${exec_src})
     set_target_properties(${exec_bin} PROPERTIES EXCLUDE_FROM_ALL true)
     target_link_libraries(${exec_bin} Hector2 ${HECTOR_DEPENDENCIES})
@@ -24,7 +24,7 @@ if(${ROOT_FOUND})
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 
     foreach(exec_src ${executables_root})
-        string(REPLACE ".cxx" "" exec_bin ${exec_src})
+        string(REGEX REPLACE "(test_|.cxx)" "" exec_bin ${exec_src})
         add_executable(${exec_bin} ${exec_src})
         set_target_properties(${exec_bin} PROPERTIES EXCLUDE_FROM_ALL true)
         target_link_libraries(${exec_bin} Hector2 ${HECTOR_DEPENDENCIES} ${ROOT_LIBRARIES})

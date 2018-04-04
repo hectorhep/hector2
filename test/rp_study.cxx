@@ -50,9 +50,9 @@ main( int argc, char* argv[] )
   };
 
   cout << "list of horizontal roman pots: " << endl;
-  const Hector::Elements h_rp = parser.romanPots( Hector::IO::MADX::horizontalPots );
-  for ( unsigned short i=0; i<h_rp.size(); i++ ) {
-    cout << ">> " << h_rp[i]->name() << " at s = " << h_rp[i]->s() << " m" << endl;
+  const auto& h_rp = parser.beamline()->find( "XRPH\\." );
+  for ( const auto& rp : h_rp ) {
+    cout << ">> " << rp->name() << " at s = " << rp->s() << " m" << endl;
   }
 
   const auto rp = parser.beamline()->get( rp_names["56-210-fr-hr"] );

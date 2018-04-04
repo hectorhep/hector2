@@ -132,26 +132,6 @@ namespace Hector
       return header_float_.asMap();
     }
 
-
-    Elements
-    MADX::romanPots( const RPType& type ) const
-    {
-      Elements out;
-      if ( !raw_beamline_ ) {
-        PrintWarning( "Beamline not yet parsed! returning an empty list" );
-        return out;
-      }
-      if ( type == allPots || type == horizontalPots ) {
-        auto rps = raw_beamline_->find( "XRPH\\.[0-9a-zA-Z]{4}\\.B[1,2]" );
-        out.insert( out.end(), rps.begin(), rps.end() );
-      }
-      if ( type == allPots || type == verticalPots ) {
-        auto rps = raw_beamline_->find( "XRPV\\.[0-9a-zA-Z]{4}\\.B[1,2]" );
-        out.insert( out.end(), rps.begin(), rps.end() );
-      }
-      return out;
-    }
-
     void
     MADX::parseHeader()
     {
@@ -449,8 +429,8 @@ namespace Hector
 
         const TwoVector relpos( elem_map_floats.get( "x" ), elem_map_floats.get( "y" ) );
         //const TwoVector relpos;
-        const int direction = 1; //FIXME
-        if ( direction<0 ) {
+        const int direction = -1; //FIXME
+        if ( direction < 0 ) {
           const TwoVector disp( elem_map_floats.get( "dx" ), elem_map_floats.get( "dy" ) ),
                           beta( elem_map_floats.get( "betx" ), elem_map_floats.get( "bety" ) );
           elem->setRelativePosition( relpos );

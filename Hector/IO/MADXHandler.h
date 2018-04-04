@@ -19,7 +19,8 @@ namespace Hector
   class Beamline;
   namespace IO
   {
-    /// Parsing tool for MAD-X output stp files
+    /// Parsing tool for MAD-X output Twiss files
+    /// \note A list of variables stored in Twiss files can be retrieved from http://mad.web.cern.ch/mad/madx.old/Introduction/tables.html
     class MADX
     {
       public:
@@ -35,7 +36,9 @@ namespace Hector
         /// \param[in] min_s Minimal s-coordinate from which the Twiss file must be parsed
         /// \param[in] max_s Maximal s-coordinate at which the Twiss file must be parsed
         MADX( const char* filename, const char* ip_name, int direction, float max_s=-1., float min_s = 0. );
+        /// Copy constructor (without the beamline)
         MADX( const MADX& );
+        /// Copy constructor
         MADX( MADX& );
         ~MADX() {}
 
@@ -51,12 +54,11 @@ namespace Hector
         /// Get a Hector element aperture type from a Twiss element apertype string
         static Aperture::Type findApertureTypeByApertype( std::string apertype );
 
-        typedef enum { allPots, horizontalPots, verticalPots } RPType;
-        Elements romanPots( const RPType& type = allPots ) const;
-
         /// Print all useful information parsed from the MAD-X Twiss file
         void printInfo() const;
+        /// List of all string variables parsed from the Twiss file
         std::map<std::string,std::string> headerStrings() const;
+        /// List of all floating-point variables parsed from the Twiss file
         std::map<std::string,float> headerFloats() const;
 
       private:

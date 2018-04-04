@@ -45,7 +45,6 @@ main( int argc, char* argv[] )
   //const CLHEP::Hep2Vector offset( -0.097, 0. );
   const CLHEP::Hep2Vector offset( 0., 0. );
   parser.beamline()->offsetElementsAfter( 120., offset );
-  //parser.romanPots()
 
   Hector::Propagator prop( parser.beamline() );
 

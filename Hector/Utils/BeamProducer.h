@@ -23,7 +23,7 @@ namespace Hector
     {
       public:
         /// Class constructor
-        LinearScanner( const unsigned short& num_part, float p1_ini, float p1_end, float p2_ini, float p2_end = 999., float e_ini = 0., float e_end = 0., float s_ini = 0. ) :
+        LinearScanner( unsigned short num_part, float p1_ini, float p1_end, float p2_ini, float p2_end = 999., float e_ini = 0., float e_end = 0., float s_ini = 0. ) :
           num_part_( num_part ), num_gen_( 0 ),
           p1_( p1_ini, ( p1_end == 999. ) ? p1_ini : p1_end ),
           p2_( p2_ini, ( p2_end == 999. ) ? p2_ini : p2_end ),
@@ -61,7 +61,7 @@ namespace Hector
         /// \param[in] x_max maximal parameter value
         /// \param[in] y fixed parameter value
         /// \param[in] s_ini initial s position
-        Xscanner( const unsigned short& num_part, float e_ini, float x_min, float x_max, float y = 0., float s_ini = 0. ) :
+        Xscanner( unsigned short num_part, float e_ini, float x_min, float x_max, float y = 0., float s_ini = 0. ) :
           LinearScanner( num_part, x_min, x_max, y, y, e_ini, e_ini, s_ini ) {}
         Particle shoot();
     };
@@ -77,7 +77,7 @@ namespace Hector
         /// \param[in] y_min minimal parameter value
         /// \param[in] y_max maximal parameter value
         /// \param[in] s_ini initial s position
-        Yscanner( const unsigned short& num_part, float e_ini, float y_min, float y_max, float x = 0., float s_ini = 0. ) :
+        Yscanner( unsigned short num_part, float e_ini, float y_min, float y_max, float x = 0., float s_ini = 0. ) :
           LinearScanner( num_part, y_min, y_max, x, x, e_ini, e_ini, s_ini ) {}
         Particle shoot();
     };
@@ -93,7 +93,7 @@ namespace Hector
         /// \param[in] tx_max maximal parameter value
         /// \param[in] ty fixed parameter value
         /// \param[in] s_ini initial s position
-        TXscanner( const unsigned short& num_part, float e_ini, float tx_min, float tx_max, float ty = 0., float s_ini = 0. ) :
+        TXscanner( unsigned short num_part, float e_ini, float tx_min, float tx_max, float ty = 0., float s_ini = 0. ) :
           LinearScanner( num_part, tx_min, tx_max, ty, ty, e_ini, e_ini, s_ini ) {}
         Particle shoot();
     };
@@ -109,7 +109,7 @@ namespace Hector
         /// \param[in] ty_min minimal parameter value
         /// \param[in] ty_max maximal parameter value
         /// \param[in] s_ini initial s position
-        TYscanner( const unsigned short& num_part, float e_ini, float ty_min, float ty_max, float tx = 0., float s_ini = 0. ) :
+        TYscanner( unsigned short num_part, float e_ini, float ty_min, float ty_max, float tx = 0., float s_ini = 0. ) :
           LinearScanner( num_part, ty_min, ty_max, tx, tx, e_ini, e_ini, s_ini ) {}
         Particle shoot();
     };
@@ -124,7 +124,7 @@ namespace Hector
         /// \param[in] x horizontal particle position
         /// \param[in] y vertical particle position
         /// \param[in] s_ini initial s position
-        Xiscanner( const unsigned short& num_part, float xi_min, float xi_max, float x = 0., float y = 0., float s_ini = 0. );
+        Xiscanner( unsigned short num_part, float xi_min, float xi_max, float x = 0., float y = 0., float s_ini = 0. );
         Particle shoot();
     };
 

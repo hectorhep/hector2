@@ -37,11 +37,6 @@ set_target_properties(Hector2 PROPERTIES LINKER_LANGUAGE CXX)
 install(TARGETS Hector2 DESTINATION lib)
 install(DIRECTORY ${HECTOR_MODULES} DESTINATION include FILES_MATCHING PATTERN "*.h")
 
-#----- test executable
-
-add_executable(hector test/test_hector.cpp)
-target_link_libraries(hector Hector2 ${HECTOR_DEPENDENCIES})
-
 #----- python wrapper
 
 if(Boost_FOUND)
