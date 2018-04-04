@@ -20,16 +20,22 @@ drawBothGraphs( const char* name, const char* title, const char* axes, TGraph* g
   gr_y->SetLineColor( kRed );
   gr_x->SetLineWidth( 2 );
   gr_y->SetLineWidth( 2 );
+  gr_x->SetMarkerColor( kBlack );
+  gr_y->SetMarkerColor( kRed );
+  gr_x->SetMarkerStyle( 24 );
+  gr_y->SetMarkerStyle( 25 );
+  gr_x->SetMarkerSize( 0.75 );
+  gr_y->SetMarkerSize( 0.75 );
 
   Hector::Canvas c( name, title );
-  mg.Draw( "al" );
+  mg.Draw( "alp" );
   mg.SetTitle( axes );
   mg.GetXaxis()->SetRangeUser( -max_s, max_s );
 
   unsigned short i = 0;
   for ( auto& lab : labels ) {
     lab->SetY( mg.GetHistogram()->GetMaximum()/2. );
-    lab->SetTextAngle( ( i%2 ) ? 75 : -75 );
+    lab->SetTextAngle( ( i % 2 ) ? 75 : -75 );
     lab->DrawClone( "same" );
     ++i;
   }
@@ -82,7 +88,7 @@ main( int argc, char* argv[] )
 
   for ( const auto& elemPtr : *beamline ) {
     //if ( elemPtr->type() == Hector::Element::aDrift ) continue;
-    cout << elemPtr->name() << "::" << elemPtr->dispersion().x() << endl;
+    cout << elemPtr->name() << "::" << elemPtr->beta().x() << endl;
     if ( fabs( elemPtr->s() )>max_s && fabs( elemPtr->s()+elemPtr->length() ) > max_s ) continue;
     if ( elemPtr->type() == Hector::Element::aDrift && !regex_match( elemPtr->name(), rgx_cmspipe ) ) {
       //cout << ">>> " << elemPtr->name() << endl;

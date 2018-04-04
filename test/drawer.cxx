@@ -28,6 +28,7 @@ main( int argc, char* argv[] )
   //Hector::Parameters::get()->setLoggingThreshold( Hector::Info );
 
   vector<string> twiss_filenames, meas_filenames;
+  vector<int> dir;
   string ip_name;
   vector<double> crossing_angles_x, crossing_angles_y;
   double max_s;
@@ -35,19 +36,18 @@ main( int argc, char* argv[] )
   double xi;
   double scale_x, scale_y;
   unsigned int num_particles;
-  int dir;
   bool show_paths, dipoles_enable;
 
   Hector::ArgsParser( argc, argv, {
     { "twiss-files", "beamline(s) Twiss file(s)", &twiss_filenames, 'i' },
   }, {
     { "ip-name", "name of the interaction point", "IP5", &ip_name, 'c' },
-    { "direction", "Twiss file parsing direction", +1, &dir, 'd' },
+    { "direction", "Twiss file parsing direction", vector<int>( 2, 1 ), &dir, 'd' },
     { "max-s", "maximal s-coordinate (m)", 250., &max_s },
     { "num-parts", "number of particles to generate", 1000, &num_particles, 'n' },
     { "xi", "particles momentum loss", 0.1, &xi },
-    { "alpha-x", "crossing angle in the x direction (rad)", vector<double>{ 180.e-6 }, &crossing_angles_x, 'x' },
-    { "alpha-y", "crossing angle in the y direction (rad)", vector<double>{ 0. }, &crossing_angles_y, 'y' },
+    { "alpha-x", "crossing angle in the x direction (rad)", vector<double>( 2, 180.e-6 ), &crossing_angles_x, 'x' },
+    { "alpha-y", "crossing angle in the y direction (rad)", vector<double>( 2, 0. ), &crossing_angles_y, 'y' },
     { "scale-x", "Horizontal coordinate scaling (m)", 0.1, &scale_x },
     { "scale-y", "Vertical coordinate scaling (m)", 0.05, &scale_y },
     { "beam-divergence", "Beam angular divergence (rad)", 30.23e-6, &beam_angular_divergence_ip, 'r' },
@@ -57,7 +57,7 @@ main( int argc, char* argv[] )
     { "meas-files", "list of measurements files", vector<string>{}, &meas_filenames, 'm' },
   } );
 
-  for ( const auto& x : crossing_angles_x ) cout << x << endl;
+  //for ( const auto& x : crossing_angles_x ) cout << x << endl;
   //--- general propagation parameters
   //Hector::Parameters::get()->setComputeApertureAcceptance( false ); //FIXME
   //Hector::Parameters::get()->setEnableKickers( false ); //FIXME
@@ -67,10 +67,11 @@ main( int argc, char* argv[] )
   vector<Hector::Propagator> propagators;
 
   vector<TMultiGraph*> mg_x, mg_y;
+  unsigned short i = 0;
   for ( const auto& fn : twiss_filenames ) {
     if ( fn == "" ) continue;
-    const Hector::IO::MADX parser( fn, ip_name, dir, max_s );
-    parser.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( 0.097, 0. ) );
+    const Hector::IO::MADX parser( fn, ip_name, dir[i], max_s );
+    //parser.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( 0.097, 0. ) );
 //    parser.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( +0.097, 0. ) );
 
     auto bl = new Hector::Beamline( *parser.beamline() );
@@ -84,6 +85,7 @@ main( int argc, char* argv[] )
     cout << "---> beamline " << fn << " has " << rps.size() << " horizontal roman pots!" << endl;
     for ( const auto& rp : rps )
       cout << " >> Roman pot " << rp->name() << " at s=" << rp->s() << " m" << endl;
+    ++i;
   }
 
 
@@ -209,7 +211,7 @@ main( int argc, char* argv[] )
         drawBeamline( plt.axis, propagators[j].beamline(), j, ip_name.c_str(), plt.scale, 0., max_s, draw_apertures );
       if ( i == 0 ) {
         for ( unsigned short j = 0; j < meas_filenames.size(); ++j ) {
-          gr_bpm_meas_x[j].SetMarkerStyle( 24 );
+          gr_bpm_meas_x[j].SetMarkerStyle( 26 );
           gr_bpm_meas_x[j].Draw( "p,same" );
           gr_rp_meas_x[j].SetMarkerStyle( 20 );
           gr_rp_meas_x[j].Draw( "p,same" );

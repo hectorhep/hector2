@@ -322,13 +322,16 @@ namespace Hector
       // then perform the 3-fold matching key <-> value <-> value type
       ParametersMap::Ordered<float> elem_map_floats;
       ParametersMap::Ordered<std::string> elem_map_str;
-      for ( unsigned short i=0; i<values.size(); i++ ) {
-        const std::string key = elements_fields_.key( i ),
-                          value = values.at( i );
+      for ( unsigned short i = 0; i < values.size(); i++ ) {
+        const std::string key = elements_fields_.key( i ), value = values.at( i );
         const ValueType type = elements_fields_.value( i );
         switch ( type ) {
-          case String: elem_map_str.add( key, value ); break;
-          case Float: elem_map_floats.add( key, std::stod( value ) ); break;
+          case String:
+            elem_map_str.add( key, value );
+            break;
+          case Float:
+            elem_map_floats.add( key, std::stod( value ) );
+            break;
           case Unknown: default: {
             throw Exception( __PRETTY_FUNCTION__,
               Form( "MAD-X predicts an unknown-type optics element parameter:\n\t (%s) for %s",
@@ -338,8 +341,7 @@ namespace Hector
       }
 
       const std::string name = trim( elem_map_str.get( "name" ) );
-      const float s = elem_map_floats.get( "s" ),
-                  length = elem_map_floats.get( "l" );
+      const float s = elem_map_floats.get( "s" ), length = elem_map_floats.get( "l" );
 
       // convert the element type from string to object
       const Element::Type elemtype = ( elem_map_str.hasKey( "keyword" ) )
@@ -429,7 +431,7 @@ namespace Hector
 
         const TwoVector relpos( elem_map_floats.get( "x" ), elem_map_floats.get( "y" ) );
         //const TwoVector relpos;
-        const int direction = -1; //FIXME
+        const int direction = 1; //FIXME
         if ( direction < 0 ) {
           const TwoVector disp( elem_map_floats.get( "dx" ), elem_map_floats.get( "dy" ) ),
                           beta( elem_map_floats.get( "betx" ), elem_map_floats.get( "bety" ) );

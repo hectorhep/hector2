@@ -55,6 +55,10 @@ namespace Hector
         Parameter( std::string name, std::string description, std::vector<std::string> default_value, std::vector<std::string>* var = nullptr, char sname = '\0');
         /// A vector of strings parameter
         Parameter( std::string name, std::string description, std::vector<std::string>* var = nullptr, char sname = '\0' );
+        /// An optional vector of integer parameter
+        Parameter( std::string name, std::string description, std::vector<int> default_value, std::vector<int>* var = nullptr, char sname = '\0');
+        /// A vector of integer parameter
+        Parameter( std::string name, std::string description, std::vector<int>* var = nullptr, char sname = '\0' );
         /// An optional vector of floating point parameter
         Parameter( std::string name, std::string description, std::vector<double> default_value, std::vector<double>* var = nullptr, char sname = '\0');
         /// A vector of floating point parameter
@@ -85,6 +89,8 @@ namespace Hector
         bool* bool_variable;
         /// Pointer to a vector of string variables possibly handled by this parameter
         std::vector<std::string>* vec_str_variable;
+        /// Pointer to a vector of integer variables possibly handled by this parameter
+        std::vector<int>* vec_int_variable;
         /// Pointer to a vector of floating point variables possibly handled by this parameter
         std::vector<double>* vec_float_variable;
       };

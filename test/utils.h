@@ -122,7 +122,7 @@ drawBeamline( const char axis, const Hector::Beamline* bl, const unsigned short 
       txt.SetTextSize( 0.012 );
       txt.SetTextAngle( 90. );
       txt.SetTextAlign( 22 );
-      txt.DrawLatex( elemPtr->s()+elemPtr->length()/2., 3.6* ( ( beam == 0 ) ? -1 : +1 ) * size_y, elemPtr->name().c_str() );
+      txt.DrawLatex( elemPtr->s()+elemPtr->length()/2., 3.2* ( ( beam == 0 ) ? -1 : +1 ) * size_y, elemPtr->name().c_str() );
     }
     else {
       txt.SetTextSize( 0.035 );
