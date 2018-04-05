@@ -3,6 +3,7 @@
 
 #include <sstream>
 #include <algorithm>
+#include <cstring>
 
 namespace Hector
 {
@@ -48,32 +49,14 @@ namespace Hector
                          Fatal, 64 );
 
       par.value = *value;
-      if ( par.str_variable != nullptr ) *par.str_variable = *value;
-      else if ( par.float_variable != nullptr ) *par.float_variable = std::stod( *value );
-      else if ( par.int_variable != nullptr ) *par.int_variable = std::stoi( *value );
-      else if ( par.uint_variable != nullptr ) *par.uint_variable = std::stoi( *value );
-      else if ( par.bool_variable != nullptr ) *par.bool_variable = std::stoi( *value );
-      else if ( par.vec_str_variable != nullptr ) {
-        std::istringstream iss( par.value ); std::string token;
-        std::vector<std::string> vec_var;
-        while ( std::getline( iss, token, ',' ) )
-          vec_var.emplace_back( token );
-        *par.vec_str_variable = vec_var;
-      }
-      else if ( par.vec_float_variable != nullptr ) {
-        std::istringstream iss( par.value ); std::string token;
-        std::vector<double> vec_var;
-        while ( std::getline( iss, token, ',' ) )
-          vec_var.emplace_back( std::stod( token ) );
-        *par.vec_float_variable = vec_var;
-      }
+      par.parse();
     }
     for ( auto& par : optional_params_ ) {
       const auto key = find( args_.begin(), args_.end(), "--"+par.name );
       const auto skey = find( args_.begin(), args_.end(), "-"+std::string( 1, par.sname ) );
       if ( key != args_.end() || skey != args_.end() ) { // Parameter set
         const auto value = ( key != args_.end() ) ? key + 1 : skey + 1;
-        if ( value != args_.end() ) {
+        if ( !par.bool_variable && value != args_.end() ) {
           for ( const auto& par2 : optional_params_ )
             if ( *value == "--"+par2.name || *value == "-"+std::string( 1, par.sname ) )
               throw Exception( __PRETTY_FUNCTION__,
@@ -88,32 +71,7 @@ namespace Hector
                            Form( "Invalid value for parameter: %s", par.name.c_str() ),
                            Fatal, 64 );
       }
-      if ( par.str_variable != nullptr ) *par.str_variable = par.value;
-      else if ( par.float_variable != nullptr ) *par.float_variable = std::stod( par.value );
-      else if ( par.int_variable != nullptr ) *par.int_variable = std::stoi( par.value );
-      else if ( par.uint_variable != nullptr ) *par.uint_variable = std::stoi( par.value );
-      else if ( par.bool_variable != nullptr ) *par.bool_variable = std::stoi( par.value );
-      else if ( par.vec_str_variable != nullptr ) {
-        std::istringstream iss( par.value ); std::string token;
-        std::vector<std::string> vec_var;
-        while ( std::getline( iss, token, ',' ) )
-          vec_var.emplace_back( token );
-        *par.vec_str_variable = vec_var;
-      }
-      else if ( par.vec_int_variable != nullptr ) {
-        std::istringstream iss( par.value ); std::string token;
-        std::vector<int> vec_var;
-        while ( std::getline( iss, token, ',' ) )
-          vec_var.emplace_back( std::stoi( token ) );
-        *par.vec_int_variable = vec_var;
-      }
-      else if ( par.vec_float_variable != nullptr ) {
-        std::istringstream iss( par.value ); std::string token;
-        std::vector<double> vec_var;
-        while ( std::getline( iss, token, ',' ) )
-          vec_var.emplace_back( std::stod( token ) );
-        *par.vec_float_variable = vec_var;
-      }
+      par.parse();
     }
   }
 
@@ -281,5 +239,45 @@ namespace Hector
     Parameter( name, description, std::vector<double>{ { } }, var, sname )
   {}
 
+  void
+  ArgsParser::Parameter::parse()
+  {
+    if ( str_variable != nullptr )
+      *str_variable = value;
+    else if ( float_variable != nullptr )
+      *float_variable = std::stod( value );
+    else if ( int_variable != nullptr )
+      *int_variable = std::stoi( value );
+    else if ( uint_variable != nullptr )
+      *uint_variable = std::stoi( value );
+    else if ( bool_variable != nullptr ) {
+      try {
+        *bool_variable = std::stoi( value );
+      } catch ( std::invalid_argument ) {
+        *bool_variable = strcasecmp( "true", value.c_str() ) == 0;
+      }
+    }
+    else if ( vec_str_variable != nullptr ) {
+      std::istringstream iss( value ); std::string token;
+      std::vector<std::string> vec_var;
+      while ( std::getline( iss, token, ',' ) )
+        vec_var.emplace_back( token );
+      *vec_str_variable = vec_var;
+    }
+    else if ( vec_int_variable != nullptr ) {
+      std::istringstream iss( value ); std::string token;
+      std::vector<int> vec_var;
+      while ( std::getline( iss, token, ',' ) )
+        vec_var.emplace_back( std::stoi( token ) );
+      *vec_int_variable = vec_var;
+    }
+    else if ( vec_float_variable != nullptr ) {
+      std::istringstream iss( value ); std::string token;
+      std::vector<double> vec_var;
+      while ( std::getline( iss, token, ',' ) )
+        vec_var.emplace_back( std::stod( token ) );
+      *vec_float_variable = vec_var;
+    }
+  }
 }
 

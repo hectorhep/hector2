@@ -64,6 +64,8 @@ namespace Hector
         /// A vector of floating point parameter
         Parameter( std::string name, std::string description, std::vector<double>* var = nullptr, char sname = '\0' );
 
+        void parse();
+
         //----- parameters attributes
 
         /// Computer-readable name
