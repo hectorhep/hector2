@@ -1,4 +1,4 @@
-#include "Hector/IO/MADXHandler.h"
+#include "Hector/IO/TwissHandler.h"
 
 #include "Hector/Core/Exception.h"
 
@@ -21,23 +21,23 @@ namespace Hector
 {
 /*  namespace ParametersMap
   {
-    //template class Unordered<IO::MADX::ValueType>;
-    template const std::string Unordered<IO::MADX::ValueType>::key( const size_t i ) const;
+    //template class Unordered<IO::Twiss::ValueType>;
+    template const std::string Unordered<IO::Twiss::ValueType>::key( const size_t i ) const;
   }*/
   namespace IO
   {
-    std::regex MADX::rgx_typ_( "^\\%[0-9]{0,}(s|le)$" );
-    std::regex MADX::rgx_hdr_( "^\\@ (\\w+) +\\%([0-9]+s|le) +\\\"?([^\"\\n]+)" );
-    std::regex MADX::rgx_elm_hdr_( "^\\s{0,}([\\*\\$])(.+)" );
-    std::regex MADX::rgx_drift_name_( "DRIFT\\_[0-9]+" );
-    std::regex MADX::rgx_quadrup_name_( "M[B,Q]\\w+\\d?\\.\\w?\\d[L,R]\\d(\\.B[1,2])?" );
-    std::regex MADX::rgx_sect_dipole_name_( "MB\\.[A-Z][0-9]{1,2}[L,R][0-9]\\.B[1,2]" );
-    std::regex MADX::rgx_rect_dipole_name_( "MB[A-Z0-9]{2,3}\\.*[B,R][0-9]" );
-    std::regex MADX::rgx_ip_name_( "IP[0-9]" );
-    std::regex MADX::rgx_monitor_name_( "BPM.+" );
-    std::regex MADX::rgx_rect_coll_name_( "T[C,A].*\\.\\d[L,R]\\d\\.?(B[1-9])?" );
+    std::regex Twiss::rgx_typ_( "^\\%[0-9]{0,}(s|le)$" );
+    std::regex Twiss::rgx_hdr_( "^\\@ (\\w+) +\\%([0-9]+s|le) +\\\"?([^\"\\n]+)" );
+    std::regex Twiss::rgx_elm_hdr_( "^\\s{0,}([\\*\\$])(.+)" );
+    std::regex Twiss::rgx_drift_name_( "DRIFT\\_[0-9]+" );
+    std::regex Twiss::rgx_quadrup_name_( "M[B,Q]\\w+\\d?\\.\\w?\\d[L,R]\\d(\\.B[1,2])?" );
+    std::regex Twiss::rgx_sect_dipole_name_( "MB\\.[A-Z][0-9]{1,2}[L,R][0-9]\\.B[1,2]" );
+    std::regex Twiss::rgx_rect_dipole_name_( "MB[A-Z0-9]{2,3}\\.*[B,R][0-9]" );
+    std::regex Twiss::rgx_ip_name_( "IP[0-9]" );
+    std::regex Twiss::rgx_monitor_name_( "BPM.+" );
+    std::regex Twiss::rgx_rect_coll_name_( "T[C,A].*\\.\\d[L,R]\\d\\.?(B[1-9])?" );
 
-    MADX::MADX( std::string filename, std::string ip_name, int direction, float max_s, float min_s ) :
+    Twiss::Twiss( std::string filename, std::string ip_name, int direction, float max_s, float min_s ) :
       in_file_( filename ),
       dir_( direction/abs( direction ) ),
       ip_name_( ip_name ), min_s_( min_s )
@@ -72,22 +72,22 @@ namespace Hector
       beamline_ = Beamline::sequencedBeamline( raw_beamline_.get() );
     }
 
-    MADX::MADX( const char* filename, const char* ip_name, int direction, float max_s, float min_s ) :
-      MADX( std::string( filename ), std::string( ip_name ), direction, max_s, min_s ) {}
+    Twiss::Twiss( const char* filename, const char* ip_name, int direction, float max_s, float min_s ) :
+      Twiss( std::string( filename ), std::string( ip_name ), direction, max_s, min_s ) {}
 
-    MADX::MADX( const MADX& rhs ) :
+    Twiss::Twiss( const Twiss& rhs ) :
       interaction_point_( rhs.interaction_point_ ),
       dir_( rhs.dir_ ), ip_name_( rhs.ip_name_ ), min_s_( rhs.min_s_ )
     {}
 
-    MADX::MADX( MADX& rhs ) :
+    Twiss::Twiss( Twiss& rhs ) :
       beamline_( std::move( rhs.beamline_ ) ), raw_beamline_( std::move( rhs.raw_beamline_ ) ),
       interaction_point_( rhs.interaction_point_ ),
       dir_( rhs.dir_ ), ip_name_( rhs.ip_name_ ), min_s_( rhs.min_s_ )
     {}
 
     Beamline*
-    MADX::beamline() const
+    Twiss::beamline() const
     {
       if ( !beamline_ ) {
         PrintWarning( "Sequenced beamline not computed from the MAD-X Twiss file. "
@@ -99,7 +99,7 @@ namespace Hector
     }
 
     void
-    MADX::printInfo() const
+    Twiss::printInfo() const
     {
       std::ostringstream os;
       os << "MAD-X output successfully parsed. Metadata:";
@@ -121,19 +121,19 @@ namespace Hector
     }
 
     std::map<std::string,std::string>
-    MADX::headerStrings() const
+    Twiss::headerStrings() const
     {
       return header_str_.asMap();
     }
 
     std::map<std::string,float>
-    MADX::headerFloats() const
+    Twiss::headerFloats() const
     {
       return header_float_.asMap();
     }
 
     void
-    MADX::parseHeader()
+    Twiss::parseHeader()
     {
       if ( !in_file_.is_open() )
         throw Exception( __PRETTY_FUNCTION__, "Twiss file is not opened nor ready for parsing!", Fatal );
@@ -175,7 +175,7 @@ namespace Hector
     }
 
     void
-    MADX::parseElementsFields()
+    Twiss::parseElementsFields()
     {
       if ( !in_file_.is_open() )
         throw Exception( __PRETTY_FUNCTION__, "Twiss file is not opened nor ready for parsing!", Fatal );
@@ -226,7 +226,7 @@ namespace Hector
     }
 
     void
-    MADX::findInteractionPoint()
+    Twiss::findInteractionPoint()
     {
       if ( !in_file_.is_open() )
         throw Exception( __PRETTY_FUNCTION__, "Twiss file is not opened nor ready for parsing!", Fatal );
@@ -263,7 +263,7 @@ namespace Hector
     }
 
     void
-    MADX::parseElements()
+    Twiss::parseElements()
     {
       if ( !in_file_.is_open() )
         throw Exception( __PRETTY_FUNCTION__, "Twiss file is not opened nor ready for parsing!", Fatal );
@@ -310,7 +310,7 @@ namespace Hector
     }
 
     std::shared_ptr<Element::ElementBase>
-    MADX::parseElement( const ValuesCollection& values )
+    Twiss::parseElement( const ValuesCollection& values )
     {
       // first check if the "correct" number of element properties is parsed
       if ( values.size() != elements_fields_.size() )
@@ -477,7 +477,7 @@ namespace Hector
     }
 
     Element::Type
-    MADX::findElementTypeByName( std::string name )
+    Twiss::findElementTypeByName( std::string name )
     {
       try {
         if ( std::regex_match( name,       rgx_drift_name_ ) ) return Element::aDrift;
@@ -494,7 +494,7 @@ namespace Hector
     }
 
     Element::Type
-    MADX::findElementTypeByKeyword( std::string keyword )
+    Twiss::findElementTypeByKeyword( std::string keyword )
     {
       if ( keyword ==      "marker" ) return Element::aMarker;
       if ( keyword ==       "drift" ) return Element::aDrift;
@@ -516,7 +516,7 @@ namespace Hector
     }
 
     Aperture::Type
-    MADX::findApertureTypeByApertype( std::string apertype )
+    Twiss::findApertureTypeByApertype( std::string apertype )
     {
       if ( apertype ==        "none" ) return Aperture::anInvalidAperture;
       if ( apertype ==   "rectangle" ) return Aperture::aRectangularAperture;
@@ -529,13 +529,13 @@ namespace Hector
     }
 
     std::ostream&
-    operator<<( std::ostream& os, const IO::MADX::ValueType& type )
+    operator<<( std::ostream& os, const IO::Twiss::ValueType& type )
     {
       switch ( type ) {
-        case IO::MADX::Unknown: os << "unknown"; break;
-        case IO::MADX::String:  os <<  "string"; break;
-        case IO::MADX::Float:   os <<   "float"; break;
-        case IO::MADX::Integer: os << "integer"; break;
+        case IO::Twiss::Unknown: os << "unknown"; break;
+        case IO::Twiss::String:  os <<  "string"; break;
+        case IO::Twiss::Float:   os <<   "float"; break;
+        case IO::Twiss::Integer: os << "integer"; break;
       }
       return os;
     }

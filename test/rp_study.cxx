@@ -1,4 +1,4 @@
-#include "Hector/IO/MADXHandler.h"
+#include "Hector/IO/TwissHandler.h"
 #include "Hector/Core/Exception.h"
 #include "Hector/Core/ParticleStoppedException.h"
 #include "Hector/Beamline/Beamline.h"
@@ -29,7 +29,7 @@ main( int argc, char* argv[] )
     { "max-s", "maximal s-coordinate (m)", 250., &max_s },
   } );
 
-  Hector::IO::MADX parser( twiss_file, ip_name, dir, max_s );
+  Hector::IO::Twiss parser( twiss_file, ip_name, dir, max_s );
   parser.printInfo();
   //parser.beamline()->dump();
   //parser.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( -0.097, 0. ) );

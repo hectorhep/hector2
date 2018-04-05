@@ -1,4 +1,4 @@
-#include "Hector/IO/MADXHandler.h"
+#include "Hector/IO/TwissHandler.h"
 #include "Hector/Beamline/Beamline.h"
 #include "Hector/Utils/ArgsParser.h"
 
@@ -66,8 +66,8 @@ main( int argc, char* argv[] )
   } );
 
 
-  Hector::IO::MADX madx( twiss_filename, ip_name, dir, max_s );
-  const Hector::Beamline* beamline = madx.rawBeamline();
+  Hector::IO::Twiss twiss( twiss_filename, ip_name, dir, max_s );
+  const Hector::Beamline* beamline = twiss.rawBeamline();
 
   TGraph gr_betax, gr_betay,
          gr_dispx, gr_dispy,

@@ -1,4 +1,4 @@
-#include "Hector/IO/MADXHandler.h"
+#include "Hector/IO/TwissHandler.h"
 #include "Hector/Beamline/Beamline.h"
 #include "Hector/IO/HBLFileHandler.h"
 #include "Hector/Utils/ArgsParser.h"
@@ -20,7 +20,7 @@ main( int argc, char* argv[] )
     { "output", "output HBL file", "output.hbl", &output_file, 'o' },
   } );
 
-  Hector::IO::MADX in( twiss_file, interaction_point, dir, max_s );
+  Hector::IO::Twiss in( twiss_file, interaction_point, dir, max_s );
   Hector::IO::HBL::write( in.beamline(), output_file.c_str() );
 
   Hector::IO::HBL reader( output_file );

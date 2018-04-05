@@ -1,7 +1,7 @@
 #include "Hector/Core/Exception.h"
 #include "Hector/Core/ParticleStoppedException.h"
 
-#include "Hector/IO/MADXHandler.h"
+#include "Hector/IO/TwissHandler.h"
 #include "Hector/Beamline/Beamline.h"
 
 #include "Hector/Propagator/Propagator.h"
@@ -26,7 +26,7 @@ int main( int argc, char* argv[] )
     { "num-part", "number of particles to shoot", 10, &num_part, 'n' },
   } );
 
-  Hector::IO::MADX parser( twiss_file.c_str(), ip.c_str(), 1, max_s, min_s );
+  Hector::IO::Twiss parser( twiss_file.c_str(), ip.c_str(), 1, max_s, min_s );
   parser.printInfo();
   cout << "+---------------------+--------------------+----------------------" << endl;
   cout << Hector::Form( "| %-19s | %-18s | %20s|", "Name", "Type", "Position along s (m)" ) << endl;

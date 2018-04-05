@@ -1,6 +1,6 @@
 #include "Hector/Beamline/Beamline.h"
 #include "Hector/Core/ParticleStoppedException.h"
-#include "Hector/IO/MADXHandler.h"
+#include "Hector/IO/TwissHandler.h"
 #include "Hector/Propagator/Propagator.h"
 #include "Hector/Utils/BeamProducer.h"
 #include "Hector/Utils/ArgsParser.h"
@@ -39,7 +39,7 @@ main( int argc, char* argv[] )
     { "--beam-width", "beam lateral width at the interaction point (m)", 13.63e-6, &beam_lateral_width_ip },
     { "--particles-energy", "beam particles energy (GeV)", 6500., &particles_energy }
   } );
-  Hector::IO::MADX parser( twiss_filename, interaction_point, +1, s_pos );
+  Hector::IO::Twiss parser( twiss_filename, interaction_point, +1, s_pos );
   parser.printInfo();
 
   //const CLHEP::Hep2Vector offset( -0.097, 0. );

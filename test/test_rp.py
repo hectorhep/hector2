@@ -9,7 +9,7 @@ def main(argv):
     if len(argv) > 1:
         num_particles = int(argv[1])
 
-    parser = pyhector.MadXparser(argv[0], 'IP5', +1, 250.)
+    parser = pyhector.Twissparser(argv[0], 'IP5', +1, 250.)
     print 'Twiss file generated on:', parser.header['production_date']
     #parser.beamline.offsetElementsAfter(120., pyhector.TwoVector(-0.097, 0.))
     prop = pyhector.Propagator(parser.beamline)

@@ -1,6 +1,6 @@
 #include "Hector/Core/Exception.h"
 #include "Hector/Beamline/Beamline.h"
-#include "Hector/IO/MADXHandler.h"
+#include "Hector/IO/TwissHandler.h"
 #include "Hector/Propagator/Propagator.h"
 
 #include "Hector/Utils/ArgsParser.h"
@@ -37,12 +37,12 @@ int main( int argc, char* argv[] )
     }
   );
 
-  Hector::IO::MADX madx( twiss_file.c_str(), "IP5", dir, max_s );
-  //madx.beamline()->offsetElementsAfter( 120., Hector::TwoVector( -0.097, 0. ) );
+  Hector::IO::Twiss twiss( twiss_file.c_str(), "IP5", dir, max_s );
+  //twiss.beamline()->offsetElementsAfter( 120., Hector::TwoVector( -0.097, 0. ) );
 
-  Hector::Propagator prop( madx.beamline() );
+  Hector::Propagator prop( twiss.beamline() );
 
-  const auto& rps = madx.beamline()->find( "XRPH\\." );
+  const auto& rps = twiss.beamline()->find( "XRPH\\." );
 
   auto h_xi_raw = new TH1D( "xi_raw", "Proton momentum loss #xi@@Events@@?.3f", 250, -0.125, 1.125 ),
        h_tx_raw = new TH1D( "tx_raw", "#theta_{X}@@Events@@#murad?.1f", 100, -500., 500. ),

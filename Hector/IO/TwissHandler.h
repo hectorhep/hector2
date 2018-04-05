@@ -1,5 +1,5 @@
-#ifndef Hector_IO_MADXParser_h
-#define Hector_IO_MADXParser_h
+#ifndef Hector_IO_TwissHandler_h
+#define Hector_IO_TwissHandler_h
 
 #include "Hector/Utils/OrderedParametersMap.h"
 #include "Hector/Utils/UnorderedParametersMap.h"
@@ -21,7 +21,7 @@ namespace Hector
   {
     /// Parsing tool for MAD-X output Twiss files
     /// \note A list of variables stored in Twiss files can be retrieved from http://mad.web.cern.ch/mad/madx.old/Introduction/tables.html
-    class MADX
+    class Twiss
     {
       public:
         /// Class constructor
@@ -29,18 +29,18 @@ namespace Hector
         /// \param[in] ip_name Name of the interaction point
         /// \param[in] min_s Minimal s-coordinate from which the Twiss file must be parsed
         /// \param[in] max_s Maximal s-coordinate at which the Twiss file must be parsed
-        MADX( std::string filename, std::string ip_name, int direction, float max_s=-1., float min_s = 0. );
+        Twiss( std::string filename, std::string ip_name, int direction, float max_s=-1., float min_s = 0. );
         /// Class constructor
         /// \param[in] filename Path to the MAD-X Twiss file to parse
         /// \param[in] ip_name Name of the interaction point
         /// \param[in] min_s Minimal s-coordinate from which the Twiss file must be parsed
         /// \param[in] max_s Maximal s-coordinate at which the Twiss file must be parsed
-        MADX( const char* filename, const char* ip_name, int direction, float max_s=-1., float min_s = 0. );
+        Twiss( const char* filename, const char* ip_name, int direction, float max_s=-1., float min_s = 0. );
         /// Copy constructor (without the beamline)
-        MADX( const MADX& );
+        Twiss( const Twiss& );
         /// Copy constructor
-        MADX( MADX& );
-        ~MADX() {}
+        Twiss( Twiss& );
+        ~Twiss() {}
 
         /// Retrieve the sequenced beamline parsed from the MAD-X Twiss file
         Beamline* beamline() const;

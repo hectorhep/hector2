@@ -21,7 +21,7 @@
 #include "Hector/Elements/RectangularAperture.h"
 #include "Hector/Elements/RectEllipticAperture.h"
 
-#include "Hector/IO/MADXHandler.h"
+#include "Hector/IO/TwissHandler.h"
 #include "Hector/IO/HBLFileHandler.h"
 
 #include "Hector/Utils/BeamProducer.h"
@@ -87,7 +87,7 @@ namespace
   py::list beamline_elements( Hector::Beamline& bl ) { return to_python_list<std::shared_ptr<Hector::Element::ElementBase> >( bl.elements() ); }
   py::list beamline_found_elements( Hector::Beamline& bl, const char* regex ) { return to_python_list_c<std::shared_ptr<Hector::Element::ElementBase> >( bl.find( regex ) ); }
 
-  py::dict madx_parser_header( Hector::IO::MADX& parser ) {
+  py::dict twiss_parser_header( Hector::IO::Twiss& parser ) {
     py::dict out = to_python_dict_c<std::string,std::string>( parser.headerStrings() );
     out.update( to_python_dict_c<std::string,float>( parser.headerFloats() ) );
     if ( out.has_key( "timestamp" ) ) {
@@ -402,9 +402,9 @@ BOOST_PYTHON_MODULE( pyhector )
 
   //----- I/O HANDLERS
 
-  py::class_<Hector::IO::MADX>( "MadXparser", "A MadX Twiss files parser", py::init<const char*,const char*,int,py::optional<double,double> >() )
-    .add_property( "beamline", py::make_function( &Hector::IO::MADX::beamline, py::return_value_policy<py::reference_existing_object>() ), "Beamline object parsed from the MadX Twiss file" )
-    .add_property( "header", madx_parser_header )
+  py::class_<Hector::IO::Twiss>( "Twissparser", "A Twiss files parser", py::init<const char*,const char*,int,py::optional<double,double> >() )
+    .add_property( "beamline", py::make_function( &Hector::IO::Twiss::beamline, py::return_value_policy<py::reference_existing_object>() ), "Beamline object parsed from the Twiss file" )
+    .add_property( "header", twiss_parser_header )
   ;
 
   py::class_<Hector::IO::HBL>( "HBLparser", "A HBL files parser", py::init<const char*>() )

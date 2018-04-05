@@ -1,5 +1,5 @@
 #include "Hector/Beamline/Beamline.h"
-#include "Hector/IO/MADXHandler.h"
+#include "Hector/IO/TwissHandler.h"
 #include "Hector/Core/ParticleStoppedException.h"
 #include "Hector/Propagator/Propagator.h"
 
@@ -80,7 +80,7 @@ main( int argc, char* argv[] )
   unsigned short i = 0;
   for ( const auto& fn : twiss_filenames ) {
     if ( fn == "" ) continue;
-    const Hector::IO::MADX parser( fn, ip_name, dir[i], max_s );
+    const Hector::IO::Twiss parser( fn, ip_name, dir[i], max_s );
     //parser.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( 0.097, 0. ) );
 //    parser.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( +0.097, 0. ) );
 
