@@ -13,8 +13,7 @@ namespace Hector
     {
       public:
         /// Class constructor
-        Collimator( const std::string& name, double spos = 0., double length = 0. ) :
-          Drift( name, spos, length ) {}
+        Collimator( const std::string& name, double spos = 0., double length = 0. );
 
         std::shared_ptr<ElementBase> clone() const override { return std::make_shared<Collimator>( *this ); }
     };
