@@ -27,7 +27,7 @@ main( int argc, char* argv[] )
   double s_pos;
 
   Hector::ArgsParser args( argc, argv, {
-    { "--twiss-file", "MAD-X Twiss file", &twiss_filename },
+    { "--twiss-file", "Twiss file", &twiss_filename },
     { "--s-pos", "s-coordinate (m)", &s_pos }
   }, {
     { "--show-every", "s-step between two hitmaps", -1, &hitmaps_dist },
@@ -39,7 +39,7 @@ main( int argc, char* argv[] )
     { "--beam-width", "beam lateral width at the interaction point (m)", 13.63e-6, &beam_lateral_width_ip },
     { "--particles-energy", "beam particles energy (GeV)", 6500., &particles_energy }
   } );
-  Hector::IO::Twiss parser( twiss_filename, interaction_point, +1, s_pos );
+  Hector::IO::Twiss parser( twiss_filename, interaction_point, s_pos );
   parser.printInfo();
 
   //const CLHEP::Hep2Vector offset( -0.097, 0. );

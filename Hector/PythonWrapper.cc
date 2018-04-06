@@ -13,7 +13,7 @@
 #include "Hector/Elements/Dipole.h"
 #include "Hector/Elements/Quadrupole.h"
 #include "Hector/Elements/Kicker.h"
-#include "Hector/Elements/RectangularCollimator.h"
+#include "Hector/Elements/Collimator.h"
 
 #include "Hector/Elements/ApertureBase.h"
 #include "Hector/Elements/CircularAperture.h"
@@ -308,6 +308,7 @@ BOOST_PYTHON_MODULE( pyhector )
     .value( "rectangularCollimator", Hector::Element::Type::aRectangularCollimator )
     .value( "ellipticalCollimator", Hector::Element::Type::anEllipticalCollimator )
     .value( "circularCollimator", Hector::Element::Type::aCircularCollimator )
+    .value( "collimator", Hector::Element::Type::aCollimator )
     .value( "placeholder", Hector::Element::Type::aPlaceholder )
     .value( "instrument", Hector::Element::Type::anInstrument )
     .value( "solenoid", Hector::Element::Type::aSolenoid )
@@ -352,7 +353,7 @@ BOOST_PYTHON_MODULE( pyhector )
   convertElement<Hector::Element::HorizontalKicker, py::init<std::string,double,double,double> >( "HorizontalKicker" );
   convertElement<Hector::Element::VerticalKicker, py::init<std::string,double,double,double> >( "VerticalKicker" );
 
-  convertElement<Hector::Element::RectangularCollimator, py::init<std::string,py::optional<double,double> > >( "RectangularCollimator" );
+  convertElement<Hector::Element::Collimator, py::init<std::string,py::optional<double,double> > >( "Collimator" );
 
   //----- APERTURES DEFINITION
 
@@ -402,7 +403,7 @@ BOOST_PYTHON_MODULE( pyhector )
 
   //----- I/O HANDLERS
 
-  py::class_<Hector::IO::Twiss>( "Twissparser", "A Twiss files parser", py::init<const char*,const char*,int,py::optional<double,double> >() )
+  py::class_<Hector::IO::Twiss>( "Twissparser", "A Twiss files parser", py::init<const char*,const char*,py::optional<double,double> >() )
     .add_property( "beamline", py::make_function( &Hector::IO::Twiss::beamline, py::return_value_policy<py::reference_existing_object>() ), "Beamline object parsed from the Twiss file" )
     .add_property( "header", twiss_parser_header )
   ;

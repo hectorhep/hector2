@@ -119,23 +119,25 @@ namespace Hector
   Propagator::propagateThrough( const Particle::Position& ini_pos, const std::shared_ptr<Element::ElementBase> elem, double eloss, int qp ) const
   {
     try {
-      const StateVector shift( elem->position(), elem->angles(), 0., 0. );
+      //const StateVector shift( elem->relativePosition(), elem->angles(), 0., 0. );
+      //const StateVector shift( -elem->relativePosition(), TwoVector(), 0., 0. );
+      const StateVector shift( TwoVector(), TwoVector(), 0., 0. );
       const Vector prop = elem->matrix( eloss, ini_pos.stateVector().m(), qp ) * ( ini_pos.stateVector().vector()-shift.vector() ) + shift.vector();
 
-      if ( Parameters::get()->loggingThreshold() >= Info ) {
+      if ( Parameters::get()->loggingThreshold() >= Debug ) {
         std::ostringstream os1; os1 << ini_pos.stateVector().vector().T();
         std::ostringstream os2; os2 << elem->matrix( eloss, ini_pos.stateVector().m(), qp );
         std::ostringstream os3; os3 << prop.T();
-        PrintInfo( Form( "Propagating particle of mass %g GeV and state vector at s = %g m:%s\t"
-                         "through %s element \"%s\" "
-                         "at s = %g m, "
-                         "of length %g m,\n\t"
-                         "and with transfer matrix:"
-                         "%s\t"
-                         "Resulting state vector:%s",
-                         ini_pos.stateVector().m(), ini_pos.s(), os1.str().c_str(),
-                         elem->typeName().c_str(), elem->name().c_str(), elem->s(), elem->length(),
-                         os2.str().c_str(), os3.str().c_str() ) );
+        PrintDebug( Form( "Propagating particle of mass %g GeV and state vector at s = %g m:%s\t"
+                          "through %s element \"%s\" "
+                          "at s = %g m, "
+                          "of length %g m,\n\t"
+                          "and with transfer matrix:"
+                          "%s\t"
+                          "Resulting state vector:%s",
+                          ini_pos.stateVector().m(), ini_pos.s(), os1.str().c_str(),
+                          elem->typeName().c_str(), elem->name().c_str(), elem->s(), elem->length(),
+                          os2.str().c_str(), os3.str().c_str() ) );
       }
 
       // perform the propagation (assuming that mass is conserved...)

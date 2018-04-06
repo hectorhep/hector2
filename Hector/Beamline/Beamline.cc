@@ -18,7 +18,8 @@ namespace Hector
     markers_( rhs.markers_ )
   {
     clear();
-    if ( copy_elements ) setElements( rhs );
+    if ( copy_elements )
+      setElements( rhs );
   }
 
   Beamline::Beamline( double length, const ThreeVector& ip ) :
@@ -91,6 +92,9 @@ namespace Hector
         next_elem->setName( Form( "%s/2", prev_name.c_str() ) );
         next_elem->setS( elem->s()+elem->length() );
         next_elem->setLength( prev_length-elem->length() );
+        next_elem->setBeta( elem->beta() );
+        next_elem->setDispersion( elem->dispersion() );
+        next_elem->setRelativePosition( elem->relativePosition() );
       }
 
       prev_elem->setLength( elem->s()-prev_elem->s() );
@@ -228,7 +232,8 @@ namespace Hector
     // convert all empty spaces into drifts
     for ( const auto& elemPtr : *beamline ) {
       // skip the markers
-      if ( elemPtr->type() == Element::aMarker && elemPtr->s() != beamline->interactionPoint().z() ) continue;
+      if ( elemPtr->type() == Element::aMarker && elemPtr->s() != beamline->interactionPoint().z() )
+        continue;
       // add a drift whenever there is a gap in s
       const double drift_length = elemPtr->s()-pos;
       if ( drift_length > 0. ) {

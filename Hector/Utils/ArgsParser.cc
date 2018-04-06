@@ -56,7 +56,7 @@ namespace Hector
       const auto skey = find( args_.begin(), args_.end(), "-"+std::string( 1, par.sname ) );
       if ( key != args_.end() || skey != args_.end() ) { // Parameter set
         const auto value = ( key != args_.end() ) ? key + 1 : skey + 1;
-        if ( !par.bool_variable && value != args_.end() ) {
+        if ( value != args_.end() ) {
           for ( const auto& par2 : optional_params_ )
             if ( *value == "--"+par2.name || *value == "-"+std::string( 1, par.sname ) )
               throw Exception( __PRETTY_FUNCTION__,
@@ -252,9 +252,10 @@ namespace Hector
       *uint_variable = std::stoi( value );
     else if ( bool_variable != nullptr ) {
       try {
-        *bool_variable = std::stoi( value );
+        *bool_variable = ( std::stoi( value ) != 0 );
       } catch ( std::invalid_argument ) {
-        *bool_variable = strcasecmp( "true", value.c_str() ) == 0;
+        *bool_variable = ( strcasecmp( "true", value.c_str() ) == 0
+                        && strcasecmp( "false", value.c_str() ) != 0 );
       }
     }
     else if ( vec_str_variable != nullptr ) {

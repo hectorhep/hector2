@@ -23,12 +23,10 @@ int main( int argc, char* argv[] )
   double crossing_angle_x, beam_divergence, vertex_size, max_s;
   string twiss_file;
   unsigned int num_events;
-  int dir;
 
   Hector::ArgsParser args( argc, argv,
     { { "twiss-file", "beamline Twiss file", &twiss_file, 'i' } },
     {
-      { "direction", "Twiss file parsing direction", +1, &dir, 'd' },
       { "max-s", "maximal s-coordinate (m)", 250., &max_s },
       { "num-parts", "number of particles to generate", 2500, &num_events },
       { "alpha-x", "crossing angle in the x direction (rad)", 180.e-6, &crossing_angle_x, 'x' },
@@ -37,7 +35,7 @@ int main( int argc, char* argv[] )
     }
   );
 
-  Hector::IO::Twiss twiss( twiss_file.c_str(), "IP5", dir, max_s );
+  Hector::IO::Twiss twiss( twiss_file.c_str(), "IP5", max_s );
   //twiss.beamline()->offsetElementsAfter( 120., Hector::TwoVector( -0.097, 0. ) );
 
   Hector::Propagator prop( twiss.beamline() );

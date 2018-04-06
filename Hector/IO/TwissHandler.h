@@ -29,13 +29,13 @@ namespace Hector
         /// \param[in] ip_name Name of the interaction point
         /// \param[in] min_s Minimal s-coordinate from which the Twiss file must be parsed
         /// \param[in] max_s Maximal s-coordinate at which the Twiss file must be parsed
-        Twiss( std::string filename, std::string ip_name, int direction, float max_s=-1., float min_s = 0. );
+        Twiss( std::string filename, std::string ip_name, float max_s = -1., float min_s = 0. );
         /// Class constructor
         /// \param[in] filename Path to the MAD-X Twiss file to parse
         /// \param[in] ip_name Name of the interaction point
         /// \param[in] min_s Minimal s-coordinate from which the Twiss file must be parsed
         /// \param[in] max_s Maximal s-coordinate at which the Twiss file must be parsed
-        Twiss( const char* filename, const char* ip_name, int direction, float max_s=-1., float min_s = 0. );
+        Twiss( const char* filename, const char* ip_name, float max_s = -1., float min_s = 0. );
         /// Copy constructor (without the beamline)
         Twiss( const Twiss& );
         /// Copy constructor
@@ -87,11 +87,8 @@ namespace Hector
         std::unique_ptr<Beamline> raw_beamline_;
         std::shared_ptr<Element::ElementBase> interaction_point_;
 
-        int dir_;
         std::string ip_name_;
         float min_s_;
-        // quantities needed whenever direction == 1 (FIXME)
-        TwoVector previous_relpos_, previous_disp_, previous_beta_;
 
         static std::regex rgx_typ_, rgx_hdr_, rgx_elm_hdr_;
         static std::regex rgx_drift_name_, rgx_ip_name_, rgx_monitor_name_;

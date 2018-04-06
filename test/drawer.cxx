@@ -30,7 +30,7 @@ main( int argc, char* argv[] )
   //Hector::Parameters::get()->setLoggingThreshold( Hector::Info );
 
   vector<string> twiss_filenames, meas_filenames;
-  vector<int> dir, colours;
+  vector<int> colours;
   string ip_name;
   vector<double> crossing_angles_x, crossing_angles_y;
   double max_s;
@@ -44,9 +44,8 @@ main( int argc, char* argv[] )
     { "twiss-files", "beamline(s) Twiss file(s)", &twiss_filenames, 'i' },
   }, {
     { "ip-name", "name of the interaction point", "IP5", &ip_name, 'c' },
-    { "direction", "Twiss file parsing direction", vector<int>( 2, 1 ), &dir, 'd' },
     { "max-s", "maximal s-coordinate (m)", 250., &max_s },
-    { "num-parts", "number of particles to generate", 1000, &num_particles, 'n' },
+    { "num-parts", "number of particles to generate", 2000, &num_particles, 'n' },
     { "xi", "particles momentum loss", 0.1, &xi },
     { "alpha-x", "crossing angle in the x direction (rad)", vector<double>( 2, 180.e-6 ), &crossing_angles_x, 'x' },
     { "alpha-y", "crossing angle in the y direction (rad)", vector<double>( 2, 0. ), &crossing_angles_y, 'y' },
@@ -80,9 +79,10 @@ main( int argc, char* argv[] )
   unsigned short i = 0;
   for ( const auto& fn : twiss_filenames ) {
     if ( fn == "" ) continue;
-    const Hector::IO::Twiss parser( fn, ip_name, dir[i], max_s );
+    const Hector::IO::Twiss parser( fn, ip_name, max_s );
     //parser.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( 0.097, 0. ) );
-//    parser.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( +0.097, 0. ) );
+    //parser.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( +0.097, 0. ) );
+    //parser.printInfo();
 
     auto bl = new Hector::Beamline( *parser.beamline() );
     propagators.emplace_back( bl );
@@ -283,7 +283,7 @@ main( int argc, char* argv[] )
   if ( draw_monitors ) {
     unsigned short i = 0;
     for ( auto& mp : monitors_plts ) {
-      Hector::Canvas c( Form( "monitors_bl%d", i+1 ), Form( "Beam %d", i+1 ) );
+      Hector::Canvas c( Form( "monitors_beam%d", i+1 ), Form( "Beam %d", i+1 ) );
       const unsigned short num_x = ceil( sqrt( mp.size() ) ), num_y = ceil( mp.size()*1./num_x );
       c.Divide( num_x, num_y );
       unsigned short j = 0;

@@ -8,7 +8,7 @@ gROOT.SetBatch(1)
 
 ### beamline retrieval part
 
-parser = hector.Twissparser('data/twiss/twiss_2016-prels2_ir5b1_6p5tev.tfs', 'IP5', 1)
+parser = hector.Twissparser('data/twiss/twiss_2016-prels2_ir5b1_6p5tev.tfs', 'IP5')
 #print [(e.name, e.type) for e in parser.beamline.elements]
 #for elem in parser.beamline().elements():
 #    print elem.s, elem.name
