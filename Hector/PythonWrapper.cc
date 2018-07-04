@@ -333,6 +333,7 @@ BOOST_PYTHON_MODULE( pyhector )
     .add_property( "beta", &Hector::Element::ElementBase::beta, &Hector::Element::ElementBase::setBeta )
     .add_property( "dispersion", &Hector::Element::ElementBase::dispersion, &Hector::Element::ElementBase::setDispersion )
     .add_property( "relativePosition", &Hector::Element::ElementBase::relativePosition, &Hector::Element::ElementBase::setRelativePosition )
+    .add_property( "parent", py::make_function( &Hector::Element::ElementBase::parentElement, py::return_value_policy<py::return_by_value>() ), &Hector::Element::ElementBase::setParentElement )
     .def( "offsetS", &Hector::Element::ElementBase::offsetS, "Offset the element longitudinal coordinate by a given distance" )
   ;
   py::register_ptr_to_python<Hector::Element::ElementBase*>();

@@ -118,6 +118,11 @@ namespace Hector
         /// Aperture
         Aperture::ApertureBase* aperture() const { return aperture_.get(); }
 
+        /// Set the parent element if this one is splitted
+        void setParentElement( const std::shared_ptr<Element::ElementBase>& parent ) { parent_elem_ = parent; }
+        /// Parent element if this one is splitted
+        Element::ElementBase* parentElement() const { return parent_elem_.get(); }
+
         /// Compute the modified field strength of the element for a given energy loss of a particle of given mass and charge
         /// \note \f$ k_e = k \cdot \frac{p}{p-\mathrm{d}p} \cdot \frac{q_{\mathrm{part}}}{q_{\mathrm{b}}} \f$
         double fieldStrength( double, double, int ) const;
@@ -129,6 +134,7 @@ namespace Hector
         std::string name_;
         /// Pointer to the associated aperture object (if any)
         std::shared_ptr<Aperture::ApertureBase> aperture_;
+        std::shared_ptr<Element::ElementBase> parent_elem_;
 
         /// Element longitudinal length
         double length_;

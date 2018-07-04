@@ -10,6 +10,8 @@
 
 using namespace std;
 
+bool draw_markers;
+
 void
 drawBothGraphs( const char* name, const char* title, const char* axes, TGraph* gr_x, TGraph* gr_y, vector<TLatex*> labels, TPave* rp_region, Hector::Canvas::PaveText* pt, float max_s )
 {
@@ -28,7 +30,7 @@ drawBothGraphs( const char* name, const char* title, const char* axes, TGraph* g
   gr_y->SetMarkerSize( 0.75 );
 
   Hector::Canvas c( name, title );
-  mg.Draw( "alp" );
+  mg.Draw( draw_markers ? "alp" : "al" );
   mg.SetTitle( axes );
   mg.GetXaxis()->SetRangeUser( -max_s, max_s );
 
@@ -67,6 +69,7 @@ main( int argc, char* argv[] )
     { "ip-name", "name of the interaction point", "IP5", &ip_name, 'c' },
     { "min-s", "minimal s-coordinate (m)", 0., &min_s },
     { "max-s", "maximal s-coordinate (m)", 250., &max_s, 's' },
+    { "markers", "draw the markers", false, &draw_markers, 'm' },
   } );
 
 
@@ -91,7 +94,12 @@ main( int argc, char* argv[] )
   float min_rp = 999., max_rp = 0.;
 
   for ( const auto& elemPtr : *beamline ) {
+    //FIXME do not plot if the element has been splitted
+    if ( elemPtr->parentElement() )
+      continue;
+
     cout << elemPtr->name() << "::" << elemPtr->beta() << endl;
+
     if ( fabs( elemPtr->s() ) > max_s && fabs( elemPtr->s()+elemPtr->length() ) > max_s ) continue;
     if ( elemPtr->type() == Hector::Element::aDrift && !regex_match( elemPtr->name(), rgx_cmspipe ) ) {
       //cout << ">>> " << elemPtr->name() << endl;
@@ -103,7 +111,6 @@ main( int argc, char* argv[] )
       if ( fabs( elemPtr->s()+elemPtr->length() ) > fabs( max_rp ) ) max_rp = elemPtr->s();
     }
 
-    //if ( elemPtr->type() == Hector::Element::aDrift ) continue;
     gr_betax.SetPoint( gr_betax.GetN(), elemPtr->s(), elemPtr->beta().x() );
     gr_betay.SetPoint( gr_betay.GetN(), elemPtr->s(), elemPtr->beta().y() );
     gr_dispx.SetPoint( gr_dispx.GetN(), elemPtr->s(), elemPtr->dispersion().x() );
@@ -125,7 +132,8 @@ main( int argc, char* argv[] )
     rp_region->SetLineColor( kBlack );
   }
 
-  const char* label = Form( "#scale[0.33]{%s}", twiss_filename.substr( twiss_filename.find_last_of( "/\\" )+1 ).c_str() );
+  //const char* label = Form( "#scale[0.33]{%s}", twiss_filename.substr( twiss_filename.find_last_of( "/\\" )+1 ).c_str() );
+  const char* label = Form( "#scale[0.33]{%s}", realpath( twiss_filename.c_str(), nullptr ) );
   auto pt = new Hector::Canvas::PaveText( 0.0, 0.0, 0.15, 0.01, label );
   pt->SetTextAlign( kHAlignLeft+kVAlignBottom );
 

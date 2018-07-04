@@ -95,6 +95,7 @@ namespace Hector
         next_elem->setBeta( elem->beta() );
         next_elem->setDispersion( elem->dispersion() );
         next_elem->setRelativePosition( elem->relativePosition() );
+        next_elem->setParentElement( prev_elem );
       }
 
       prev_elem->setLength( elem->s()-prev_elem->s() );
@@ -236,12 +237,11 @@ namespace Hector
         continue;
       // add a drift whenever there is a gap in s
       const double drift_length = elemPtr->s()-pos;
-      if ( drift_length > 0. ) {
-        try {
+      try {
+        if ( drift_length > 0. )
           tmp->add( std::make_shared<Element::Drift>( Form( "drift:%.4E", pos ).c_str(), pos, drift_length ) );
-        } catch ( Exception& e ) { e.dump(); }
-      }
-      try { tmp->add( elemPtr ); } catch ( Exception& e ) { e.dump(); }
+        tmp->add( elemPtr );
+      } catch ( Exception& e ) { e.dump(); }
       pos = elemPtr->s()+elemPtr->length();
     }
     // add the last drift

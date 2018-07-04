@@ -37,15 +37,18 @@ int main( int argc, char* argv[] )
     //if ( elem->type() == Hector::Element::aDrift ) continue;
     cout << Hector::Form( "|%20s | %-18s [ ", elem->name().c_str(), ( elem->type() != Hector::Element::aDrift ) ? elem->typeName().c_str() : "" );
     string pos_ini = Hector::Form( "%7s", Hector::Form( "%#0.3f", elem->s() ).c_str() );
-    if ( elem->length() > 0. ) cout << Hector::Form( "%.7s → %7s m", pos_ini.c_str(), Hector::Form( "%#0.3f", elem->s()+elem->length() ).c_str() );
-    else cout << Hector::Form( "%17s m", pos_ini.c_str() );
-    cout << " ]";
-    cout << endl;
+    if ( elem->length() > 0. )
+      cout << Hector::Form( "%.7s → %7s m", pos_ini.c_str(), Hector::Form( "%#0.3f", elem->s()+elem->length() ).c_str() );
+    else
+      cout << Hector::Form( "%17s m", pos_ini.c_str() );
+    cout << " ]" << endl;
   }
   cout << "+---------------------+-------------------------------------------" << endl;
   //parser.beamline()->dump();
 
-  cout << "beamline matrix at s = " << max_s << " m: " << parser.beamline()->matrix( 100., Hector::Parameters::get()->beamParticlesMass(), +1 ) << endl;
+  cout << "beamline matrix at s = " << max_s << " m: "
+       << parser.beamline()->matrix( 0., Hector::Parameters::get()->beamParticlesMass(), +1 )
+       << endl;
 
   if ( shoot ) {
     Hector::Propagator prop( parser.beamline() );

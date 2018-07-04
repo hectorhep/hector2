@@ -120,7 +120,7 @@ namespace Hector
   {
     try {
       //const StateVector shift( elem->relativePosition(), elem->angles(), 0., 0. );
-      //const StateVector shift( -elem->relativePosition(), TwoVector(), 0., 0. );
+      //const StateVector shift( elem->relativePosition(), TwoVector(), 0., 0. );
       const StateVector shift( TwoVector(), TwoVector(), 0., 0. );
       const Vector prop = elem->matrix( eloss, ini_pos.stateVector().m(), qp ) * ( ini_pos.stateVector().vector()-shift.vector() ) + shift.vector();
 
