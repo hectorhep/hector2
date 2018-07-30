@@ -1,7 +1,6 @@
 #ifndef Hector_Elements_Marker_h
 #define Hector_Elements_Marker_h
 
-#include "ElementBase.h"
 #include "Drift.h"
 
 namespace Hector
@@ -9,19 +8,14 @@ namespace Hector
   namespace Element
   {
     /// Marker object builder
-    class Marker : public ElementBase
+    class Marker : public Drift
     {
       public:
         /// Class constructor
-        Marker( const std::string& name, float spos, float length );
+        Marker( const std::string& name, double spos, double length = 0. ) :
+          Drift( name, aMarker, spos, length ) {}
 
-        Marker* clone() const { return new Marker( *this ); }
-        /** \note \f$ \mathbf{M} = \mathbf{I}_6 \f$
-         */
-        CLHEP::HepMatrix matrix( float, float, int ) const;
-
-      private:
-
+        std::shared_ptr<ElementBase> clone() const override { return std::make_shared<Marker>( *this ); }
     };
   }
 }

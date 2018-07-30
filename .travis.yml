@@ -1,0 +1,68 @@
+language: cpp
+sudo: true
+
+matrix:
+  include:
+    - os: linux
+      compiler: gcc
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-4.9
+            - libclhep-dev
+      env:
+         - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+    - os: linux
+      compiler: gcc
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-4.9
+            - libclhep-dev
+            - libpythia8-dev
+            - libboost-python-dev
+      env:
+         - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+    - os: linux
+      compiler: clang
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.6
+          packages:
+            - clang-3.6
+            - libclhep-dev
+    - os: linux
+      compiler: clang
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.6
+          packages:
+            - clang-3.6
+            - libclhep-dev
+            - libpythia8-dev
+            - libboost-python-dev
+
+before_script:
+  - mkdir build
+  - eval "${MATRIX_EVAL}"
+  - cd build
+  - wget --quiet https://raw.githubusercontent.com/BristolTopGroup/AnalysisSoftware/master/FindROOT.cmake
+  - wget --quiet https://gist.githubusercontent.com/forthommel/e6932e25b781710ebe5bd8dc6726dc3c/raw/1d7bd5f2aeff0d50f8e1740d7dcacaf1be006a59/FindCLHEP.cmake
+  - cmake -D CMAKE_MODULE_PATH=$PWD ..
+
+script:
+  - pwd
+  - make hector
+  - curl http://abpdata.web.cern.ch/abpdata/lhc_optics_web/www/opt2017/coll400/twiss_lhcb1.tfs -o twiss_file.tfs && test/hector --twiss-file twiss_file.tfs
+
+#install:
+#  - make install
+

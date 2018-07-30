@@ -1,33 +1,39 @@
-#include "Kicker.h"
+#include "Hector/Elements/Kicker.h"
+#include "Hector/Elements/Drift.h"
+#include "Hector/Core/Parameters.h"
 
 namespace Hector
 {
   namespace Element
   {
-    CLHEP::HepMatrix
-    HorizontalKicker::matrix( float eloss, float mp, int qp ) const
+    Matrix
+    HorizontalKicker::matrix( double eloss, double mp, int qp ) const
     {
-      if ( !Parameters::enable_kickers ) return Drift::genericMatrix( length_ );
+      Matrix mat = Drift::genericMatrix( length_ );
 
-      const float ke = -fieldStrength( eloss, mp, qp );
-      if ( ke==0 ) return Drift::genericMatrix( length_ );
+      if ( !Parameters::get()->enableKickers() )
+        return mat;
 
-      CLHEP::HepMatrix mat = Drift::genericMatrix( length_ );
+      const double ke = -fieldStrength( eloss, mp, qp );
+      if ( ke == 0. )
+        return mat;
 
       mat( 1, 6 ) = length_*tan( ke ) * 0.5;
       mat( 2, 6 ) = ke;
       return mat;
     }
 
-    CLHEP::HepMatrix
-    VerticalKicker::matrix( float eloss, float mp, int qp ) const
+    Matrix
+    VerticalKicker::matrix( double eloss, double mp, int qp ) const
     {
-      if ( !Parameters::enable_kickers ) return Drift::genericMatrix( length_ );
+      Matrix mat = Drift::genericMatrix( length_ );
 
-      const float ke = -fieldStrength( eloss, mp, qp );
-      if ( ke==0 ) return Drift::genericMatrix( length_ );
+      if ( !Parameters::get()->enableKickers() )
+        return mat;
 
-      CLHEP::HepMatrix mat = Drift::genericMatrix( length_ );
+      const double ke = -fieldStrength( eloss, mp, qp );
+      if ( ke == 0. )
+        return mat;
 
       mat( 3, 6 ) = length_*tan( ke ) * 0.5;
       mat( 4, 6 ) = ke;

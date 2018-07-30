@@ -4,24 +4,24 @@ namespace Hector
 {
   namespace Element
   {
-    Drift::Drift( const std::string& name, float spos, float length ) :
+    Drift::Drift( const std::string& name, double spos, double length ) :
       ElementBase( aDrift, name, spos, length )
     {}
 
-    Drift::Drift( const std::string& name, const Type& type, float spos, float length ) :
+    Drift::Drift( const std::string& name, const Type& type, double spos, double length ) :
       ElementBase( type, name, spos, length )
     {}
 
-    CLHEP::HepMatrix
-    Drift::matrix( float, float, int ) const
+    Matrix
+    Drift::matrix( double, double, int ) const
     {
       return genericMatrix( length_ );
     }
 
-    CLHEP::HepMatrix
-    Drift::genericMatrix( float length )
+    Matrix
+    Drift::genericMatrix( double length )
     {
-      CLHEP::HepMatrix mat = CLHEP::HepDiagMatrix( 6, 1 );
+      Matrix mat = DiagonalMatrix( 6, 1 );
       mat( 1, 2 ) = length;
       mat( 3, 4 ) = length;
       return mat;

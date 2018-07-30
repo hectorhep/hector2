@@ -1,99 +1,114 @@
-#include "ElementBase.h"
+#include "Hector/Elements/ElementBase.h"
+#include "Hector/Utils/Utils.h"
+#include "Hector/Core/Parameters.h"
+#include "Hector/Core/Exception.h"
+
+#include <sstream>
 
 namespace Hector
 {
   namespace Element
   {
-    ElementBase::ElementBase( const Type& type, const std::string& name, float spos, float length ) :
-      type_( type ), name_( name ), aperture_( 0 ),
+    ElementBase::ElementBase( const Type& type, const std::string& name, double spos, double length ) :
+      type_( type ), name_( name ),
       length_( length ), magnetic_strength_( 0. ), s_( spos )
     {}
 
-    ElementBase::ElementBase( const ElementBase& rhs ) :
-      type_( rhs.type_ ), name_( rhs.name_ ), aperture_( 0 ),
+    ElementBase::ElementBase( ElementBase& rhs ) :
+      type_( rhs.type_ ), name_( rhs.name_ ),
+      aperture_( rhs.aperture_ ),
       length_( rhs.length_ ), magnetic_strength_( rhs.magnetic_strength_ ),
       pos_( rhs.pos_ ), angles_( rhs.angles_ ), s_( rhs.s_ ),
       beta_( rhs.beta_ ), disp_( rhs.disp_ ), rel_pos_( rhs.rel_pos_ )
-    {
-      if ( rhs.aperture_ ) aperture_ = rhs.aperture_->clone();
-    }
+    {}
 
-    ElementBase::~ElementBase()
-    {
-      if ( aperture_!=0 ) delete aperture_;
-    }
+    ElementBase::ElementBase( const ElementBase& rhs ) :
+      type_( rhs.type_ ), name_( rhs.name_ ),
+      aperture_( rhs.aperture_ ),
+      length_( rhs.length_ ), magnetic_strength_( rhs.magnetic_strength_ ),
+      pos_( rhs.pos_ ), angles_( rhs.angles_ ), s_( rhs.s_ ),
+      beta_( rhs.beta_ ), disp_( rhs.disp_ ), rel_pos_( rhs.rel_pos_ )
+    {}
 
     bool
     ElementBase::operator==( const ElementBase& rhs ) const
     {
-      if ( type_!=rhs.type_ ) return false;
-      if ( s_!=rhs.s_ ) return false;
-      if ( pos_!=rhs.pos_ ) return false;
-      if ( magnetic_strength_!=rhs.magnetic_strength_ ) return false;
-      if ( length_!=rhs.length_ ) return false;
-      if ( name_!=rhs.name_ ) return false;
-      if ( aperture_ and rhs.aperture_ and *aperture_!=*rhs.aperture_ ) return false;
+      if ( type_ != rhs.type_ ) return false;
+      if ( s_ != rhs.s_ ) return false;
+      if ( pos_ != rhs.pos_ ) return false;
+      if ( magnetic_strength_ != rhs.magnetic_strength_ ) return false;
+      if ( length_ != rhs.length_ ) return false;
+      if ( name_ != rhs.name_ ) return false;
+      if ( aperture_ ) {
+        if ( !rhs.aperture_ ) return false;
+        if ( *aperture_ != *rhs.aperture_ ) return false;
+      }
       return true;
     }
 
-    float
-    ElementBase::fieldStrength( float eloss, float mp, int qp ) const
+    void
+    ElementBase::setAperture( const std::shared_ptr<Aperture::ApertureBase>& apert )
+    {
+      aperture_ = apert;
+    }
+
+    void
+    ElementBase::setAperture( Aperture::ApertureBase* apert )
+    {
+      setAperture( std::shared_ptr<Aperture::ApertureBase>( apert ) );
+    }
+
+    double
+    ElementBase::fieldStrength( double e_loss, double mp, int qp ) const
     {
       // only act on charged particles
-      if ( qp==0 ) return 0.;
+      if ( qp == 0 )
+        return 0.;
+
+      if ( e_loss < 0. )
+        throw Exception( __PRETTY_FUNCTION__, Form( "Invalid energy loss: %g GeV", e_loss ), Fatal );
+
+      double p_bal = 1.;
+      if ( e_loss > 0. ) {
+        const double e_ini = Parameters::get()->beamEnergy(),
+                     mp0 = Parameters::get()->beamParticlesMass(),
+                     e_out = e_ini-e_loss;
+        const double p_ini = sqrt( ( e_ini-mp0 )*( e_ini+mp0 ) ), // e_ini^2 - p_ini^2 = mp0^2
+                     p_out = sqrt( ( e_out-mp  )*( e_out+mp  ) ); // e_out^2 - p_out^2 = mp^2
+
+        if ( p_out == 0 )
+          throw Exception( __PRETTY_FUNCTION__, "Invalid particle momentum", JustWarning );
+
+        p_bal = p_ini / p_out;
+      }
 
       // reweight the field strength by the particle charge and momentum
-      const float eini = Parameters::beam_energy,
-                  mp0 = Parameters::beam_particles_mass,
-                  e = eini-eloss;
-      const float p0 = sqrt( ( eini-mp0 )*( eini+mp0 ) ), // e_ini^2 - p_0^2 = mp0^2
-                  p = sqrt( ( e-mp )*( e+mp ) ); // e^2 - p^2 = mp^2
-      return magnetic_strength_*( p0/p )*( qp/Parameters::beam_particles_charge );
+      return magnetic_strength_*p_bal*( qp/Parameters::get()->beamParticlesCharge() );
     }
 
-    /// Human-readable printout of a beamline element object
-    std::ostream&
-    operator<<( std::ostream& os, const ElementBase& elem )
+    const std::string
+    ElementBase::typeName() const
     {
-      std::ostringstream oss; oss << elem.type();
-      os << Form( "%15s %17s (length = %5.2f m) at %6.2f < s < %6.2f m", oss.str().c_str(), elem.name().c_str(), elem.length(), elem.s(), elem.s()+elem.length() );
-      if ( elem.aperture() ) { os << " with aperture: " << elem.aperture(); }
-      else { os << " with no aperture restriction"; }
-      return os;
+      std::ostringstream os;
+      os << type_;
+      return os.str();
     }
+  }
 
-    /// Human-readable printout of a beamline element object
-    std::ostream&
-    operator<<( std::ostream& os, const ElementBase* elem )
-    {
-      return os << *( elem );
-    }
-    /// Human-readable printout of a beamline element type
-    std::ostream&
-    operator<<( std::ostream& os, const Type& type )
-    {
-      switch ( type ) {
-        case anInvalidElement:       return os << "invalid";
-        case aMarker:                return os << "marker";
-        case aDrift:                 return os << "drift";
-        case aMonitor:               return os << "monitor";
-        case aRectangularDipole:     return os << "rect.dipole";
-        case aSectorDipole:          return os << "sector dipole";
-        case aGenericQuadrupole:     return os << "quadrupole";
-        case anHorizontalQuadrupole: return os << "hor.quadrupole";
-        case aVerticalQuadrupole:    return os << "vert.quadrupole";
-        case aSextupole:             return os << "sextupole";
-        case aMultipole:             return os << "multipole";
-        case aVerticalKicker:        return os << "vertic.kicker";
-        case anHorizontalKicker:     return os << "horiz.kicker";
-        case aRectangularCollimator: return os << "rect.collimator";
-        case anEllipticalCollimator: return os << "ellip.collimator";
-        case aCircularCollimator:    return os << "circular collimator";
-        case aPlaceholder:           return os << "placeholder";
-        case anInstrument:           return os << "instrument";
-        case aSolenoid:              return os << "solenoid";
-      }
-      return os;
-    }
+  /// Human-readable printout of a beamline element object
+  std::ostream&
+  operator<<( std::ostream& os, const Element::ElementBase& elem )
+  {
+    os << Form( "%-15s %17s (length = %5.2f m) at %6.2f < s < %6.2f m", elem.typeName().c_str(), elem.name().c_str(), elem.length(), elem.s(), elem.s()+elem.length() );
+    if ( elem.aperture() )
+      return os << " with aperture: " << elem.aperture();
+    return os << " with no aperture restriction";
+  }
+
+  /// Human-readable printout of a beamline element object
+  std::ostream&
+  operator<<( std::ostream& os, const Element::ElementBase* elem )
+  {
+    return os << *elem;
   }
 }

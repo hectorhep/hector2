@@ -1,26 +1,46 @@
-#include "StateVector.h"
+#include "Hector/Propagator/StateVector.h"
+#include "Hector/Core/Exception.h"
 
 namespace Hector
 {
-  StateVector::StateVector( const CLHEP::HepVector& vec, double mass ) :
-    CLHEP::HepVector( vec ), m_( mass )
+  StateVector::StateVector() :
+    Vector( 6, 0 ), m_( 0. )
+  {
+    ( *this )[K] = 1.;
+    ( *this )[E] = Parameters::get()->beamEnergy();
+  }
+
+  StateVector::StateVector( const Vector& vec, double mass ) :
+    Vector( vec ), m_( mass )
   {}
 
-  StateVector::StateVector( const CLHEP::HepLorentzVector& mom, const CLHEP::Hep2Vector& pos ) :
-    CLHEP::HepVector( 6, 1 ), m_( mom.m() )
+  StateVector::StateVector( const LorentzVector& mom, const TwoVector& pos ) :
+    Vector( 6, 1 ), m_( mom.m() )
   {
     setPosition( pos );
     setMomentum( mom );
     ( *this )[K] = 1.;
   }
 
-  StateVector::StateVector( const CLHEP::Hep2Vector& pos, const CLHEP::Hep2Vector& ang, double energy, double kick ) :
-    CLHEP::HepVector( 6, 1 ), m_( 0. )
+  StateVector::StateVector( const TwoVector& pos, const TwoVector& ang, double energy, double kick ) :
+    Vector( 6, 1 ), m_( 0. )
   {
     setPosition( pos );
     setAngles( ang );
     setEnergy( energy );
     setKick( kick );
+  }
+
+  void
+  StateVector::setXi( double xi )
+  {
+    setEnergy( xi_to_e( xi ) );
+  }
+
+  double
+  StateVector::xi() const
+  {
+    return e_to_xi( energy() );
   }
 
   void
@@ -31,64 +51,63 @@ namespace Hector
     ( *this )[Y] = y;
   }
 
-  CLHEP::Hep2Vector
+  TwoVector
   StateVector::position() const
   {
     // return in m
-    return CLHEP::Hep2Vector( ( *this )[X], ( *this )[Y] );
+    return TwoVector( ( *this )[X], ( *this )[Y] );
   }
 
   void
   StateVector::setAngles( double tx, double ty )
   {
-    // store the tangent of the angles
-    ( *this )[TX] = tan( tx );
-    ( *this )[TY] = tan( ty );
+    ( *this )[TX] = tx;
+    ( *this )[TY] = ty;
   }
 
-  CLHEP::Hep2Vector
+  TwoVector
   StateVector::angles() const
   {
     // return in rad
-    return math::atan2( CLHEP::Hep2Vector( ( *this )[TX], ( *this )[TY] ) );
+    return TwoVector( ( *this )[TX], ( *this )[TY] );
   }
 
   void
-  StateVector::setMomentum( const CLHEP::HepLorentzVector& mom )
+  StateVector::setMomentum( const LorentzVector& mom )
   {
-    setAngles( atan2( mom.px(), mom.pz() ), atan2( mom.py(), mom.pz() ) );
-    ( *this )[E] = mom.e();
+    setAngles( mom.px()/mom.pz(), mom.py()/mom.pz() );
+    setEnergy( mom.e() );
     m_ = mom.m();
   }
 
   void
-  StateVector::addMomentum( const CLHEP::HepLorentzVector& mom )
+  StateVector::addMomentum( const LorentzVector& mom )
   {
-    setAngles( angles()+math::atan2( CLHEP::Hep2Vector( atan2( mom.px(), mom.pz() ), atan2( mom.py(), mom.pz() ) ) ) );
+    setAngles( angles()+TwoVector( mom.px()/mom.pz(), mom.py()/mom.pz() ) );
     ( *this )[E] = mom.e();
     m_ = mom.m();
   }
 
-  CLHEP::HepLorentzVector
+  LorentzVector
   StateVector::momentum() const
   {
-    const CLHEP::Hep2Vector tan_ang( math::tan2( angles() ) );
+    const TwoVector tan_ang( math::tan2( angles() ) );
     const double pz = sqrt( ( energy()*energy()-m_*m_ )/( 1.+tan_ang.mag2() ) ),
                  px = pz*tan_ang.x(),
                  py = pz*tan_ang.y();
-    return CLHEP::HepLorentzVector( px, py, pz, energy() );
+    return LorentzVector( px, py, pz, energy() );
   }
 
   void
   StateVector::setM( double mass )
   {
-    if ( mass!=momentum().m() ) {
+    if ( mass != momentum().m() ) {
       m_ = mass;
-      if ( momentum().mag2()!=0. )
+      if ( momentum().mag2() != 0. )
         ( *this )[E] = sqrt( momentum().mag2()+m_*m_ ); // match the energy accordingly
       else {
         const int sign = 1; //FIXME
-        setMomentum( CLHEP::HepLorentzVector( 0., 0., sign*sqrt( energy()*energy()-m_*m_ ), energy() ) ); // longitudinal momentum only
+        setMomentum( LorentzVector( 0., 0., sign*sqrt( energy()*energy()-m_*m_ ), energy() ) ); // longitudinal momentum only
       }
       return;
     }

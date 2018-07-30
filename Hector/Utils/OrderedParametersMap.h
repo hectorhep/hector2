@@ -3,6 +3,7 @@
 
 #include <map>
 #include <string>
+#include <iostream>
 
 using std::cout;
 
@@ -20,26 +21,33 @@ namespace Hector
         ~Ordered() {}
 
         /// Number of keys stored in the map
-        size_t size() const { return map::size(); }
+        using std::map<std::string,T>::size;
+
+        /// Return a map-typped object
+        std::map<std::string,T> asMap() const { return *this; }
 
         /// Does the map have this key?
-        bool hasKey( const char* key ) const { return map::find( std::string( key ) )!=map::end(); }
+        bool hasKey( const char* key ) const {
+          return map::find( std::string( key ) ) != map::end();
+        }
         /// Add a new key-value combination
         void add( const std::string& key, const T& value ) {
           map::insert( std::pair<std::string,T>( key, value ) );
         }
         /// Add a new key-value combination
-        void add( const char* key, const T& value ) { add( std::string( key ), value ); }
+        void add( const char* key, const T& value ) {
+          add( std::string( key ), value );
+        }
         /// Retrieve the value associated to a key
         const T get( const char* key ) const {
-          const_iterator p = map::find( std::string( key ) );
-          return ( p!=map::end() ) ? p->second : static_cast<T>( 0 );
+          const auto& val = map::find( std::string( key ) );
+          return ( val != map::end() ) ? val->second : static_cast<T>( 0 );
         }
 
         /// Print the whole list of key-values stored in the map
-        void dump( std::ostream& os=std::cout ) const {
-          for ( const_iterator p=map::begin(); p!=map::end(); p++ ) {
-            os << " [" << p->first << "] " << p->second << std::endl;
+        void dump( std::ostream& os = std::cout ) const {
+          for ( const auto& val : *this ) {
+            os << " [" << val.first << "] " << val.second << std::endl;
           }
         }
 

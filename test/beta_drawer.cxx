@@ -1,4 +1,6 @@
-#include "Hector/IO/MADXParser.h"
+#include "Hector/IO/TwissHandler.h"
+#include "Hector/Beamline/Beamline.h"
+#include "Hector/Utils/ArgsParser.h"
 
 #include "Canvas.h"
 
@@ -6,8 +8,12 @@
 #include "TMultiGraph.h"
 #include "TLatex.h"
 
+using namespace std;
+
+bool draw_markers;
+
 void
-drawBothGraphs( const char* name, const char* title, const char* axes, TGraph* gr_x, TGraph* gr_y, std::vector<TLatex*> labels, TPave* rp_region, float max_s )
+drawBothGraphs( const char* name, const char* title, const char* axes, TGraph* gr_x, TGraph* gr_y, vector<TLatex*> labels, TPave* rp_region, Hector::Canvas::PaveText* pt, float max_s )
 {
   TMultiGraph mg;
   mg.Add( gr_x );
@@ -16,82 +22,101 @@ drawBothGraphs( const char* name, const char* title, const char* axes, TGraph* g
   gr_y->SetLineColor( kRed );
   gr_x->SetLineWidth( 2 );
   gr_y->SetLineWidth( 2 );
+  gr_x->SetMarkerColor( kBlack );
+  gr_y->SetMarkerColor( kRed );
+  gr_x->SetMarkerStyle( 24 );
+  gr_y->SetMarkerStyle( 25 );
+  gr_x->SetMarkerSize( 0.75 );
+  gr_y->SetMarkerSize( 0.75 );
 
   Hector::Canvas c( name, title );
-  mg.Draw( "al" );
+  mg.Draw( draw_markers ? "alp" : "al" );
   mg.SetTitle( axes );
   mg.GetXaxis()->SetRangeUser( -max_s, max_s );
 
-  for ( unsigned short i=0; i<labels.size(); i++ ) {
-    //std::cout << labels[i] << std::endl;
-    TLatex* lab = dynamic_cast<TLatex*>( labels[i]->Clone() );
-    //lab->SetY( mg.GetHistogram()->GetMaximum()/2. );
-    lab->SetTextAlign( ( i%2 ) ? 32 : 12 );
-    lab->SetY( ( i%2 ? -1 : 1 ) * mg.GetHistogram()->GetMaximum()/30. );
-    lab->Draw( "same" );
+  unsigned short i = 0;
+  for ( auto& lab : labels ) {
+    lab->SetY( mg.GetHistogram()->GetMaximum()/2. );
+    lab->SetTextAngle( ( i % 2 ) ? 75 : -75 );
+    lab->DrawClone( "same" );
+    ++i;
   }
-  rp_region->SetY1( mg.GetHistogram()->GetMinimum() );
-  rp_region->SetY2( mg.GetHistogram()->GetMaximum() );
-  rp_region->Draw( "same" );
+  if ( rp_region ) {
+    rp_region->SetY1( mg.GetHistogram()->GetMinimum() );
+    rp_region->SetY2( mg.GetHistogram()->GetMaximum() );
+    rp_region->Draw( "same" );
+  }
 
   c.Prettify( mg.GetHistogram() );
   c.SetLegendX1( 0.25 );
   c.AddLegendEntry( gr_x, gr_x->GetTitle(), "l" );
   c.AddLegendEntry( gr_y, gr_y->GetTitle(), "l" );
   c.SetGrid();
+  if ( pt )
+    pt->Draw();
+
   c.Save( "pdf" );
 }
 
 int
 main( int argc, char* argv[] )
 {
-  if ( argc<2 ) {
-    std::cerr << "Usage: " << argv[0] << " <MAD-X output> [maximum s]" << std::endl;
-    exit( 0 );
-  }
+  string twiss_filename, ip_name;
+  double min_s, max_s;
+  Hector::ArgsParser args( argc, argv, {
+    { "twiss-file", "Twiss file", &twiss_filename, 'i' }
+  }, {
+    { "ip-name", "name of the interaction point", "IP5", &ip_name, 'c' },
+    { "min-s", "minimal s-coordinate (m)", 0., &min_s },
+    { "max-s", "maximal s-coordinate (m)", 250., &max_s, 's' },
+    { "markers", "draw the markers", false, &draw_markers, 'm' },
+  } );
 
-  const float max_s = ( argc>2 ) ? atof( argv[2] ) : 500.;
 
-  Hector::Parser::MADX madx( argv[1], "IP5", +1, max_s );
-  const Hector::Beamline* beamline = madx.rawBeamline();
+  Hector::IO::Twiss twiss( twiss_filename, ip_name, max_s, min_s );
+  const Hector::Beamline* beamline = twiss.rawBeamline();
 
   TGraph gr_betax, gr_betay,
          gr_dispx, gr_dispy,
          gr_relx, gr_rely;
 
-  std::regex rgx_cmspipe( "CMSPIPE[0-9]{1,2}\\.[L,R][0-9]" ),
-             rgx_rp( "XRP[V,H]\\.[A-Za-z][0-9][A-Za-z][0-9]\\.B[1,2]" );
+  regex rgx_cmspipe( "CMSPIPE[0-9]{1,2}\\.[L,R][0-9]" ),
+        rgx_rp( "XRP[V,H]\\.[A-Za-z][0-9][A-Za-z][0-9]\\.B[1,2]" );
 
   TLatex txt;
   txt.SetTextFont( 130+2 );
-  txt.SetTextAngle( 90 );
-  txt.SetTextSize( 0.015 );
-  txt.SetTextAlign( 12 );
+  txt.SetTextAngle( 60 );
+  txt.SetTextSize( 0.012 );
+  txt.SetTextAlign( 11 );
 
-  std::vector<TLatex*> labels;
+  vector<TLatex*> labels;
 
   float min_rp = 999., max_rp = 0.;
 
-  for ( Hector::Elements::const_iterator e=beamline->begin(); e!=beamline->end(); ++e ) {
-    const Hector::Element::ElementBase* elem = *e;
-    if ( elem->type()==Hector::Element::aDrift ) continue;
-    //std::cout << elem << "::" << elem->dispersion().x() << std::endl;
-    if ( fabs( elem->s() )>max_s and fabs( elem->s()+elem->length() )>max_s ) continue;
-    if ( elem->type()==Hector::Element::aMarker and !std::regex_match( elem->name(), rgx_cmspipe ) ) {
-      //std::cout << ">>> " << elem->name() << std::endl;
-      labels.push_back( txt.DrawLatex( elem->s(), 100., elem->name().c_str() ) );
+  for ( const auto& elemPtr : *beamline ) {
+    //FIXME do not plot if the element has been splitted
+    if ( elemPtr->parentElement() )
+      continue;
+
+    cout << elemPtr->name() << "::" << elemPtr->beta() << endl;
+
+    if ( fabs( elemPtr->s() ) > max_s && fabs( elemPtr->s()+elemPtr->length() ) > max_s ) continue;
+    if ( elemPtr->type() == Hector::Element::aDrift && !regex_match( elemPtr->name(), rgx_cmspipe ) ) {
+      //cout << ">>> " << elemPtr->name() << endl;
+      labels.push_back( txt.DrawLatex( elemPtr->s(), 100., elemPtr->name().c_str() ) );
     }
-    if ( elem->type()==Hector::Element::aRectangularCollimator and std::regex_match( elem->name(), rgx_rp ) ) {
-      if ( fabs( elem->s() )<fabs( min_rp ) ) min_rp = elem->s();
-      if ( fabs( elem->s()+elem->length() )>fabs( max_rp ) ) max_rp = elem->s();
+    if ( regex_match( elemPtr->name(), rgx_rp ) ) {
+      labels.push_back( txt.DrawLatex( elemPtr->s(), 100., elemPtr->name().c_str() ) );
+      if ( fabs( elemPtr->s() ) < fabs( min_rp ) ) min_rp = elemPtr->s();
+      if ( fabs( elemPtr->s()+elemPtr->length() ) > fabs( max_rp ) ) max_rp = elemPtr->s();
     }
 
-    gr_betax.SetPoint( gr_betax.GetN(), elem->s(), elem->beta().x() );
-    gr_betay.SetPoint( gr_betay.GetN(), elem->s(), elem->beta().y() );
-    gr_dispx.SetPoint( gr_dispx.GetN(), elem->s(), elem->dispersion().x() );
-    gr_dispy.SetPoint( gr_dispy.GetN(), elem->s(), elem->dispersion().y() );
-    gr_relx.SetPoint( gr_relx.GetN(), elem->s(), elem->relativePosition().x() );
-    gr_rely.SetPoint( gr_rely.GetN(), elem->s(), elem->relativePosition().y() );
+    gr_betax.SetPoint( gr_betax.GetN(), elemPtr->s(), elemPtr->beta().x() );
+    gr_betay.SetPoint( gr_betay.GetN(), elemPtr->s(), elemPtr->beta().y() );
+    gr_dispx.SetPoint( gr_dispx.GetN(), elemPtr->s(), elemPtr->dispersion().x() );
+    gr_dispy.SetPoint( gr_dispy.GetN(), elemPtr->s(), elemPtr->dispersion().y() );
+    gr_relx.SetPoint( gr_relx.GetN(), elemPtr->s(), elemPtr->relativePosition().x() );
+    gr_rely.SetPoint( gr_rely.GetN(), elemPtr->s(), elemPtr->relativePosition().y() );
   }
   gr_betax.SetTitle( "#beta_{X}" );
   gr_betay.SetTitle( "#beta_{Y}" );
@@ -100,13 +125,21 @@ main( int argc, char* argv[] )
   gr_relx.SetTitle( "relative X" );
   gr_rely.SetTitle( "relative Y" );
 
-  TPave* rp_region = new TPave( min_rp, 0., max_rp, 1., 3 );
-  rp_region->SetFillColorAlpha( kGray, 0.5 );
-  rp_region->SetLineColor( kBlack );
+  TPave* rp_region = nullptr;
+  if ( min_rp < max_rp ) {
+    rp_region = new TPave( min_rp, 0., max_rp, 1., 3 );
+    rp_region->SetFillColorAlpha( kGray, 0.5 );
+    rp_region->SetLineColor( kBlack );
+  }
 
-  drawBothGraphs( "beta", "Beta-s dependence", "s (m)\\#beta (m)", &gr_betax, &gr_betay, labels, rp_region, max_s );
-  drawBothGraphs( "disp", "Dispersion-s dependence", "s (m)\\D (m)", &gr_dispx, &gr_dispy, labels, rp_region, max_s );
-  drawBothGraphs( "relat_align", "Relative alignment-s dependence", "s (m)\\Relative distance (m)", &gr_relx, &gr_rely, labels, rp_region, max_s );
+  //const char* label = Form( "#scale[0.33]{%s}", twiss_filename.substr( twiss_filename.find_last_of( "/\\" )+1 ).c_str() );
+  const char* label = Form( "#scale[0.33]{%s}", realpath( twiss_filename.c_str(), nullptr ) );
+  auto pt = new Hector::Canvas::PaveText( 0.0, 0.0, 0.15, 0.01, label );
+  pt->SetTextAlign( kHAlignLeft+kVAlignBottom );
+
+  drawBothGraphs( "beta", "#beta(s) dependence", "s (m)@@#beta (m)", &gr_betax, &gr_betay, labels, rp_region, pt, max_s );
+  drawBothGraphs( "disp", "D(s) dependence", "s (m)@@D (m)", &gr_dispx, &gr_dispy, labels, rp_region, pt, max_s );
+  drawBothGraphs( "relat_align", "Relative alignment s-dependence", "s (m)@@Relative distance (m)", &gr_relx, &gr_rely, labels, rp_region, pt, max_s );
 
   return 0;
 }

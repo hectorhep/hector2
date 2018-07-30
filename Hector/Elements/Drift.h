@@ -12,12 +12,12 @@ namespace Hector
     {
       public:
         /// Class constructor
-        Drift( const std::string&, float spos=0., float length=0. );
+        Drift( const std::string&, double spos = 0., double length = 0. );
         /// Class constructor
-        Drift( const std::string&, const Type& type, float spos=0., float length=0. );
+        Drift( const std::string&, const Type& type, double spos = 0., double length = 0. );
 
-        Drift* clone() const { return new Drift( *this ); }
-        CLHEP::HepMatrix matrix( float eloss=-1., float mp=-1., int qp=0 ) const;
+        std::shared_ptr<ElementBase> clone() const override { return std::make_shared<Drift>( *this ); }
+        Matrix matrix( double eloss = -1., double mp = Parameters::get()->beamParticlesMass(), int qp = Parameters::get()->beamParticlesCharge() ) const override;
         /// Build a transfer matrix for a given drift length
         /// \param[in] length drift length
         /** \note \f$
@@ -33,9 +33,7 @@ namespace Hector
          * \right)
          * \f$
          */
-        static CLHEP::HepMatrix genericMatrix( float length );
-
-      private:
+        static Matrix genericMatrix( double length );
     };
   }
 }

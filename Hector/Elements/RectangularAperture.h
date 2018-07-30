@@ -12,14 +12,13 @@ namespace Hector
     {
       public:
         /// Class constructor
-        RectangularAperture( float, float, const CLHEP::Hep2Vector& pos=CLHEP::Hep2Vector() );
+        RectangularAperture( double, double, const TwoVector& pos = TwoVector() );
         ~RectangularAperture();
 
-        RectangularAperture* clone() const { return new RectangularAperture( *this ); }
+        std::shared_ptr<ApertureBase> clone() const override { return std::make_shared<RectangularAperture>( *this ); }
 
-        bool contains( const CLHEP::Hep2Vector& ) const;
-        CLHEP::Hep2Vector limits() const;
-
+        bool contains( const TwoVector& ) const override;
+        TwoVector limits() const override;
     };
   }
 }

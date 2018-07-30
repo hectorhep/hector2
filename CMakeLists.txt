@@ -2,26 +2,17 @@ cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
 project(Hector)
 set(PROJECT_VERSION 2)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-long-long -pedantic -g -O -fPIC")
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/cmake)
 set(HECTOR_SOURCE_DIR ${PROJECT_SOURCE_DIR}/Hector)
 
+#----- include external dependencies, prepare the environment
+
+include(SetEnvironment)
+
 #----- define all individual modules to be built beforehand
 
-set(MODULES Core IO Elements Beamline Propagator)
-
-#----- enable fortran (for Pythia/Herwig/...)
-
-enable_language(Fortran OPTIONAL)
-
-#----- include external hadronisers/...
-
-find_package(CLHEP REQUIRED)
-#add_subdirectory(external)
-#
-#if(EXISTS $ENV{has_pythia6})
-#  add_definitions(-DPYTHIA6)
-#endif()
+set(HECTOR_MODULES Core IO Elements Beamline Propagator Utils)
+set(HECTOR_SOURCE_DIR ${PROJECT_SOURCE_DIR}/Hector)
 
 find_package(ROOT QUIET)
 function(ROOT_DICTIONARY dictionary)
@@ -37,8 +28,8 @@ endfunction()
 
 #----- build all the intermediate objects
 
-include_directories(${HECTOR_SOURCE_DIR})
-foreach(_module ${MODULES})
+include_directories(${PROJECT_SOURCE_DIR})
+foreach(_module ${HECTOR_MODULES})
   include_directories(${HECTOR_SOURCE_DIR}/${_module})
   add_subdirectory(Hector/${_module})
 endforeach()
@@ -55,38 +46,51 @@ endif()
 # do not forget to retrieve
 # http://home.thep.lu.se/~leif/LHEF/LHEF.h
 
-add_library(Hector SHARED $<TARGET_OBJECTS:HectorCore>
-                          $<TARGET_OBJECTS:HectorIO>
-                          $<TARGET_OBJECTS:HectorElements>
-                          $<TARGET_OBJECTS:HectorBeamline>
-                          $<TARGET_OBJECTS:HectorPropagator>)
-set_target_properties(Hector PROPERTIES LINKER_LANGUAGE CXX)
+add_library(Hector2 SHARED $<TARGET_OBJECTS:HectorCore>
+                           $<TARGET_OBJECTS:HectorIO>
+                           $<TARGET_OBJECTS:HectorElements>
+                           $<TARGET_OBJECTS:HectorBeamline>
+                           $<TARGET_OBJECTS:HectorPropagator>
+                           $<TARGET_OBJECTS:HectorUtils>)
+set_target_properties(Hector2 PROPERTIES LINKER_LANGUAGE CXX)
 
-find_package(Pythia8 QUIET)
-if(DEFINED PYTHIA8_FOUND)
-  target_link_libraries(Hector CLHEP ${PYTHIA8_LIBRARY})
-else()
-  target_link_libraries(Hector CLHEP)
+install(TARGETS Hector2 DESTINATION lib)
+install(DIRECTORY ${HECTOR_MODULES} DESTINATION include FILES_MATCHING PATTERN "*.h")
+
+#----- python wrapper
+
+if(Boost_FOUND)
+  find_package(PythonLibs 2.7 REQUIRED)
+  include_directories(${Boost_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS})
+  PYTHON_ADD_MODULE(pyhector ${HECTOR_SOURCE_DIR}/PythonWrapper.cc)
+  target_link_libraries(pyhector Hector2 ${HECTOR_DEPENDENCIES} ${Boost_LIBRARIES})
+  #install(TARGETS pyhector DESTINATION "${PYTHON_INSTALL_PATH}")
 endif()
-
-install(TARGETS Hector DESTINATION lib)
-install(DIRECTORY ${MODULES} DESTINATION include FILES_MATCHING PATTERN "*.h")
-
-add_executable(hector test/test_hector.cpp)
-target_link_libraries(hector Hector)
 
 #----- add the tests
 
+enable_testing()
 add_subdirectory(test)
 
 #----- copy the data files
 
 file(GLOB input RELATIVE ${PROJECT_SOURCE_DIR} data/twiss/*)
 foreach(_files ${input})
-  configure_file(
-    ${_files}
-    ${_files}
-    COPYONLY
-)
+  configure_file(${_files} ${_files} COPYONLY)
 endforeach()
+
+#----- documentation
+
+find_package(Doxygen)
+if(DOXYGEN_FOUND)
+  set(DOXYGEN_IN ${CMAKE_SOURCE_DIR}/docs/Doxyfile.in)
+  set(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
+  configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
+  message(STATUS "Doxygen build started")
+  add_custom_target(doc_doxygen EXCLUDE_FROM_ALL
+    COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    COMMENT "Generating Hector documentation with Doxygen"
+    VERBATIM)
+endif()
 
