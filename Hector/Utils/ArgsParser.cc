@@ -253,7 +253,7 @@ namespace Hector
     else if ( bool_variable != nullptr ) {
       try {
         *bool_variable = ( std::stoi( value ) != 0 );
-      } catch ( std::invalid_argument ) {
+      } catch ( const std::invalid_argument& ) {
         *bool_variable = ( strcasecmp( "true", value.c_str() ) == 0
                         && strcasecmp( "false", value.c_str() ) != 0 );
       }

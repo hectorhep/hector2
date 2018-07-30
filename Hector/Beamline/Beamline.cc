@@ -166,8 +166,8 @@ namespace Hector
       for ( auto& elem : elements_ )
         if ( std::regex_search( elem->name().c_str(), m, rgx_search ) ) out.emplace_back( elem );
       return out;
-    } catch ( std::regex_error ) {
-      throw Exception( __PRETTY_FUNCTION__, Form( "Invalid regular expression required:\n\t%s", regex ), Fatal );
+    } catch ( const std::regex_error& e ) {
+      throw Exception( __PRETTY_FUNCTION__, Form( "Invalid regular expression required:\n\t%s\n\tError code: %d", regex, e.code() ), Fatal );
     }
   }
 

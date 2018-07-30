@@ -17,8 +17,10 @@ namespace Hector
   {
     part.clear();
 
-    const double energy_loss = Parameters::get()->beamEnergy()-part.lastStateVector().energy();
-//    const double energy_loss = 0.;
+    const double energy_loss = ( Parameters::get()->useRelativeEnergy() )
+      ? Parameters::get()->beamEnergy()-part.lastStateVector().energy()
+      : part.lastStateVector().energy();
+
     const double first_s = part.firstS();
 
     try {
