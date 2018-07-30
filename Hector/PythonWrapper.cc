@@ -114,8 +114,16 @@ namespace
   struct ElementBaseWrap : Hector::Element::ElementBase, py::wrapper<Hector::Element::ElementBase>
   {
     ElementBaseWrap() : Hector::Element::ElementBase( Hector::Element::anInvalidElement ) {}
-    std::shared_ptr<Hector::Element::ElementBase> clone() const override { return this->get_override( "clone" )(); }
-    Hector::Matrix matrix( double eloss, double mp, int qp ) const override { return this->get_override( "matrix" )( eloss, mp, qp ); }
+    std::shared_ptr<Hector::Element::ElementBase> clone() const override {
+      if ( py::override n = this->get_override( "clone" ) )
+        return n();
+      return Hector::Element::ElementBase::clone();
+    }
+    Hector::Matrix matrix( double eloss, double mp, int qp ) const override {
+      if ( py::override m = this->get_override( "matrix" ) )
+        return m( eloss, mp, qp );
+      return Hector::Element::ElementBase::matrix( eloss, mp, qp );
+    }
   };
   template<class T, class init = py::init<std::string,double,double,double> >
   void convertElement( const char* name )

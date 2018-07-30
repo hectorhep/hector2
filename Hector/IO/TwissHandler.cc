@@ -385,7 +385,7 @@ namespace Hector
                 JustWarning );
 
             const double mag_strength = k0l/length;
-            std::cout << name << "|" << s << "|" << mag_strength << std::endl;
+//            std::cout << name << "|" << s << "|" << mag_strength << std::endl;
             if ( elemtype == Element::aRectangularDipole )
               elem.reset( new Element::RectangularDipole( name, s, length, mag_strength ) );
             if ( elemtype == Element::aSectorDipole )
