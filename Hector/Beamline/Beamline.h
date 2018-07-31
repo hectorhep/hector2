@@ -16,7 +16,7 @@ namespace Hector
   {
     public:
       /// List of markers in the beamline
-      typedef std::map<float,Element::Marker> MarkersMap;
+      typedef std::map<double,Element::Marker> MarkersMap;
 
     public:
       Beamline();
@@ -25,7 +25,7 @@ namespace Hector
       /// Build a beamline from a longitudinal size and a interaction point position
       /// \param[in] length Longitudinal length of the beamline
       /// \param[in] ip Position of the interaction point
-      Beamline( float length, const ThreeVector& ip = ThreeVector() );
+      Beamline( double length, const ThreeVector& ip = ThreeVector() );
       ~Beamline();
 
       /// Compute all drifts between each element in the beamline
@@ -58,10 +58,10 @@ namespace Hector
       const std::shared_ptr<Element::ElementBase> get( const char* name ) const;
       /// Retrieve a beamline element given its s-position
       /// \param[in] s s-position of the element (computed wrt the interaction point)
-      std::shared_ptr<Element::ElementBase>& get( float s );
+      std::shared_ptr<Element::ElementBase>& get( double s );
       /// Retrieve a beamline element given its s-position
       /// \param[in] s s-position of the element (computed wrt the interaction point)
-      const std::shared_ptr<Element::ElementBase> get( float s ) const;
+      const std::shared_ptr<Element::ElementBase> get( double s ) const;
       /// Find an element by name
       std::vector<std::shared_ptr<Element::ElementBase> > find( const char* );
       /// Number of elements in the beamline
@@ -84,25 +84,25 @@ namespace Hector
       const MarkersMap::const_iterator markers_end() const { return markers_.end(); }
 
       /// Set the longitudinal length of the beamline (in m)
-      void setLength( float length ) { max_length_ = length; }
+      void setLength( double length ) { max_length_ = length; }
       /// Longitudinal length of the beamline (in m)
-      float length() const;
+      double length() const;
       /// Maximal length of the beamline (in m)
-      float maxLength() const { return max_length_; }
+      double maxLength() const { return max_length_; }
 
       /// Offset all elements after a given s-coordinate
-      void offsetElementsAfter( float s, const TwoVector& offset );
+      void offsetElementsAfter( double s, const TwoVector& offset );
       /// Tilt all elements after a given s-coordinate
-      void tiltElementsAfter( float s, const TwoVector& offset );
+      void tiltElementsAfter( double s, const TwoVector& offset );
 
       /// Total propagation matrix of all combined beamline elements
-      Matrix matrix( float eloss, float mp = Parameters::get()->beamParticlesMass(), int qp = Parameters::get()->beamParticlesCharge() ) const;
+      Matrix matrix( double eloss, double mp = Parameters::get()->beamParticlesMass(), int qp = Parameters::get()->beamParticlesCharge() ) const;
 
     private:
       /// Copy the list of elements from one beamline to this one
       void setElements( const Beamline& moth_bl );
       /// Beamline maximal length (in m)
-      float max_length_;
+      double max_length_;
       /// Position of the interaction point
       ThreeVector ip_;
 

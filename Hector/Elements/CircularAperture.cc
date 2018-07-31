@@ -4,7 +4,7 @@ namespace Hector
 {
   namespace Aperture
   {
-    CircularAperture::CircularAperture( float radius, const TwoVector& pos ) :
+    CircularAperture::CircularAperture( double radius, const TwoVector& pos ) :
       EllipticAperture( radius, radius, pos )
     {
     }

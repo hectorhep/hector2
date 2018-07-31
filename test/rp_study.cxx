@@ -1,4 +1,4 @@
-#include "Hector/IO/MADXHandler.h"
+#include "Hector/IO/TwissHandler.h"
 #include "Hector/Core/Exception.h"
 #include "Hector/Core/ParticleStoppedException.h"
 #include "Hector/Beamline/Beamline.h"
@@ -19,17 +19,15 @@ int
 main( int argc, char* argv[] )
 {
   string twiss_file, ip_name;
-  int dir;
   double max_s;
   Hector::ArgsParser( argc, argv, {
     { "twiss-file", "beamline Twiss file", &twiss_file, 'i' }
   }, {
     { "ip-name", "name of the interaction point", "IP5", &ip_name, 'c' },
-    { "direction", "Twiss file parsing direction", +1, &dir, 'd' },
     { "max-s", "maximal s-coordinate (m)", 250., &max_s },
   } );
 
-  Hector::IO::MADX parser( twiss_file, ip_name, dir, max_s );
+  Hector::IO::Twiss parser( twiss_file, ip_name, max_s );
   parser.printInfo();
   //parser.beamline()->dump();
   //parser.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( -0.097, 0. ) );
@@ -50,9 +48,9 @@ main( int argc, char* argv[] )
   };
 
   cout << "list of horizontal roman pots: " << endl;
-  const Hector::Elements h_rp = parser.romanPots( Hector::IO::MADX::horizontalPots );
-  for ( unsigned short i=0; i<h_rp.size(); i++ ) {
-    cout << ">> " << h_rp[i]->name() << " at s = " << h_rp[i]->s() << " m" << endl;
+  const auto& h_rp = parser.beamline()->find( "XRPH\\." );
+  for ( const auto& rp : h_rp ) {
+    cout << ">> " << rp->name() << " at s = " << rp->s() << " m" << endl;
   }
 
   const auto rp = parser.beamline()->get( rp_names["56-210-fr-hr"] );

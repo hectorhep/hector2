@@ -7,14 +7,14 @@ namespace Hector
   namespace Element
   {
     Matrix
-    HorizontalKicker::matrix( float eloss, float mp, int qp ) const
+    HorizontalKicker::matrix( double eloss, double mp, int qp ) const
     {
       Matrix mat = Drift::genericMatrix( length_ );
 
       if ( !Parameters::get()->enableKickers() )
         return mat;
 
-      const float ke = -fieldStrength( eloss, mp, qp );
+      const double ke = -fieldStrength( eloss, mp, qp );
       if ( ke == 0. )
         return mat;
 
@@ -24,14 +24,14 @@ namespace Hector
     }
 
     Matrix
-    VerticalKicker::matrix( float eloss, float mp, int qp ) const
+    VerticalKicker::matrix( double eloss, double mp, int qp ) const
     {
       Matrix mat = Drift::genericMatrix( length_ );
 
       if ( !Parameters::get()->enableKickers() )
         return mat;
 
-      const float ke = -fieldStrength( eloss, mp, qp );
+      const double ke = -fieldStrength( eloss, mp, qp );
       if ( ke == 0. )
         return mat;
 

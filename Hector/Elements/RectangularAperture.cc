@@ -4,7 +4,7 @@ namespace Hector
 {
   namespace Aperture
   {
-    RectangularAperture::RectangularAperture( float rect_length, float rect_height, const TwoVector& pos ) :
+    RectangularAperture::RectangularAperture( double rect_length, double rect_height, const TwoVector& pos ) :
       ApertureBase( aRectangularAperture, pos, { { rect_length, rect_height, 0., 0. } } )
     {}
 

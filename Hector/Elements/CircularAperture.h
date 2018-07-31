@@ -12,7 +12,7 @@ namespace Hector
     {
       public:
         /// Class constructor
-        CircularAperture( float, const TwoVector& pos = TwoVector() );
+        CircularAperture( double, const TwoVector& pos = TwoVector() );
         ~CircularAperture();
 
         std::shared_ptr<ApertureBase> clone() const override { return std::make_shared<CircularAperture>( *this ); }

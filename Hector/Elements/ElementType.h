@@ -26,6 +26,7 @@ namespace Hector
       aRectangularCollimator, ///< Rectangular-type collimator
       anEllipticalCollimator, ///< Rectangular-type collimator
       aCircularCollimator, ///< Circular-type collimator
+      aCollimator, ///< Generic collimator
       //RomanPot, InteractionPoint,
       aPlaceholder, ///< A placeholder element
       anInstrument, ///< A measurement apparatus

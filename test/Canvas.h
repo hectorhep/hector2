@@ -110,7 +110,7 @@ namespace Hector
             }
             else y_title = Form( "%s (%s / %d %s)", y_title.Data(), distrib.Data(), static_cast<unsigned int>( GetBinning( obj ) ), unit.Data() );
           }
-          else { 
+          else {
             if ( !form_spec.IsNull() ) {
               TString format = Form( "%%s / %%%s %%s", form_spec.Data() );
               y_title = Form( format.Data(), y_title.Data(), GetBinning( obj ), unit.Data() );
@@ -177,12 +177,12 @@ namespace Hector
 
       TCanvas::cd();
       if ( fDrawLogo ) {
-        fTopLogo = std::make_unique<PaveText>( 0.14, 0.94, 0.2, 1. );
+        fTopLogo = std::make_unique<PaveText>( 0.14, 0.95, 0.2, 1.01 );
         fTopLogo->SetTextSize( 0.04 );
         fTopLogo->SetTextFont( font_type( 2 ) );
         fTopLogo->SetTextAlign( kHAlignLeft+kVAlignTop );
         fTopLogo->AddText( "#font[32]{Hector}" );
-        fTopLogo->AddText( "#scale[0.66]{simulation}" );
+        fTopLogo->AddText( "#scale[0.7]{simulation}" );
       }
       SetTopLabel();
       if ( fRatio ) DivideCanvas();

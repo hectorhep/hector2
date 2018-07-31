@@ -12,7 +12,7 @@ namespace Hector
     {
       public:
         /// (virtual) class constructor
-        Quadrupole( const Type& type, const std::string& name, float spos, float length, float mag_str ) :
+        Quadrupole( const Type& type, const std::string& name, double spos, double length, double mag_str ) :
           ElementBase( type, name, spos, length ) {
           setMagneticStrength( mag_str );
         }
@@ -23,7 +23,7 @@ namespace Hector
     {
       public:
         /// Class constructor
-        HorizontalQuadrupole( const std::string& name, float spos, float length, float mag_str ) :
+        HorizontalQuadrupole( const std::string& name, double spos, double length, double mag_str ) :
           Quadrupole( anHorizontalQuadrupole, name, spos, length, mag_str ) {}
 
         std::shared_ptr<ElementBase> clone() const override { return std::make_shared<HorizontalQuadrupole>( *this ); }
@@ -41,7 +41,7 @@ namespace Hector
          * \f$
          * assuming \f$ k =  k_{0} \cdot \frac{p_{0}}{p_{0} - \mathrm{d}p} \cdot \frac{q_{\mathrm{part}}}{q_{\mathrm{b}}} \f$ and \f$ \omega \equiv \omega(k,L) = L \sqrt{|k|} \f$
          */
-        Matrix matrix( float, float mp = Parameters::get()->beamParticlesMass(), int qp = Parameters::get()->beamParticlesCharge() ) const override;
+        Matrix matrix( double, double mp = Parameters::get()->beamParticlesMass(), int qp = Parameters::get()->beamParticlesCharge() ) const override;
     };
 
     /// Vertical quadrupole object builder
@@ -49,7 +49,7 @@ namespace Hector
     {
       public:
         /// Class constructor
-        VerticalQuadrupole( const std::string& name, float spos, float length, float mag_str ) :
+        VerticalQuadrupole( const std::string& name, double spos, double length, double mag_str ) :
           Quadrupole( aVerticalQuadrupole, name, spos, length, mag_str ) {}
 
         std::shared_ptr<ElementBase> clone() const override { return std::make_shared<VerticalQuadrupole>( *this ); }
@@ -67,7 +67,7 @@ namespace Hector
          * \f$
          * assuming \f$ k =  k_{0} \cdot \frac{p_{0}}{p_{0} - \mathrm{d}p} \cdot \frac{q_{\mathrm{part}}}{q_{\mathrm{b}}} \f$ and \f$ \omega \equiv \omega(k,l) = L \sqrt{|k|} \f$
          */
-        Matrix matrix( float, float mp = Parameters::get()->beamParticlesMass(), int qp = Parameters::get()->beamParticlesCharge() ) const override;
+        Matrix matrix( double, double mp = Parameters::get()->beamParticlesMass(), int qp = Parameters::get()->beamParticlesCharge() ) const override;
     };
   }
 }

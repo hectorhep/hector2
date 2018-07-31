@@ -1,18 +1,36 @@
 #include "Hector/Utils/LHEHandler.h"
 
 #ifndef GOOD_HEPMC
-#pragma message "HepMC version 2 was found on your system! Version 3 is required for LHEF parsing!"
-#else
+#  ifndef PYTHIA8
+#    pragma message "No HepMC v3+ nor Pythia8 release was found on your system! Disabling LHEF parsing!"
+#  endif
+#endif
 
 #include "Hector/Core/Exception.h"
+
+#include <sstream>
 
 namespace Hector
 {
   namespace IO
   {
-    LHE::LHE( const char* filename ) :
-      reader_( new LHEF::Reader( filename ) )
+    LHE::LHE( const char* filename )
+#ifdef GOOD_HEPMC
+      : reader_( new LHEF::Reader( filename ) )
     {}
+#else
+#  ifdef PYTHIA8
+      : pythia_( new Pythia8::Pythia )
+    {
+      pythia_->settings.mode( "Next:numberCount", 0 ); // disabling unnecessary output
+      pythia_->settings.mode( "Beams:frameType", 4 ); // LHEF input
+      pythia_->settings.word( "Beams:LHEF", filename );
+      pythia_->init();
+    }
+#  else
+    {}
+#  endif
+#endif
 
     LHE::~LHE()
     {}
@@ -31,6 +49,7 @@ namespace Hector
     LHE::nextEvent( Particles& parts )
     {
       parts.clear();
+#ifdef GOOD_HEPMC
       bool status = reader_->readEvent();
       if ( !status ) return false;
 
@@ -59,45 +78,86 @@ namespace Hector
           parts.push_back( part );
         }
       }
+#else
+#  ifdef PYTHIA8
+      while ( true ) {
+        if ( !pythia_->next() )
+          continue;
+        for ( int i = 0; i < pythia_->event.size(); ++i ) {
+          const Pythia8::Particle& pyp = pythia_->event[i];
+          if ( pyp.status() > 0 ) {
+            const LorentzVector mom( pyp.px(), pyp.py(), pyp.pz(), pyp.e() );
+            Particle part( mom );
+            part.setPDGid( pyp.id() );
+            parts.emplace_back( part );
+          }
+        }
+        return true;
+      }
+#  endif
+#endif
       return true;
     }
 
     float
     LHE::crossSection() const
     {
+#ifdef GOOD_HEPMC
       return *( reader_->heprup.XSECUP.begin() );
+#else
+      return -1.;
+#endif
     }
 
     float
     LHE::crossSectionError() const
     {
+#ifdef GOOD_HEPMC
       return *( reader_->heprup.XERRUP.begin() );
+#else
+      return -1.;
+#endif
     }
 
     int
     LHE::beam1PDGId() const
     {
+#ifdef GOOD_HEPMC
       return reader_->heprup.IDBMUP.first;
+#else
+      return 0;
+#endif
     }
 
     int
     LHE::beam2PDGid() const
     {
+#ifdef GOOD_HEPMC
       return reader_->heprup.IDBMUP.second;
+#else
+      return 0;
+#endif
     }
 
     float
     LHE::beam1Energy() const
     {
+#ifdef GOOD_HEPMC
       return reader_->heprup.EBMUP.first;
+#else
+      return -1.;
+#endif
     }
 
     float
     LHE::beam2Energy() const
     {
+#ifdef GOOD_HEPMC
       return reader_->heprup.EBMUP.second;
+#else
+      return -1.;
+#endif
     }
   }
 }
 
-#endif

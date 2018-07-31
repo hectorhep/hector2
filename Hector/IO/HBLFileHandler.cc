@@ -7,7 +7,7 @@
 #include "Hector/Elements/Kicker.h"
 #include "Hector/Elements/Dipole.h"
 #include "Hector/Elements/Quadrupole.h"
-#include "Hector/Elements/RectangularCollimator.h"
+#include "Hector/Elements/Collimator.h"
 #include "Hector/Elements/RectangularAperture.h"
 #include "Hector/Elements/CircularAperture.h"
 #include "Hector/Elements/EllipticAperture.h"
@@ -85,7 +85,10 @@ namespace Hector
             elem = std::make_shared<Element::HorizontalKicker>( el.element_name, el.element_s, el.element_length, el.element_magnetic_strength );
             break;
           case Element::aRectangularCollimator:
-            elem = std::make_shared<Element::RectangularCollimator>( el.element_name, el.element_s, el.element_length );
+          case Element::anEllipticalCollimator:
+          case Element::aCircularCollimator:
+          case Element::aCollimator:
+            elem = std::make_shared<Element::Collimator>( el.element_name, el.element_s, el.element_length );
             break;
           //case Element::anEllipticalCollimator:
           //case Element::aCircularCollimator:

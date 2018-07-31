@@ -4,7 +4,7 @@ namespace Hector
 {
   namespace Aperture
   {
-    RectEllipticAperture::RectEllipticAperture( float rect_size_x, float rect_size_y, float ell_size_x, float ell_size_y, const TwoVector& pos ) :
+    RectEllipticAperture::RectEllipticAperture( double rect_size_x, double rect_size_y, double ell_size_x, double ell_size_y, const TwoVector& pos ) :
       ApertureBase( aRectEllipticAperture, pos, { { rect_size_x, rect_size_y, ell_size_x, ell_size_y } } )
     {}
 

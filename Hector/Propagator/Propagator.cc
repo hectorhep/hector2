@@ -13,12 +13,15 @@
 namespace Hector
 {
   void
-  Propagator::propagate( Particle& part, float s_max ) const
+  Propagator::propagate( Particle& part, double s_max ) const
   {
     part.clear();
 
-    const double energy_loss = Parameters::get()->beamEnergy()-part.lastStateVector().energy();
-    const float first_s = part.firstS();
+    const double energy_loss = ( Parameters::get()->useRelativeEnergy() )
+      ? Parameters::get()->beamEnergy()-part.lastStateVector().energy()
+      : part.lastStateVector().energy();
+
+    const double first_s = part.firstS();
 
     try {
 
@@ -93,7 +96,7 @@ namespace Hector
   }
 
   bool
-  Propagator::stopped( Particle& part, float s_max ) const
+  Propagator::stopped( Particle& part, double s_max ) const
   {
     for ( Elements::const_iterator it = beamline_->begin()+1; it != beamline_->end(); ++it ) {
       // extract the previous and the current element in the beamline
@@ -115,15 +118,30 @@ namespace Hector
   }
 
   Particle::Position
-  Propagator::propagateThrough( const Particle::Position& ini_pos, const std::shared_ptr<Element::ElementBase> elem, float eloss, int qp ) const
+  Propagator::propagateThrough( const Particle::Position& ini_pos, const std::shared_ptr<Element::ElementBase> elem, double eloss, int qp ) const
   {
     try {
-      const StateVector shift( elem->position(), elem->angles(), 0., 0. );
+      //const StateVector shift( elem->relativePosition(), elem->angles(), 0., 0. );
+      //const StateVector shift( elem->relativePosition(), TwoVector(), 0., 0. );
+      const StateVector shift( TwoVector(), TwoVector(), 0., 0. );
+      const Vector prop = elem->matrix( eloss, ini_pos.stateVector().m(), qp ) * ( ini_pos.stateVector().vector()-shift.vector() ) + shift.vector();
 
-      /*std::ostringstream os; os << elem->matrix( eloss, ini_pos.stateVector().m(), qp );
-      PrintInfo( Form( "Propagating through %s element \"%s\" with transfer matrix\n%s", elem->typeString().c_str(), elem->name().c_str(), os.str().c_str() ) );*/
+      if ( Parameters::get()->loggingThreshold() >= Debug ) {
+        std::ostringstream os1; os1 << ini_pos.stateVector().vector().T();
+        std::ostringstream os2; os2 << elem->matrix( eloss, ini_pos.stateVector().m(), qp );
+        std::ostringstream os3; os3 << prop.T();
+        PrintDebug( Form( "Propagating particle of mass %g GeV and state vector at s = %g m:%s\t"
+                          "through %s element \"%s\" "
+                          "at s = %g m, "
+                          "of length %g m,\n\t"
+                          "and with transfer matrix:"
+                          "%s\t"
+                          "Resulting state vector:%s",
+                          ini_pos.stateVector().m(), ini_pos.s(), os1.str().c_str(),
+                          elem->typeName().c_str(), elem->name().c_str(), elem->s(), elem->length(),
+                          os2.str().c_str(), os3.str().c_str() ) );
+      }
 
-      Vector prop = elem->matrix( eloss, ini_pos.stateVector().m(), qp ) * ( ini_pos.stateVector().vector()-shift.vector() ) + shift.vector();
       // perform the propagation (assuming that mass is conserved...)
       StateVector vec( prop, ini_pos.stateVector().m() );
 
@@ -136,7 +154,7 @@ namespace Hector
   }
 
   void
-  Propagator::propagate( Particles& beam, float s_max ) const
+  Propagator::propagate( Particles& beam, double s_max ) const
   {
     for ( auto& part : beam )
       propagate( part, s_max );

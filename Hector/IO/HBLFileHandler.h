@@ -6,6 +6,7 @@
 namespace Hector
 {
   class Beamline;
+  /// Collection of input/output utilitaries
   namespace IO
   {
     /// An HBL (Hector BeamLine) files handler

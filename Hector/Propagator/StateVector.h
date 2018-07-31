@@ -13,7 +13,7 @@ namespace Hector
   /// Six-dimensional state vector associated to a particle at a given s
   class StateVector : private Vector
   {
-    private:
+    public:
       /// Human-readable enumeration of the 6 state vector coordinates
       enum Components {
         X  = 0, TX = 1,

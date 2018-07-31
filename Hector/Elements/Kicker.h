@@ -12,7 +12,7 @@ namespace Hector
     {
       public:
         /// (virtual) class constructor
-        Kicker( const Type& type, const std::string& name, float spos, float length, float mag_str ) :
+        Kicker( const Type& type, const std::string& name, double spos, double length, double mag_str ) :
           ElementBase( type, name, spos, length ) {
           setMagneticStrength( mag_str );
         }
@@ -23,7 +23,7 @@ namespace Hector
     {
       public:
         /// Class constructor
-        HorizontalKicker( const std::string& name, float spos, float length, float mag_str ) :
+        HorizontalKicker( const std::string& name, double spos, double length, double mag_str ) :
           Kicker( anHorizontalKicker, name, spos, length, mag_str ) {}
 
         std::shared_ptr<ElementBase> clone() const override { return std::make_shared<HorizontalKicker>( *this ); }
@@ -41,7 +41,7 @@ namespace Hector
          * \f$
          * assuming \f$ k =  k_{0} \cdot \frac{p_{0}}{p_{0} - \mathrm{d}p} \cdot \frac{q_{\mathrm{particle}}}{q_{\mathrm{beam}}} \f$
          */
-        Matrix matrix( float, float mp = Parameters::get()->beamParticlesMass(), int qp = Parameters::get()->beamParticlesCharge() ) const override;
+        Matrix matrix( double, double mp = Parameters::get()->beamParticlesMass(), int qp = Parameters::get()->beamParticlesCharge() ) const override;
     };
 
     /// Vertical kicker object builder
@@ -49,7 +49,7 @@ namespace Hector
     {
       public:
         /// Class constructor
-        VerticalKicker( const std::string& name, float spos, float length, float mag_str ) :
+        VerticalKicker( const std::string& name, double spos, double length, double mag_str ) :
           Kicker( aVerticalKicker, name, spos, length, mag_str ) {}
 
         std::shared_ptr<ElementBase> clone() const override { return std::make_shared<VerticalKicker>( *this ); }
@@ -67,7 +67,7 @@ namespace Hector
          * \f$
          * assuming \f$ k =  k_{0} \cdot \frac{p_{0}}{p_{0} - \mathrm{d}p} \cdot \frac{q_{\mathrm{particle}}}{q_{\mathrm{beam}}} \f$
          */
-        Matrix matrix( float, float mp = Parameters::get()->beamParticlesMass(), int qp = Parameters::get()->beamParticlesCharge() ) const override;
+        Matrix matrix( double, double mp = Parameters::get()->beamParticlesMass(), int qp = Parameters::get()->beamParticlesCharge() ) const override;
     };
   }
 }

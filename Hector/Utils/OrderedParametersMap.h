@@ -21,10 +21,9 @@ namespace Hector
         ~Ordered() {}
 
         /// Number of keys stored in the map
-        size_t size() const {
-          return map::size();
-        }
+        using std::map<std::string,T>::size;
 
+        /// Return a map-typped object
         std::map<std::string,T> asMap() const { return *this; }
 
         /// Does the map have this key?

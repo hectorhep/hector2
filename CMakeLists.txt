@@ -37,11 +37,6 @@ set_target_properties(Hector2 PROPERTIES LINKER_LANGUAGE CXX)
 install(TARGETS Hector2 DESTINATION lib)
 install(DIRECTORY Hector DESTINATION include FILES_MATCHING PATTERN "*.h")
 
-#----- test executable
-
-add_executable(hector test/test_hector.cpp)
-target_link_libraries(hector Hector2 ${HECTOR_DEPENDENCIES})
-
 #----- python wrapper
 
 if(Boost_FOUND)
@@ -63,4 +58,19 @@ file(GLOB input RELATIVE ${PROJECT_SOURCE_DIR} data/twiss/*)
 foreach(_files ${input})
   configure_file(${_files} ${_files} COPYONLY)
 endforeach()
+
+#----- documentation
+
+find_package(Doxygen)
+if(DOXYGEN_FOUND)
+  set(DOXYGEN_IN ${CMAKE_SOURCE_DIR}/docs/Doxyfile.in)
+  set(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
+  configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
+  message(STATUS "Doxygen build started")
+  add_custom_target(doc_doxygen EXCLUDE_FROM_ALL
+    COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    COMMENT "Generating Hector documentation with Doxygen"
+    VERBATIM)
+endif()
 

@@ -12,8 +12,8 @@ namespace Hector
     {
       public:
         /// Class constructor
-        Marker( const std::string& name, float spos, float length = 0. ) :
-          Drift( name, spos, length ) {}
+        Marker( const std::string& name, double spos, double length = 0. ) :
+          Drift( name, aMarker, spos, length ) {}
 
         std::shared_ptr<ElementBase> clone() const override { return std::make_shared<Marker>( *this ); }
     };

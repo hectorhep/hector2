@@ -2,7 +2,7 @@
 #include "Hector/Core/Exception.h"
 #include "Hector/Propagator/Particle.h"
 
-#include <stdarg.h>  // For va_start, etc.
+#include <stdarg.h> // For va_start, etc.
 #include <algorithm>
 #include <locale>
 #include <CLHEP/Random/RandFlat.h>
@@ -19,18 +19,21 @@ namespace Hector
       va_start( ap, fmt );
       int n = vsnprintf( (char*)str.data(), size, fmt.c_str(), ap );
       va_end( ap );
-      if ( n>-1 and n<size ) {
+      if ( n > -1 && n < size ) {
         str.resize( n );
         return str;
       }
-      if ( n>-1 ) size = n + 1;
-      else size *= 2; // retry with a larger size
+      if ( n > -1 )
+        size = n+1;
+      else
+        size *= 2; // retry with a larger size
     }
     return str;
   }
 
   std::string trim( const std::string& str ) {
-    if ( str=="" ) return str;
+    if ( str == "" )
+      return str;
     size_t first = str.find_first_not_of( ' ' ),
            last = str.find_last_not_of( ' ' );
     std::string tmp = str.substr( first, ( last-first+1 ) );

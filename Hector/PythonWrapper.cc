@@ -13,7 +13,7 @@
 #include "Hector/Elements/Dipole.h"
 #include "Hector/Elements/Quadrupole.h"
 #include "Hector/Elements/Kicker.h"
-#include "Hector/Elements/RectangularCollimator.h"
+#include "Hector/Elements/Collimator.h"
 
 #include "Hector/Elements/ApertureBase.h"
 #include "Hector/Elements/CircularAperture.h"
@@ -21,7 +21,7 @@
 #include "Hector/Elements/RectangularAperture.h"
 #include "Hector/Elements/RectEllipticAperture.h"
 
-#include "Hector/IO/MADXHandler.h"
+#include "Hector/IO/TwissHandler.h"
 #include "Hector/IO/HBLFileHandler.h"
 
 #include "Hector/Utils/BeamProducer.h"
@@ -87,7 +87,7 @@ namespace
   py::list beamline_elements( Hector::Beamline& bl ) { return to_python_list<std::shared_ptr<Hector::Element::ElementBase> >( bl.elements() ); }
   py::list beamline_found_elements( Hector::Beamline& bl, const char* regex ) { return to_python_list_c<std::shared_ptr<Hector::Element::ElementBase> >( bl.find( regex ) ); }
 
-  py::dict madx_parser_header( Hector::IO::MADX& parser ) {
+  py::dict twiss_parser_header( Hector::IO::Twiss& parser ) {
     py::dict out = to_python_dict_c<std::string,std::string>( parser.headerStrings() );
     out.update( to_python_dict_c<std::string,float>( parser.headerFloats() ) );
     if ( out.has_key( "timestamp" ) ) {
@@ -114,10 +114,18 @@ namespace
   struct ElementBaseWrap : Hector::Element::ElementBase, py::wrapper<Hector::Element::ElementBase>
   {
     ElementBaseWrap() : Hector::Element::ElementBase( Hector::Element::anInvalidElement ) {}
-    std::shared_ptr<Hector::Element::ElementBase> clone() const override { return this->get_override( "clone" )(); }
-    Hector::Matrix matrix( float eloss, float mp, int qp ) const override { return this->get_override( "matrix" )( eloss, mp, qp ); }
+    std::shared_ptr<Hector::Element::ElementBase> clone() const override {
+      if ( py::override n = this->get_override( "clone" ) )
+        return n();
+      return Hector::Element::ElementBase::clone();
+    }
+    Hector::Matrix matrix( double eloss, double mp, int qp ) const override {
+      if ( py::override m = this->get_override( "matrix" ) )
+        return m( eloss, mp, qp );
+      return Hector::Element::ElementBase::matrix( eloss, mp, qp );
+    }
   };
-  template<class T, class init = py::init<std::string,float,float,float> >
+  template<class T, class init = py::init<std::string,double,double,double> >
   void convertElement( const char* name )
   {
     py::class_<T, py::bases<Hector::Element::ElementBase> >( name, init() )
@@ -128,7 +136,7 @@ namespace
 
   struct ApertureBaseWrap : Hector::Aperture::ApertureBase, py::wrapper<Hector::Aperture::ApertureBase>
   {
-    ApertureBaseWrap() : Hector::Aperture::ApertureBase( Hector::Aperture::anInvalidAperture, Hector::TwoVector(), std::vector<float>{} ) {}
+    ApertureBaseWrap() : Hector::Aperture::ApertureBase( Hector::Aperture::anInvalidAperture, Hector::TwoVector(), std::vector<double>{} ) {}
     std::shared_ptr<Hector::Aperture::ApertureBase> clone() const override { return this->get_override( "clone" )(); }
   };
   template<class T, class init>
@@ -308,6 +316,7 @@ BOOST_PYTHON_MODULE( pyhector )
     .value( "rectangularCollimator", Hector::Element::Type::aRectangularCollimator )
     .value( "ellipticalCollimator", Hector::Element::Type::anEllipticalCollimator )
     .value( "circularCollimator", Hector::Element::Type::aCircularCollimator )
+    .value( "collimator", Hector::Element::Type::aCollimator )
     .value( "placeholder", Hector::Element::Type::aPlaceholder )
     .value( "instrument", Hector::Element::Type::anInstrument )
     .value( "solenoid", Hector::Element::Type::aSolenoid )
@@ -332,27 +341,28 @@ BOOST_PYTHON_MODULE( pyhector )
     .add_property( "beta", &Hector::Element::ElementBase::beta, &Hector::Element::ElementBase::setBeta )
     .add_property( "dispersion", &Hector::Element::ElementBase::dispersion, &Hector::Element::ElementBase::setDispersion )
     .add_property( "relativePosition", &Hector::Element::ElementBase::relativePosition, &Hector::Element::ElementBase::setRelativePosition )
+    .add_property( "parent", py::make_function( &Hector::Element::ElementBase::parentElement, py::return_value_policy<py::return_by_value>() ), &Hector::Element::ElementBase::setParentElement )
     .def( "offsetS", &Hector::Element::ElementBase::offsetS, "Offset the element longitudinal coordinate by a given distance" )
   ;
   py::register_ptr_to_python<Hector::Element::ElementBase*>();
 
   //--- passive elements
-  convertElement<Hector::Element::Drift, py::init<std::string,py::optional<float,float> > >( "Drift" );
-  convertElement<Hector::Element::Marker, py::init<std::string,float,py::optional<float> > >( "Marker" );
+  convertElement<Hector::Element::Drift, py::init<std::string,py::optional<double,double> > >( "Drift" );
+  convertElement<Hector::Element::Marker, py::init<std::string,double,py::optional<double> > >( "Marker" );
 
   //--- dipoles
-  convertElement<Hector::Element::SectorDipole, py::init<std::string,float,float,float> >( "SectorDipole" );
-  convertElement<Hector::Element::RectangularDipole, py::init<std::string,float,float,float> >( "RectangularDipole" );
+  convertElement<Hector::Element::SectorDipole, py::init<std::string,double,double,double> >( "SectorDipole" );
+  convertElement<Hector::Element::RectangularDipole, py::init<std::string,double,double,double> >( "RectangularDipole" );
 
   //--- quadrupoles
-  convertElement<Hector::Element::HorizontalQuadrupole, py::init<std::string,float,float,float> >( "HorizontalQuadrupole" );
-  convertElement<Hector::Element::VerticalQuadrupole, py::init<std::string,float,float,float> >( "VerticalQuadrupole" );
+  convertElement<Hector::Element::HorizontalQuadrupole, py::init<std::string,double,double,double> >( "HorizontalQuadrupole" );
+  convertElement<Hector::Element::VerticalQuadrupole, py::init<std::string,double,double,double> >( "VerticalQuadrupole" );
 
   //--- kickers
-  convertElement<Hector::Element::HorizontalKicker, py::init<std::string,float,float,float> >( "HorizontalKicker" );
-  convertElement<Hector::Element::VerticalKicker, py::init<std::string,float,float,float> >( "VerticalKicker" );
+  convertElement<Hector::Element::HorizontalKicker, py::init<std::string,double,double,double> >( "HorizontalKicker" );
+  convertElement<Hector::Element::VerticalKicker, py::init<std::string,double,double,double> >( "VerticalKicker" );
 
-  convertElement<Hector::Element::RectangularCollimator, py::init<std::string,py::optional<float,float> > >( "RectangularCollimator" );
+  convertElement<Hector::Element::Collimator, py::init<std::string,py::optional<double,double> > >( "Collimator" );
 
   //----- APERTURES DEFINITION
 
@@ -366,15 +376,15 @@ BOOST_PYTHON_MODULE( pyhector )
   ;
   py::register_ptr_to_python<Hector::Aperture::ApertureBase*>();
 
-  convertAperture<Hector::Aperture::CircularAperture, py::init<float,Hector::TwoVector> >( "CircularAperture" );
-  convertAperture<Hector::Aperture::EllipticAperture, py::init<float,float,Hector::TwoVector> >( "EllipticAperture" );
-  convertAperture<Hector::Aperture::RectangularAperture, py::init<float,float,Hector::TwoVector> >( "RectangularAperture" );
-  convertAperture<Hector::Aperture::RectEllipticAperture, py::init<float,float,float,float,Hector::TwoVector> >( "RectEllipticAperture" );
+  convertAperture<Hector::Aperture::CircularAperture, py::init<double,Hector::TwoVector> >( "CircularAperture" );
+  convertAperture<Hector::Aperture::EllipticAperture, py::init<double,double,Hector::TwoVector> >( "EllipticAperture" );
+  convertAperture<Hector::Aperture::RectangularAperture, py::init<double,double,Hector::TwoVector> >( "RectangularAperture" );
+  convertAperture<Hector::Aperture::RectEllipticAperture, py::init<double,double,double,double,Hector::TwoVector> >( "RectEllipticAperture" );
 
   //----- BEAMLINE DEFINITION
 
   std::shared_ptr<Hector::Element::ElementBase>& ( Hector::Beamline::*get_by_name )( const char* ) = &Hector::Beamline::get;
-  std::shared_ptr<Hector::Element::ElementBase>& ( Hector::Beamline::*get_by_spos )( float ) = &Hector::Beamline::get;
+  std::shared_ptr<Hector::Element::ElementBase>& ( Hector::Beamline::*get_by_spos )( double ) = &Hector::Beamline::get;
   py::class_<Hector::Beamline>( "Beamline", "A collection of elements composing a beamline" )
     .def( "__str__", &dump_beamline )
     .def( "dump", &Hector::Beamline::dump, beamline_dump_overloads() )
@@ -393,8 +403,8 @@ BOOST_PYTHON_MODULE( pyhector )
 
   //----- PROPAGATOR
 
-  void ( Hector::Propagator::*propagate_single )( Hector::Particle&, float ) const = &Hector::Propagator::propagate;
-  void ( Hector::Propagator::*propagate_multi )( Hector::Particles&, float ) const = &Hector::Propagator::propagate;
+  void ( Hector::Propagator::*propagate_single )( Hector::Particle&, double ) const = &Hector::Propagator::propagate;
+  void ( Hector::Propagator::*propagate_multi )( Hector::Particles&, double ) const = &Hector::Propagator::propagate;
   py::class_<Hector::Propagator>( "Propagator", "Beamline propagation helper class", py::init<const Hector::Beamline*>() )
     .def( "propagate", propagate_single, "Propagate a single particle into the beamline", py::args( "particle object", "maximal s-position for the propagation" ) )
     .def( "propagate", propagate_multi, "Propagate a collection of particles into the beamline", py::args( "particles object collection", "maximal s-position for the propagation" ) )
@@ -402,10 +412,9 @@ BOOST_PYTHON_MODULE( pyhector )
 
   //----- I/O HANDLERS
 
-  py::class_<Hector::IO::MADX>( "MadXparser", "A MadX Twiss files parser", py::init<const char*,const char*,int,py::optional<float,float> >() )
-    .add_property( "beamline", py::make_function( &Hector::IO::MADX::beamline, py::return_value_policy<py::reference_existing_object>() ), "Beamline object parsed from the MadX Twiss file" )
-    .add_property( "romanPots", &Hector::IO::MADX::romanPots, "List of Roman pots along the beamline" )
-    .add_property( "header", madx_parser_header )
+  py::class_<Hector::IO::Twiss>( "Twissparser", "A Twiss files parser", py::init<const char*,const char*,py::optional<double,double> >() )
+    .add_property( "beamline", py::make_function( &Hector::IO::Twiss::beamline, py::return_value_policy<py::reference_existing_object>() ), "Beamline object parsed from the Twiss file" )
+    .add_property( "header", twiss_parser_header )
   ;
 
   py::class_<Hector::IO::HBL>( "HBLparser", "A HBL files parser", py::init<const char*>() )

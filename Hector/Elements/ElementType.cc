@@ -23,6 +23,7 @@ namespace Hector
       case Element::aRectangularCollimator: return os << "rect.collimator";
       case Element::anEllipticalCollimator: return os << "ellip.collimator";
       case Element::aCircularCollimator:    return os << "circular collimator";
+      case Element::aCollimator:            return os << "collimator";
       case Element::aPlaceholder:           return os << "placeholder";
       case Element::anInstrument:           return os << "instrument";
       case Element::aSolenoid:              return os << "solenoid";
