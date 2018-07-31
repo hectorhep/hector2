@@ -22,7 +22,7 @@ namespace Hector
       setElements( rhs );
   }
 
-  Beamline::Beamline( double length, const ThreeVector& ip ) :
+  Beamline::Beamline( double length, const std::shared_ptr<Element::ElementBase>& ip ) :
     max_length_( length+5. ), // artificially increase the size to include next elements
     ip_( ip )
   {}
@@ -194,7 +194,7 @@ namespace Hector
   Beamline::dump( std::ostream& os, bool show_drifts ) const
   {
     os << "=============== Beamline dump ===============\n"
-       << " interaction point: " << interactionPoint() << "\n"
+       << " interaction point: " << ip_->name() << " at " << ip_->position() << "\n"
        << " length: " << length() << " m\n"
        << " elements list: ";
     for ( const auto& elemPtr : elements_ ) {
@@ -233,7 +233,7 @@ namespace Hector
     // convert all empty spaces into drifts
     for ( const auto& elemPtr : *beamline ) {
       // skip the markers
-      if ( elemPtr->type() == Element::aMarker && elemPtr->s() != beamline->interactionPoint().z() )
+      if ( elemPtr->type() == Element::aMarker && elemPtr->name() != beamline->interactionPoint()->name() )
         continue;
       // add a drift whenever there is a gap in s
       const double drift_length = elemPtr->s()-pos;

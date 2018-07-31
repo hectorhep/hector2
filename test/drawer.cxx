@@ -62,6 +62,11 @@ main( int argc, char* argv[] )
     { "dump-beamlines", "dump beamlines in terminal", false, &dump_beamlines, 'd' },
   } );
 
+  if ( offset.size() < 1 )
+    throw logic_error( "Beam position at bunch crossing is invalid!" );
+  else if ( offset.size() < 2 )
+    offset.emplace_back( offset.at( 0 ) );
+
   //for ( const auto& x : crossing_angles_x ) cout << x << endl;
   //--- general propagation parameters
   //Hector::Parameters::get()->setComputeApertureAcceptance( false ); //FIXME
@@ -111,8 +116,8 @@ main( int argc, char* argv[] )
   }
 
   Hector::BeamProducer::GaussianParticleGun gun;
-  gun.smearX( offset[0], beam_lateral_width_ip );
-  gun.smearY( offset[1], beam_lateral_width_ip );
+  gun.smearX( offset.at( 0 ), beam_lateral_width_ip );
+  gun.smearY( offset.at( 1 ), beam_lateral_width_ip );
 
   Hector::Timer tmr;
 

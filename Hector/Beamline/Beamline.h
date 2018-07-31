@@ -25,7 +25,7 @@ namespace Hector
       /// Build a beamline from a longitudinal size and a interaction point position
       /// \param[in] length Longitudinal length of the beamline
       /// \param[in] ip Position of the interaction point
-      Beamline( double length, const ThreeVector& ip = ThreeVector() );
+      Beamline( double length, const std::shared_ptr<Element::ElementBase>& ip = nullptr );
       ~Beamline();
 
       /// Compute all drifts between each element in the beamline
@@ -39,9 +39,9 @@ namespace Hector
       void dump( std::ostream& os = std::cout, bool show_drifts = true ) const;
 
       /// Set the position of the interaction point
-      void setInteractionPoint( ThreeVector ip ) { ip_ = ip; }
+      void setInteractionPoint( std::shared_ptr<Element::ElementBase> ip ) { ip_ = ip; }
       /// Retrieve the position of the interaction point
-      ThreeVector interactionPoint() const { return ip_; }
+      const std::shared_ptr<Element::ElementBase>& interactionPoint() const { return ip_; }
 
       /// Add a new element in the beamline
       /// \param[in] elem Element to be copied and added to the beamline
@@ -103,8 +103,8 @@ namespace Hector
       void setElements( const Beamline& moth_bl );
       /// Beamline maximal length (in m)
       double max_length_;
-      /// Position of the interaction point
-      ThreeVector ip_;
+      /// Pointer to the interaction point
+      std::shared_ptr<Element::ElementBase> ip_;
 
       /// List of elements defining the beamline
       Elements elements_;

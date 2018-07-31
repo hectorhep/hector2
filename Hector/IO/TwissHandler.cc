@@ -255,7 +255,7 @@ namespace Hector
           auto elem = parseElement( values );
           if ( !elem || elem->name() != ip_name_ ) continue;
           interaction_point_ = elem;
-          raw_beamline_->setInteractionPoint( ThreeVector( elem->x(), elem->y(), 0. ) );
+          raw_beamline_->setInteractionPoint( elem );
           break;
         } catch ( Exception& e ) {
           e.dump();
