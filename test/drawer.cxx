@@ -109,7 +109,7 @@ main( int argc, char* argv[] )
       bl->dump();
 
     auto rps = bl->find( "XRPH\\." );
-    cout << "---> beamline " << fn << " has " << rps.size() << " horizontal roman pots!" << endl;
+    cout << "---> beamline " << fn << " has " << rps.size() << " horizontal Roman pots!" << endl;
     for ( const auto& rp : rps )
       cout << " >> Roman pot " << rp->name() << " at s=" << rp->s() << " m" << endl;
     ++i;
