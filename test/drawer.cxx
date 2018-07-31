@@ -32,13 +32,13 @@ main( int argc, char* argv[] )
   vector<string> twiss_filenames, meas_filenames;
   vector<int> colours;
   string ip_name;
-  vector<double> crossing_angles_x, crossing_angles_y;
+  vector<double> crossing_angles_x, crossing_angles_y, offset;
   double max_s;
   double beam_lateral_width_ip, beam_angular_divergence_ip;
   double xi;
   double scale_x, scale_y;
   unsigned int num_particles;
-  bool show_paths, dipoles_enable, draw_monitors;
+  bool show_paths, dipoles_enable, draw_monitors, dump_beamlines;
 
   Hector::ArgsParser( argc, argv, {
     { "twiss-files", "beamline(s) Twiss file(s)", &twiss_filenames, 'i' },
@@ -47,6 +47,7 @@ main( int argc, char* argv[] )
     { "max-s", "maximal s-coordinate (m)", 250., &max_s },
     { "num-parts", "number of particles to generate", 2000, &num_particles, 'n' },
     { "xi", "particles momentum loss", 0.1, &xi },
+    { "offset", "beam position at bunch crossing (m)", vector<double>( 2, 0. ), &offset, 'o' },
     { "alpha-x", "crossing angle in the x direction (rad)", vector<double>( 2, 180.e-6 ), &crossing_angles_x, 'x' },
     { "alpha-y", "crossing angle in the y direction (rad)", vector<double>( 2, 0. ), &crossing_angles_y, 'y' },
     { "scale-x", "horizontal coordinate scaling (m)", 0.1, &scale_x },
@@ -58,6 +59,7 @@ main( int argc, char* argv[] )
     { "meas-files", "list of measurements files", vector<string>{}, &meas_filenames, 'm' },
     { "draw-monitors", "show monitors output", false, &draw_monitors },
     { "colours", "beam colours", vector<int>{ kBlue+1, kRed+1 }, &colours },
+    { "dump-beamlines", "dump beamlines in terminal", false, &dump_beamlines, 'd' },
   } );
 
   //for ( const auto& x : crossing_angles_x ) cout << x << endl;
@@ -98,7 +100,9 @@ main( int argc, char* argv[] )
     }
 
     //--- look at the beamline(s)
-//    bl->dump();
+    if ( dump_beamlines )
+      bl->dump();
+
     auto rps = bl->find( "XRPH\\." );
     cout << "---> beamline " << fn << " has " << rps.size() << " horizontal roman pots!" << endl;
     for ( const auto& rp : rps )
@@ -107,8 +111,8 @@ main( int argc, char* argv[] )
   }
 
   Hector::BeamProducer::GaussianParticleGun gun;
-  gun.smearX( 0., beam_lateral_width_ip );
-  gun.smearY( 0., beam_lateral_width_ip );
+  gun.smearX( offset[0], beam_lateral_width_ip );
+  gun.smearY( offset[1], beam_lateral_width_ip );
 
   Hector::Timer tmr;
 
@@ -148,8 +152,8 @@ main( int argc, char* argv[] )
           } catch ( Hector::Exception& ) {}
         }
       }
-      gr_x.SetLineColor( kGray );
-      gr_y.SetLineColor( kGray );
+      gr_x.SetLineColorAlpha( colours[j], 0.05 );
+      gr_y.SetLineColorAlpha( colours[j], 0.05 );
       gr_x.SetLineWidth( 1 );
       gr_y.SetLineWidth( 1 );
       mg_x[j]->Add( (TGraph*)gr_x.Clone() );
@@ -221,7 +225,7 @@ main( int argc, char* argv[] )
       for ( unsigned short j = 0; j < propagators.size(); ++j ) {
         TGraphErrors g_mean = mean_trajectory( *plt.gr[j] );
         g_mean.SetLineColor( colours[j] );
-        g_mean.SetFillColorAlpha( colours[j], 0.3 );
+        g_mean.SetFillColorAlpha( colours[j], 0.33 );
         if ( show_paths )
           mg->Add( plt.gr[j] );
         mg->Add( (TGraph*)g_mean.Clone() );
