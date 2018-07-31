@@ -6,7 +6,7 @@
 #include "TColor.h"
 
 void
-elementStyle( const std::shared_ptr<Hector::Element::ElementBase>& elem, Color_t& col, Style_t& style )
+fillElementStyle( const std::shared_ptr<Hector::Element::ElementBase>& elem, Color_t& col, Style_t& style )
 {
   col = kWhite;
   style = 1001;
@@ -112,7 +112,7 @@ drawBeamline( const char axis, const Hector::Beamline* bl, const unsigned short 
     elem_box->SetLineColor( kGray+1 );
     //elem_box->SetFillStyle( 1001 );
     short fill_colour, fill_style;
-    elementStyle( elemPtr, fill_colour, fill_style );
+    fillElementStyle( elemPtr, fill_colour, fill_style );
     //elem_box->SetFillColorAlpha( elementColour( elemPtr ), alpha );
     elem_box->SetFillColor( fill_colour );
     elem_box->SetFillStyle( fill_style );
@@ -146,20 +146,17 @@ drawBeamline( const char axis, const Hector::Beamline* bl, const unsigned short 
 #include <map>
 #include "Canvas.h"
 
+/// Helper class to build a beamline legend in ROOT
 class elementsLegend : public TLegend
 {
   public:
-    elementsLegend( const Hector::Beamline* bl = 0, float xmin = 0.07, float ymin = 0.07, float xmax = 0.93, float ymax = 0.93 ) :
+    /// Build a helper producer with attributes
+    /// \params[in] bl Hector beamline to parse
+    elementsLegend( const Hector::Beamline* bl = nullptr, float xmin = 0.05, float ymin = 0.05, float xmax = 0.95, float ymax = 0.95 ) :
       TLegend( xmin, ymin, xmax, ymax ) {
       if ( bl ) feedBeamline( bl );
       TLegend::SetTextFont( font_type( 2 ) );
       TLegend::SetHeader( "#font[32]{Elements legend}" );
-    }
-    ~elementsLegend() {
-      for ( auto& ai : already_in_ ) {
-        if ( ai.second ) delete ai.second;
-      }
-      already_in_.clear();
     }
 
     void feedBeamline( const Hector::Beamline* bl ) {
@@ -167,25 +164,27 @@ class elementsLegend : public TLegend
         const Hector::Element::Type type = elemPtr->type();
         // skip the markers and drifts
         if ( type == Hector::Element::aMarker ) continue;
+        if ( type == Hector::Element::anInstrument ) continue;
+        if ( type == Hector::Element::aMonitor ) continue;
         if ( type == Hector::Element::aDrift ) continue;
         // skip the elements already added
-        if ( already_in_.find( type ) != already_in_.end() ) continue;
+        if ( already_in_.count( type ) > 0 ) continue;
 
         auto pv = new TPave( 0., 0., 0., 0., 0 );
         short fill_colour, fill_style;
-        elementStyle( elemPtr, fill_colour, fill_style );
+        fillElementStyle( elemPtr, fill_colour, fill_style );
         pv->SetFillColorAlpha( fill_colour, alpha );
         pv->SetFillStyle( fill_style );
         pv->SetLineColor( kGray );
         pv->SetLineWidth( 4 );
         TLegend::AddEntry( pv, elemPtr->typeName().c_str(), "f" );
-        already_in_.insert( std::pair<Hector::Element::Type, TPave*>( type, pv ) );
+        already_in_[type].reset( pv );
       }
       if ( already_in_.size() > 7 ) TLegend::SetNColumns( 2 );
     }
 
   private:
-    std::map<Hector::Element::Type, TPave*> already_in_;
+    std::map<Hector::Element::Type,std::unique_ptr<TPave> > already_in_;
 };
 
 #endif

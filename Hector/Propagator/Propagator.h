@@ -31,7 +31,7 @@ namespace Hector
       /// Extract a particle position at the exit of an element once it enters it
       Particle::Position propagateThrough( const Particle::Position& ini_pos, const std::shared_ptr<Element::ElementBase> ele, double eloss, int qp ) const;
 
-      const Beamline* beamline_;
+      const Beamline* beamline_; // NOT owning
   };
 }
 

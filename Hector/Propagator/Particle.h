@@ -38,8 +38,13 @@ namespace Hector
     public:
       Particle();
       /// Construct a particle according to its first state vector/s-position couple
-      Particle( const StateVector&, double s0 = 0. );
+      /// \param[in] sv0 State vector at initial position \a s0
+      /// \param[in] s0 Longitudinal initial position (in m)
+      Particle( const StateVector& sv0, double s0 = 0. );
       /// Construct a particle according to its first state vector's 4-momentum
+      /// \param[in] mom Initial 4-momentum
+      /// \param[in] charge Electric charge (in units of e)
+      /// \param[in] pdgid PDG id
       Particle( const LorentzVector& mom, int charge = Parameters::get()->beamParticlesCharge(), int pdgid = 2212 );
       ~Particle();
 
@@ -49,13 +54,15 @@ namespace Hector
       /// Clear all state vectors (but the initial one)
       void clear() { positions_.erase( ++begin(), end() ); }
       /// Add a new s-position/state vector couple to the particle's trajectory
+      /// \param[in] stopped Has the particle been stopped in the process?
       void addPosition( double s, const StateVector& vec, bool stopped = false ) { addPosition( Position( s, vec ), stopped ); }
       /// Add a new position (s-position/state vector couple) to the particle's trajectory
+      /// \param[in] stopped Has the particle been stopped in the process?
       void addPosition( const Position& pos, bool stopped = false );
 
-      /// Set the electric charge (in e)
+      /// Set the electric charge (in units of e)
       void setCharge( int ch ) { charge_ = ch; }
-      /// Electric charge (in e)
+      /// Electric charge (in units of e)
       int charge() const { return charge_; }
 
       /// Set the particle's PDG id

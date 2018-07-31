@@ -77,8 +77,8 @@ main( int argc, char* argv[] )
   vector<Hector::Propagator> propagators;
 
   vector<TMultiGraph*> mg_x, mg_y;
-  vector<TH1D*> h_timing;
-  vector<map<Hector::Element::ElementBase*,TH2D*> > monitors_plts( twiss_filenames.size() );
+  vector<std::unique_ptr<TH1D> > h_timing;
+  vector<map<Hector::Element::ElementBase*,std::unique_ptr<TH2D> > > monitors_plts( twiss_filenames.size() );
 
   for ( const auto& fn : twiss_filenames )
     h_timing.emplace_back( new TH1D( ( "timing"+fn ).c_str(), "Propagation time@@Event@@ms?.2f", 100, 0., 10. ) );
@@ -90,19 +90,18 @@ main( int argc, char* argv[] )
     //parser.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( 0.097, 0. ) );
     //parser.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( +0.097, 0. ) );
     //parser.printInfo();
-
+    if ( !parser.beamline() )
+      throw runtime_error( "Failed to parse the beamline!" );
     auto bl = new Hector::Beamline( *parser.beamline() );
+
     propagators.emplace_back( bl );
     mg_x.emplace_back( new TMultiGraph );
     mg_y.emplace_back( new TMultiGraph );
 
-    if ( draw_monitors ) {
-      for ( const auto& elemPtr : bl->elements() ) {
-        if ( elemPtr->type() != Hector::Element::aMonitor )
-          continue;
-        monitors_plts[i][elemPtr.get()] = new TH2D( Form( "bl%d_%s", i, elemPtr->name().c_str() ), Form( "%s (s=%.2fm);x (mm);y (mm)", elemPtr->name().c_str(), elemPtr->s() ), 100, -25., 25., 100, -25., 25. );
-      }
-    }
+    if ( draw_monitors )
+      for ( const auto& elemPtr : bl->elements() )
+        if ( elemPtr->type() == Hector::Element::aMonitor )
+          monitors_plts[i][elemPtr.get()].reset( new TH2D( Form( "bl%d_%s", i, elemPtr->name().c_str() ), Form( "%s (s=%.2fm);x (mm);y (mm)", elemPtr->name().c_str(), elemPtr->s() ), 100, -25., 25., 100, -25., 25. ) );
 
     //--- look at the beamline(s)
     if ( dump_beamlines )
@@ -127,8 +126,8 @@ main( int argc, char* argv[] )
 
     unsigned short j = 0;
     for ( const auto& prop : propagators ) {
-      const double crossing_angle_x = ( crossing_angles_x.size() == propagators.size() ) ? crossing_angles_x[j] : crossing_angles_x[0];
-      const double crossing_angle_y = ( crossing_angles_y.size() == propagators.size() ) ? crossing_angles_y[j] : crossing_angles_y[0];
+      const double crossing_angle_x = ( crossing_angles_x.size() == propagators.size() ) ? crossing_angles_x.at( j ) : crossing_angles_x.at( 0 );
+      const double crossing_angle_y = ( crossing_angles_y.size() == propagators.size() ) ? crossing_angles_y.at( j ) : crossing_angles_y.at( 0 );
       gun.smearTx( crossing_angle_x, beam_angular_divergence_ip );
       gun.smearTy( crossing_angle_y, beam_angular_divergence_ip );
       //gun.smearTy( crossing_angle_y, 0. );
@@ -157,8 +156,8 @@ main( int argc, char* argv[] )
           } catch ( Hector::Exception& ) {}
         }
       }
-      gr_x.SetLineColorAlpha( colours[j], 0.05 );
-      gr_y.SetLineColorAlpha( colours[j], 0.05 );
+      gr_x.SetLineColorAlpha( colours.at( j ), 0.05 );
+      gr_y.SetLineColorAlpha( colours.at( j ), 0.05 );
       gr_x.SetLineWidth( 1 );
       gr_y.SetLineWidth( 1 );
       mg_x[j]->Add( (TGraph*)gr_x.Clone() );
@@ -173,7 +172,7 @@ main( int argc, char* argv[] )
     ostringstream os_xa;
     for ( unsigned short i = 0; i < crossing_angles_x.size(); ++i ) {
       if ( i > 0 ) os_xa << "/";
-      os_xa << Form( "%.1f", crossing_angles_x[i]*1.e6 );
+      os_xa << Form( "%.1f", crossing_angles_x.at( i )*1.e6 );
     }
     Hector::Canvas c( "beamline", Form( "E_{p} = %.1f TeV, #alpha_{X} = %s #murad", Hector::Parameters::get()->beamEnergy()*CLHEP::GeV/CLHEP::TeV, os_xa.str().c_str() ), true );
     c.SetWindowSize( 800, 800 );
@@ -199,18 +198,18 @@ main( int argc, char* argv[] )
         }
         if ( fields.size() == 0 )
           continue;
-        switch ( stoi( fields[0] ) ) {
+        switch ( stoi( fields.at( 0 ) ) ) {
           case 1: // BPM
-            if ( stod( fields[2] ) != -1. )
-              gr_bpm_meas_x[ifn].SetPoint( gr_bpm_meas_x[ifn].GetN(), stod( fields[1] ), +stod( fields[2] )*1.e-3 );
-            if ( stod( fields[3] ) != -1. )
-              gr_bpm_meas_x[ifn].SetPoint( gr_bpm_meas_x[ifn].GetN(), stod( fields[1] ), -stod( fields[3] )*1.e-3 );
+            if ( stod( fields.at( 2 ) ) != -1. )
+              gr_bpm_meas_x[ifn].SetPoint( gr_bpm_meas_x[ifn].GetN(), stod( fields.at( 1 ) ), +stod( fields.at( 2 ) )*1.e-3 );
+            if ( stod( fields.at( 3 ) ) != -1. )
+              gr_bpm_meas_x[ifn].SetPoint( gr_bpm_meas_x[ifn].GetN(), stod( fields.at( 1 ) ), -stod( fields.at( 3 ) )*1.e-3 );
             break;
           case 2: // RP
-            if ( stod( fields[2] ) != -1. )
-              gr_rp_meas_x[ifn].SetPoint( gr_rp_meas_x[ifn].GetN(), stod( fields[1] ), +stod( fields[2] )*1.e-3 );
-            if ( stod( fields[3] ) != -1. )
-              gr_rp_meas_x[ifn].SetPoint( gr_rp_meas_x[ifn].GetN(), stod( fields[1] ), -stod( fields[3] )*1.e-3 );
+            if ( stod( fields.at( 2 ) ) != -1. )
+              gr_rp_meas_x[ifn].SetPoint( gr_rp_meas_x[ifn].GetN(), stod( fields.at( 1 ) ), +stod( fields.at( 2 ) )*1.e-3 );
+            if ( stod( fields.at( 3 ) ) != -1. )
+              gr_rp_meas_x[ifn].SetPoint( gr_rp_meas_x[ifn].GetN(), stod( fields.at( 1 ) ), -stod( fields.at( 3 ) )*1.e-3 );
             break;
         }
       }
@@ -224,42 +223,44 @@ main( int argc, char* argv[] )
     };
 
     unsigned short i = 0;
+    TMultiGraph* mg[2];
     for ( auto& plt : vector<plot_t>{ { 'x', mg_x, scale_x }, { 'y', mg_y, scale_y } } ) {
       c.cd( i+1 );
-      auto mg = new TMultiGraph;
+      mg[i] = new TMultiGraph;
       for ( unsigned short j = 0; j < propagators.size(); ++j ) {
         TGraphErrors g_mean = mean_trajectory( *plt.gr[j] );
-        g_mean.SetLineColor( colours[j] );
-        g_mean.SetFillColorAlpha( colours[j], 0.33 );
+        g_mean.SetLineColor( colours.at( j ) );
+        g_mean.SetFillColorAlpha( colours.at( j ), 0.33 );
         if ( show_paths )
-          mg->Add( plt.gr[j] );
-        mg->Add( (TGraph*)g_mean.Clone() );
+          mg[i]->Add( plt.gr[j] );
+        mg[i]->Add( (TGraph*)g_mean.Clone() );
       }
-      mg->Draw( "a2" );
-      mg->SetTitle( Form( ".@@%c (m)", plt.axis ) );
-      mg->GetXaxis()->SetLimits( 0., max_s );
-      mg->GetYaxis()->SetRangeUser( -plt.scale, plt.scale );
-      c.Prettify( mg->GetHistogram() );
+      mg[i]->Draw( "a2" );
+      mg[i]->SetTitle( Form( ".@@%c (m)", plt.axis ) );
+      mg[i]->GetXaxis()->SetLimits( 0., max_s );
+      mg[i]->GetYaxis()->SetRangeUser( -plt.scale, plt.scale );
+      c.Prettify( mg[i]->GetHistogram() );
 
-      for ( unsigned short j = 0; j < propagators.size(); ++j )
-        drawBeamline( plt.axis, propagators[j].beamline(), j, ip_name.c_str(), plt.scale, 0., max_s, draw_apertures );
-      if ( i == 0 ) {
+      unsigned short j = 0;
+      for ( const auto& prop : propagators )
+        drawBeamline( plt.axis, prop.beamline(), j++, ip_name.c_str(), plt.scale, 0., max_s, draw_apertures );
+
+      if ( i == 0 )
         for ( unsigned short j = 0; j < meas_filenames.size(); ++j ) {
           gr_bpm_meas_x[j].SetMarkerStyle( 26 );
           gr_bpm_meas_x[j].Draw( "p,same" );
           gr_rp_meas_x[j].SetMarkerStyle( 20 );
           gr_rp_meas_x[j].Draw( "p,same" );
         }
-      }
 
-      mg->Draw( "l3" );
-      mg->GetXaxis()->SetLabelSize( 0.055 );
+      mg[i]->Draw( "l3" );
+      mg[i]->GetXaxis()->SetLabelSize( 0.055 );
       if ( i > 0 )
-        mg->GetXaxis()->SetTitleOffset( 0.7 );
-      mg->GetYaxis()->SetLabelSize( 0.055 );
-      mg->GetYaxis()->SetTitleSize( 0.1 );
-      mg->GetYaxis()->SetTitleOffset( 0.65 );
-      mg->GetXaxis()->SetTitle( "" );
+        mg[i]->GetXaxis()->SetTitleOffset( 0.7 );
+      mg[i]->GetYaxis()->SetLabelSize( 0.055 );
+      mg[i]->GetYaxis()->SetTitleSize( 0.1 );
+      mg[i]->GetYaxis()->SetTitleOffset( 0.65 );
+      mg[i]->GetXaxis()->SetTitle( "" );
       c.GetPad( i+1 )->SetGrid( 1, 1 );
       ++i;
     }
@@ -274,11 +275,13 @@ main( int argc, char* argv[] )
       ++j;
     }
     const char* label = Form( "#scale[0.33]{%s}", os.str().c_str() );
-    auto pt = new Hector::Canvas::PaveText( 0.0, 0.0, 0.15, 0.01, label );
-    pt->SetTextAlign( kHAlignLeft+kVAlignBottom );
-    pt->Draw();
+    Hector::Canvas::PaveText pt( 0.0, 0.0, 0.15, 0.01, label );
+    pt.SetTextAlign( kHAlignLeft+kVAlignBottom );
+    pt.Draw();
 
     c.Save( "pdf" );
+    for ( unsigned short k = 0; k < i; ++k )
+      delete mg[k];
   }
   { // draw the legend
     Hector::Canvas c( "beamline_legend", "", false, false );
@@ -312,11 +315,11 @@ main( int argc, char* argv[] )
     unsigned short i = 0;
     for ( auto& h : h_timing ) {
       if ( i == 0 ) hs.SetTitle( h->GetTitle() );
-      h->SetLineColor( colours[i] );
-      h->SetFillColor( colours[i] );
+      h->SetLineColor( colours.at( i ) );
+      h->SetFillColor( colours.at( i ) );
       h->SetFillStyle( 3004+i );
-      c.AddLegendEntry( h, Form( "Beam %d", ++i ), "f" );
-      hs.Add( h );
+      c.AddLegendEntry( h.get(), Form( "Beam %d", ++i ), "f" );
+      hs.Add( h.get() );
     }
     hs.Draw( "h,nostack" );
     c.Prettify( hs.GetHistogram() );
@@ -353,7 +356,7 @@ mean_trajectory( const TMultiGraph& amg )
     for ( int i = 0; i < gr->GetN(); ++i ) {
       double x, y;
       gr->GetPoint( i, x, y );
-      err_val[x] += pow( y-mean_val[x], 2 )/num_vals[x];
+      err_val[x] += pow( y-mean_val.at( x ), 2 )/num_vals.at( x );
     }
   }
 
@@ -370,4 +373,3 @@ mean_trajectory( const TMultiGraph& amg )
     out.SetPointError( j++, 0., v.second );
   return out;
 }
-
