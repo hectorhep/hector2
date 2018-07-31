@@ -7,12 +7,14 @@
 #include <map>
 #include <memory>
 
+#include "TObject.h"
+
 using std::cout;
 
 namespace Hector
 {
   /// A beamline, or collection of optics elements
-  class Beamline
+  class Beamline : public TObject
   {
     public:
       /// List of markers in the beamline
@@ -26,7 +28,7 @@ namespace Hector
       /// \param[in] length Longitudinal length of the beamline
       /// \param[in] ip Position of the interaction point
       Beamline( double length, const ThreeVector& ip = ThreeVector() );
-      ~Beamline();
+      virtual ~Beamline();
 
       /// Compute all drifts between each element in the beamline
       static std::unique_ptr<Beamline> sequencedBeamline( const Beamline* );
@@ -110,6 +112,9 @@ namespace Hector
       Elements elements_;
       /// List of markers in the beamline
       MarkersMap markers_;
+
+    public:
+      ClassDef( Beamline, 1 )
   };
 }
 

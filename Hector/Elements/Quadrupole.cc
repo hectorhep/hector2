@@ -16,7 +16,7 @@ namespace Hector
         throw Exception( __PRETTY_FUNCTION__,
                          Form( "Magnetic strength for horizontal quadrupole %s should be negative!\n\t"
                                "Value = %g", name_.c_str(), ke ),
-                         Fatal );
+                         FatalError );
       if ( ke == 0. ) { // simple drift matrix
         PrintDebug( Form( "Quadrupole %s has no effect. Treating it as a drift.", name_.c_str() ) );
         return mat;
@@ -50,7 +50,7 @@ namespace Hector
         throw Exception( __PRETTY_FUNCTION__,
                          Form( "Magnetic strength for vertical quadrupole %s should be positive!\n\t"
                                "Value = %g", name_.c_str(), ke ),
-                         Fatal );
+                         FatalError );
       if ( ke == 0. ) { // simple drift matrix
         PrintDebug( Form( "Quadrupole %s has no effect. Treating it as a drift.", name_.c_str() ) );
         return mat;

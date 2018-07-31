@@ -14,18 +14,6 @@ include(SetEnvironment)
 set(HECTOR_MODULES Core IO Elements Beamline Propagator Utils)
 set(HECTOR_SOURCE_DIR ${PROJECT_SOURCE_DIR}/Hector)
 
-find_package(ROOT QUIET)
-function(ROOT_DICTIONARY dictionary)
-  if(${ROOT_FOUND})
-    include(${ROOT_USE_FILE})
-    if(${ROOT_VERSION} LESS 6.0)
-      ROOT_GENERATE_DICTIONARY(${dictionary} ${ARGN})
-    else()
-      ROOT_GENERATE_DICTIONARY(${dictionary} MODULE ${dictionary} ${ARGN})
-    endif()
-  endif()
-endfunction()
-
 #----- build all the intermediate objects
 
 include_directories(${PROJECT_SOURCE_DIR})
@@ -34,7 +22,7 @@ foreach(_module ${HECTOR_MODULES})
   add_subdirectory(Hector/${_module})
 endforeach()
 
-if(${ROOT_FOUND})
+if(ROOT_FOUND)
   message("sources:${ROOT_HECTOR_SRCS}")
   #add_library(HectorROOT SHARED ${ROOT_HECTOR_SRCS} ${ROOT_HECTOR_LIBS})
   #add_library(HectorROOT SHARED Hector/Propagator/Particle.cc ${ROOT_HECTOR_LIBS})
@@ -52,6 +40,7 @@ add_library(Hector2 SHARED $<TARGET_OBJECTS:HectorCore>
                            $<TARGET_OBJECTS:HectorBeamline>
                            $<TARGET_OBJECTS:HectorPropagator>
                            $<TARGET_OBJECTS:HectorUtils>)
+target_link_libraries(Hector2 ${HECTOR_DEPENDENCIES})
 set_target_properties(Hector2 PROPERTIES LINKER_LANGUAGE CXX)
 
 install(TARGETS Hector2 DESTINATION lib)

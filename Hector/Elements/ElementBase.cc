@@ -66,7 +66,7 @@ namespace Hector
         return 0.;
 
       if ( e_loss < 0. )
-        throw Exception( __PRETTY_FUNCTION__, Form( "Invalid energy loss: %g GeV", e_loss ), Fatal );
+        throw Exception( __PRETTY_FUNCTION__, Form( "Invalid energy loss: %g GeV", e_loss ), FatalError );
 
       double p_bal = 1.;
       if ( e_loss > 0. ) {

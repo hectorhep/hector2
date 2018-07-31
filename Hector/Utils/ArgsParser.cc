@@ -40,13 +40,13 @@ namespace Hector
         print_help();
         throw Exception( __PRETTY_FUNCTION__,
                          Form( "The following parameter was not set: %s", par.name.c_str() ),
-                         Fatal, 64 );
+                         FatalError, 64 );
       }
       const auto value = ( key != args_.end() ) ? key + 1 : skey + 1;
       if ( value == args_.end() )
         throw Exception( __PRETTY_FUNCTION__,
                          Form( "Invalid value for parameter: %s", par.name.c_str() ),
-                         Fatal, 64 );
+                         FatalError, 64 );
 
       par.value = *value;
       par.parse();
@@ -61,7 +61,7 @@ namespace Hector
             if ( *value == "--"+par2.name || *value == "-"+std::string( 1, par.sname ) )
               throw Exception( __PRETTY_FUNCTION__,
                  Form( "Invalid value for parameter: %s", par.name.c_str() ),
-                 Fatal, 64 );
+                 FatalError, 64 );
           par.value = *value;
         }
         else if ( par.bool_variable )
@@ -69,7 +69,7 @@ namespace Hector
         else
           throw Exception( __PRETTY_FUNCTION__,
                            Form( "Invalid value for parameter: %s", par.name.c_str() ),
-                           Fatal, 64 );
+                           FatalError, 64 );
       }
       par.parse();
     }
@@ -90,7 +90,7 @@ namespace Hector
     }
     throw Exception( __PRETTY_FUNCTION__,
                      Form( "The parameter \"%s\" was not declared in the arguments parser constructor!", name.c_str() ),
-                     Fatal, 64 );
+                     FatalError, 64 );
   }
 
   void
@@ -281,4 +281,3 @@ namespace Hector
     }
   }
 }
-

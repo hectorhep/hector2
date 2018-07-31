@@ -16,6 +16,9 @@ namespace Hector
           ElementBase( type, name, spos, length ) {
           setMagneticStrength( mag_str );
         }
+
+      public:
+        ClassDef( Dipole, 1 )
     };
 
     /// Rectangular dipole object builder

@@ -37,15 +37,15 @@ namespace Hector
     {
       std::ifstream file( filename, std::ios::binary | std::ios::in );
       if ( !file.is_open() )
-        throw Exception( __PRETTY_FUNCTION__, Form( "Impossible to open file \"%s\" for reading!", filename ), Fatal );
+        throw Exception( __PRETTY_FUNCTION__, Form( "Impossible to open file \"%s\" for reading!", filename ), FatalError );
 
       HBLHeader hdr;
       file.read( reinterpret_cast<char*>( &hdr ), sizeof( HBLHeader ) );
       if ( hdr.magic != magic_number )
-        throw Exception( __PRETTY_FUNCTION__, Form( "Invalid magic number retrieved for file \"%s\"!", filename ), Fatal );
+        throw Exception( __PRETTY_FUNCTION__, Form( "Invalid magic number retrieved for file \"%s\"!", filename ), FatalError );
 
       if ( hdr.version > version )
-        throw Exception( __PRETTY_FUNCTION__, Form( "Version %d is not (yet) supported! Currently peaking at %d!", hdr.version, version ), Fatal );
+        throw Exception( __PRETTY_FUNCTION__, Form( "Version %d is not (yet) supported! Currently peaking at %d!", hdr.version, version ), FatalError );
 
       HBLElement el;
       std::shared_ptr<Element::ElementBase> elem;
@@ -93,7 +93,7 @@ namespace Hector
           //case Element::anEllipticalCollimator:
           //case Element::aCircularCollimator:
           default:
-            throw Exception( __PRETTY_FUNCTION__, Form( "Invalid element type: %s", (int)el.element_type ), Fatal );
+            throw Exception( __PRETTY_FUNCTION__, Form( "Invalid element type: %s", (int)el.element_type ), FatalError );
         }
         switch ( ( Aperture::Type )el.aperture_type ) {
           case Aperture::anInvalidAperture: break;
@@ -115,12 +115,12 @@ namespace Hector
           //case Aperture::aRaceTrackAperture:
           //case Aperture::anOctagonalAperture:
           default:
-            throw Exception( __PRETTY_FUNCTION__, Form( "Invalid aperture type: %s", (int)el.aperture_type ), Fatal );
+            throw Exception( __PRETTY_FUNCTION__, Form( "Invalid aperture type: %s", (int)el.aperture_type ), FatalError );
         }
         if ( elem ) beamline_->add( elem );
       }
       if ( beamline_->numElements() != hdr.num_elements )
-        throw Exception( __PRETTY_FUNCTION__, Form( "Expecting %d elements, retrieved %d!", hdr.num_elements, beamline_->numElements() ), Fatal );
+        throw Exception( __PRETTY_FUNCTION__, Form( "Expecting %d elements, retrieved %d!", hdr.num_elements, beamline_->numElements() ), FatalError );
     }
 
     void

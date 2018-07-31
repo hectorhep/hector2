@@ -42,7 +42,7 @@ namespace Hector
     if ( !positions_.empty() > 0 && lastStateVector().m() != pos.stateVector().m() ) {
       throw Exception( __PRETTY_FUNCTION__, Form( "Particle mass is not conserved in propagation!\n\t"
                                                   "Previous mass was %.3f GeV, new mass is %.3f GeV",
-                                                  lastStateVector().m(), pos.stateVector().m() ), Fatal );
+                                                  lastStateVector().m(), pos.stateVector().m() ), FatalError );
     }
     positions_.insert( pos.pair() );
     stopped_ = stopped;

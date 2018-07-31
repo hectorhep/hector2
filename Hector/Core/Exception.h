@@ -34,7 +34,7 @@ namespace Hector
 
       /// Destruct the exception (and terminate the program execution if fatal)
       inline ~Exception() {
-        if ( type_ == Fatal ) exit( error_num_ ); // we stop the execution of this process on fatal exception
+        if ( type_ == FatalError ) exit( error_num_ ); // we stop the execution of this process on fatal exception
       }
 
       /// Method/function that raised the exception
@@ -48,7 +48,7 @@ namespace Hector
         switch ( type_ ) {
           case JustWarning:        return "\033[32;1mJustWarning\033[0m";
           case Info:               return "\033[33;1mInfo\033[0m";
-          case Fatal:              return "\033[31;1mFatal\033[0m";
+          case FatalError:         return "\033[31;1mFatal\033[0m";
           case Undefined: default: return "\33[7;1mUndefined\033[0m";
         }
       }

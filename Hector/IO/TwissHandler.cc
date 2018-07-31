@@ -42,7 +42,7 @@ namespace Hector
       ip_name_( ip_name ), min_s_( min_s )
     {
       if ( !in_file_.is_open() )
-        throw Exception( __PRETTY_FUNCTION__, Form( "Failed to open the Twiss file \"%s\"\n\tPlease check the path!", filename.c_str() ), Fatal );
+        throw Exception( __PRETTY_FUNCTION__, Form( "Failed to open the Twiss file \"%s\"\n\tPlease check the path!", filename.c_str() ), FatalError );
       parseHeader();
 
       raw_beamline_ = std::unique_ptr<Beamline>( new Beamline( max_s-min_s ) );
@@ -137,7 +137,7 @@ namespace Hector
     Twiss::parseHeader()
     {
       if ( !in_file_.is_open() )
-        throw Exception( __PRETTY_FUNCTION__, "Twiss file is not opened nor ready for parsing!", Fatal );
+        throw Exception( __PRETTY_FUNCTION__, "Twiss file is not opened nor ready for parsing!", FatalError );
       std::string line;
       while ( !in_file_.eof() ) {
         std::getline( in_file_, line );
@@ -157,7 +157,7 @@ namespace Hector
         } catch ( std::regex_error& e ) {
           throw Exception( __PRETTY_FUNCTION__,
             Form( "Error at line %d while parsing the header!\n\t%s",
-                  in_file_.tellg(), e.what() ), Fatal );
+                  in_file_.tellg(), e.what() ), FatalError );
         }
       }
       // parse the Twiss file production timestamp
@@ -179,7 +179,7 @@ namespace Hector
     Twiss::parseElementsFields()
     {
       if ( !in_file_.is_open() )
-        throw Exception( __PRETTY_FUNCTION__, "Twiss file is not opened nor ready for parsing!", Fatal );
+        throw Exception( __PRETTY_FUNCTION__, "Twiss file is not opened nor ready for parsing!", FatalError );
       std::string line;
 
       in_file_.seekg( in_file_lastline_ );
@@ -204,7 +204,7 @@ namespace Hector
         } catch ( std::regex_error& e ) {
           throw Exception( __PRETTY_FUNCTION__,
             Form( "Error at line %d while parsing elements fields!\n\t%s",
-                  in_file_.tellg(), e.what() ), Fatal );
+                  in_file_.tellg(), e.what() ), FatalError );
         }
       }
 
@@ -224,7 +224,7 @@ namespace Hector
         } catch ( std::regex_error& e ) {
           throw Exception( __PRETTY_FUNCTION__,
             Form( "Error while performing the matching name-data!\n\t%s",
-                  e.what() ), Fatal );
+                  e.what() ), FatalError );
         }
       }
     }
@@ -233,7 +233,7 @@ namespace Hector
     Twiss::findInteractionPoint()
     {
       if ( !in_file_.is_open() )
-        throw Exception( __PRETTY_FUNCTION__, "Twiss file is not opened nor ready for parsing!", Fatal );
+        throw Exception( __PRETTY_FUNCTION__, "Twiss file is not opened nor ready for parsing!", FatalError );
       std::string line;
       in_file_.seekg( in_file_lastline_ );
 
@@ -250,7 +250,7 @@ namespace Hector
             Form( "Twiss file seems corrupted!\n\t"
                   "Element %s at line %d has %d fields when %d are expected.",
                   trim( values.at( 0 ) ).c_str(), in_file_.tellg(),
-                  values.size(), elements_fields_.size() ), Fatal );
+                  values.size(), elements_fields_.size() ), FatalError );
         try {
           auto elem = parseElement( values );
           if ( !elem || elem->name() != ip_name_ ) continue;
@@ -261,7 +261,7 @@ namespace Hector
           e.dump();
           throw Exception( __PRETTY_FUNCTION__,
             Form( "Failed to retrieve the interaction point with name=\"%s\"",
-                  ip_name_.c_str() ), Fatal );
+                  ip_name_.c_str() ), FatalError );
         }
       }
     }
@@ -270,14 +270,14 @@ namespace Hector
     Twiss::parseElements()
     {
       if ( !in_file_.is_open() )
-        throw Exception( __PRETTY_FUNCTION__, "Twiss file is not opened nor ready for parsing!", Fatal );
+        throw Exception( __PRETTY_FUNCTION__, "Twiss file is not opened nor ready for parsing!", FatalError );
       // parse the optics elements and their characteristics
       std::string line;
 
       if ( !interaction_point_ )
         throw Exception( __PRETTY_FUNCTION__,
           Form( "Interaction point \"%s\" has not been found in the beamline!",
-                ip_name_.c_str() ), Fatal );
+                ip_name_.c_str() ), FatalError );
 
       in_file_.seekg( in_file_lastline_ ); // return to the first element line
 
@@ -325,7 +325,7 @@ namespace Hector
         throw Exception( __PRETTY_FUNCTION__,
           Form( "Twiss file seems corrupted!\n\t"
                 "Element %s has %d fields when %d are expected.",
-                trim( values.at( 0 ) ).c_str(), values.size(), elements_fields_.size() ), Fatal );
+                trim( values.at( 0 ) ).c_str(), values.size(), elements_fields_.size() ), FatalError );
 
       // then perform the 3-fold matching key <-> value <-> value type
       ParametersMap::Ordered<float> elem_map_floats;
@@ -477,7 +477,7 @@ namespace Hector
         if ( std::regex_match( name,     rgx_monitor_name_ ) ) return Element::aMonitor;
         if ( std::regex_match( name,   rgx_rect_coll_name_ ) ) return Element::aRectangularCollimator;
       } catch ( std::regex_error& e ) {
-        throw Exception( __PRETTY_FUNCTION__, Form( "Error while retrieving the element type!\n\t%s", e.what() ), Fatal );
+        throw Exception( __PRETTY_FUNCTION__, Form( "Error while retrieving the element type!\n\t%s", e.what() ), FatalError );
       }
       return Element::anInvalidElement;
     }

@@ -7,10 +7,10 @@ endif()
 #----- check the gcc/clang version
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-long-long -pedantic-errors -std=c++11 -g -fPIC")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O -Wall -Wno-long-long -pedantic-errors -std=c++14 -g -fPIC")
 else()
   if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 4.9)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-long-long -pedantic-errors -std=c++11 -g -fPIC")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O -Wall -Wno-long-long -pedantic-errors -std=c++14 -g -fPIC")
   else()
     if(LXPLUS)
       message(FATAL_ERROR "gcc version >= 4.9 is required.\nYou may try to source:\n\t/cvmfs/sft.cern.ch/lcg/external/gcc/4.8.4/x86_64-slc6/setup.sh")
@@ -71,4 +71,21 @@ endif()
 #----- Boost for Python wrapper
 
 find_package(Boost COMPONENTS python QUIET)
+
+#----- ROOT for external integration
+
+find_package(ROOT QUIET)
+function(ROOT_DICTIONARY dictionary)
+  if(ROOT_FOUND)
+    include(${ROOT_USE_FILE})
+    if(${ROOT_VERSION} LESS 6.0)
+      ROOT_GENERATE_DICTIONARY(${dictionary} ${ARGN})
+    else()
+      ROOT_GENERATE_DICTIONARY(${dictionary} MODULE ${dictionary} ${ARGN})
+    endif()
+  endif()
+endfunction()
+if(ROOT_FOUND)
+  include_directories(${ROOT_INCLUDE_DIRS})
+endif()
 

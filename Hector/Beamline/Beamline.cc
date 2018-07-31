@@ -72,7 +72,7 @@ namespace Hector
       if ( !Parameters::get()->correctBeamlineOverlaps() )
         throw Exception( __PRETTY_FUNCTION__, Form( "Elements overlap with \"%s\" "
                                                     "detected while adding \"%s\"!",
-                                                    prev_elem->name().c_str(), elem->name().c_str() ), Fatal );
+                                                    prev_elem->name().c_str(), elem->name().c_str() ), FatalError );
 
       // from that point on, an overlap is detected
       // reduce or separate that element in two sub-parts
@@ -167,7 +167,7 @@ namespace Hector
         if ( std::regex_search( elem->name().c_str(), m, rgx_search ) ) out.emplace_back( elem );
       return out;
     } catch ( const std::regex_error& e ) {
-      throw Exception( __PRETTY_FUNCTION__, Form( "Invalid regular expression required:\n\t%s\n\tError code: %d", regex, e.code() ), Fatal );
+      throw Exception( __PRETTY_FUNCTION__, Form( "Invalid regular expression required:\n\t%s\n\tError code: %d", regex, e.code() ), FatalError );
     }
   }
 
@@ -261,4 +261,3 @@ namespace Hector
     for ( const auto& elem : moth_bl ) add( elem );
   }
 }
-

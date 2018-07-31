@@ -16,6 +16,9 @@ namespace Hector
           Drift( name, aMarker, spos, length ) {}
 
         std::shared_ptr<ElementBase> clone() const override { return std::make_shared<Marker>( *this ); }
+
+      public:
+        ClassDef( Marker, 1 )
     };
   }
 }

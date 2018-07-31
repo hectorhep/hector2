@@ -5,13 +5,14 @@
 #include "Hector/Core/Parameters.h"
 
 #include <map>
+#include "TObject.h"
 
 using std::cout;
 
 namespace Hector
 {
   /// Six-dimensional state vector associated to a particle at a given s
-  class StateVector : private Vector
+  class StateVector : private Vector, public TObject
   {
     public:
       /// Human-readable enumeration of the 6 state vector coordinates

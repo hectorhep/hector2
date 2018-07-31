@@ -12,7 +12,6 @@
 
 #pragma link C++ namespace Hector;
 
-#pragma link C++ class CLHEP::HepVector+;
 #pragma link C++ class Hector::StateVector+;
 #pragma link C++ class Hector::Particle+;
 //#pragma link C++ class Hector::Parameters+;

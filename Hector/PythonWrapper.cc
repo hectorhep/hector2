@@ -214,7 +214,7 @@ BOOST_PYTHON_MODULE( pyhector )
     .value( "debug", Hector::ExceptionType::Debug )
     .value( "info", Hector::ExceptionType::Info )
     .value( "justWarning", Hector::ExceptionType::JustWarning )
-    .value( "fatal", Hector::ExceptionType::Fatal )
+    .value( "fatal", Hector::ExceptionType::FatalError )
   ;
 
   py::class_<Hector::Exception> except( "Exception", py::init<const char*,const char*,py::optional<Hector::ExceptionType,int> >() );

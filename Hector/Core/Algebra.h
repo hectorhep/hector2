@@ -10,6 +10,7 @@
 #include <CLHEP/Vector/LorentzVector.h>
 
 #include <array>
+#include "TObject.h"
 
 namespace Hector
 {
@@ -33,7 +34,7 @@ namespace Hector
       }
   };
   /// Two-vector of double-precision floats
-  class TwoVector : public CLHEP::Hep2Vector
+  class TwoVector : public CLHEP::Hep2Vector, public TObject
   {
     public:
       using CLHEP::Hep2Vector::Hep2Vector;
@@ -42,6 +43,10 @@ namespace Hector
       TwoVector( const CLHEP::Hep2Vector& vec ) : CLHEP::Hep2Vector( vec ) {}
       /// Build a two-vector from its two-dimensional spatial coordinates
       TwoVector( const std::array<double,2>& vec ) : CLHEP::Hep2Vector( vec[0], vec[1] ) {}
+      virtual ~TwoVector() {}
+
+    public:
+      ClassDef( TwoVector, 1 )
   };
   /// Three-vector of double-precision floats
   class ThreeVector : public CLHEP::Hep3Vector
@@ -53,6 +58,10 @@ namespace Hector
       ThreeVector( const CLHEP::Hep3Vector& vec ) : CLHEP::Hep3Vector( vec ) {}
       /// Build a three-vector from its spatial coordinates
       ThreeVector( const std::array<double,3>& vec ) : CLHEP::Hep3Vector( vec[0], vec[1], vec[2] ) {}
+      virtual ~ThreeVector() {}
+
+    public:
+      ClassDef( ThreeVector, 1 )
   };
   /// Lorentz vector of double-precision floats
   class LorentzVector : public CLHEP::HepLorentzVector
@@ -66,8 +75,12 @@ namespace Hector
       LorentzVector( const std::array<double,3>& sp, double t ) : CLHEP::HepLorentzVector( sp[0], sp[1], sp[2], t ) {}
       /// Build a Lorentz vector from a four-vector containing its spatial and temporal coordinates
       LorentzVector( const std::array<double,4> vec ) : CLHEP::HepLorentzVector( vec[0], vec[1], vec[2], vec[3] ) {}
+      virtual ~LorentzVector() {}
+
+    public:
+      ClassDef( LorentzVector, 1 )
   };
-  
+
   namespace math
   {
     /// Compute the tangent of both the components of a 2-vector

@@ -69,7 +69,7 @@ namespace Hector
 
       if ( Parameters::get()->useRelativeEnergy() ) {
         /*throw Exception( __PRETTY_FUNCTION__, "Relative energy mode not yet supported in this version of Hector!\n\t"
-                                              "Please contact the developers for more information.", Fatal );*/
+                                              "Please contact the developers for more information.", FatalError );*/
         Matrix ef_matrix = DiagonalMatrix( 6, 1 );
         const double t_theta_half_ke = tan( theta*0.5 ) * ke;
         ef_matrix( 2, 1 ) =  t_theta_half_ke;
