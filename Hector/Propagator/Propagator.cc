@@ -63,29 +63,31 @@ namespace Hector
 
         part.addPosition( out_pos.s(), out_pos.stateVector() );
 
-        if ( Parameters::get()->computeApertureAcceptance() ) {
-          const auto& aper = prev_elem->aperture();
-          if ( aper && aper->type() != Aperture::anInvalidAperture ) {
-            const TwoVector pos_prev_elem( part.stateVectorAt( prev_elem->s() ).position() );
-            if ( !aper->contains( pos_prev_elem ) ) {
-              std::ostringstream os1, os2;
-              os1 << pos_prev_elem;
-              os2 << aper->position();
-              throw ParticleStoppedException( __PRETTY_FUNCTION__, prev_elem.get(), JustWarning,
-                Form( "Entering at %s, s = %.2f m\n\t"
-                      "Aperture centre at %s\n\t"
-                      "Distance to aperture centre: %.2f cm",
-                      os1.str().c_str(), prev_elem->s(),
-                      os2.str().c_str(),
-                      ( aper->position()-pos_prev_elem ).mag()*1.e2 ).c_str() );
-            }
-            // has passed through the element?
-            //std::cout << prev_elem->s()+prev_elem->length() << "\t" << part.stateVectorAt( prev_elem->s()+prev_elem->length() ).position() << std::endl;
-            if ( !aper->contains( part.stateVectorAt( prev_elem->s()+prev_elem->length() ).position() ) )
-              throw ParticleStoppedException( __PRETTY_FUNCTION__, prev_elem.get(), JustWarning,
-                                              Form( "Did not pass aperture %s", aper->typeName().c_str() ).c_str() );
-          }
+        if ( !Parameters::get()->computeApertureAcceptance() )
+          continue;
+
+        const auto& aper = prev_elem->aperture();
+        if ( !aper || aper->type() != Aperture::anInvalidAperture )
+          continue;
+
+        const TwoVector pos_prev_elem( part.stateVectorAt( prev_elem->s() ).position() );
+        if ( !aper->contains( pos_prev_elem ) ) {
+          std::ostringstream os1, os2;
+          os1 << pos_prev_elem;
+          os2 << aper->position();
+          throw ParticleStoppedException( __PRETTY_FUNCTION__, prev_elem.get(), JustWarning,
+            Form( "Entering at %s, s = %.2f m\n\t"
+                  "Aperture centre at %s\n\t"
+                  "Distance to aperture centre: %.2f cm",
+                  os1.str().c_str(), prev_elem->s(),
+                  os2.str().c_str(),
+                  ( aper->position()-pos_prev_elem ).mag()*1.e2 ).c_str() );
         }
+        // has passed through the element?
+        //std::cout << prev_elem->s()+prev_elem->length() << "\t" << part.stateVectorAt( prev_elem->s()+prev_elem->length() ).position() << std::endl;
+        if ( !aper->contains( part.stateVectorAt( prev_elem->s()+prev_elem->length() ).position() ) )
+          throw ParticleStoppedException( __PRETTY_FUNCTION__, prev_elem.get(), JustWarning,
+                                            Form( "Did not pass aperture %s", aper->typeName().c_str() ).c_str() );
       }
     }
     catch ( const ParticleStoppedException& ) { throw; }
