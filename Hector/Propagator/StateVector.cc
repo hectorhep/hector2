@@ -104,7 +104,7 @@ namespace Hector
     if ( mass != momentum().m() ) {
       m_ = mass;
       if ( momentum().mag2() != 0. )
-        ( *this )[E] = sqrt( momentum().mag2()+m_*m_ ); // match the energy accordingly
+        ( *this )[E] = std::hypot( momentum().mag(), m_ ); // match the energy accordingly
       else {
         const int sign = 1; //FIXME
         setMomentum( LorentzVector( 0., 0., sign*sqrt( energy()*energy()-m_*m_ ), energy() ) ); // longitudinal momentum only

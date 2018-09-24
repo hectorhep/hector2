@@ -16,57 +16,52 @@ namespace Hector
   {
     if ( num_gen_ >= num_part_ )
       throw Exception( __PRETTY_FUNCTION__, "Too much particles already generated!", JustWarning );
-
     return num_gen_++;
   }
 
   Particle
   BeamProducer::Xscanner::shoot()
   {
-    const float x = p1_.first + LinearScanner::next()*( p1_.second-p1_.first )/( num_part_-1 ),
-                y = p2_.first;
-
-    const TwoVector pos_ini( x, y );
+    const TwoVector pos_ini(
+      p1_.first + LinearScanner::next()*( p1_.second-p1_.first )/( num_part_-1 ),
+      p2_.first );
     const LorentzVector mom_ini( 0., 0., 0., Parameters::get()->beamEnergy() );
-
     return Particle( StateVector( mom_ini, pos_ini ), s_.first );
   }
 
   Particle
   BeamProducer::Yscanner::shoot()
   {
-    const float x = p2_.first,
-                y = p1_.first + LinearScanner::next()*( p1_.second-p1_.first )/( num_part_-1 );
-
-    const TwoVector pos_ini( x, y );
+    const TwoVector pos_ini(
+      p2_.first,
+      p1_.first + LinearScanner::next()*( p1_.second-p1_.first )/( num_part_-1 ) );
     const LorentzVector mom_ini( 0., 0., 0., Parameters::get()->beamEnergy() );
-
     return Particle( StateVector( mom_ini, pos_ini ), s_.first );
   }
 
   Particle
   BeamProducer::TXscanner::shoot()
   {
-    const float tx = p1_.first + LinearScanner::next()*( p1_.second-p1_.first )/( num_part_-1 ),
-                ty = p2_.first;
-
-    return Particle( StateVector( TwoVector(), TwoVector( tx, ty ), e_.first ), s_.first );
+    const TwoVector angles(
+      p1_.first + LinearScanner::next()*( p1_.second-p1_.first )/( num_part_-1 ),
+      p2_.first );
+    return Particle( StateVector( TwoVector(), angles, e_.first ), s_.first );
   }
 
   Particle
   BeamProducer::TYscanner::shoot()
   {
-    const float tx = p2_.first,
-                ty = p1_.first + LinearScanner::next()*( p1_.second-p1_.first )/( num_part_-1 );
-
-    return Particle( StateVector( TwoVector(), TwoVector( tx, ty ), e_.first ), s_.first );
+    const TwoVector angles(
+      p2_.first,
+      p1_.first + LinearScanner::next()*( p1_.second-p1_.first )/( num_part_-1 ) );
+    return Particle( StateVector( TwoVector(), angles, e_.first ), s_.first );
   }
 
   Particle
   BeamProducer::Xiscanner::shoot()
   {
-    const float energy = e_.first + LinearScanner::next()*( e_.second-e_.first )/( num_part_-1 ),
-                mom = sqrt( energy*energy-pow( Parameters::get()->beamParticlesMass(), 2 ) );
+    const double energy = e_.first + LinearScanner::next()*( e_.second-e_.first )/( num_part_-1 );
+    const double mom = sqrt( energy*energy-pow( Parameters::get()->beamParticlesMass(), 2 ) );
     return Particle( StateVector( LorentzVector( 0., 0., mom, energy ), TwoVector( p1_.first, p2_.first ) ), s_.first );
   }
 

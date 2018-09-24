@@ -39,16 +39,17 @@ namespace Hector
           add( std::string( key ), value );
         }
         /// Retrieve the value associated to a key
-        const T get( const char* key ) const {
+        const T& get( const char* key ) const {
           const auto& val = map::find( std::string( key ) );
-          return ( val != map::end() ) ? val->second : static_cast<T>( 0 );
+          if ( val == map::end() )
+            throw std::out_of_range( "Failed to retrieve key!" );
+          return val->second;
         }
 
         /// Print the whole list of key-values stored in the map
         void dump( std::ostream& os = std::cout ) const {
-          for ( const auto& val : *this ) {
+          for ( const auto& val : *this )
             os << " [" << val.first << "] " << val.second << std::endl;
-          }
         }
 
       public:
