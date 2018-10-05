@@ -22,7 +22,7 @@ main( int argc, char* argv[] )
   string twiss_filename, interaction_point;
   unsigned int num_particles;
   double crossing_angle_x, crossing_angle_y;
-  double hitmaps_dist;
+  double hitmaps_dist = -1.;
   double beam_angular_divergence_ip, beam_lateral_width_ip, particles_energy;
   double s_pos;
 

@@ -38,7 +38,7 @@ main( int argc, char* argv[] )
   double xi;
   double scale_x, scale_y;
   unsigned int num_particles;
-  bool show_paths, dipoles_enable, draw_monitors, dump_beamlines;
+  bool show_paths = false, dipoles_enable, draw_monitors = false, dump_beamlines;
 
   Hector::ArgsParser( argc, argv, {
     { "twiss-files", "beamline(s) Twiss file(s)", &twiss_filenames, 'i' },

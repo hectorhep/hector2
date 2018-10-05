@@ -125,9 +125,9 @@ main( int argc, char* argv[] )
   gr_relx.SetTitle( "relative X" );
   gr_rely.SetTitle( "relative Y" );
 
-  TPave* rp_region = nullptr;
+  std::unique_ptr<TPave> rp_region;
   if ( min_rp < max_rp ) {
-    rp_region = new TPave( min_rp, 0., max_rp, 1., 3 );
+    rp_region.reset( new TPave( min_rp, 0., max_rp, 1., 3 ) );
     rp_region->SetFillColorAlpha( kGray, 0.5 );
     rp_region->SetLineColor( kBlack );
   }
@@ -137,9 +137,9 @@ main( int argc, char* argv[] )
   auto pt = new Hector::Canvas::PaveText( 0.0, 0.0, 0.15, 0.01, label );
   pt->SetTextAlign( kHAlignLeft+kVAlignBottom );
 
-  drawBothGraphs( "beta", "#beta(s) dependence", "s (m)@@#beta (m)", &gr_betax, &gr_betay, labels, rp_region, pt, max_s );
-  drawBothGraphs( "disp", "D(s) dependence", "s (m)@@D (m)", &gr_dispx, &gr_dispy, labels, rp_region, pt, max_s );
-  drawBothGraphs( "relat_align", "Relative alignment s-dependence", "s (m)@@Relative distance (m)", &gr_relx, &gr_rely, labels, rp_region, pt, max_s );
+  drawBothGraphs( "beta", "#beta(s) dependence", "s (m)@@#beta (m)", &gr_betax, &gr_betay, labels, rp_region.get(), pt, max_s );
+  drawBothGraphs( "disp", "D(s) dependence", "s (m)@@D (m)", &gr_dispx, &gr_dispy, labels, rp_region.get(), pt, max_s );
+  drawBothGraphs( "relat_align", "Relative alignment s-dependence", "s (m)@@Relative distance (m)", &gr_relx, &gr_rely, labels, rp_region.get(), pt, max_s );
 
   return 0;
 }

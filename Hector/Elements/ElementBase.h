@@ -134,6 +134,7 @@ namespace Hector
         std::string name_;
         /// Pointer to the associated aperture object (if any)
         std::shared_ptr<Aperture::ApertureBase> aperture_;
+        /// Pointer to the parent element (if divided)
         std::shared_ptr<Element::ElementBase> parent_elem_;
 
         /// Element longitudinal length
