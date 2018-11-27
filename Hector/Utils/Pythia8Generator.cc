@@ -16,24 +16,23 @@ namespace Hector
     pythia_->settings.mode( "Beams:idB", 2212 );
     pythia_->settings.parm( "Beams:eCM", 2.*Parameters::get()->beamEnergy() ); //FIXME consider the asymmetric energies too!
     // parameterise the generator
-    for ( const auto param : params ) {
-      if ( !pythia_->readString( param.c_str() ) ) {
-        throw Exception( __PRETTY_FUNCTION__, Form( "Failed to parse the command:\n\t  \"%s\"", param.c_str() ), JustWarning );
-      }
-    }
+    for ( const auto param : params )
+      if ( !pythia_->readString( param.c_str() ) )
+        throw Exception( __PRETTY_FUNCTION__, JustWarning )
+          << "Failed to parse the command:\n\t  \"" << param << "\"";
     // initialise the core
-    if ( !pythia_->init() ) {
-      throw Exception( __PRETTY_FUNCTION__, "Failed to initialise the Pythia8 core", JustWarning );
-    }
+    if ( !pythia_->init() )
+      throw Exception( __PRETTY_FUNCTION__, JustWarning )
+        << "Failed to initialise the Pythia8 core.";
   }
 
   Pythia8Generator::Pythia8Generator( const char* xml_input ) :
     pythia_( new Pythia8::Pythia( xml_input ) )
   {
     // initialise the core
-    if ( !pythia_->init() ) {
-      throw Exception( __PRETTY_FUNCTION__, "Failed to initialise the Pythia8 core", JustWarning );
-    }
+    if ( !pythia_->init() )
+      throw Exception( __PRETTY_FUNCTION__, JustWarning )
+        << "Failed to initialise the Pythia8 core.";
   }
 
   Pythia8Generator::~Pythia8Generator()
@@ -71,7 +70,8 @@ evt.list(true,true);
         return Particle( LorentzVector( part.px(), part.py(), part.pz(), part.e() ), (int)part.charge(), part.id() );
       }
     }
-    throw Exception( __PRETTY_FUNCTION__, "Failed to generate the diffractive proton!", JustWarning );
+    throw Exception( __PRETTY_FUNCTION__, JustWarning )
+      << "Failed to generate the diffractive proton!";
   }
 
   void
@@ -88,6 +88,7 @@ evt.list(true,true);
         return;
       }
     }
-    throw Exception( __PRETTY_FUNCTION__, "Failed to generate the modified kinematics for the particle template!", JustWarning );
+    throw Exception( __PRETTY_FUNCTION__, JustWarning )
+      << "Failed to generate the modified kinematics for the particle template!";
   }
 }

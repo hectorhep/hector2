@@ -15,9 +15,13 @@ namespace Hector
       /// \param[in] elem Beamline element stopping the particle
       /// \param[in] type Exception type
       /// \param[in] additional_info Any other useful information to help the debugging
-      ParticleStoppedException( const char* from, const Element::ElementBase* elem, ExceptionType type = Undefined, const char* additional_info = "" ) :
-        Exception( from, Form( "Particle stopped at %s (%s).\n%s", elem->name().c_str(), elem->typeName().c_str(), additional_info ), type, 10000 ),
-        elem_( elem ) {}
+      ParticleStoppedException( const char* from, ExceptionType type = Undefined, const Element::ElementBase* elem = nullptr ) :
+        Exception( from, type, 10000 ), elem_( elem ) {
+        message_ << "Particle stopped";
+        if ( elem )
+          message_ << " at " << elem->name() << " (" << elem->type() << ")";
+        message_ << ".\n";
+      }
       /// Retrieve the beamline element that stopped the particle
       const Element::ElementBase* stoppingElement() const { return elem_; }
 

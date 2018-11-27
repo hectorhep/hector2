@@ -13,12 +13,11 @@ namespace Hector
 
       const double ke = fieldStrength( eloss, mp, qp ); // should be negative
       if ( ke > 0. )
-        throw Exception( __PRETTY_FUNCTION__,
-                         Form( "Magnetic strength for horizontal quadrupole %s should be negative!\n\t"
-                               "Value = %g", name_.c_str(), ke ),
-                         Fatal );
+        throw Exception( __PRETTY_FUNCTION__, Fatal )
+          << "Magnetic strength for horizontal quadrupole " << name_ << " should be negative!\n\t"
+          << "Value = " << ke << ".";
       if ( ke == 0. ) { // simple drift matrix
-        PrintDebug( Form( "Quadrupole %s has no effect. Treating it as a drift.", name_.c_str() ) );
+        PrintDebug << "Quadrupole " << name_ << " has no effect. Treating it as a drift.";
         return mat;
       }
 
@@ -47,12 +46,11 @@ namespace Hector
 
       const double ke = fieldStrength( eloss, mp, qp );
       if ( ke < 0. )
-        throw Exception( __PRETTY_FUNCTION__,
-                         Form( "Magnetic strength for vertical quadrupole %s should be positive!\n\t"
-                               "Value = %g", name_.c_str(), ke ),
-                         Fatal );
+        throw Exception( __PRETTY_FUNCTION__, Fatal )
+          << "Magnetic strength for vertical quadrupole " << name_ << " should be positive!\n\t"
+          << "Value = " << ke << ".";
       if ( ke == 0. ) { // simple drift matrix
-        PrintDebug( Form( "Quadrupole %s has no effect. Treating it as a drift.", name_.c_str() ) );
+        PrintDebug << "Quadrupole " << name_ << " has no effect. Treating it as a drift.";
         return mat;
       }
 

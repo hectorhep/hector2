@@ -2,23 +2,22 @@
 #define Hector_Core_Exception_h
 
 #include "Hector/Utils/Utils.h"
-#include "Parameters.h"
+#include "Hector/Core/Parameters.h"
 
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <cstdlib> // exit()
 
-#define PrintDebug(m) Hector::Exception( __PRETTY_FUNCTION__, m, Hector::Debug ).dump();
-#define PrintInfo(m) Hector::Exception( __PRETTY_FUNCTION__, m, Hector::Info ).dump();
-#define PrintWarning(m) Hector::Exception( __PRETTY_FUNCTION__, m, Hector::JustWarning ).dump();
-
-using std::cerr;
+#define PrintDebug Hector::Exception( __PRETTY_FUNCTION__, Hector::Debug )
+#define PrintInfo Hector::Exception( __PRETTY_FUNCTION__, Hector::Info )
+#define PrintWarning Hector::Exception( __PRETTY_FUNCTION__, Hector::JustWarning )
 
 namespace Hector
 {
   /// A simple exception handler
-  class Exception : public std::runtime_error
+  class Exception : public std::exception
   {
     public:
       /// Construct an exception from a std::string description
@@ -26,15 +25,32 @@ namespace Hector
       /// \param[in] desc Error message
       /// \param[in] type Type of exception encountered
       /// \param[in] id Error code associated to the exception
-      inline Exception( const char* from, const std::string& desc, ExceptionType type = Undefined, int id = 0 ) :
-        std::runtime_error( desc ), from_( from ), type_( type ), error_num_( id ) {}
-      /// Construct an exception from a char* description
-      inline Exception( const char* from, const char* desc, ExceptionType type = Undefined, int id = 0 ) :
-        std::runtime_error( desc ), from_( from ), type_( type ), error_num_( id ) {}
+      explicit inline Exception( const char* from, ExceptionType type = Undefined, int id = 0 ) :
+        from_( from ), type_( type ), error_num_( id ) {}
+      /// Copy constructor
+      inline Exception( const Exception& rhs ) :
+        message_( rhs.message_.str() ), from_( rhs.from_ ), type_( rhs.type_ ), error_num_( rhs.error_num_ ) {}
 
       /// Destruct the exception (and terminate the program execution if fatal)
-      inline ~Exception() {
+      inline ~Exception() noexcept override {
+        dump();
         if ( type_ == Fatal ) exit( error_num_ ); // we stop the execution of this process on fatal exception
+      }
+
+	    //----- Overloaded stream operators
+
+	    /// Generic templated message feeder operator
+	    template<typename T>
+	    inline friend const Exception& operator<<( const Exception& exc, T var ) {
+	      Exception& nc_except = const_cast<Exception&>( exc );
+	      nc_except.message_ << var;
+	      return exc;
+	    }
+      /// Pipe modifier operator
+      inline friend const Exception& operator<<( const Exception& exc, std::ios_base&( *f )( std::ios_base& ) ) {
+        Exception& nc_except = const_cast<Exception&>( exc );
+        f( nc_except.message_ );
+        return exc;
       }
 
       /// Method/function that raised the exception
@@ -66,7 +82,7 @@ namespace Hector
              << " Raised by:   " << from_ << std::endl;
         }
         os << " Description: " << std::endl
-           << "\t" << what() << std::endl;
+           << "\t" << message_.str() << std::endl;
         if ( error_num_ != 0 )
           os << "-----------------------------------------------------------" << std::endl
              << " Error #" << errorNumber() << std::endl;
@@ -74,8 +90,11 @@ namespace Hector
       }
       /// Get a one-line description of the error
       inline const std::string oneLine() const {
-        return Form( "[%s] ::: %s ::: %s", type_, from_.c_str(), what() );
+        return Form( "[%s] ::: %s ::: %s", type_, from_.c_str(), message_.str() );
       }
+
+    protected:
+      std::ostringstream message_;
 
     private:
       std::string from_;

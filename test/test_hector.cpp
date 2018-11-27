@@ -72,7 +72,7 @@ int main( int argc, char* argv[] )
     ostringstream os; os << "Summary\n\t-------";
     for ( const auto& el : stopping_elements )
       os << Hector::Form( "\n\t*) %.2f%% of particles stopped in %s", 100.*el.second/num_part, el.first.c_str() );
-    PrintInfo( os.str().c_str() );
+    PrintInfo << os.str() << ".";
   }
 
   return 0;

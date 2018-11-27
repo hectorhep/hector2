@@ -18,7 +18,7 @@ namespace Hector
 
       const double ke = fieldStrength( eloss, mp, qp );
       if ( ke == 0. ) { // simple drift matrix
-        PrintDebug( Form( "Sector dipole %s has no effect. Treating it as a drift.", name_.c_str() ) );
+        PrintDebug << "Sector dipole " << name_ << " has no effect. Treating it as a drift.";
         return mat;
       }
 
@@ -49,7 +49,7 @@ namespace Hector
 
       const double ke = fieldStrength( eloss, mp, qp );
       if ( ke == 0. ) { // simple drift matrix
-        PrintDebug( Form( "Rectangular dipole %s has no effect. Treating it as a drift.", name_.c_str() ) );
+        PrintDebug << "Rectangular dipole " << name_ << " has no effect. Treating it as a drift.";
         return mat;
       }
 

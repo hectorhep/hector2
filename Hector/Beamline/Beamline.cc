@@ -50,9 +50,9 @@ namespace Hector
   {
     const double new_size = elem->s()+elem->length();
     if ( new_size > max_length_ && max_length_ < 0. )
-      throw Exception( __PRETTY_FUNCTION__, Form( "Element %s is too far away for this beamline!\n"
-                                                  "\tBeamline length: %.3f m, this element: %.3f m",
-                                                  elem->name().c_str(), max_length_, new_size ), Debug );
+      throw Exception( __PRETTY_FUNCTION__, Debug )
+        << "Element " << elem->name() << " is too far away for this beamline!\n"
+        << "\tBeamline length: " << max_length_ << " m, this element: " << new_size << " m.";
 
     bool already_added = false;
 
@@ -70,17 +70,17 @@ namespace Hector
       if ( prev_elem->s() == elem->s() && elem->length() == 0 ) continue;
 
       if ( !Parameters::get()->correctBeamlineOverlaps() )
-        throw Exception( __PRETTY_FUNCTION__, Form( "Elements overlap with \"%s\" "
-                                                    "detected while adding \"%s\"!",
-                                                    prev_elem->name().c_str(), elem->name().c_str() ), Fatal );
+        throw Exception( __PRETTY_FUNCTION__, Fatal )
+          << "Elements overlap with \"" << prev_elem->name() << "\" "
+          << "detected while adding \"" << elem->name() << "\"!";
 
       // from that point on, an overlap is detected
       // reduce or separate that element in two sub-parts
 
-      PrintDebug( Form( "%s (%s) is inside %s (%s)\n\t"
-                        "Hector will fix the overlap by splitting the earlier.",
-                        elem->name().c_str(), elem->typeName().c_str(),
-                        prev_elem->name().c_str(), prev_elem->typeName().c_str() ) );
+      PrintDebug
+        << elem->name() << " (" << elem->type() << ") is inside "
+        << prev_elem->name() << " (" << prev_elem->type() << ")\n\t"
+        << "Hector will fix the overlap by splitting the earlier.";
       const double prev_length = prev_elem->length();
 
       std::shared_ptr<Element::ElementBase> next_elem = nullptr;
@@ -167,7 +167,9 @@ namespace Hector
         if ( std::regex_search( elem->name().c_str(), m, rgx_search ) ) out.emplace_back( elem );
       return out;
     } catch ( const std::regex_error& e ) {
-      throw Exception( __PRETTY_FUNCTION__, Form( "Invalid regular expression required:\n\t%s\n\tError code: %d", regex, e.code() ), Fatal );
+      throw Exception( __PRETTY_FUNCTION__, Fatal )
+        << "Invalid regular expression required:\n\t"
+        << regex << "\n\tError code: " << e.code() << ".";
     }
   }
 

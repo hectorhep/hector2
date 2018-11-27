@@ -44,20 +44,20 @@ namespace Hector
         /// Retrieve the key associated to a position in the map
         const std::string key( const size_t i ) const {
           if ( i >= map::size() )
-            throw Exception( __PRETTY_FUNCTION__, Form( "Invalid index: %d for an unordered map of size %d", i, map::size() ), JustWarning );
+            throw Exception( __PRETTY_FUNCTION__, JustWarning ) << "Invalid index: " << i << " for an unordered map of size " << map::size() << ".";
           return map::at( i ).first;
         }
         /// Retrieve the value associated to a position in the map
         const T& value( const size_t i ) const {
           if ( i >= map::size() )
-            throw Exception( __PRETTY_FUNCTION__, Form( "Invalid index: %d for an unordered map of size %d", i, map::size() ), JustWarning );
+            throw Exception( __PRETTY_FUNCTION__, JustWarning ) << "Invalid index: " << i << " for an unordered map of size " << map::size() << ".";
           return map::at( i ).second;
         }
         /// Retrieve the position in the map for the given key
         size_t id( const char* k ) const {
           for ( size_t i = 0; i < map::size(); ++i )
             if ( key( i ) == k ) return i;
-          throw Exception( __PRETTY_FUNCTION__, Form( "Key \"%s\" was not found in the map", k ), JustWarning );
+          throw Exception( __PRETTY_FUNCTION__, JustWarning ) << "Key \"" << k << "\" was not found in the map.";
         }
 
         /// Retrieve the value associated to a key

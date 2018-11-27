@@ -38,11 +38,10 @@ namespace Hector
     void
     LHE::printInfo() const
     {
-      std::ostringstream os;
-      os << "LHEF file successfully parsed. General info:"
-         << "\n\t Beams: " << beam1Energy() << " GeV (" << beam1PDGId() << ") on " << beam2Energy() << " GeV (" << beam2PDGid() << ")"
-         << "\n\t Process cross section: " << crossSection() << " +- " << crossSectionError() << " pb";
-      PrintInfo( os.str() );
+      PrintInfo
+       << "LHEF file successfully parsed. General info:"
+       << "\n\t Beams: " << beam1Energy() << " GeV (" << beam1PDGId() << ") on " << beam2Energy() << " GeV (" << beam2PDGid() << ")"
+       << "\n\t Process cross section: " << crossSection() << " +- " << crossSectionError() << " pb.";
     }
 
     bool

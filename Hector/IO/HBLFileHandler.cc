@@ -37,26 +37,27 @@ namespace Hector
     {
       std::ifstream file( filename, std::ios::binary | std::ios::in );
       if ( !file.is_open() )
-        throw Exception( __PRETTY_FUNCTION__, Form( "Impossible to open file \"%s\" for reading!", filename ), Fatal );
+        throw Exception( __PRETTY_FUNCTION__, Fatal )
+          << "Impossible to open file \"" << filename << "\" for reading!";
 
       HBLHeader hdr;
       file.read( reinterpret_cast<char*>( &hdr ), sizeof( HBLHeader ) );
       if ( hdr.magic != magic_number )
-        throw Exception( __PRETTY_FUNCTION__, Form( "Invalid magic number retrieved for file \"%s\"!", filename ), Fatal );
+        throw Exception( __PRETTY_FUNCTION__, Fatal )
+          << "Invalid magic number retrieved for file \"" << filename << "\"!";
 
       if ( hdr.version > version )
-        throw Exception( __PRETTY_FUNCTION__, Form( "Version %d is not (yet) supported! Currently peaking at %d!", hdr.version, version ), Fatal );
+        throw Exception( __PRETTY_FUNCTION__, Fatal )
+          << "Version " << hdr.version << " is not (yet) supported! Currently peaking at " << version << "!";
 
       HBLElement el;
       std::shared_ptr<Element::ElementBase> elem;
       while ( file.read( reinterpret_cast<char*>( &el ), sizeof( HBLElement ) ) ) {
-        if ( Parameters::get()->loggingThreshold() > JustWarning ) {
-          std::ostringstream os; os << ( Element::Type )el.element_type;
-          PrintInfo( Form( "Retrieved a %s element\n\t"
-                           "with name %s\n\tat s=%f m\n\t"
-                           "with length=%f m (magnetic strength=%f)",
-                           os.str().c_str(), el.element_name, el.element_s, el.element_length, el.element_magnetic_strength ) );
-        }
+        if ( Parameters::get()->loggingThreshold() > JustWarning )
+          PrintInfo
+            << "Retrieved a " << (Element::Type)el.element_type << " element\n\t"
+            << "with name " << el.element_name << "\n\tat s=" << el.element_s << " m\n\t"
+            << "with length=" << el.element_length << " m (magnetic strength=" << el.element_magnetic_strength << ").";
         switch ( ( Element::Type )el.element_type ) {
           case Element::aMarker:
           case Element::aMonitor:
@@ -93,7 +94,8 @@ namespace Hector
           //case Element::anEllipticalCollimator:
           //case Element::aCircularCollimator:
           default:
-            throw Exception( __PRETTY_FUNCTION__, Form( "Invalid element type: %s", (int)el.element_type ), Fatal );
+            throw Exception( __PRETTY_FUNCTION__, Fatal )
+              <<  "Invalid element type: " << (int)el.element_type << ".";
         }
         switch ( ( Aperture::Type )el.aperture_type ) {
           case Aperture::anInvalidAperture: break;
@@ -115,12 +117,14 @@ namespace Hector
           //case Aperture::aRaceTrackAperture:
           //case Aperture::anOctagonalAperture:
           default:
-            throw Exception( __PRETTY_FUNCTION__, Form( "Invalid aperture type: %s", (int)el.aperture_type ), Fatal );
+            throw Exception( __PRETTY_FUNCTION__, Fatal )
+              << "Invalid aperture type: " << (int)el.aperture_type << ".";
         }
         if ( elem ) beamline_->add( elem );
       }
       if ( beamline_->numElements() != hdr.num_elements )
-        throw Exception( __PRETTY_FUNCTION__, Form( "Expecting %d elements, retrieved %d!", hdr.num_elements, beamline_->numElements() ), Fatal );
+        throw Exception( __PRETTY_FUNCTION__, Fatal )
+          << "Expecting " << hdr.num_elements << " elements, retrieved " << beamline_->numElements() << "!";
     }
 
     void

@@ -42,22 +42,23 @@ namespace Hector
       ip_name_( ip_name ), min_s_( min_s )
     {
       if ( !in_file_.is_open() )
-        throw Exception( __PRETTY_FUNCTION__, Form( "Failed to open the Twiss file \"%s\"\n\tPlease check the path!", filename.c_str() ), Fatal );
+        throw Exception( __PRETTY_FUNCTION__, Fatal )
+          << "Failed to open the Twiss file \"" << filename << "\"\n\tPlease check the path!";
       parseHeader();
 
       raw_beamline_ = std::unique_ptr<Beamline>( new Beamline( max_s-min_s ) );
       if ( max_s < 0. && header_float_.hasKey( "length" ) ) raw_beamline_->setLength( header_float_.get( "length" ) );
       if ( header_float_.hasKey( "energy" ) && Parameters::get()->beamEnergy() != header_float_.get( "energy" ) ) {
         Parameters::get()->setBeamEnergy( header_float_.get( "energy" ) );
-        PrintWarning( Form( "Beam energy changed to %.1f GeV to match Twiss optics parameters", Parameters::get()->beamEnergy() ) );
+        PrintWarning << "Beam energy changed to " << Parameters::get()->beamEnergy() << " GeV to match Twiss optics parameters.";
       }
       if ( header_float_.hasKey( "mass" ) && Parameters::get()->beamParticlesMass() != header_float_.get( "mass" ) ) {
         Parameters::get()->setBeamParticlesMass( header_float_.get( "mass" ) );
-        PrintWarning( Form( "Beam particles mass changed to %.4f GeV to match Twiss optics parameters", Parameters::get()->beamParticlesMass() ) );
+        PrintWarning << "Beam particles mass changed to " << Parameters::get()->beamParticlesMass() << " GeV to match Twiss optics parameters.";
       }
       if ( header_float_.hasKey( "charge" ) && Parameters::get()->beamParticlesCharge() != static_cast<int>( header_float_.get( "charge" ) ) ) {
         Parameters::get()->setBeamParticlesCharge( static_cast<int>( header_float_.get( "charge" ) ) );
-        PrintWarning( Form( "Beam particles charge changed to %d e to match Twiss optics parameters", Parameters::get()->beamParticlesCharge() ) );
+        PrintWarning << "Beam particles charge changed to " << Parameters::get()->beamParticlesCharge() << " e to match Twiss optics parameters.";
       }
 
       parseElementsFields();
@@ -89,9 +90,10 @@ namespace Hector
     Twiss::beamline() const
     {
       if ( !beamline_ ) {
-        PrintWarning( "Sequenced beamline not computed from the Twiss file. "
-                      "Retrieving the raw version. "
-                      "You may encounter some numerical issues." );
+        PrintWarning
+          << "Sequenced beamline not computed from the Twiss file."
+          << " Retrieving the raw version."
+          << " You may encounter some numerical issues.";
         return raw_beamline_.get();
       }
       return beamline_.get();
@@ -118,7 +120,7 @@ namespace Hector
       if ( header_str_.hasKey( "sequence" ) ) os << "\n\t Sequence: " << header_str_.get( "sequence" );
       if ( header_str_.hasKey( "particle" ) ) os << "\n\t Beam particles: " << header_str_.get( "particle" );
       if ( header_float_.hasKey( "length" ) ) os << "\n\t Maximal beamline length: " << header_float_.get( "length" ) << " m";
-      PrintInfo( os.str().c_str() );
+      PrintInfo << os.str() << ".";
     }
 
     std::map<std::string,std::string>
@@ -137,7 +139,7 @@ namespace Hector
     Twiss::parseHeader()
     {
       if ( !in_file_.is_open() )
-        throw Exception( __PRETTY_FUNCTION__, "Twiss file is not opened nor ready for parsing!", Fatal );
+        throw Exception( __PRETTY_FUNCTION__, Fatal ) << "Twiss file is not opened nor ready for parsing!";
       std::string line;
       while ( !in_file_.eof() ) {
         std::getline( in_file_, line );
@@ -155,9 +157,9 @@ namespace Hector
           // keep track of the last line read in the file
           in_file_lastline_ = in_file_.tellg();
         } catch ( std::regex_error& e ) {
-          throw Exception( __PRETTY_FUNCTION__,
-            Form( "Error at line %d while parsing the header!\n\t%s",
-                  in_file_.tellg(), e.what() ), Fatal );
+          throw Exception( __PRETTY_FUNCTION__, Fatal )
+            << "Error at line " << in_file_.tellg() << " while parsing the header!\n\t"
+            << e.what();
         }
       }
       // parse the Twiss file production timestamp
@@ -179,7 +181,7 @@ namespace Hector
     Twiss::parseElementsFields()
     {
       if ( !in_file_.is_open() )
-        throw Exception( __PRETTY_FUNCTION__, "Twiss file is not opened nor ready for parsing!", Fatal );
+        throw Exception( __PRETTY_FUNCTION__, Fatal ) << "Twiss file is not opened nor ready for parsing!";
       std::string line;
 
       in_file_.seekg( in_file_lastline_ );
@@ -202,9 +204,9 @@ namespace Hector
           }
           in_file_lastline_ = in_file_.tellg();
         } catch ( std::regex_error& e ) {
-          throw Exception( __PRETTY_FUNCTION__,
-            Form( "Error at line %d while parsing elements fields!\n\t%s",
-                  in_file_.tellg(), e.what() ), Fatal );
+          throw Exception( __PRETTY_FUNCTION__, Fatal )
+            << "Error at line " << in_file_.tellg() << " while parsing elements fields!\n\t"
+            << e.what();
         }
       }
 
@@ -222,9 +224,9 @@ namespace Hector
           }
           elements_fields_.add( list_names.at( i ), type );
         } catch ( std::regex_error& e ) {
-          throw Exception( __PRETTY_FUNCTION__,
-            Form( "Error while performing the matching name-data!\n\t%s",
-                  e.what() ), Fatal );
+          throw Exception( __PRETTY_FUNCTION__, Fatal )
+            << "Error while performing the matching name-data!\n\t"
+            << e.what();
         }
       }
     }
@@ -233,7 +235,7 @@ namespace Hector
     Twiss::findInteractionPoint()
     {
       if ( !in_file_.is_open() )
-        throw Exception( __PRETTY_FUNCTION__, "Twiss file is not opened nor ready for parsing!", Fatal );
+        throw Exception( __PRETTY_FUNCTION__, Fatal ) << "Twiss file is not opened nor ready for parsing!";
       std::string line;
       in_file_.seekg( in_file_lastline_ );
 
@@ -246,11 +248,11 @@ namespace Hector
         while ( str >> buffer ) values.push_back( buffer );
         // first check if the "correct" number of element properties is parsed
         if ( values.size() != elements_fields_.size() )
-          throw Exception( __PRETTY_FUNCTION__,
-            Form( "Twiss file seems corrupted!\n\t"
-                  "Element %s at line %d has %d fields when %d are expected.",
-                  trim( values.at( 0 ) ).c_str(), in_file_.tellg(),
-                  values.size(), elements_fields_.size() ), Fatal );
+          throw Exception( __PRETTY_FUNCTION__, Fatal )
+            << "Twiss file seems corrupted!\n\t"
+            << "Element " << trim( values.at( 0 ) )
+            << " at line " << in_file_.tellg() << " has " << values.size() << " fields"
+            << " when " << elements_fields_.size() << " are expected.";
         try {
           auto elem = parseElement( values );
           if ( !elem || elem->name() != ip_name_ ) continue;
@@ -259,9 +261,8 @@ namespace Hector
           break;
         } catch ( Exception& e ) {
           e.dump();
-          throw Exception( __PRETTY_FUNCTION__,
-            Form( "Failed to retrieve the interaction point with name=\"%s\"",
-                  ip_name_.c_str() ), Fatal );
+          throw Exception( __PRETTY_FUNCTION__, Fatal )
+            << "Failed to retrieve the interaction point with name=\"" << ip_name_ << "\".";
         }
       }
     }
@@ -270,14 +271,13 @@ namespace Hector
     Twiss::parseElements()
     {
       if ( !in_file_.is_open() )
-        throw Exception( __PRETTY_FUNCTION__, "Twiss file is not opened nor ready for parsing!", Fatal );
+        throw Exception( __PRETTY_FUNCTION__, Fatal ) << "Twiss file is not opened nor ready for parsing!";
       // parse the optics elements and their characteristics
       std::string line;
 
       if ( !interaction_point_ )
-        throw Exception( __PRETTY_FUNCTION__,
-          Form( "Interaction point \"%s\" has not been found in the beamline!",
-                ip_name_.c_str() ), Fatal );
+        throw Exception( __PRETTY_FUNCTION__, Fatal )
+          << "Interaction point \"" << ip_name_ << "\" has not been found in the beamline!";
 
       in_file_.seekg( in_file_lastline_ ); // return to the first element line
 
@@ -302,7 +302,8 @@ namespace Hector
             continue;
           if ( elem->s()+elem->length() > raw_beamline_->maxLength() ) {
             if ( has_next_element )
-              throw Exception( __PRETTY_FUNCTION__, "Finished to parse the beamline", Info, 20001 );
+              throw Exception( __PRETTY_FUNCTION__, Info, 20001 )
+                << "Finished to parse the beamline";
             if ( elem->type() != Element::anInstrument && elem->type() != Element::aDrift )
               has_next_element = true;
           }
@@ -322,10 +323,10 @@ namespace Hector
     {
       // first check if the "correct" number of element properties is parsed
       if ( values.size() != elements_fields_.size() )
-        throw Exception( __PRETTY_FUNCTION__,
-          Form( "Twiss file seems corrupted!\n\t"
-                "Element %s has %d fields when %d are expected.",
-                trim( values.at( 0 ) ).c_str(), values.size(), elements_fields_.size() ), Fatal );
+        throw Exception( __PRETTY_FUNCTION__, Fatal )
+          << "Twiss file seems corrupted!\n\t"
+          << "Element " << trim( values.at( 0 ) ) << " has " << values.size() << " fields"
+          << " when " << elements_fields_.size() << " are expected.";
 
       // then perform the 3-fold matching key <-> value <-> value type
       ParametersMap::Ordered<float> elem_map_floats;
@@ -341,9 +342,9 @@ namespace Hector
             elem_map_floats.add( key, std::stod( value ) );
             break;
           case Unknown: default: {
-            throw Exception( __PRETTY_FUNCTION__,
-              Form( "Twiss file predicts an unknown-type optics element parameter:\n\t (%s) for %s",
-                    elements_fields_.key( i ).c_str(), trim( values.at( 0 ) ).c_str() ), JustWarning );
+            throw Exception( __PRETTY_FUNCTION__, JustWarning )
+              << "Twiss file predicts an unknown-type optics element parameter:\n\t"
+              << " (" << elements_fields_.key( i ) << ") for " << trim( values.at( 0 ) ) << ".";
           } break;
         }
       }
@@ -362,8 +363,9 @@ namespace Hector
         // create the element
         switch ( elemtype ) {
           case Element::aGenericQuadrupole: {
-            if ( length <= 0. ) throw Exception( __PRETTY_FUNCTION__,
-              Form( "Trying to add a quadrupole with invalid length (l=%.2e m)", length ), JustWarning );
+            if ( length <= 0. )
+              throw Exception( __PRETTY_FUNCTION__, JustWarning )
+                << "Trying to add a quadrupole with invalid length (l=" << length << " m).";
 
             const double k1l = elem_map_floats.get( "k1l" );
             const double mag_str_k = -k1l/length;
@@ -376,13 +378,11 @@ namespace Hector
           case Element::aSectorDipole: {
             const double k0l = elem_map_floats.get( "k0l" );
             if ( length <= 0. )
-              throw Exception( __PRETTY_FUNCTION__,
-                Form( "Trying to add a dipole with invalid length (l=%.2e m)", length ),
-                JustWarning );
+              throw Exception( __PRETTY_FUNCTION__, JustWarning )
+                << "Trying to add a dipole with invalid length (l=" << length << " m).";
             if ( k0l == 0. )
-              throw Exception( __PRETTY_FUNCTION__,
-                Form( "Trying to add a dipole (%s) with k0l=%.2e", name.c_str(), k0l ),
-                JustWarning );
+              throw Exception( __PRETTY_FUNCTION__, JustWarning )
+                << "Trying to add a dipole (" << name << ") with k0l=" << k0l << ".";
 
             const double mag_strength = k0l/length;
 //            std::cout << name << "|" << s << "|" << mag_strength << std::endl;
@@ -477,7 +477,7 @@ namespace Hector
         if ( std::regex_match( name,     rgx_monitor_name_ ) ) return Element::aMonitor;
         if ( std::regex_match( name,   rgx_rect_coll_name_ ) ) return Element::aRectangularCollimator;
       } catch ( std::regex_error& e ) {
-        throw Exception( __PRETTY_FUNCTION__, Form( "Error while retrieving the element type!\n\t%s", e.what() ), Fatal );
+        throw Exception( __PRETTY_FUNCTION__, Fatal ) << "Error while retrieving the element type!\n\t" << e.what();
       }
       return Element::anInvalidElement;
     }

@@ -62,7 +62,7 @@ main( int argc, char* argv[] )
     }
   }
 
-  Hector::BeamProducer::gaussianParticleGun gun;
+  Hector::BeamProducer::GaussianParticleGun gun;
   //gun.setElimits( particles_energy*0.95, particles_energy );
   gun.setElimits( particles_energy );
   gun.setXparams( 0., beam_lateral_width_ip );
@@ -106,7 +106,7 @@ main( int argc, char* argv[] )
   for ( const auto& se : stopped_at ) {
     summary << "\n\t>> " << Form( "%.1f%% of particles (%d/%d) stopped in ", 100. * se.second/num_particles, se.second, num_particles ) << se.first->name() << " " << se.first->typeName();
   }
-  PrintInfo( summary.str() );
+  PrintInfo << summary.str() << ".";
 
   const string top_label = Form( "s = %.2f m, #alpha_{X} = %.1f #murad", s_pos, crossing_angle_x*1.e6 );
   {

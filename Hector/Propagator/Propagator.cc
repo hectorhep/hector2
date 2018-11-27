@@ -39,12 +39,10 @@ namespace Hector
         if ( first_s > prev_elem->s() && first_s < elem->s() ) {
           switch ( prev_elem->type() ) {
             case Element::aDrift:
-              PrintInfo( Form( "Path starts inside element %s",
-                               prev_elem->name().c_str() ) );
+              PrintInfo << "Path starts inside drift " << prev_elem->name() << ".";
               break;
             default:
-              PrintInfo( Form( "Path starts inside drift %s",
-                               prev_elem->name().c_str() ) );
+              PrintInfo << "Path starts inside element " << prev_elem->name() << ".";
               break;
           }
 
@@ -71,23 +69,16 @@ namespace Hector
           continue;
 
         const TwoVector pos_prev_elem( part.stateVectorAt( prev_elem->s() ).position() );
-        if ( !aper->contains( pos_prev_elem ) ) {
-          std::ostringstream os1, os2;
-          os1 << pos_prev_elem;
-          os2 << aper->position();
-          throw ParticleStoppedException( __PRETTY_FUNCTION__, prev_elem.get(), JustWarning,
-            Form( "Entering at %s, s = %.2f m\n\t"
-                  "Aperture centre at %s\n\t"
-                  "Distance to aperture centre: %.2f cm",
-                  os1.str().c_str(), prev_elem->s(),
-                  os2.str().c_str(),
-                  ( aper->position()-pos_prev_elem ).mag()*1.e2 ).c_str() );
-        }
+        if ( !aper->contains( pos_prev_elem ) )
+          throw ParticleStoppedException( __PRETTY_FUNCTION__, JustWarning, prev_elem.get() )
+            << "Entering at " << pos_prev_elem << ", s = " << prev_elem->s() << " m\n\t"
+            << "Aperture centre at " << aper->position() << "\n\t"
+            << "Distance to aperture centre: " << ( aper->position()-pos_prev_elem ).mag()*1.e2 << " cm.";
         // has passed through the element?
         //std::cout << prev_elem->s()+prev_elem->length() << "\t" << part.stateVectorAt( prev_elem->s()+prev_elem->length() ).position() << std::endl;
         if ( !aper->contains( part.stateVectorAt( prev_elem->s()+prev_elem->length() ).position() ) )
-          throw ParticleStoppedException( __PRETTY_FUNCTION__, prev_elem.get(), JustWarning,
-                                            Form( "Did not pass aperture %s", aper->typeName().c_str() ).c_str() );
+          throw ParticleStoppedException( __PRETTY_FUNCTION__, JustWarning, prev_elem.get() )
+            << "Did not pass aperture " << aper->type() << ".";
       }
     }
     catch ( const ParticleStoppedException& ) { throw; }
@@ -128,21 +119,15 @@ namespace Hector
       const StateVector shift( TwoVector(), TwoVector(), 0., 0. );
       const Vector prop = elem->matrix( eloss, ini_pos.stateVector().m(), qp ) * ( ini_pos.stateVector().vector()-shift.vector() ) + shift.vector();
 
-      if ( Parameters::get()->loggingThreshold() >= Debug ) {
-        std::ostringstream os1; os1 << ini_pos.stateVector().vector().T();
-        std::ostringstream os2; os2 << elem->matrix( eloss, ini_pos.stateVector().m(), qp );
-        std::ostringstream os3; os3 << prop.T();
-        PrintDebug( Form( "Propagating particle of mass %g GeV and state vector at s = %g m:%s\t"
-                          "through %s element \"%s\" "
-                          "at s = %g m, "
-                          "of length %g m,\n\t"
-                          "and with transfer matrix:"
-                          "%s\t"
-                          "Resulting state vector:%s",
-                          ini_pos.stateVector().m(), ini_pos.s(), os1.str().c_str(),
-                          elem->typeName().c_str(), elem->name().c_str(), elem->s(), elem->length(),
-                          os2.str().c_str(), os3.str().c_str() ) );
-      }
+      if ( Parameters::get()->loggingThreshold() >= Debug )
+        PrintDebug
+          << "Propagating particle of mass " << ini_pos.stateVector().m() << " GeV"
+          << " and state vector at s = " << ini_pos.s() << " m:" << ini_pos.stateVector().vector().T() << "\t"
+          << "through " << elem->type() << " element \"" << elem->name() << "\" "
+          << "at s = " << elem->s() << " m, "
+          << "of length " << elem->length() << " m,\n\t"
+          << "and with transfer matrix:" << elem->matrix( eloss, ini_pos.stateVector().m(), qp ) << "\t"
+          << "Resulting state vector:" << prop.T();
 
       // perform the propagation (assuming that mass is conserved...)
       StateVector vec( prop, ini_pos.stateVector().m() );
