@@ -90,7 +90,7 @@ namespace Hector
       }
       /// Get a one-line description of the error
       inline const std::string oneLine() const {
-        return Form( "[%s] ::: %s ::: %s", type_, from_.c_str(), message_.str() );
+        return Form( "[%s] ::: %s ::: %s", type_, from_.c_str(), message_.str().c_str() );
       }
 
     protected:
