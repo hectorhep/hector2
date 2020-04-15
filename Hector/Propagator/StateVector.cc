@@ -75,16 +75,16 @@ namespace Hector
   void
   StateVector::setMomentum( const LorentzVector& mom )
   {
-    setAngles( mom.px()/mom.pz(), mom.py()/mom.pz() );
-    setEnergy( mom.e() );
+    setAngles( mom.x()/mom.z(), mom.y()/mom.z() );
+    setEnergy( mom.w() );
     m_ = mom.m();
   }
 
   void
   StateVector::addMomentum( const LorentzVector& mom )
   {
-    setAngles( angles()+TwoVector( mom.px()/mom.pz(), mom.py()/mom.pz() ) );
-    ( *this )[E] = mom.e();
+    setAngles( angles()+TwoVector( mom.x()/mom.z(), mom.y()/mom.z() ) );
+    ( *this )[E] = mom.w();
     m_ = mom.m();
   }
 
@@ -92,7 +92,7 @@ namespace Hector
   StateVector::momentum() const
   {
     const TwoVector tan_ang( math::tan2( angles() ) );
-    const double pz = sqrt( ( energy()*energy()-m_*m_ )/( 1.+tan_ang.mag2() ) ),
+    const double pz = std::sqrt( ( energy()*energy()-m_*m_ )/( 1.+std::pow( tan_ang.norm(), 2 ) ) ),
                  px = pz*tan_ang.x(),
                  py = pz*tan_ang.y();
     return LorentzVector( px, py, pz, energy() );
@@ -103,11 +103,11 @@ namespace Hector
   {
     if ( mass != momentum().m() ) {
       m_ = mass;
-      if ( momentum().mag2() != 0. )
-        ( *this )[E] = std::hypot( momentum().mag(), m_ ); // match the energy accordingly
+      if ( momentum().norm() != 0. )
+        ( *this )[E] = std::hypot( momentum().norm(), m_ ); // match the energy accordingly
       else {
         const int sign = 1; //FIXME
-        setMomentum( LorentzVector( 0., 0., sign*sqrt( energy()*energy()-m_*m_ ), energy() ) ); // longitudinal momentum only
+        setMomentum( LorentzVector( 0., 0., sign*std::sqrt( energy()*energy()-m_*m_ ), energy() ) ); // longitudinal momentum only
       }
       return;
     }

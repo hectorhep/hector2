@@ -5,7 +5,6 @@
 #include <stdarg.h> // For va_start, etc.
 #include <algorithm>
 #include <locale>
-#include <CLHEP/Random/RandFlat.h>
 
 namespace Hector
 {
@@ -93,7 +92,7 @@ namespace Hector
                  seta = sqrt( 1.-ceta*ceta );
     // theta is the angle between particle and beam
     const double theta = atan( seta/( Parameters::get()->beamEnergy()/gkk-ceta ) ),
-                 phi = CLHEP::RandFlat::shoot( phi_min, phi_max );
+                 phi = rand()*( phi_max-phi_min )/RAND_MAX;
 
     TwoVector old_ang( sv_ini.angles() );
     sv_ini.setAngles( old_ang + TwoVector( theta*cos( phi ), -theta*sin( phi ) ) );

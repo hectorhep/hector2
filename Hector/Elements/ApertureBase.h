@@ -61,11 +61,11 @@ namespace Hector
         /// Get the horizontal position of the aperture barycentre
         double x() const { return pos_.x(); }
         /// Set the horizontal position of the aperture barycentre
-        void setX( double x ) { pos_.setX( x ); }
+        void setX( double x ) { pos_[0] = x; }
         /// Get the vertical position of the aperture barycentre
         double y() const { return pos_.y(); }
         /// Set the vertical position of the aperture barycentre
-        void setY( double y ) { pos_.setY( y ); }
+        void setY( double y ) { pos_[1] = y; }
 
         /// Change the x-y position of the aperture barycentre
         void offset( const TwoVector& offs ) { pos_ += offs; }

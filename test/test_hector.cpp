@@ -8,8 +8,6 @@
 #include "Hector/Utils/BeamProducer.h"
 #include "Hector/Utils/ArgsParser.h"
 
-#include <CLHEP/Random/RandGauss.h>
-
 using namespace std;
 
 int main( int argc, char* argv[] )

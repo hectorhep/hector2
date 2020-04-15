@@ -1,73 +1,69 @@
 #ifndef Hector_Core_Algebra_h
 #define Hector_Core_Algebra_h
 
-#include <CLHEP/Matrix/DiagMatrix.h>
-#include <CLHEP/Matrix/Matrix.h>
-#include <CLHEP/Matrix/Vector.h>
-
-#include <CLHEP/Vector/TwoVector.h>
-#include <CLHEP/Vector/ThreeVector.h>
-#include <CLHEP/Vector/LorentzVector.h>
+#include <Eigen/Dense>
 
 #include <array>
+#include <vector>
 
 namespace Hector
 {
   /// A generic N-dimensional matrix
-  typedef CLHEP::HepMatrix Matrix;
+  typedef Eigen::MatrixXf Matrix;
   /// A generic N-dimensional diagonal matrix
-  typedef CLHEP::HepDiagMatrix DiagonalMatrix;
+  typedef Eigen::MatrixXf DiagonalMatrix;
 
   /// N-dimensional vector of double-precision floats
-  class Vector : public CLHEP::HepVector
+  class Vector : public Eigen::VectorXf
   {
     public:
-      using CLHEP::HepVector::HepVector;
-      Vector() : CLHEP::HepVector() {}
+      using Eigen::VectorXf::VectorXf;
+      Vector() : Eigen::VectorXf() {}
       /// Build a N-vector from an equivalent CLHEP object
-      Vector( const CLHEP::HepVector vec ) : CLHEP::HepVector( vec ) {}
+      Vector( const Eigen::VectorXf vec ) : Eigen::VectorXf( vec ) {}
       /// Build a N-vector from its N-dimensional coordinates
-      Vector( const std::vector<double>& vec ) : CLHEP::HepVector( vec.size() ) {
+      Vector( const std::vector<double>& vec ) : Eigen::VectorXf( vec.size() ) {
         unsigned short i = 0;
         for ( const auto& c : vec ) { operator()( i ) = c; ++i; }
       }
   };
   /// Two-vector of double-precision floats
-  class TwoVector : public CLHEP::Hep2Vector
+  class TwoVector : public Eigen::Vector2f
   {
     public:
-      using CLHEP::Hep2Vector::Hep2Vector;
-      TwoVector() : CLHEP::Hep2Vector() {}
+      using Eigen::Vector2f::Vector2f;
+      TwoVector() : Eigen::Vector2f() {}
       /// Build a two-vector from an equivalent CLHEP object
-      TwoVector( const CLHEP::Hep2Vector& vec ) : CLHEP::Hep2Vector( vec ) {}
+      TwoVector( const Eigen::Vector2f& vec ) : Eigen::Vector2f( vec ) {}
       /// Build a two-vector from its two-dimensional spatial coordinates
-      TwoVector( const std::array<double,2>& vec ) : CLHEP::Hep2Vector( vec[0], vec[1] ) {}
+      TwoVector( const std::array<double,2>& vec ) : Eigen::Vector2f( vec[0], vec[1] ) {}
   };
   /// Three-vector of double-precision floats
-  class ThreeVector : public CLHEP::Hep3Vector
+  class ThreeVector : public Eigen::Vector3f
   {
     public:
-      using CLHEP::Hep3Vector::Hep3Vector;
-      ThreeVector() : CLHEP::Hep3Vector() {}
+      using Eigen::Vector3f::Vector3f;
+      ThreeVector() : Eigen::Vector3f() {}
       /// Build a three-vector from an equivalent CLHEP object
-      ThreeVector( const CLHEP::Hep3Vector& vec ) : CLHEP::Hep3Vector( vec ) {}
+      ThreeVector( const Eigen::Vector3f& vec ) : Eigen::Vector3f( vec ) {}
       /// Build a three-vector from its spatial coordinates
-      ThreeVector( const std::array<double,3>& vec ) : CLHEP::Hep3Vector( vec[0], vec[1], vec[2] ) {}
+      ThreeVector( const std::array<double,3>& vec ) : Eigen::Vector3f( vec[0], vec[1], vec[2] ) {}
   };
   /// Lorentz vector of double-precision floats
-  class LorentzVector : public CLHEP::HepLorentzVector
+  class LorentzVector : public Eigen::Vector4f
   {
     public:
-      using CLHEP::HepLorentzVector::HepLorentzVector;
-      LorentzVector() : CLHEP::HepLorentzVector() {}
+      using Eigen::Vector4f::Vector4f;
+      LorentzVector() : Eigen::Vector4f() {}
       /// Build a Lorentz vector from an equivalent CLHEP object
-      LorentzVector( const CLHEP::HepLorentzVector& vec ) : CLHEP::HepLorentzVector( vec ) {}
+      LorentzVector( const Eigen::Vector4f& vec ) : Eigen::Vector4f( vec ) {}
       /// Build a Lorentz vector from its spatial and temporal coordinates
-      LorentzVector( const std::array<double,3>& sp, double t ) : CLHEP::HepLorentzVector( sp[0], sp[1], sp[2], t ) {}
+      LorentzVector( const std::array<double,3>& sp, double t ) : Eigen::Vector4f( sp[0], sp[1], sp[2], t ) {}
       /// Build a Lorentz vector from a four-vector containing its spatial and temporal coordinates
-      LorentzVector( const std::array<double,4> vec ) : CLHEP::HepLorentzVector( vec[0], vec[1], vec[2], vec[3] ) {}
+      LorentzVector( const std::array<double,4> vec ) : Eigen::Vector4f( vec[0], vec[1], vec[2], vec[3] ) {}
+      double m() const;
   };
-  
+
   namespace math
   {
     /// Compute the tangent of both the components of a 2-vector

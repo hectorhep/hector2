@@ -2,9 +2,6 @@
 #include "Hector/Utils/Utils.h"
 #include "Hector/Core/Exception.h"
 
-#include <CLHEP/Random/RandFlat.h>
-#include <CLHEP/Random/RandGauss.h>
-
 namespace Hector
 {
   BeamProducer::Xiscanner::Xiscanner( unsigned short num_part, float xi_min, float xi_max, float x, float y, float s_ini ) :

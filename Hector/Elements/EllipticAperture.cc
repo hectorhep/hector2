@@ -15,7 +15,7 @@ namespace Hector
     EllipticAperture::contains( const TwoVector& pos ) const
     {
       const TwoVector vec( ( pos.x()-pos_.x() )/p( 0 ), ( pos.y()-pos_.y() )/p( 1 ) );
-      return ( vec.mag2() < 1. );
+      return ( vec.norm() < 1. );
     }
 
     TwoVector

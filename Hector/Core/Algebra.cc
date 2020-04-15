@@ -16,4 +16,13 @@ namespace Hector
       return TwoVector( atan( x ), atan( y ) );
     }
   }
+
+  double
+  LorentzVector::m() const
+  {
+    const double m2 = w()*w()-x()*x()-y()*y()-z()*z();
+    if ( m2 < 0 )
+      return -std::sqrt( -m2 );
+    return std::sqrt( m2 );
+  }
 }

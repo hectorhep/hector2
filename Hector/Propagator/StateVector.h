@@ -5,8 +5,7 @@
 #include "Hector/Core/Parameters.h"
 
 #include <map>
-
-using std::cout;
+#include <iosfwd>
 
 namespace Hector
 {

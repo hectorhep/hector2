@@ -17,7 +17,7 @@ namespace Hector
       const TwoVector vec1( pos-pos_ ),
                       vec2( vec1.x()/p( 2 ), vec1.y()/p( 3 ) );
       return ( ( fabs( vec1.x() ) < p( 0 ) ) && ( fabs( vec1.y() ) < p( 1 ) ) // rectangular part
-            && ( vec2.mag2() < 1. ) ); // elliptic part
+            && ( vec2.norm() < 1. ) ); // elliptic part
     }
 
     TwoVector

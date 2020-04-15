@@ -73,7 +73,7 @@ namespace Hector
           throw ParticleStoppedException( __PRETTY_FUNCTION__, JustWarning, prev_elem.get() )
             << "Entering at " << pos_prev_elem << ", s = " << prev_elem->s() << " m\n\t"
             << "Aperture centre at " << aper->position() << "\n\t"
-            << "Distance to aperture centre: " << ( aper->position()-pos_prev_elem ).mag()*1.e2 << " cm.";
+            << "Distance to aperture centre: " << ( aper->position()-pos_prev_elem ).norm()*1.e2 << " cm.";
         // has passed through the element?
         //std::cout << prev_elem->s()+prev_elem->length() << "\t" << part.stateVectorAt( prev_elem->s()+prev_elem->length() ).position() << std::endl;
         if ( !aper->contains( part.stateVectorAt( prev_elem->s()+prev_elem->length() ).position() ) )
@@ -122,12 +122,12 @@ namespace Hector
       if ( Parameters::get()->loggingThreshold() >= Debug )
         PrintDebug
           << "Propagating particle of mass " << ini_pos.stateVector().m() << " GeV"
-          << " and state vector at s = " << ini_pos.s() << " m:" << ini_pos.stateVector().vector().T() << "\t"
+          << " and state vector at s = " << ini_pos.s() << " m:" << ini_pos.stateVector().vector() << "\t"
           << "through " << elem->type() << " element \"" << elem->name() << "\" "
           << "at s = " << elem->s() << " m, "
           << "of length " << elem->length() << " m,\n\t"
           << "and with transfer matrix:" << elem->matrix( eloss, ini_pos.stateVector().m(), qp ) << "\t"
-          << "Resulting state vector:" << prop.T();
+          << "Resulting state vector:" << prop;
 
       // perform the propagation (assuming that mass is conserved...)
       StateVector vec( prop, ini_pos.stateVector().m() );

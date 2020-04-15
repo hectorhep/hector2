@@ -4,8 +4,7 @@
 #include "Hector/Propagator/StateVector.h"
 
 #include <vector>
-
-using std::cout;
+#include <iosfwd>
 
 namespace Hector
 {
@@ -74,7 +73,7 @@ namespace Hector
       double mass() const { return firstStateVector().m(); }
 
       /// Print all useful information about a particle
-      void dump( std::ostream& os = std::cout ) const;
+      void dump( std::ostream& os ) const;
 
       /// First position associated to the particle along s
       double firstS() const { return positions_.begin()->first; }

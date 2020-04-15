@@ -1,8 +1,6 @@
 #include "Hector/Propagator/Particle.h"
 #include "Hector/Core/Exception.h"
 
-#include <CLHEP/Random/RandFlat.h>
-
 namespace Hector
 {
   Particle::Particle() :
