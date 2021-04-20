@@ -1,6 +1,6 @@
 #include "Hector/Utils/BeamProducer.h"
 #include "Hector/Utils/Utils.h"
-#include "Hector/Core/Exception.h"
+#include "Hector/Exception.h"
 
 #include <CLHEP/Random/RandFlat.h>
 #include <CLHEP/Random/RandGauss.h>

@@ -1,5 +1,6 @@
-#include "Hector/Propagator/Particle.h"
-#include "Hector/Core/Exception.h"
+#include "Hector/Particle.h"
+#include "Hector/Exception.h"
+#include "Hector/Utils/String.h"
 
 #include <CLHEP/Random/RandFlat.h>
 
@@ -69,6 +70,6 @@ namespace hector {
       return;
     os << " list of associated state vectors:\n";
     for (const auto& pos : positions_)
-      os << Form("   s = %8.3f m:", pos.first) << " " << pos.second << std::endl;
+      os << format("   s = %8.3f m:", pos.first) << " " << pos.second << std::endl;
   }
 }  // namespace hector

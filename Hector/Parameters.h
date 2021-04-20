@@ -1,7 +1,7 @@
-#ifndef Hector_Core_Parameters_h
-#define Hector_Core_Parameters_h
+#ifndef Hector_Parameters_h
+#define Hector_Parameters_h
 
-#include "ExceptionType.h"
+#include "Hector/ExceptionType.h"
 #include <memory>
 
 /// Mother of all namespaces/objects in Hector

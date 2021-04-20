@@ -1,5 +1,5 @@
-#ifndef Hector_Core_ExceptionType_h
-#define Hector_Core_ExceptionType_h
+#ifndef Hector_ExceptionType_h
+#define Hector_ExceptionType_h
 
 namespace hector {
   /// Enumeration of exception severities

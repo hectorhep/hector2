@@ -1,7 +1,7 @@
 #ifndef Hector_IO_Pythia8Generator_h
 #define Hector_IO_Pythia8Generator_h
 
-#include "Hector/Propagator/Particle.h"
+#include "Hector/Particle.h"
 
 #include <Pythia8/Pythia.h>
 

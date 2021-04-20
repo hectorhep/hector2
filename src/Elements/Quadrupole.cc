@@ -1,6 +1,6 @@
 #include "Hector/Elements/Quadrupole.h"
 #include "Hector/Elements/Drift.h"
-#include "Hector/Core/Exception.h"
+#include "Hector/Exception.h"
 
 namespace hector {
   namespace element {

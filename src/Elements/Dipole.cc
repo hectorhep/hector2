@@ -1,8 +1,8 @@
 #include "Hector/Elements/Dipole.h"
 #include "Hector/Elements/Drift.h"
 
-#include "Hector/Core/Exception.h"
-#include "Hector/Core/Algebra.h"
+#include "Hector/Exception.h"
+#include "Hector/Algebra.h"
 
 namespace hector {
   namespace element {

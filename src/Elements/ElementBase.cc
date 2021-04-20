@@ -1,7 +1,7 @@
 #include "Hector/Elements/ElementBase.h"
-#include "Hector/Utils/Utils.h"
-#include "Hector/Core/Parameters.h"
-#include "Hector/Core/Exception.h"
+#include "Hector/Utils/String.h"
+#include "Hector/Parameters.h"
+#include "Hector/Exception.h"
 
 #include <sstream>
 
@@ -98,12 +98,12 @@ namespace hector {
 
   /// Human-readable printout of a beamline element object
   std::ostream& operator<<(std::ostream& os, const element::ElementBase& elem) {
-    os << Form("%-15s %17s (length = %5.2f m) at %6.2f < s < %6.2f m",
-               elem.typeName().c_str(),
-               elem.name().c_str(),
-               elem.length(),
-               elem.s(),
-               elem.s() + elem.length());
+    os << format("%-15s %17s (length = %5.2f m) at %6.2f < s < %6.2f m",
+                 elem.typeName().c_str(),
+                 elem.name().c_str(),
+                 elem.length(),
+                 elem.s(),
+                 elem.s() + elem.length());
     if (elem.aperture())
       return os << " with aperture: " << elem.aperture();
     return os << " with no aperture restriction";

@@ -1,10 +1,10 @@
-#include "Hector/Core/Exception.h"
-#include "Hector/Core/ParticleStoppedException.h"
-#include "Hector/Core/Parameters.h"
+#include "Hector/Exception.h"
+#include "Hector/ParticleStoppedException.h"
+#include "Hector/Parameters.h"
 
-#include "Hector/Propagator/Propagator.h"
-#include "Hector/Propagator/Particle.h"
-#include "Hector/Propagator/StateVector.h"
+#include "Hector/Propagator.h"
+#include "Hector/Particle.h"
+#include "Hector/StateVector.h"
 
 #include "Hector/Beamline.h"
 

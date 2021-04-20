@@ -1,9 +1,11 @@
 #include "Hector/Utils/ArgsParser.h"
-#include "Hector/Core/Exception.h"
+#include "Hector/Utils/String.h"
+#include "Hector/Exception.h"
 
 #include <sstream>
 #include <algorithm>
 #include <cstring>
+#include <iostream>
 
 namespace hector {
   ArgsParser::ArgsParser(int argc,
@@ -100,15 +102,15 @@ namespace hector {
     if (required_params_.size() > 0) {
       oss << "\n required argument" << ((required_params_.size() > 1) ? "s" : "") << ":";
       for (const auto& par : required_params_)
-        oss << Form((par.sname != '\0') ? "\n\t--%-20s -%1s\t%-40s" : "\n\t--%-20s %2s\t%-40s",
-                    par.name.c_str(),
-                    &par.sname,
-                    par.description.c_str());
+        oss << format((par.sname != '\0') ? "\n\t--%-20s -%1s\t%-40s" : "\n\t--%-20s %2s\t%-40s",
+                      par.name.c_str(),
+                      &par.sname,
+                      par.description.c_str());
     }
     if (optional_params_.size() > 0) {
       oss << "\n optional argument" << ((optional_params_.size() > 1) ? "s" : "") << ":";
       for (const auto& par : optional_params_)
-        oss << Form(
+        oss << format(
             (par.sname != '\0') ? "\n\t--%-20s -%1s\t%-40s\tdefault = '%s'" : "\n\t--%-20s %2s\t%-40s\tdefault = '%s'",
             par.name.c_str(),
             &par.sname,
@@ -161,7 +163,7 @@ namespace hector {
       : name(name),
         sname(sname),
         description(description),
-        value(Form("%+i", default_value)),
+        value(format("%+i", default_value)),
         str_variable(nullptr),
         float_variable(nullptr),
         int_variable(var),
@@ -178,7 +180,7 @@ namespace hector {
       : name(name),
         sname(sname),
         description(description),
-        value(Form("%d", default_value)),
+        value(format("%d", default_value)),
         str_variable(nullptr),
         float_variable(nullptr),
         int_variable(nullptr),
@@ -196,7 +198,7 @@ namespace hector {
       : name(name),
         sname(sname),
         description(description),
-        value(Form("%g", default_value)),
+        value(format("%g", default_value)),
         str_variable(nullptr),
         float_variable(var),
         int_variable(nullptr),
@@ -252,7 +254,7 @@ namespace hector {
         vec_float_variable(nullptr) {
     unsigned short i = 0;
     for (const auto& val : default_value)
-      value += (((i++ > 0) ? "," : "") + Form("%d", val));
+      value += (((i++ > 0) ? "," : "") + format("%d", val));
   }
 
   ArgsParser::Parameter::Parameter(std::string name, std::string description, std::vector<int>* var, char sname)
@@ -277,7 +279,7 @@ namespace hector {
         vec_float_variable(var) {
     unsigned short i = 0;
     for (const auto& flt : default_value)
-      value += (((i++ > 0) ? "," : "") + Form("%g", flt));
+      value += (((i++ > 0) ? "," : "") + format("%g", flt));
   }
 
   ArgsParser::Parameter::Parameter(std::string name, std::string description, std::vector<double>* var, char sname)

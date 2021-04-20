@@ -1,8 +1,8 @@
 #ifndef Hector_Elements_ElementBase_h
 #define Hector_Elements_ElementBase_h
 
-#include "Hector/Core/Algebra.h"
-#include "Hector/Core/Parameters.h"
+#include "Hector/Algebra.h"
+#include "Hector/Parameters.h"
 #include "Hector/Apertures/ApertureBase.h"
 #include "Hector/Elements/ElementType.h"
 

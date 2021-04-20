@@ -1,5 +1,5 @@
 #include "Hector/Apertures/ApertureBase.h"
-#include "Hector/Utils/Utils.h"
+#include "Hector/Utils/String.h"
 
 #include <sstream>
 
@@ -28,7 +28,7 @@ namespace hector {
   }  // namespace aperture
 
   std::ostream& operator<<(std::ostream& os, const aperture::ApertureBase& ap) {
-    os << ap.type() << Form(" (param. (%.3f, %.3f, %.3f, %.3f),", ap.p(0), ap.p(1), ap.p(2), ap.p(3)) << " center at "
+    os << ap.type() << format(" (param. (%.3f, %.3f, %.3f, %.3f),", ap.p(0), ap.p(1), ap.p(2), ap.p(3)) << " center at "
        << ap.position() << ")";
     return os;
   }

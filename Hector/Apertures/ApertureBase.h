@@ -1,7 +1,7 @@
 #ifndef Hector_Apertures_ApertureBase_h
 #define Hector_Apertures_ApertureBase_h
 
-#include "Hector/Core/Algebra.h"
+#include "Hector/Algebra.h"
 #include "Hector/Apertures/ApertureType.h"
 
 #include <vector>

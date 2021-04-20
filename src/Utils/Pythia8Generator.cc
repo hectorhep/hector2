@@ -1,8 +1,8 @@
 #include "Hector/Utils/Pythia8Generator.h"
 #include "Hector/Utils/Utils.h"
 
-#include "Hector/Core/Parameters.h"
-#include "Hector/Core/Exception.h"
+#include "Hector/Parameters.h"
+#include "Hector/Exception.h"
 
 #include <Pythia8/Event.h>
 

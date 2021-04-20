@@ -6,7 +6,7 @@
 #endif
 #endif
 
-#include "Hector/Core/Exception.h"
+#include "Hector/Exception.h"
 
 #include <sstream>
 

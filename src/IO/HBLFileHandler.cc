@@ -1,5 +1,5 @@
 #include "Hector/IO/HBLFileHandler.h"
-#include "Hector/Core/Exception.h"
+#include "Hector/Exception.h"
 
 #include "Hector/Beamline.h"
 

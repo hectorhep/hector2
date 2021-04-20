@@ -1,7 +1,10 @@
 #include "Hector/Beamline.h"
-#include "Hector/Core/Exception.h"
+#include "Hector/Exception.h"
+#include "Hector/Particle.h"
+
+#include "Hector/Utils/String.h"
+
 #include "Hector/Elements/Drift.h"
-#include "Hector/Propagator/Particle.h"
 
 #include <sstream>
 #include <algorithm>
@@ -74,9 +77,9 @@ namespace hector {
       // check if one needs to add an extra piece to the previous element
       if (elem->s() + elem->length() < prev_elem->s() + prev_elem->length()) {
         const std::string prev_name = prev_elem->name();
-        prev_elem->setName(Form("%s/1", prev_name.c_str()));
+        prev_elem->setName(format("%s/1", prev_name.c_str()));
         next_elem = prev_elem->clone();
-        next_elem->setName(Form("%s/2", prev_name.c_str()));
+        next_elem->setName(format("%s/2", prev_name.c_str()));
         next_elem->setS(elem->s() + elem->length());
         next_elem->setLength(prev_length - elem->length());
         next_elem->setBeta(elem->beta());
@@ -216,10 +219,10 @@ namespace hector {
       const double drift_length = elemPtr->s() - pos;
       try {
         if (drift_length > 0.)
-          tmp->add(std::make_shared<element::Drift>(Form("drift:%.4E", pos).c_str(), pos, drift_length));
+          tmp->add(std::make_shared<element::Drift>(format("drift:%.4E", pos).c_str(), pos, drift_length));
         tmp->add(elemPtr);
-      } catch (Exception& e) {
-        e.dump();
+      } catch (const Exception& e) {
+        e.dump(std::cerr);
       }
       pos = elemPtr->s() + elemPtr->length();
     }
@@ -227,9 +230,9 @@ namespace hector {
     const double drift_length = tmp->length() - pos;
     if (drift_length > 0) {
       try {
-        tmp->add(std::make_shared<element::Drift>(Form("drift:%.4E", pos).c_str(), pos, drift_length));
-      } catch (Exception& e) {
-        e.dump();
+        tmp->add(std::make_shared<element::Drift>(format("drift:%.4E", pos).c_str(), pos, drift_length));
+      } catch (const Exception& e) {
+        e.dump(std::cerr);
       }
     }
 

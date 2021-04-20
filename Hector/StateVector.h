@@ -1,8 +1,8 @@
-#ifndef Hector_Propagator_StateVector_h
-#define Hector_Propagator_StateVector_h
+#ifndef Hector_StateVector_h
+#define Hector_StateVector_h
 
-#include "Hector/Core/Algebra.h"
-#include "Hector/Core/Parameters.h"
+#include "Hector/Algebra.h"
+#include "Hector/Parameters.h"
 
 #include <map>
 

@@ -1,6 +1,5 @@
 #include "Hector/IO/TwissHandler.h"
-
-#include "Hector/Core/Exception.h"
+#include "Hector/Exception.h"
 
 #include "Hector/Beamline.h"
 
@@ -15,7 +14,9 @@
 #include "Hector/Apertures/Rectangular.h"
 #include "Hector/Apertures/RectElliptic.h"
 
-#include <time.h>
+#include "Hector/Utils/String.h"
+
+#include <ctime>
 
 namespace hector {
   /*  namespace pmap
@@ -250,7 +251,7 @@ namespace hector {
           raw_beamline_->setInteractionPoint(elem);
           break;
         } catch (Exception& e) {
-          e.dump();
+          e.dump(std::cerr);
           throw Exception(__PRETTY_FUNCTION__, Fatal)
               << "Failed to retrieve the interaction point with name=\"" << ip_name_ << "\".";
         }
@@ -297,7 +298,7 @@ namespace hector {
           raw_beamline_->add(elem);
         } catch (Exception& e) {
           if (e.errorNumber() != 20001)
-            e.dump();
+            e.dump(std::cerr);
           break;  // finished to parse
         }
       }
@@ -448,8 +449,8 @@ namespace hector {
           }
         }
 
-      } catch (Exception& e) {
-        e.dump();
+      } catch (const Exception& e) {
+        e.dump(std::cerr);
       }
       return elem;
     }

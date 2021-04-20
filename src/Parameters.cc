@@ -1,4 +1,4 @@
-#include "Hector/Core/Parameters.h"
+#include "Hector/Parameters.h"
 
 namespace hector {
   Parameters::Parameters()

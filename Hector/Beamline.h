@@ -1,5 +1,5 @@
-#ifndef Hector_Beamline_Beamline_h
-#define Hector_Beamline_Beamline_h
+#ifndef Hector_Beamline_h
+#define Hector_Beamline_h
 
 #include "Hector/Elements/ElementBase.h"
 #include "Hector/Elements/Marker.h"

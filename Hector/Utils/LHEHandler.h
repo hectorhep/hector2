@@ -14,7 +14,7 @@
 #endif
 #endif
 
-#include "Hector/Propagator/Particle.h"
+#include "Hector/Particle.h"
 
 namespace hector {
   namespace io {

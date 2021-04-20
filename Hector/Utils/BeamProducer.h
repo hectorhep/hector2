@@ -1,7 +1,7 @@
-#ifndef Hector_Propagator_BeamProducer
-#define Hector_Propagator_BeamProducer
+#ifndef Hector_Utils_BeamProducer
+#define Hector_Utils_BeamProducer
 
-#include "Hector/Propagator/Particle.h"
+#include "Hector/Particle.h"
 
 #include <vector>
 

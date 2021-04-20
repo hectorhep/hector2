@@ -1,7 +1,7 @@
-#ifndef Hector_Core_ParticleStoppedException_h
-#define Hector_Core_ParticleStoppedException_h
+#ifndef Hector_ParticleStoppedException_h
+#define Hector_ParticleStoppedException_h
 
-#include "Hector/Core/Exception.h"
+#include "Hector/Exception.h"
 #include "Hector/Elements/ElementBase.h"
 
 namespace hector {

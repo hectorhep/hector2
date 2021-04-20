@@ -1,5 +1,7 @@
-#include "Hector/Propagator/StateVector.h"
-#include "Hector/Core/Exception.h"
+#include "Hector/StateVector.h"
+#include "Hector/Exception.h"
+#include "Hector/Utils/String.h"
+#include "Hector/Utils/Utils.h"
 
 namespace hector {
   StateVector::StateVector() : Vector(6, 0), m_(0.) {
@@ -84,12 +86,12 @@ namespace hector {
 
   /// Human-readable printout of a state vector
   std::ostream& operator<<(std::ostream& os, const StateVector& vec) {
-    return os << Form("{ x = % 6.4e m, x' = % 6.3e rad, y = % 6.4e m, y' = % 6.3e rad, k = % 3.1f, E = %6.3e GeV }",
-                      vec.position().x(),
-                      vec.angles().x(),
-                      vec.position().y(),
-                      vec.angles().y(),
-                      vec.kick(),
-                      vec.energy());
+    return os << format("{ x = % 6.4e m, x' = % 6.3e rad, y = % 6.4e m, y' = % 6.3e rad, k = % 3.1f, E = %6.3e GeV }",
+                        vec.position().x(),
+                        vec.angles().x(),
+                        vec.position().y(),
+                        vec.angles().y(),
+                        vec.kick(),
+                        vec.energy());
   }
 }  // namespace hector

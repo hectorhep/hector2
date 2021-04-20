@@ -1,11 +1,10 @@
-#ifndef Hector_Propagator_Particle_h
-#define Hector_Propagator_Particle_h
+#ifndef Hector_Particle_h
+#define Hector_Particle_h
 
-#include "Hector/Propagator/StateVector.h"
+#include "Hector/StateVector.h"
 
 #include <vector>
-
-using std::cout;
+#include <iosfwd>
 
 namespace hector {
   /// Generic particle model inserted in a beam
@@ -71,7 +70,7 @@ namespace hector {
     double mass() const { return firstStateVector().m(); }
 
     /// Print all useful information about a particle
-    void dump(std::ostream& os = std::cout) const;
+    void dump(std::ostream& os) const;
 
     /// First position associated to the particle along s
     double firstS() const { return positions_.begin()->first; }

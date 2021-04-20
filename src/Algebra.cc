@@ -1,4 +1,4 @@
-#include "Hector/Core/Algebra.h"
+#include "Hector/Algebra.h"
 
 namespace hector {
   namespace math {
