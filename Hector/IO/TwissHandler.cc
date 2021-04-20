@@ -212,7 +212,7 @@ namespace Hector
 
       // perform the matching name <-> data type
       bool has_lists_matching = ( list_names.size() == list_types.size() );
-      for ( unsigned short i = 0; i < list_names.size(); i++ ) {
+      for ( size_t i = 0; i < list_names.size(); i++ ) {
         ValueType type = Unknown;
         try {
           std::smatch match;
@@ -331,7 +331,7 @@ namespace Hector
       // then perform the 3-fold matching key <-> value <-> value type
       ParametersMap::Ordered<float> elem_map_floats;
       ParametersMap::Ordered<std::string> elem_map_str;
-      for ( unsigned short i = 0; i < values.size(); i++ ) {
+      for ( size_t i = 0; i < values.size(); i++ ) {
         const std::string key = elements_fields_.key( i ), value = values.at( i );
         const ValueType type = elements_fields_.value( i );
         switch ( type ) {

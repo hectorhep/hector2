@@ -47,9 +47,9 @@ namespace Hector
     pythia_->next();
     const Pythia8::Event evt = pythia_->event;
 
-evt.list(true,true);
+    evt.list(true, true);
     Particles pout;
-    for ( unsigned short i=0; i<evt.size(); i++ ) {
+    for ( int i = 0; i < evt.size(); ++i ) {
       const Pythia8::Particle part = evt[i];
       if ( !stable || part.status() > 0 ) { // stable particles
         pout.emplace_back( LorentzVector( part.px(), part.py(), part.pz(), part.e() ), (int)part.charge(), part.id() );
@@ -64,7 +64,7 @@ evt.list(true,true);
     pythia_->next();
 
     const Pythia8::Event evt = pythia_->event;
-    for ( unsigned short i=0; i<evt.size(); i++ ) {
+    for ( int i = 0; i < evt.size(); ++i ) {
       const Pythia8::Particle part = evt[i];
       if ( part.id() == 9902210 ) { // diffractive proton
         return Particle( LorentzVector( part.px(), part.py(), part.pz(), part.e() ), (int)part.charge(), part.id() );
@@ -81,7 +81,7 @@ evt.list(true,true);
     in_part.clear();
 
     const Pythia8::Event evt = pythia_->event;
-    for ( unsigned short i=0; i<evt.size(); i++ ) {
+    for ( int i = 0; i < evt.size(); ++i ) {
       const Pythia8::Particle part = evt[i];
       if ( part.id() == 9902210 ) { // diffractive proton
         in_part.firstStateVector().addMomentum( LorentzVector( part.px(), part.py(), part.pz(), part.e() ) );

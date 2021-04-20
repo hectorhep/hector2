@@ -210,8 +210,8 @@ namespace Hector
     vec_str_variable( nullptr ), vec_int_variable( var ), vec_float_variable( nullptr )
   {
     unsigned short i = 0;
-    for ( const auto& var : default_value )
-      value += ( ( ( i++ > 0 ) ? "," : "" )+Form( "%d", var ) );
+    for ( const auto& val : default_value )
+      value += ( ( ( i++ > 0 ) ? "," : "" )+Form( "%d", val ) );
   }
 
   ArgsParser::Parameter::Parameter( std::string name, std::string description, std::vector<int>* var, char sname ) :
