@@ -70,5 +70,15 @@ endif()
 
 #----- Boost for Python wrapper
 
-find_package(Boost COMPONENTS python QUIET)
+find_package(PythonInterp 3)
+if(PYTHONINTERP_FOUND)
+  find_package(PythonLibs 3)
+  # stupid workaround for different behaviour between Fedora's and CC8's Boost CMake bindings
+  find_package(Boost OPTIONAL_COMPONENTS python${PYTHON_VERSION_MAJOR} python${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR})
+  if(NOT ${Boost_python${PYTHON_VERSION_MAJOR}_FOUND})
+    if (NOT ${Boost_python${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}_FOUND})
+      message(FATAL_ERROR "Boost Python binding not found")
+    endif()
+  endif()
+endif()
 

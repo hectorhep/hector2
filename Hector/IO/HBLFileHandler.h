@@ -1,6 +1,7 @@
 #ifndef Hector_IO_HBLFileHandler_h
 #define Hector_IO_HBLFileHandler_h
 
+#include <string>
 #include <memory>
 
 namespace Hector

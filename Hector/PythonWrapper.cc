@@ -75,7 +75,8 @@ namespace
   Hector::Matrix invert_matrix( const Hector::Matrix& mat ) {
     int err;
     Hector::Matrix out = mat.inverse( err );
-    if ( err != 0 ) throw Hector::Exception( __PRETTY_FUNCTION__, "Failed to invert the matrix", Hector::JustWarning );
+    if ( err != 0 )
+      throw Hector::Exception( __PRETTY_FUNCTION__, Hector::JustWarning ) << "Failed to invert the matrix";
     return out;
   }
   //--- helper python <-> C++ converters
@@ -217,14 +218,14 @@ BOOST_PYTHON_MODULE( pyhector )
     .value( "fatal", Hector::ExceptionType::Fatal )
   ;
 
-  py::class_<Hector::Exception> except( "Exception", py::init<const char*,const char*,py::optional<Hector::ExceptionType,int> >() );
+  py::class_<Hector::Exception> except( "Exception", py::init<const char*,py::optional<Hector::ExceptionType,int> >() );
   except
     .add_property( "type", &Hector::Exception::type )
     .add_property( "message", &Hector::Exception::what )
     .add_property( "errorNumber", &Hector::Exception::errorNumber )
     .add_property( "from", &Hector::Exception::from )
   ;
-  py::class_<Hector::ParticleStoppedException, py::bases<Hector::Exception> > psexcept( "ParticleStoppedException", py::init<const char*,const Hector::Element::ElementBase*,py::optional<Hector::ExceptionType,const char*> >() );
+  py::class_<Hector::ParticleStoppedException, py::bases<Hector::Exception> > psexcept( "ParticleStoppedException", py::init<const char*,py::optional<Hector::ExceptionType,const Hector::Element::ElementBase*> >() );
   psexcept
     .add_property( "stoppingElement", py::make_function( &Hector::ParticleStoppedException::stoppingElement, py::return_value_policy<py::reference_existing_object>() ) )
   ;
