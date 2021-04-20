@@ -21,7 +21,7 @@ namespace hector {
     Pythia8Generator(const std::vector<std::string>&);
     /// Create and configure a `Pythia8` instance
     /// \param[in] xml_input Input configuration file
-    Pythia8Generator(const char* xml_input);
+    Pythia8Generator(const std::string& xml_input);
     ~Pythia8Generator();
 
     double crossSection() const {

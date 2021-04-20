@@ -488,7 +488,8 @@ BOOST_PYTHON_MODULE(pyhector) {
 
   //----- BEAMLINE DEFINITION
 
-  std::shared_ptr<hector::element::ElementBase>& (hector::Beamline::*get_by_name)(const char*) = &hector::Beamline::get;
+  std::shared_ptr<hector::element::ElementBase>& (hector::Beamline::*get_by_name)(const std::string&) =
+      &hector::Beamline::get;
   std::shared_ptr<hector::element::ElementBase>& (hector::Beamline::*get_by_spos)(double) = &hector::Beamline::get;
   py::class_<hector::Beamline>("Beamline", "A collection of elements composing a beamline")
       .def("__str__", &dump_beamline)

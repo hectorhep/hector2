@@ -1,7 +1,7 @@
 #ifndef Hector_Elements_ApertureType_h
 #define Hector_Elements_ApertureType_h
 
-#include <iostream>
+#include <iosfwd>
 
 namespace hector {
   /// Collection of apertures to be associated to element objects

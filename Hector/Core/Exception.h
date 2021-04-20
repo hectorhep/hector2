@@ -23,7 +23,7 @@ namespace hector {
     /// \param[in] desc Error message
     /// \param[in] type Type of exception encountered
     /// \param[in] id Error code associated to the exception
-    explicit inline Exception(const char* from, ExceptionType type = Undefined, int id = 0)
+    explicit inline Exception(const std::string& from, ExceptionType type = Undefined, int id = 0)
         : from_(from), type_(type), error_num_(id) {}
     /// Copy constructor
     inline Exception(const Exception& rhs)

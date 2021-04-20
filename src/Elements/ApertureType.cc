@@ -1,4 +1,5 @@
 #include "Hector/Elements/ApertureType.h"
+#include <iostream>
 
 namespace hector {
   std::ostream& operator<<(std::ostream& os, const aperture::Type& type) {

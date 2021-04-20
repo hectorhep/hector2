@@ -22,7 +22,7 @@ namespace hector {
       throw Exception(__PRETTY_FUNCTION__, JustWarning) << "Failed to initialise the Pythia8 core.";
   }
 
-  Pythia8Generator::Pythia8Generator(const char* xml_input) : pythia_(new Pythia8::Pythia(xml_input)) {
+  Pythia8Generator::Pythia8Generator(const std::string& xml_input) : pythia_(new Pythia8::Pythia(xml_input)) {
     // initialise the core
     if (!pythia_->init())
       throw Exception(__PRETTY_FUNCTION__, JustWarning) << "Failed to initialise the Pythia8 core.";

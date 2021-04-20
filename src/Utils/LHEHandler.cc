@@ -12,7 +12,7 @@
 
 namespace hector {
   namespace io {
-    LHE::LHE(const char* filename)
+    LHE::LHE(const std::string& filename)
 #if defined(GOOD_HEPMC)
         : reader_(new LHEF::Reader(filename)) {
     }
@@ -25,6 +25,7 @@ namespace hector {
     }
 #else
     {
+      PrintWarning << "No parser found to read LHEF file \"" << filename << "\".";
     }
 #endif
 

@@ -27,12 +27,6 @@ namespace hector {
       /// \param[in] min_s Minimal s-coordinate from which the Twiss file must be parsed
       /// \param[in] max_s Maximal s-coordinate at which the Twiss file must be parsed
       Twiss(std::string filename, std::string ip_name, float max_s = -1., float min_s = 0.);
-      /// Class constructor
-      /// \param[in] filename Path to the MAD-X Twiss file to parse
-      /// \param[in] ip_name Name of the interaction point
-      /// \param[in] min_s Minimal s-coordinate from which the Twiss file must be parsed
-      /// \param[in] max_s Maximal s-coordinate at which the Twiss file must be parsed
-      Twiss(const char* filename, const char* ip_name, float max_s = -1., float min_s = 0.);
       /// Copy constructor (without the beamline)
       Twiss(const Twiss&);
       /// Copy constructor

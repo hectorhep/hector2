@@ -73,9 +73,6 @@ namespace hector {
       beamline_ = Beamline::sequencedBeamline(raw_beamline_.get());
     }
 
-    Twiss::Twiss(const char* filename, const char* ip_name, float max_s, float min_s)
-        : Twiss(std::string(filename), std::string(ip_name), max_s, min_s) {}
-
     Twiss::Twiss(const Twiss& rhs)
         : interaction_point_(rhs.interaction_point_), ip_name_(rhs.ip_name_), min_s_(rhs.min_s_) {}
 

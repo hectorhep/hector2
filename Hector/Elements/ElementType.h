@@ -1,7 +1,7 @@
 #ifndef Hector_Elements_ElementType_h
 #define Hector_Elements_ElementType_h
 
-#include <iostream>
+#include <iosfwd>
 
 namespace hector {
   namespace element {

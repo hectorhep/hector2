@@ -103,7 +103,7 @@ namespace hector {
     std::sort(elements_.begin(), elements_.end(), element::ElementsSorter());
   }
 
-  const std::shared_ptr<element::ElementBase> Beamline::get(const char* name) const {
+  const std::shared_ptr<element::ElementBase> Beamline::get(const std::string& name) const {
     for (size_t i = 0; i < elements_.size(); ++i) {
       const auto elem = elements_.at(i);
       if (elem->name().find(name) != std::string::npos)
@@ -112,7 +112,7 @@ namespace hector {
     return 0;
   }
 
-  std::shared_ptr<element::ElementBase>& Beamline::get(const char* name) {
+  std::shared_ptr<element::ElementBase>& Beamline::get(const std::string& name) {
     for (auto& elem : elements_) {
       if (elem->name().find(name) != std::string::npos)
         return elem;
@@ -141,7 +141,7 @@ namespace hector {
     return *elements_.end();
   }
 
-  std::vector<std::shared_ptr<element::ElementBase> > Beamline::find(const char* regex) {
+  std::vector<std::shared_ptr<element::ElementBase> > Beamline::find(const std::string& regex) {
     try {
       std::regex rgx_search(regex);
       std::cmatch m;

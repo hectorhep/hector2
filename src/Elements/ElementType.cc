@@ -1,4 +1,5 @@
 #include "Hector/Elements/ElementType.h"
+#include <iostream>
 
 namespace hector {
   /// Human-readable printout of a beamline element type

@@ -23,7 +23,7 @@ namespace hector {
     public:
       /// Parse a LHEF file to build a particles vector for each event
       /// \param[in] filename Path to the .lhe file to parse
-      LHE(const char* filename);
+      LHE(const std::string& filename);
       ~LHE();
 
       /// Display general information retrieved from the LHEF file

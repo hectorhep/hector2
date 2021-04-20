@@ -13,7 +13,7 @@ namespace hector {
     /// \param[in] elem Beamline element stopping the particle
     /// \param[in] type Exception type
     /// \param[in] additional_info Any other useful information to help the debugging
-    ParticleStoppedException(const char* from,
+    ParticleStoppedException(const std::string& from,
                              ExceptionType type = Undefined,
                              const element::ElementBase* elem = nullptr)
         : Exception(from, type, 10000), elem_(elem) {
