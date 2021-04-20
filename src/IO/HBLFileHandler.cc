@@ -8,10 +8,11 @@
 #include "Hector/Elements/Dipole.h"
 #include "Hector/Elements/Quadrupole.h"
 #include "Hector/Elements/Collimator.h"
-#include "Hector/Elements/RectangularAperture.h"
-#include "Hector/Elements/CircularAperture.h"
-#include "Hector/Elements/EllipticAperture.h"
-#include "Hector/Elements/RectEllipticAperture.h"
+
+#include "Hector/Apertures/Rectangular.h"
+#include "Hector/Apertures/Circular.h"
+#include "Hector/Apertures/Elliptic.h"
+#include "Hector/Apertures/RectElliptic.h"
 
 #include "Hector/IO/HBLFileStructures.h"
 
@@ -96,32 +97,30 @@ namespace hector {
           case aperture::anInvalidAperture:
             break;
           case aperture::aRectangularAperture:
-            elem->setAperture(std::make_shared<aperture::RectangularAperture>(
+            elem->setAperture(std::make_shared<aperture::Rectangular>(
                 el.aperture_p1, el.aperture_p2, TwoVector(el.aperture_x, el.aperture_y)));
             break;
           case aperture::anEllipticAperture:
-            elem->setAperture(std::make_shared<aperture::EllipticAperture>(
+            elem->setAperture(std::make_shared<aperture::Elliptic>(
                 el.aperture_p1, el.aperture_p2, TwoVector(el.aperture_x, el.aperture_y)));
             break;
           case aperture::aCircularAperture:
             elem->setAperture(
-                std::make_shared<aperture::CircularAperture>(el.aperture_p1, TwoVector(el.aperture_x, el.aperture_y)));
+                std::make_shared<aperture::Circular>(el.aperture_p1, TwoVector(el.aperture_x, el.aperture_y)));
             break;
           case aperture::aRectEllipticAperture:
-            elem->setAperture(
-                std::make_shared<aperture::RectEllipticAperture>(el.aperture_p1,
-                                                                 el.aperture_p2,
-                                                                 el.aperture_p3,
-                                                                 el.aperture_p4,
-                                                                 TwoVector(el.aperture_x, el.aperture_y)));
+            elem->setAperture(std::make_shared<aperture::RectElliptic>(el.aperture_p1,
+                                                                       el.aperture_p2,
+                                                                       el.aperture_p3,
+                                                                       el.aperture_p4,
+                                                                       TwoVector(el.aperture_x, el.aperture_y)));
             break;
           case aperture::aRectCircularAperture:
-            elem->setAperture(
-                std::make_shared<aperture::RectEllipticAperture>(el.aperture_p1,
-                                                                 el.aperture_p2,
-                                                                 el.aperture_p3,
-                                                                 el.aperture_p3,
-                                                                 TwoVector(el.aperture_x, el.aperture_y)));
+            elem->setAperture(std::make_shared<aperture::RectElliptic>(el.aperture_p1,
+                                                                       el.aperture_p2,
+                                                                       el.aperture_p3,
+                                                                       el.aperture_p3,
+                                                                       TwoVector(el.aperture_x, el.aperture_y)));
             break;
           //case aperture::aRaceTrackAperture:
           //case aperture::anOctagonalAperture:

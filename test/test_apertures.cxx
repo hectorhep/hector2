@@ -1,7 +1,7 @@
-#include "Hector/Elements/CircularAperture.h"
-#include "Hector/Elements/EllipticAperture.h"
-#include "Hector/Elements/RectangularAperture.h"
-#include "Hector/Elements/RectEllipticAperture.h"
+#include "Hector/Apertures/Circular.h"
+#include "Hector/Apertures/Elliptic.h"
+#include "Hector/Apertures/Rectangular.h"
+#include "Hector/Apertures/RectElliptic.h"
 
 #include "TGraph.h"
 #include "TMultiGraph.h"
@@ -14,9 +14,9 @@ int main() {
   const float x_min = -0.5, x_max = 0.5, y_min = -0.5, y_max = 0.5;
   const unsigned short num_steps = 500;
 
-  hector::aperture::RectangularAperture aper_rect(0.35, 0.25);
-  hector::aperture::EllipticAperture aper_el(0.4, 0.2);
-  hector::aperture::RectEllipticAperture aper(0.35, 0.25, 0.4, 0.2, CLHEP::Hep2Vector(0.0, 0.0));
+  hector::aperture::Rectangular aper_rect(0.35, 0.25);
+  hector::aperture::Elliptic aper_el(0.4, 0.2);
+  hector::aperture::RectElliptic aper(0.35, 0.25, 0.4, 0.2, CLHEP::Hep2Vector(0.0, 0.0));
   CLHEP::Hep2Vector limits = aper.limits();
 
   std::cout << "Aperture has limits: " << limits.x() << " / " << limits.y() << std::endl;

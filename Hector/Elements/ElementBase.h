@@ -3,7 +3,7 @@
 
 #include "Hector/Core/Algebra.h"
 #include "Hector/Core/Parameters.h"
-#include "Hector/Elements/ApertureBase.h"
+#include "Hector/Apertures/ApertureBase.h"
 #include "Hector/Elements/ElementType.h"
 
 #include <memory>

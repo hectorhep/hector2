@@ -1,5 +1,5 @@
-#ifndef Hector_Elements_ApertureType_h
-#define Hector_Elements_ApertureType_h
+#ifndef Hector_Apertures_ApertureType_h
+#define Hector_Apertures_ApertureType_h
 
 #include <iosfwd>
 

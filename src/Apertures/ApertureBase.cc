@@ -1,4 +1,4 @@
-#include "Hector/Elements/ApertureBase.h"
+#include "Hector/Apertures/ApertureBase.h"
 #include "Hector/Utils/Utils.h"
 
 #include <sstream>

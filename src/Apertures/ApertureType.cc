@@ -1,4 +1,4 @@
-#include "Hector/Elements/ApertureType.h"
+#include "Hector/Apertures/ApertureType.h"
 #include <iostream>
 
 namespace hector {

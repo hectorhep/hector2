@@ -10,10 +10,10 @@
 #include "Hector/Elements/Kicker.h"
 #include "Hector/Elements/Marker.h"
 
-#include "Hector/Elements/EllipticAperture.h"
-#include "Hector/Elements/CircularAperture.h"
-#include "Hector/Elements/RectangularAperture.h"
-#include "Hector/Elements/RectEllipticAperture.h"
+#include "Hector/Apertures/Elliptic.h"
+#include "Hector/Apertures/Circular.h"
+#include "Hector/Apertures/Rectangular.h"
+#include "Hector/Apertures/RectElliptic.h"
 
 #include <time.h>
 
@@ -154,7 +154,7 @@ namespace hector {
       if (header_str_.hasKey("date")) {
         std::string date = trim(header_str_.get("date"));
         std::string time = trim((header_str_.hasKey("time")) ? header_str_.get("time") : "00.00.00");
-        struct std::tm tm = {0};  // fixes https://stackoverflow.com/questions/9037631
+        struct std::tm tm;  // fixes https://stackoverflow.com/questions/9037631
         //std::istringstream ss( date+" "+time ); ss >> std::get_time( &tm, "%d/%m/%y %H.%M.%S" ); // unfortunately only from gcc 5+...
         if (strptime((date + " " + time + " CET").c_str(), "%d/%m/%y %H.%M.%S %z", &tm) == nullptr) {
           if (mktime(&tm) < 0)
@@ -426,24 +426,22 @@ namespace hector {
           // MAD-X provides it in m
           switch (apertype) {
             case aperture::aCircularAperture:
-              elem->setAperture(std::make_shared<aperture::CircularAperture>(aper_1, env_pos));
+              elem->setAperture(std::make_shared<aperture::Circular>(aper_1, env_pos));
               break;
             case aperture::aRectangularAperture:
-              elem->setAperture(std::make_shared<aperture::RectangularAperture>(aper_1, aper_2, env_pos));
+              elem->setAperture(std::make_shared<aperture::Rectangular>(aper_1, aper_2, env_pos));
               break;
             case aperture::anEllipticAperture:
-              elem->setAperture(std::make_shared<aperture::EllipticAperture>(aper_1, aper_2, env_pos));
+              elem->setAperture(std::make_shared<aperture::Elliptic>(aper_1, aper_2, env_pos));
               break;
             case aperture::aRectEllipticAperture: {
               const double aper_3 = elem_map_floats.get("aper_3");
               const double aper_4 = elem_map_floats.get("aper_4");
-              elem->setAperture(
-                  std::make_shared<aperture::RectEllipticAperture>(aper_1, aper_2, aper_3, aper_4, env_pos));
+              elem->setAperture(std::make_shared<aperture::RectElliptic>(aper_1, aper_2, aper_3, aper_4, env_pos));
             } break;
             case aperture::aRectCircularAperture: {
               const double aper_3 = elem_map_floats.get("aper_3");
-              elem->setAperture(
-                  std::make_shared<aperture::RectEllipticAperture>(aper_1, aper_2, aper_3, aper_3, env_pos));
+              elem->setAperture(std::make_shared<aperture::RectElliptic>(aper_1, aper_2, aper_3, aper_3, env_pos));
             } break;
             default:
               break;

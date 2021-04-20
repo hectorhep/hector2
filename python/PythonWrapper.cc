@@ -15,11 +15,11 @@
 #include "Hector/Elements/Kicker.h"
 #include "Hector/Elements/Collimator.h"
 
-#include "Hector/Elements/ApertureBase.h"
-#include "Hector/Elements/CircularAperture.h"
-#include "Hector/Elements/EllipticAperture.h"
-#include "Hector/Elements/RectangularAperture.h"
-#include "Hector/Elements/RectEllipticAperture.h"
+#include "Hector/Apertures/ApertureBase.h"
+#include "Hector/Apertures/Circular.h"
+#include "Hector/Apertures/Elliptic.h"
+#include "Hector/Apertures/Rectangular.h"
+#include "Hector/Apertures/RectElliptic.h"
 
 #include "Hector/IO/TwissHandler.h"
 #include "Hector/IO/HBLFileHandler.h"
@@ -479,11 +479,10 @@ BOOST_PYTHON_MODULE(pyhector) {
            "Offset the barycentre by a given vertical-horizontal coordinate");
   py::register_ptr_to_python<hector::aperture::ApertureBase*>();
 
-  convertAperture<hector::aperture::CircularAperture, py::init<double, hector::TwoVector> >("CircularAperture");
-  convertAperture<hector::aperture::EllipticAperture, py::init<double, double, hector::TwoVector> >("EllipticAperture");
-  convertAperture<hector::aperture::RectangularAperture, py::init<double, double, hector::TwoVector> >(
-      "RectangularAperture");
-  convertAperture<hector::aperture::RectEllipticAperture, py::init<double, double, double, double, hector::TwoVector> >(
+  convertAperture<hector::aperture::Circular, py::init<double, hector::TwoVector> >("CircularAperture");
+  convertAperture<hector::aperture::Elliptic, py::init<double, double, hector::TwoVector> >("EllipticAperture");
+  convertAperture<hector::aperture::Rectangular, py::init<double, double, hector::TwoVector> >("RectangularAperture");
+  convertAperture<hector::aperture::RectElliptic, py::init<double, double, double, double, hector::TwoVector> >(
       "RectEllipticAperture");
 
   //----- BEAMLINE DEFINITION

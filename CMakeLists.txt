@@ -12,7 +12,6 @@ include(SetEnvironment)
 
 #----- define all individual modules to be built beforehand
 
-set(HECTOR_MODULES Core IO Elements Beamline Propagator Utils)
 set(HECTOR_SOURCE_DIR ${PROJECT_SOURCE_DIR}/src)
 set(PYHECTOR_SOURCE_DIR ${PROJECT_SOURCE_DIR}/python)
 
@@ -23,6 +22,7 @@ file(GLOB LIB_SRC ${HECTOR_SOURCE_DIR}/*.cc
                   ${HECTOR_SOURCE_DIR}/Core/*.cc
                   ${HECTOR_SOURCE_DIR}/IO/*.cc
                   ${HECTOR_SOURCE_DIR}/Elements/*.cc
+                  ${HECTOR_SOURCE_DIR}/Apertures/*.cc
                   ${HECTOR_SOURCE_DIR}/Propagator/*.cc
                   ${HECTOR_SOURCE_DIR}/Utils/*.cc)
 file(GLOB_RECURSE HECTOR_INCLUDES ${PROJECT_SOURCE_DIR}/Hector/*.h)

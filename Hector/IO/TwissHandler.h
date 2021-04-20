@@ -5,7 +5,7 @@
 #include "Hector/Utils/UnorderedParametersMap.h"
 
 #include "Hector/Elements/ElementBase.h"
-#include "Hector/Elements/ApertureType.h"
+#include "Hector/Apertures/ApertureType.h"
 
 #include <fstream>
 #include <regex>
