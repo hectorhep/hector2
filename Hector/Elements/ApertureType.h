@@ -3,14 +3,11 @@
 
 #include <iostream>
 
-namespace Hector
-{
+namespace Hector {
   /// Collection of apertures to be associated to element objects
-  namespace Aperture
-  {
+  namespace Aperture {
     /// List of types allowed for an aperture
-    enum Type
-    {
+    enum Type {
       anInvalidAperture = -1,
       aRectangularAperture,
       anEllipticAperture,
@@ -20,9 +17,9 @@ namespace Hector
       aRaceTrackAperture,
       anOctagonalAperture
     };
-  }
+  }  // namespace Aperture
   /// Human-readable printout of an aperture type
-  std::ostream& operator<<( std::ostream&, const Aperture::Type& );
-}
+  std::ostream& operator<<(std::ostream&, const Aperture::Type&);
+}  // namespace Hector
 
 #endif

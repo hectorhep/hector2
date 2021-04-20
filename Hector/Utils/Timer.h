@@ -3,15 +3,13 @@
 
 #include <chrono>
 
-namespace Hector
-{
+namespace Hector {
   /**
    * A generic timer to extract the processing time between two steps in this software's flow
    * \author Laurent Forthomme <laurent.forthomme@cern.ch>
    */
-  class Timer
-  {
-   public:
+  class Timer {
+  public:
     inline Timer() { reset(); }
     /**
      * Get the time elapsed since the last @a reset call (or class construction)
@@ -19,16 +17,15 @@ namespace Hector
      */
     inline double elapsed() {
       auto end = std::chrono::high_resolution_clock::now();
-      return std::chrono::duration<double>( end-beg_ ).count();
+      return std::chrono::duration<double>(end - beg_).count();
     }
     /// Reset the clock counter
-    inline void reset() {
-      beg_ = std::chrono::high_resolution_clock::now();
-    }
-   private:
+    inline void reset() { beg_ = std::chrono::high_resolution_clock::now(); }
+
+  private:
     /// Timestamp marking the beginning of the counter
     std::chrono::time_point<std::chrono::high_resolution_clock> beg_;
   };
-}
+}  // namespace Hector
 
 #endif
