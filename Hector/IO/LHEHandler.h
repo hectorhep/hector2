@@ -1,5 +1,5 @@
-#ifndef Hector_IO_LHEParser_h
-#define Hector_IO_LHEParser_h
+#ifndef Hector_IO_LHEHandler_h
+#define Hector_IO_LHEHandler_h
 
 #ifdef HEPMC
 #include "HepMC/Version.h"

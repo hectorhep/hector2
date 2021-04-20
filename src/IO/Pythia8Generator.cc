@@ -1,4 +1,4 @@
-#include "Hector/Utils/Pythia8Generator.h"
+#include "Hector/IO/Pythia8Generator.h"
 #include "Hector/Utils/Utils.h"
 
 #include "Hector/Parameters.h"
@@ -11,12 +11,13 @@ namespace hector {
     // specify the incoming state
     pythia_->settings.mode("Beams:idA", 2212);
     pythia_->settings.mode("Beams:idB", 2212);
-    pythia_->settings.parm("Beams:eCM",
-                           2. * Parameters::get()->beamEnergy());  //FIXME consider the asymmetric energies too!
+    // one may also consider the asymmetric energies in the future
+    pythia_->settings.parm("Beams:eCM", 2. * Parameters::get()->beamEnergy());
     // parameterise the generator
     for (const auto& param : params)
       if (!pythia_->readString(param.c_str()))
-        throw Exception(__PRETTY_FUNCTION__, JustWarning) << "Failed to parse the command:\n\t  \"" << param << "\"";
+        throw Exception(__PRETTY_FUNCTION__, JustWarning) << "Failed to parse the command:\n\t"
+                                                          << "  \"" << param << "\"";
     // initialise the core
     if (!pythia_->init())
       throw Exception(__PRETTY_FUNCTION__, JustWarning) << "Failed to initialise the Pythia8 core.";
@@ -35,12 +36,12 @@ namespace hector {
 
   Particles Pythia8Generator::generate(bool stable) {
     pythia_->next();
-    const Pythia8::Event evt = pythia_->event;
+    const auto& evt = pythia_->event;
 
     evt.list(true, true);
     Particles pout;
-    for (int i = 0; i < evt.size(); ++i) {
-      const Pythia8::Particle part = evt[i];
+    for (auto i = 0; i < evt.size(); ++i) {
+      const auto& part = evt[i];
       if (!stable || part.status() > 0) {  // stable particles
         pout.emplace_back(LorentzVector(part.px(), part.py(), part.pz(), part.e()), (int)part.charge(), part.id());
       }
@@ -51,9 +52,9 @@ namespace hector {
   Particle Pythia8Generator::diffractiveProton() {
     pythia_->next();
 
-    const Pythia8::Event evt = pythia_->event;
-    for (int i = 0; i < evt.size(); ++i) {
-      const Pythia8::Particle part = evt[i];
+    const auto& evt = pythia_->event;
+    for (auto i = 0; i < evt.size(); ++i) {
+      const auto& part = evt[i];
       if (part.id() == 9902210) {  // diffractive proton
         return Particle(LorentzVector(part.px(), part.py(), part.pz(), part.e()), (int)part.charge(), part.id());
       }
@@ -65,9 +66,9 @@ namespace hector {
     pythia_->next();
     in_part.clear();
 
-    const Pythia8::Event evt = pythia_->event;
-    for (int i = 0; i < evt.size(); ++i) {
-      const Pythia8::Particle part = evt[i];
+    const auto& evt = pythia_->event;
+    for (auto i = 0; i < evt.size(); ++i) {
+      const auto& part = evt[i];
       if (part.id() == 9902210) {  // diffractive proton
         in_part.firstStateVector().addMomentum(LorentzVector(part.px(), part.py(), part.pz(), part.e()));
         return;

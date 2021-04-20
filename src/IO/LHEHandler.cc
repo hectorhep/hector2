@@ -1,4 +1,4 @@
-#include "Hector/Utils/LHEHandler.h"
+#include "Hector/IO/LHEHandler.h"
 
 #ifndef GOOD_HEPMC
 #ifndef PYTHIA8
