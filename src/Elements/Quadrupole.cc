@@ -1,5 +1,5 @@
-#include "Quadrupole.h"
-#include "Drift.h"
+#include "Hector/Elements/Quadrupole.h"
+#include "Hector/Elements/Drift.h"
 #include "Hector/Core/Exception.h"
 
 namespace Hector {

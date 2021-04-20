@@ -13,27 +13,25 @@ include(SetEnvironment)
 #----- define all individual modules to be built beforehand
 
 set(HECTOR_MODULES Core IO Elements Beamline Propagator Utils)
-set(HECTOR_SOURCE_DIR ${PROJECT_SOURCE_DIR}/Hector)
+set(HECTOR_SOURCE_DIR ${PROJECT_SOURCE_DIR}/src)
+set(PYHECTOR_SOURCE_DIR ${PROJECT_SOURCE_DIR}/python)
 
 #----- build all the intermediate objects
 
 include_directories(${PROJECT_SOURCE_DIR})
-foreach(_module ${HECTOR_MODULES})
-  include_directories(${HECTOR_SOURCE_DIR}/${_module})
-  add_subdirectory(Hector/${_module})
-endforeach()
+file(GLOB LIB_SRC ${HECTOR_SOURCE_DIR}/*.cc
+                  ${HECTOR_SOURCE_DIR}/Core/*.cc
+                  ${HECTOR_SOURCE_DIR}/IO/*.cc
+                  ${HECTOR_SOURCE_DIR}/Elements/*.cc
+                  ${HECTOR_SOURCE_DIR}/Propagator/*.cc
+                  ${HECTOR_SOURCE_DIR}/Utils/*.cc)
 
 #----- link everything into the library and executable
 
 # do not forget to retrieve
 # http://home.thep.lu.se/~leif/LHEF/LHEF.h
 
-add_library(Hector2 SHARED $<TARGET_OBJECTS:HectorCore>
-                           $<TARGET_OBJECTS:HectorIO>
-                           $<TARGET_OBJECTS:HectorElements>
-                           $<TARGET_OBJECTS:HectorBeamline>
-                           $<TARGET_OBJECTS:HectorPropagator>
-                           $<TARGET_OBJECTS:HectorUtils>)
+add_library(Hector2 SHARED ${LIB_SRC})
 set_target_properties(Hector2 PROPERTIES LINKER_LANGUAGE CXX)
 
 install(TARGETS Hector2 DESTINATION lib)
@@ -43,7 +41,7 @@ install(DIRECTORY Hector DESTINATION include FILES_MATCHING PATTERN "*.h")
 
 if(BUILD_PYTHON AND Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS})
-  python_add_module(pyhector ${HECTOR_SOURCE_DIR}/PythonWrapper.cc ${HECTOR_SOURCE_DIR}/__init__.py)
+  python_add_module(pyhector ${PYHECTOR_SOURCE_DIR}/PythonWrapper.cc ${PYHECTOR_SOURCE_DIR}/__init__.py)
   target_link_libraries(pyhector Hector2 ${HECTOR_DEPENDENCIES} ${Boost_LIBRARIES})
   #execute_process(
   #  COMMAND python27 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())"

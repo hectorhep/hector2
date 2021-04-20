@@ -1,4 +1,4 @@
-#include "ElementType.h"
+#include "Hector/Elements/ElementType.h"
 
 namespace Hector {
   /// Human-readable printout of a beamline element type

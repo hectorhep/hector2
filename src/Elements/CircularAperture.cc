@@ -1,4 +1,4 @@
-#include "CircularAperture.h"
+#include "Hector/Elements/CircularAperture.h"
 
 namespace Hector {
   namespace Aperture {

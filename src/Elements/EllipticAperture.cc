@@ -1,4 +1,4 @@
-#include "EllipticAperture.h"
+#include "Hector/Elements/EllipticAperture.h"
 
 namespace Hector {
   namespace Aperture {

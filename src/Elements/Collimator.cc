@@ -1,4 +1,4 @@
-#include "Collimator.h"
+#include "Hector/Elements/Collimator.h"
 
 namespace Hector {
   namespace Element {

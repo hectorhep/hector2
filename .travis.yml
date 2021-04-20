@@ -61,7 +61,8 @@ before_script:
 script:
   - pwd
   - make hector
-  - curl http://abpdata.web.cern.ch/abpdata/lhc_optics_web/www/opt2017/coll400/twiss_lhcb1.tfs -o twiss_file.tfs && test/hector --twiss-file twiss_file.tfs
+  - curl http://abpdata.web.cern.ch/abpdata/lhc_optics_web/www/opt2017/coll400/twiss_lhcb1.tfs -o twiss_file.tfs
+  - test/hector --twiss-file twiss_file.tfs
 
 #install:
 #  - make install

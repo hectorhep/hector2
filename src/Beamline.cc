@@ -1,4 +1,4 @@
-#include "Hector/Beamline/Beamline.h"
+#include "Hector/Beamline.h"
 #include "Hector/Core/Exception.h"
 #include "Hector/Elements/Drift.h"
 #include "Hector/Propagator/Particle.h"
