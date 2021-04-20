@@ -8,14 +8,14 @@
 
 #include <memory>
 
-namespace Hector {
+namespace hector {
   /// Collection of beamline elements
-  namespace Element {
+  namespace element {
     /// A generic beamline element object
     class ElementBase {
     public:
       /// Build a new element
-      /// \param[in] type Element type (see Element::Type)
+      /// \param[in] type Element type (see element::Type)
       /// \param[in] name Element name
       /// \param[in] spos s-position of the element in the beamline
       /// \param[in] length Element length (in m)
@@ -112,16 +112,16 @@ namespace Hector {
       TwoVector relativePosition() const { return rel_pos_; }
 
       /// Set the aperture for this element
-      void setAperture(Aperture::ApertureBase* apert);
+      void setAperture(aperture::ApertureBase* apert);
       /// Set the aperture for this element
-      void setAperture(const std::shared_ptr<Aperture::ApertureBase>& apert);
+      void setAperture(const std::shared_ptr<aperture::ApertureBase>& apert);
       /// Aperture
-      Aperture::ApertureBase* aperture() const { return aperture_.get(); }
+      aperture::ApertureBase* aperture() const { return aperture_.get(); }
 
       /// Set the parent element if this one is splitted
-      void setParentElement(const std::shared_ptr<Element::ElementBase>& parent) { parent_elem_ = parent; }
+      void setParentElement(const std::shared_ptr<ElementBase>& parent) { parent_elem_ = parent; }
       /// Parent element if this one is splitted
-      Element::ElementBase* parentElement() const { return parent_elem_.get(); }
+      ElementBase* parentElement() const { return parent_elem_.get(); }
 
       /// Compute the modified field strength of the element for a given energy loss of a particle of given mass and charge
       /// \note \f$ k_e = k \cdot \frac{p}{p-\mathrm{d}p} \cdot \frac{q_{\mathrm{part}}}{q_{\mathrm{b}}} \f$
@@ -133,9 +133,9 @@ namespace Hector {
       /// Element name
       std::string name_;
       /// Pointer to the associated aperture object (if any)
-      std::shared_ptr<Aperture::ApertureBase> aperture_;
+      std::shared_ptr<aperture::ApertureBase> aperture_;
       /// Pointer to the parent element (if divided)
-      std::shared_ptr<Element::ElementBase> parent_elem_;
+      std::shared_ptr<ElementBase> parent_elem_;
 
       /// Element longitudinal length
       double length_;
@@ -180,13 +180,13 @@ namespace Hector {
         return false;
       }
     };
-  }  // namespace Element
+  }  // namespace element
   /// List of elements
-  typedef std::vector<std::shared_ptr<Element::ElementBase> > Elements;
+  typedef std::vector<std::shared_ptr<element::ElementBase> > Elements;
   /// Human-readable printout of the properties of an element
-  std::ostream& operator<<(std::ostream&, const Element::ElementBase&);
+  std::ostream& operator<<(std::ostream&, const element::ElementBase&);
   /// Human-readable printout of the properties of an element
-  std::ostream& operator<<(std::ostream&, const Element::ElementBase*);
-}  // namespace Hector
+  std::ostream& operator<<(std::ostream&, const element::ElementBase*);
+}  // namespace hector
 
 #endif

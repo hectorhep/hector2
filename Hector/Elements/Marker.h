@@ -3,8 +3,8 @@
 
 #include "Drift.h"
 
-namespace Hector {
-  namespace Element {
+namespace hector {
+  namespace element {
     /// Marker object builder
     class Marker : public Drift {
     public:
@@ -13,7 +13,7 @@ namespace Hector {
 
       std::shared_ptr<ElementBase> clone() const override { return std::make_shared<Marker>(*this); }
     };
-  }  // namespace Element
-}  // namespace Hector
+  }  // namespace element
+}  // namespace hector
 
 #endif

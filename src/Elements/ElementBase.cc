@@ -5,8 +5,8 @@
 
 #include <sstream>
 
-namespace Hector {
-  namespace Element {
+namespace hector {
+  namespace element {
     ElementBase::ElementBase(const Type& type, const std::string& name, double spos, double length)
         : type_(type), name_(name), length_(length), magnetic_strength_(0.), s_(spos) {}
 
@@ -58,10 +58,10 @@ namespace Hector {
       return true;
     }
 
-    void ElementBase::setAperture(const std::shared_ptr<Aperture::ApertureBase>& apert) { aperture_ = apert; }
+    void ElementBase::setAperture(const std::shared_ptr<aperture::ApertureBase>& apert) { aperture_ = apert; }
 
-    void ElementBase::setAperture(Aperture::ApertureBase* apert) {
-      setAperture(std::shared_ptr<Aperture::ApertureBase>(apert));
+    void ElementBase::setAperture(aperture::ApertureBase* apert) {
+      setAperture(std::shared_ptr<aperture::ApertureBase>(apert));
     }
 
     double ElementBase::fieldStrength(double e_loss, double mp, int qp) const {
@@ -94,10 +94,10 @@ namespace Hector {
       os << type_;
       return os.str();
     }
-  }  // namespace Element
+  }  // namespace element
 
   /// Human-readable printout of a beamline element object
-  std::ostream& operator<<(std::ostream& os, const Element::ElementBase& elem) {
+  std::ostream& operator<<(std::ostream& os, const element::ElementBase& elem) {
     os << Form("%-15s %17s (length = %5.2f m) at %6.2f < s < %6.2f m",
                elem.typeName().c_str(),
                elem.name().c_str(),
@@ -110,5 +110,5 @@ namespace Hector {
   }
 
   /// Human-readable printout of a beamline element object
-  std::ostream& operator<<(std::ostream& os, const Element::ElementBase* elem) { return os << *elem; }
-}  // namespace Hector
+  std::ostream& operator<<(std::ostream& os, const element::ElementBase* elem) { return os << *elem; }
+}  // namespace hector

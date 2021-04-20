@@ -4,8 +4,8 @@
 #include "Hector/Core/Exception.h"
 #include "Hector/Core/Algebra.h"
 
-namespace Hector {
-  namespace Element {
+namespace hector {
+  namespace element {
     Matrix SectorDipole::matrix(double eloss, double mp, int qp) const {
       Matrix mat = Drift::genericMatrix(length_);
 
@@ -71,5 +71,5 @@ namespace Hector {
 
       return mat;
     }
-  }  // namespace Element
-}  // namespace Hector
+  }  // namespace element
+}  // namespace hector

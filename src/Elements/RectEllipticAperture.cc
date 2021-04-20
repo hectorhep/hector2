@@ -1,7 +1,7 @@
 #include "Hector/Elements/RectEllipticAperture.h"
 
-namespace Hector {
-  namespace Aperture {
+namespace hector {
+  namespace aperture {
     RectEllipticAperture::RectEllipticAperture(
         double rect_size_x, double rect_size_y, double ell_size_x, double ell_size_y, const TwoVector& pos)
         : ApertureBase(aRectEllipticAperture, pos, {{rect_size_x, rect_size_y, ell_size_x, ell_size_y}}) {}
@@ -17,5 +17,5 @@ namespace Hector {
     TwoVector RectEllipticAperture::limits() const {  //FIXME
       return TwoVector(std::min(p(0), p(2)), std::min(p(1), p(3)));
     }
-  }  // namespace Aperture
-}  // namespace Hector
+  }  // namespace aperture
+}  // namespace hector

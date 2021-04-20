@@ -3,9 +3,9 @@
 
 #include "Hector/Propagator/Particle.h"
 
-namespace Hector {
+namespace hector {
   class Beamline;
-  namespace Element {
+  namespace element {
     class ElementBase;
   }
   /// Main object to propagate particles through a beamline
@@ -28,12 +28,12 @@ namespace Hector {
   private:
     /// Extract a particle position at the exit of an element once it enters it
     Particle::Position propagateThrough(const Particle::Position& ini_pos,
-                                        const std::shared_ptr<Element::ElementBase> ele,
+                                        const std::shared_ptr<element::ElementBase> ele,
                                         double eloss,
                                         int qp) const;
 
     const Beamline* beamline_;  // NOT owning
   };
-}  // namespace Hector
+}  // namespace hector
 
 #endif

@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <cstring>
 
-namespace Hector {
+namespace hector {
   ArgsParser::ArgsParser(int argc,
                          char* argv[],
                          const ParametersList& required_parameters,
@@ -321,4 +321,4 @@ namespace Hector {
       *vec_float_variable = vec_var;
     }
   }
-}  // namespace Hector
+}  // namespace hector

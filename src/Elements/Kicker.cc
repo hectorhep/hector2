@@ -2,8 +2,8 @@
 #include "Hector/Elements/Drift.h"
 #include "Hector/Core/Parameters.h"
 
-namespace Hector {
-  namespace Element {
+namespace hector {
+  namespace element {
     Matrix HorizontalKicker::matrix(double eloss, double mp, int qp) const {
       Matrix mat = Drift::genericMatrix(length_);
 
@@ -33,5 +33,5 @@ namespace Hector {
       mat(4, 6) = ke;
       return mat;
     }
-  }  // namespace Element
-}  // namespace Hector
+  }  // namespace element
+}  // namespace hector

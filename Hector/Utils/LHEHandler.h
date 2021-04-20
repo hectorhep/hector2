@@ -16,8 +16,8 @@
 
 #include "Hector/Propagator/Particle.h"
 
-namespace Hector {
-  namespace IO {
+namespace hector {
+  namespace io {
     /// Parsing tool for LHEF files to use as beams of primary particles
     class LHE {
     public:
@@ -57,7 +57,7 @@ namespace Hector {
 #endif
 #endif
     };
-  }  // namespace IO
-}  // namespace Hector
+  }  // namespace io
+}  // namespace hector
 
 #endif

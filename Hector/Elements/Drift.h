@@ -3,8 +3,8 @@
 
 #include "ElementBase.h"
 
-namespace Hector {
-  namespace Element {
+namespace hector {
+  namespace element {
     /// Drift object builder
     class Drift : public ElementBase {
     public:
@@ -34,7 +34,7 @@ namespace Hector {
          */
       static Matrix genericMatrix(double length);
     };
-  }  // namespace Element
-}  // namespace Hector
+  }  // namespace element
+}  // namespace hector
 
 #endif

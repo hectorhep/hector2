@@ -7,7 +7,7 @@
 /// Mother of all namespaces/objects in Hector
 /// \author Laurent Forthomme <laurent.forthomme@cernSPAMNOT.ch>
 /// \date Nov 2016
-namespace Hector {
+namespace hector {
   /// List of user-parameterisable constants for the run
   /// \note All parameters are to be left untouched once the run is started
   class Parameters {
@@ -69,6 +69,6 @@ namespace Hector {
     bool enable_kickers_;
     bool enable_dipoles_;
   };
-}  // namespace Hector
+}  // namespace hector
 
 #endif

@@ -1,7 +1,7 @@
 #include "Hector/Elements/RectangularAperture.h"
 
-namespace Hector {
-  namespace Aperture {
+namespace hector {
+  namespace aperture {
     RectangularAperture::RectangularAperture(double rect_length, double rect_height, const TwoVector& pos)
         : ApertureBase(aRectangularAperture, pos, {{rect_length, rect_height, 0., 0.}}) {}
 
@@ -13,5 +13,5 @@ namespace Hector {
     }
 
     TwoVector RectangularAperture::limits() const { return TwoVector(p(0), p(1)); }
-  }  // namespace Aperture
-}  // namespace Hector
+  }  // namespace aperture
+}  // namespace hector

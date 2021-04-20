@@ -9,9 +9,9 @@
 
 using std::cout;
 
-namespace Hector {
+namespace hector {
   class Exception;
-  namespace ParametersMap {
+  namespace pmap {
     /// Unordered set of parameters indexed by key
     template <class T>
     class Unordered : private std::vector<std::pair<std::string, T> > {
@@ -78,7 +78,7 @@ namespace Hector {
     private:
       typedef std::vector<std::pair<std::string, T> > map;
     };
-  }  // namespace ParametersMap
-}  // namespace Hector
+  }  // namespace pmap
+}  // namespace hector
 
 #endif

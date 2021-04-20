@@ -2,7 +2,7 @@
 
 #include "Hector/Core/Exception.h"
 
-#include "Hector/Beamline/Beamline.h"
+#include "Hector/Beamline.h"
 
 #include "Hector/Elements/Quadrupole.h"
 #include "Hector/Elements/Dipole.h"
@@ -17,13 +17,13 @@
 
 #include <time.h>
 
-namespace Hector {
-  /*  namespace ParametersMap
+namespace hector {
+  /*  namespace pmap
   {
-    //template class Unordered<IO::Twiss::ValueType>;
-    template const std::string Unordered<IO::Twiss::ValueType>::key( const size_t i ) const;
+    //template class Unordered<io::Twiss::ValueType>;
+    template const std::string Unordered<io::Twiss::ValueType>::key( const size_t i ) const;
   }*/
-  namespace IO {
+  namespace io {
     std::regex Twiss::rgx_typ_("^\\%[0-9]{0,}(s|le)$");
     std::regex Twiss::rgx_hdr_("^\\@ (\\w+) +\\%([0-9]+s|le) +\\\"?([^\"\\n]+)");
     std::regex Twiss::rgx_elm_hdr_("^\\s{0,}([\\*\\$])(.+)");
@@ -286,7 +286,7 @@ namespace Hector {
           values.emplace_back(buffer);
         try {
           auto elem = parseElement(values);
-          if (!elem || elem->type() == Element::aDrift)
+          if (!elem || elem->type() == element::aDrift)
             continue;
           elem->offsetS(-interaction_point_->s());
           if (elem->s() < min_s_)
@@ -294,7 +294,7 @@ namespace Hector {
           if (elem->s() + elem->length() > raw_beamline_->maxLength()) {
             if (has_next_element)
               throw Exception(__PRETTY_FUNCTION__, Info, 20001) << "Finished to parse the beamline";
-            if (elem->type() != Element::anInstrument && elem->type() != Element::aDrift)
+            if (elem->type() != element::anInstrument && elem->type() != element::aDrift)
               has_next_element = true;
           }
           raw_beamline_->add(elem);
@@ -308,7 +308,7 @@ namespace Hector {
       raw_beamline_->add(interaction_point_);
     }
 
-    std::shared_ptr<Element::ElementBase> Twiss::parseElement(const ValuesCollection& values) {
+    std::shared_ptr<element::ElementBase> Twiss::parseElement(const ValuesCollection& values) {
       // first check if the "correct" number of element properties is parsed
       if (values.size() != elements_fields_.size())
         throw Exception(__PRETTY_FUNCTION__, Fatal)
@@ -317,8 +317,8 @@ namespace Hector {
             << " when " << elements_fields_.size() << " are expected.";
 
       // then perform the 3-fold matching key <-> value <-> value type
-      ParametersMap::Ordered<float> elem_map_floats;
-      ParametersMap::Ordered<std::string> elem_map_str;
+      pmap::Ordered<float> elem_map_floats;
+      pmap::Ordered<std::string> elem_map_str;
       for (size_t i = 0; i < values.size(); i++) {
         const std::string key = elements_fields_.key(i), value = values.at(i);
         const ValueType type = elements_fields_.value(i);
@@ -342,16 +342,16 @@ namespace Hector {
       const float s = elem_map_floats.get("s"), length = elem_map_floats.get("l");
 
       // convert the element type from string to object
-      const Element::Type elemtype = (elem_map_str.hasKey("keyword"))
+      const element::Type elemtype = (elem_map_str.hasKey("keyword"))
                                          ? findElementTypeByKeyword(lowercase(trim(elem_map_str.get("keyword"))))
                                          : findElementTypeByName(name);
 
-      std::shared_ptr<Element::ElementBase> elem;
+      std::shared_ptr<element::ElementBase> elem;
 
       try {
         // create the element
         switch (elemtype) {
-          case Element::aGenericQuadrupole: {
+          case element::aGenericQuadrupole: {
             if (length <= 0.)
               throw Exception(__PRETTY_FUNCTION__, JustWarning)
                   << "Trying to add a quadrupole with invalid length (l=" << length << " m).";
@@ -359,12 +359,12 @@ namespace Hector {
             const double k1l = elem_map_floats.get("k1l");
             const double mag_str_k = -k1l / length;
             if (k1l > 0)
-              elem.reset(new Element::HorizontalQuadrupole(name, s, length, mag_str_k));
+              elem.reset(new element::HorizontalQuadrupole(name, s, length, mag_str_k));
             else
-              elem.reset(new Element::VerticalQuadrupole(name, s, length, mag_str_k));
+              elem.reset(new element::VerticalQuadrupole(name, s, length, mag_str_k));
           } break;
-          case Element::aRectangularDipole:
-          case Element::aSectorDipole: {
+          case element::aRectangularDipole:
+          case element::aSectorDipole: {
             const double k0l = elem_map_floats.get("k0l");
             if (length <= 0.)
               throw Exception(__PRETTY_FUNCTION__, JustWarning)
@@ -375,36 +375,36 @@ namespace Hector {
 
             const double mag_strength = k0l / length;
             //            std::cout << name << "|" << s << "|" << mag_strength << std::endl;
-            if (elemtype == Element::aRectangularDipole)
-              elem.reset(new Element::RectangularDipole(name, s, length, mag_strength));
-            if (elemtype == Element::aSectorDipole)
-              elem.reset(new Element::SectorDipole(name, s, length, mag_strength));
+            if (elemtype == element::aRectangularDipole)
+              elem.reset(new element::RectangularDipole(name, s, length, mag_strength));
+            if (elemtype == element::aSectorDipole)
+              elem.reset(new element::SectorDipole(name, s, length, mag_strength));
           } break;
-          case Element::anHorizontalKicker: {
+          case element::anHorizontalKicker: {
             const double hkick = elem_map_floats.get("hkick");
             if (hkick == 0.)
               return 0;
-            elem.reset(new Element::HorizontalKicker(name, s, length, hkick));
+            elem.reset(new element::HorizontalKicker(name, s, length, hkick));
           } break;
-          case Element::aVerticalKicker: {
+          case element::aVerticalKicker: {
             const double vkick = elem_map_floats.get("vkick");
             if (vkick == 0.)
               return 0;
-            elem.reset(new Element::VerticalKicker(name, s, length, vkick));
+            elem.reset(new element::VerticalKicker(name, s, length, vkick));
           } break;
-          case Element::aRectangularCollimator:
-          case Element::anEllipticalCollimator:
-          case Element::aCircularCollimator:
-          case Element::aCollimator:
-            elem.reset(new Element::Collimator(name, s, length));
+          case element::aRectangularCollimator:
+          case element::anEllipticalCollimator:
+          case element::aCircularCollimator:
+          case element::aCollimator:
+            elem.reset(new element::Collimator(name, s, length));
             break;
-          case Element::aMarker:
-            elem.reset(new Element::Marker(name, s, length));
+          case element::aMarker:
+            elem.reset(new element::Marker(name, s, length));
             break;
-          case Element::anInstrument:
-          case Element::aMonitor:
-          case Element::aDrift:
-            elem.reset(new Element::Drift(name, elemtype, s, length));
+          case element::anInstrument:
+          case element::aMonitor:
+          case element::aDrift:
+            elem.reset(new element::Drift(name, elemtype, s, length));
             break;
           default:
             break;
@@ -423,30 +423,30 @@ namespace Hector {
         // associate the aperture type to the element
         if (elem_map_str.hasKey("apertype")) {
           const std::string aper_type = lowercase(trim(elem_map_str.get("apertype")));
-          const Aperture::Type apertype = findApertureTypeByApertype(aper_type);
+          const aperture::Type apertype = findApertureTypeByApertype(aper_type);
           const double aper_1 = elem_map_floats.get("aper_1");
           const double aper_2 = elem_map_floats.get("aper_2");
           // MAD-X provides it in m
           switch (apertype) {
-            case Aperture::aCircularAperture:
-              elem->setAperture(std::make_shared<Aperture::CircularAperture>(aper_1, env_pos));
+            case aperture::aCircularAperture:
+              elem->setAperture(std::make_shared<aperture::CircularAperture>(aper_1, env_pos));
               break;
-            case Aperture::aRectangularAperture:
-              elem->setAperture(std::make_shared<Aperture::RectangularAperture>(aper_1, aper_2, env_pos));
+            case aperture::aRectangularAperture:
+              elem->setAperture(std::make_shared<aperture::RectangularAperture>(aper_1, aper_2, env_pos));
               break;
-            case Aperture::anEllipticAperture:
-              elem->setAperture(std::make_shared<Aperture::EllipticAperture>(aper_1, aper_2, env_pos));
+            case aperture::anEllipticAperture:
+              elem->setAperture(std::make_shared<aperture::EllipticAperture>(aper_1, aper_2, env_pos));
               break;
-            case Aperture::aRectEllipticAperture: {
+            case aperture::aRectEllipticAperture: {
               const double aper_3 = elem_map_floats.get("aper_3");
               const double aper_4 = elem_map_floats.get("aper_4");
               elem->setAperture(
-                  std::make_shared<Aperture::RectEllipticAperture>(aper_1, aper_2, aper_3, aper_4, env_pos));
+                  std::make_shared<aperture::RectEllipticAperture>(aper_1, aper_2, aper_3, aper_4, env_pos));
             } break;
-            case Aperture::aRectCircularAperture: {
+            case aperture::aRectCircularAperture: {
               const double aper_3 = elem_map_floats.get("aper_3");
               elem->setAperture(
-                  std::make_shared<Aperture::RectEllipticAperture>(aper_1, aper_2, aper_3, aper_3, env_pos));
+                  std::make_shared<aperture::RectEllipticAperture>(aper_1, aper_2, aper_3, aper_3, env_pos));
             } break;
             default:
               break;
@@ -459,100 +459,100 @@ namespace Hector {
       return elem;
     }
 
-    Element::Type Twiss::findElementTypeByName(std::string name) {
+    element::Type Twiss::findElementTypeByName(std::string name) {
       try {
         if (std::regex_match(name, rgx_drift_name_))
-          return Element::aDrift;
+          return element::aDrift;
         if (std::regex_match(name, rgx_quadrup_name_))
-          return Element::aGenericQuadrupole;  //FIXME
+          return element::aGenericQuadrupole;  //FIXME
         if (std::regex_match(name, rgx_sect_dipole_name_))
-          return Element::aSectorDipole;
+          return element::aSectorDipole;
         if (std::regex_match(name, rgx_rect_dipole_name_))
-          return Element::aRectangularDipole;
+          return element::aRectangularDipole;
         if (std::regex_match(name, rgx_ip_name_))
-          return Element::aMarker;
+          return element::aMarker;
         if (std::regex_match(name, rgx_monitor_name_))
-          return Element::aMonitor;
+          return element::aMonitor;
         if (std::regex_match(name, rgx_rect_coll_name_))
-          return Element::aRectangularCollimator;
+          return element::aRectangularCollimator;
       } catch (std::regex_error& e) {
         throw Exception(__PRETTY_FUNCTION__, Fatal) << "Error while retrieving the element type!\n\t" << e.what();
       }
-      return Element::anInvalidElement;
+      return element::anInvalidElement;
     }
 
-    Element::Type Twiss::findElementTypeByKeyword(std::string keyword) {
+    element::Type Twiss::findElementTypeByKeyword(std::string keyword) {
       if (keyword == "marker")
-        return Element::aMarker;
+        return element::aMarker;
       if (keyword == "drift")
-        return Element::aDrift;
+        return element::aDrift;
       if (keyword == "monitor")
-        return Element::aMonitor;
+        return element::aMonitor;
       if (keyword == "quadrupole")
-        return Element::aGenericQuadrupole;
+        return element::aGenericQuadrupole;
       if (keyword == "sextupole")
-        return Element::aSextupole;
+        return element::aSextupole;
       if (keyword == "multipole")
-        return Element::aMultipole;
+        return element::aMultipole;
       if (keyword == "sbend")
-        return Element::aSectorDipole;
+        return element::aSectorDipole;
       if (keyword == "rbend")
-        return Element::aRectangularDipole;
+        return element::aRectangularDipole;
       if (keyword == "hkicker")
-        return Element::anHorizontalKicker;
+        return element::anHorizontalKicker;
       if (keyword == "vkicker")
-        return Element::aVerticalKicker;
+        return element::aVerticalKicker;
       if (keyword == "collimator")
-        return Element::aCollimator;
+        return element::aCollimator;
       if (keyword == "rcollimator")
-        return Element::aRectangularCollimator;
+        return element::aRectangularCollimator;
       if (keyword == "ecollimator")
-        return Element::anEllipticalCollimator;
+        return element::anEllipticalCollimator;
       if (keyword == "ccollimator")
-        return Element::aCircularCollimator;
+        return element::aCircularCollimator;
       if (keyword == "placeholder")
-        return Element::aPlaceholder;
+        return element::aPlaceholder;
       if (keyword == "instrument")
-        return Element::anInstrument;
+        return element::anInstrument;
       if (keyword == "solenoid")
-        return Element::aSolenoid;
-      return Element::anInvalidElement;
+        return element::aSolenoid;
+      return element::anInvalidElement;
     }
 
-    Aperture::Type Twiss::findApertureTypeByApertype(std::string apertype) {
+    aperture::Type Twiss::findApertureTypeByApertype(std::string apertype) {
       if (apertype == "none")
-        return Aperture::anInvalidAperture;
+        return aperture::anInvalidAperture;
       if (apertype == "rectangle")
-        return Aperture::aRectangularAperture;
+        return aperture::aRectangularAperture;
       if (apertype == "ellipse")
-        return Aperture::anEllipticAperture;
+        return aperture::anEllipticAperture;
       if (apertype == "circle")
-        return Aperture::aCircularAperture;
+        return aperture::aCircularAperture;
       if (apertype == "rectellipse")
-        return Aperture::aRectEllipticAperture;
+        return aperture::aRectEllipticAperture;
       if (apertype == "racetrack")
-        return Aperture::aRaceTrackAperture;
+        return aperture::aRaceTrackAperture;
       if (apertype == "octagon")
-        return Aperture::anOctagonalAperture;
-      return Aperture::anInvalidAperture;
+        return aperture::anOctagonalAperture;
+      return aperture::anInvalidAperture;
     }
 
-    std::ostream& operator<<(std::ostream& os, const IO::Twiss::ValueType& type) {
+    std::ostream& operator<<(std::ostream& os, const io::Twiss::ValueType& type) {
       switch (type) {
-        case IO::Twiss::Unknown:
+        case io::Twiss::Unknown:
           os << "unknown";
           break;
-        case IO::Twiss::String:
+        case io::Twiss::String:
           os << "string";
           break;
-        case IO::Twiss::Float:
+        case io::Twiss::Float:
           os << "float";
           break;
-        case IO::Twiss::Integer:
+        case io::Twiss::Integer:
           os << "integer";
           break;
       }
       return os;
     }
-  }  // namespace IO
-}  // namespace Hector
+  }  // namespace io
+}  // namespace hector

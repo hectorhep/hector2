@@ -11,7 +11,7 @@
 
 #include <array>
 
-namespace Hector {
+namespace hector {
   /// A generic N-dimensional matrix
   typedef CLHEP::HepMatrix Matrix;
   /// A generic N-dimensional diagonal matrix
@@ -72,6 +72,6 @@ namespace Hector {
     /// Compute the arc-tangent of both the components of a 2-vector
     TwoVector atan2(const TwoVector& ang);
   }  // namespace math
-}  // namespace Hector
+}  // namespace hector
 
 #endif

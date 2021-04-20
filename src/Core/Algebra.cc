@@ -1,6 +1,6 @@
 #include "Hector/Core/Algebra.h"
 
-namespace Hector {
+namespace hector {
   namespace math {
     /// Compute the tangent of both the components of a 2-vector
     TwoVector tan2(const TwoVector& ang) {
@@ -14,4 +14,4 @@ namespace Hector {
       return TwoVector(atan(x), atan(y));
     }
   }  // namespace math
-}  // namespace Hector
+}  // namespace hector

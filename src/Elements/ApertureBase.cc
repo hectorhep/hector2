@@ -3,8 +3,8 @@
 
 #include <sstream>
 
-namespace Hector {
-  namespace Aperture {
+namespace hector {
+  namespace aperture {
     ApertureBase::ApertureBase(const Type& type, const TwoVector& pos, const Parameters& param)
         : type_(type), pos_(pos), param_(param) {}
 
@@ -25,16 +25,16 @@ namespace Hector {
         return false;
       return true;
     }
-  }  // namespace Aperture
+  }  // namespace aperture
 
-  std::ostream& operator<<(std::ostream& os, const Aperture::ApertureBase& ap) {
+  std::ostream& operator<<(std::ostream& os, const aperture::ApertureBase& ap) {
     os << ap.type() << Form(" (param. (%.3f, %.3f, %.3f, %.3f),", ap.p(0), ap.p(1), ap.p(2), ap.p(3)) << " center at "
        << ap.position() << ")";
     return os;
   }
 
-  std::ostream& operator<<(std::ostream& os, const Aperture::ApertureBase* ap) {
+  std::ostream& operator<<(std::ostream& os, const aperture::ApertureBase* ap) {
     os << *(ap);
     return os;
   }
-}  // namespace Hector
+}  // namespace hector

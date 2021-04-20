@@ -10,11 +10,11 @@
 #include <string>
 #include <cstdlib>  // exit()
 
-#define PrintDebug Hector::Exception(__PRETTY_FUNCTION__, Hector::Debug)
-#define PrintInfo Hector::Exception(__PRETTY_FUNCTION__, Hector::Info)
-#define PrintWarning Hector::Exception(__PRETTY_FUNCTION__, Hector::JustWarning)
+#define PrintDebug hector::Exception(__PRETTY_FUNCTION__, hector::Debug)
+#define PrintInfo hector::Exception(__PRETTY_FUNCTION__, hector::Info)
+#define PrintWarning hector::Exception(__PRETTY_FUNCTION__, hector::JustWarning)
 
-namespace Hector {
+namespace hector {
   /// A simple exception handler
   class Exception : public std::exception {
   public:
@@ -104,6 +104,6 @@ namespace Hector {
     ExceptionType type_;
     int error_num_;
   };
-}  // namespace Hector
+}  // namespace hector
 
 #endif

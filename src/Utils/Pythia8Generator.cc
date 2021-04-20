@@ -6,7 +6,7 @@
 
 #include <Pythia8/Event.h>
 
-namespace Hector {
+namespace hector {
   Pythia8Generator::Pythia8Generator(const std::vector<std::string>& params) : pythia_(new Pythia8::Pythia) {
     // specify the incoming state
     pythia_->settings.mode("Beams:idA", 2212);
@@ -76,4 +76,4 @@ namespace Hector {
     throw Exception(__PRETTY_FUNCTION__, JustWarning)
         << "Failed to generate the modified kinematics for the particle template!";
   }
-}  // namespace Hector
+}  // namespace hector

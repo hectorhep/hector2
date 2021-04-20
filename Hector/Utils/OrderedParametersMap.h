@@ -7,9 +7,9 @@
 
 using std::cout;
 
-namespace Hector {
+namespace hector {
   /// Collection of key-value containers
-  namespace ParametersMap {
+  namespace pmap {
     /// Ordered set of parameters indexed by key
     template <class T>
     class Ordered : private std::map<std::string, T> {
@@ -50,7 +50,7 @@ namespace Hector {
     private:
       typedef std::map<std::string, T> map;
     };
-  }  // namespace ParametersMap
-}  // namespace Hector
+  }  // namespace pmap
+}  // namespace hector
 
 #endif

@@ -1,4 +1,4 @@
-#include "Hector/Beamline/Beamline.h"
+#include "Hector/Beamline.h"
 #include "Hector/IO/TwissHandler.h"
 #include "Hector/Core/ParticleStoppedException.h"
 #include "Hector/Propagator/Propagator.h"
@@ -25,7 +25,7 @@ using namespace std;
 TGraphErrors mean_trajectory(const TMultiGraph&);
 
 int main(int argc, char* argv[]) {
-  //Hector::Parameters::get()->setLoggingThreshold( Hector::Info );
+  //hector::Parameters::get()->setLoggingThreshold( hector::Info );
 
   vector<string> twiss_filenames, meas_filenames;
   vector<int> colours;
@@ -38,7 +38,7 @@ int main(int argc, char* argv[]) {
   unsigned int num_particles;
   bool show_paths = false, dipoles_enable, draw_monitors = false, dump_beamlines;
 
-  Hector::ArgsParser(
+  hector::ArgsParser(
       argc,
       argv,
       {
@@ -71,16 +71,16 @@ int main(int argc, char* argv[]) {
 
   //for ( const auto& x : crossing_angles_x ) cout << x << endl;
   //--- general propagation parameters
-  //Hector::Parameters::get()->setComputeApertureAcceptance( false ); //FIXME
-  //Hector::Parameters::get()->setEnableKickers( false ); //FIXME
-  Hector::Parameters::get()->setEnableDipoles(dipoles_enable);
+  //hector::Parameters::get()->setComputeApertureAcceptance( false ); //FIXME
+  //hector::Parameters::get()->setEnableKickers( false ); //FIXME
+  hector::Parameters::get()->setEnableDipoles(dipoles_enable);
 
   //--- define the propagator objects
-  vector<Hector::Propagator> propagators;
+  vector<hector::Propagator> propagators;
 
   vector<TMultiGraph*> mg_x, mg_y;
   vector<std::unique_ptr<TH1D> > h_timing;
-  vector<map<Hector::Element::ElementBase*, std::unique_ptr<TH2D> > > monitors_plts(twiss_filenames.size());
+  vector<map<hector::element::ElementBase*, std::unique_ptr<TH2D> > > monitors_plts(twiss_filenames.size());
 
   for (const auto& fn : twiss_filenames)
     h_timing.emplace_back(new TH1D(("timing" + fn).c_str(), "Propagation time@@Event@@ms?.2f", 100, 0., 10.));
@@ -89,13 +89,13 @@ int main(int argc, char* argv[]) {
   for (const auto& fn : twiss_filenames) {
     if (fn == "")
       continue;
-    const Hector::IO::Twiss parser(fn, ip_name, max_s);
+    const hector::io::Twiss parser(fn, ip_name, max_s);
     //parser.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( 0.097, 0. ) );
     //parser.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( +0.097, 0. ) );
     //parser.printInfo();
     if (!parser.beamline())
       throw runtime_error("Failed to parse the beamline!");
-    auto bl = new Hector::Beamline(*parser.beamline());
+    auto bl = new hector::Beamline(*parser.beamline());
 
     propagators.emplace_back(bl);
     mg_x.emplace_back(new TMultiGraph);
@@ -103,7 +103,7 @@ int main(int argc, char* argv[]) {
 
     if (draw_monitors)
       for (const auto& elemPtr : bl->elements())
-        if (elemPtr->type() == Hector::Element::aMonitor)
+        if (elemPtr->type() == hector::element::aMonitor)
           monitors_plts[i][elemPtr.get()].reset(
               new TH2D(Form("bl%d_%s", i, elemPtr->name().c_str()),
                        Form("%s (s=%.2fm);x (mm);y (mm)", elemPtr->name().c_str(), elemPtr->s()),
@@ -125,11 +125,11 @@ int main(int argc, char* argv[]) {
     ++i;
   }
 
-  Hector::BeamProducer::GaussianParticleGun gun;
+  hector::beam::GaussianParticleGun gun;
   gun.smearX(offset.at(0), beam_lateral_width_ip);
   gun.smearY(offset.at(1), beam_lateral_width_ip);
 
-  Hector::Timer tmr;
+  hector::Timer tmr;
 
   for (size_t i = 0; i < num_particles; ++i) {
     if (num_particles > 10 && i % (num_particles / 10) == 0)
@@ -144,7 +144,7 @@ int main(int argc, char* argv[]) {
       gun.smearTx(crossing_angle_x, beam_angular_divergence_ip);
       gun.smearTy(crossing_angle_y, beam_angular_divergence_ip);
       //gun.smearTy( crossing_angle_y, 0. );
-      Hector::Particle p = gun.shoot();
+      hector::Particle p = gun.shoot();
       p.firstStateVector().setXi(xi);
       //      p.firstStateVector().setKick( 0. );
       //      cout << p.firstStateVector().kick() << endl;
@@ -153,7 +153,7 @@ int main(int argc, char* argv[]) {
       tmr.reset();
       try {
         prop.propagate(p, max_s);
-      } catch (Hector::ParticleStoppedException& e) {
+      } catch (hector::ParticleStoppedException& e) {
       }
       h_timing[j]->Fill(tmr.elapsed() * 1.e3);  // in ms
       for (const auto& pos : p) {
@@ -162,12 +162,12 @@ int main(int argc, char* argv[]) {
       }
       if (draw_monitors) {
         for (const auto& elemPtr : prop.beamline()->elements()) {
-          if (elemPtr->type() != Hector::Element::aMonitor)
+          if (elemPtr->type() != hector::element::aMonitor)
             continue;
           try {
             const auto sv_mon = p.stateVectorAt(elemPtr->s() + 0.5 * elemPtr->length());
             monitors_plts[j][elemPtr.get()]->Fill(sv_mon.x() * 1.e3, sv_mon.y() * 1.e3);
-          } catch (Hector::Exception&) {
+          } catch (hector::Exception&) {
           }
         }
       }
@@ -190,9 +190,9 @@ int main(int argc, char* argv[]) {
         os_xa << "/";
       os_xa << Form("%.1f", crossing_angles_x.at(i) * 1.e6);
     }
-    Hector::Canvas c("beamline",
+    hector::Canvas c("beamline",
                      Form("E_{p} = %.1f TeV, #alpha_{X} = %s #murad",
-                          Hector::Parameters::get()->beamEnergy() * CLHEP::GeV / CLHEP::TeV,
+                          hector::Parameters::get()->beamEnergy() * CLHEP::GeV / CLHEP::TeV,
                           os_xa.str().c_str()),
                      true);
     c.SetWindowSize(800, 800);
@@ -297,7 +297,7 @@ int main(int argc, char* argv[]) {
       ++j;
     }
     const char* label = Form("#scale[0.33]{%s}", os.str().c_str());
-    Hector::Canvas::PaveText pt(0.0, 0.0, 0.15, 0.01, label);
+    hector::Canvas::PaveText pt(0.0, 0.0, 0.15, 0.01, label);
     pt.SetTextAlign(kHAlignLeft + kVAlignBottom);
     pt.Draw();
 
@@ -306,7 +306,7 @@ int main(int argc, char* argv[]) {
       delete mg[k];
   }
   {  // draw the legend
-    Hector::Canvas c("beamline_legend", "", false, false);
+    hector::Canvas c("beamline_legend", "", false, false);
     elementsLegend leg;
     gStyle->SetOptStat(0);
     for (const auto& prop : propagators)
@@ -317,7 +317,7 @@ int main(int argc, char* argv[]) {
   if (draw_monitors) {
     unsigned short i = 0;
     for (auto& mp : monitors_plts) {
-      Hector::Canvas c(Form("monitors_beam%d", i + 1), Form("Beam %d", i + 1));
+      hector::Canvas c(Form("monitors_beam%d", i + 1), Form("Beam %d", i + 1));
       const unsigned short num_x = ceil(sqrt(mp.size())), num_y = ceil(mp.size() * 1. / num_x);
       c.Divide(num_x, num_y);
       unsigned short j = 0;
@@ -331,7 +331,7 @@ int main(int argc, char* argv[]) {
     }
   }
   {
-    Hector::Canvas c("propagation_time", Form("%d events, s_{max} = %.1f m", num_particles, max_s));
+    hector::Canvas c("propagation_time", Form("%d events, s_{max} = %.1f m", num_particles, max_s));
     gStyle->SetOptStat(1111);
     THStack hs;
     unsigned short i = 0;

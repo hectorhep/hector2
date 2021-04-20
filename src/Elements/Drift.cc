@@ -1,7 +1,7 @@
 #include "Hector/Elements/Drift.h"
 
-namespace Hector {
-  namespace Element {
+namespace hector {
+  namespace element {
     Drift::Drift(const std::string& name, double spos, double length) : ElementBase(aDrift, name, spos, length) {}
 
     Drift::Drift(const std::string& name, const Type& type, double spos, double length)
@@ -15,5 +15,5 @@ namespace Hector {
       mat(3, 4) = length;
       return mat;
     }
-  }  // namespace Element
-}  // namespace Hector
+  }  // namespace element
+}  // namespace hector

@@ -9,7 +9,7 @@
 #include <vector>
 #include <string>
 
-namespace Hector {
+namespace hector {
   /**
    * \brief Interface to the `Pythia8` generator
    * \author Laurent Forthomme
@@ -37,6 +37,6 @@ namespace Hector {
   private:
     std::unique_ptr<Pythia8::Pythia> pythia_;
   };
-}  // namespace Hector
+}  // namespace hector
 
 #endif

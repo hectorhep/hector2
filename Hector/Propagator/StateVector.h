@@ -8,7 +8,7 @@
 
 using std::cout;
 
-namespace Hector {
+namespace hector {
   /// Six-dimensional state vector associated to a particle at a given s
   class StateVector : private Vector {
   public:
@@ -96,6 +96,6 @@ namespace Hector {
   };
   /// Human-readable printout of the state vector
   std::ostream& operator<<(std::ostream&, const StateVector&);
-}  // namespace Hector
+}  // namespace hector
 
 #endif

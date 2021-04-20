@@ -9,7 +9,7 @@
 #include "Hector/Core/Exception.h"
 #include "Hector/Propagator/Particle.h"
 
-namespace Hector {
+namespace hector {
   std::string Form(const std::string fmt, ...) {
     int size = (static_cast<int>(fmt.size())) * 2 + 50;
     std::string str;
@@ -105,4 +105,4 @@ namespace Hector {
 
   double xi_to_e(double xi, double e0) { return e0 * (1. - xi); }
 
-}  // namespace Hector
+}  // namespace hector

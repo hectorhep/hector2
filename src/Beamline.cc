@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <regex>
 
-namespace Hector {
+namespace hector {
   Beamline::Beamline() : max_length_(0.) {}
 
   Beamline::Beamline(const Beamline& rhs, bool copy_elements)
@@ -17,7 +17,7 @@ namespace Hector {
       setElements(rhs);
   }
 
-  Beamline::Beamline(double length, const std::shared_ptr<Element::ElementBase>& ip)
+  Beamline::Beamline(double length, const std::shared_ptr<element::ElementBase>& ip)
       : max_length_(length + 5.),  // artificially increase the size to include next elements
         ip_(ip) {}
 
@@ -28,11 +28,11 @@ namespace Hector {
 
   void Beamline::clear() { elements_.clear(); }
 
-  void Beamline::addMarker(const Element::Marker& marker) {
-    markers_.insert(std::pair<double, Element::Marker>(marker.s(), marker));
+  void Beamline::addMarker(const element::Marker& marker) {
+    markers_.insert(std::pair<double, element::Marker>(marker.s(), marker));
   }
 
-  void Beamline::add(const std::shared_ptr<Element::ElementBase> elem) {
+  void Beamline::add(const std::shared_ptr<element::ElementBase> elem) {
     const double new_size = elem->s() + elem->length();
     if (new_size > max_length_ && max_length_ < 0.)
       throw Exception(__PRETTY_FUNCTION__, Debug)
@@ -70,7 +70,7 @@ namespace Hector {
                  << "Hector will fix the overlap by splitting the earlier.";
       const double prev_length = prev_elem->length();
 
-      std::shared_ptr<Element::ElementBase> next_elem = nullptr;
+      std::shared_ptr<element::ElementBase> next_elem = nullptr;
       // check if one needs to add an extra piece to the previous element
       if (elem->s() + elem->length() < prev_elem->s() + prev_elem->length()) {
         const std::string prev_name = prev_elem->name();
@@ -100,10 +100,10 @@ namespace Hector {
       elements_.push_back(elem);
 
     // sort all beamline elements according to their s-position
-    std::sort(elements_.begin(), elements_.end(), Element::ElementsSorter());
+    std::sort(elements_.begin(), elements_.end(), element::ElementsSorter());
   }
 
-  const std::shared_ptr<Element::ElementBase> Beamline::get(const char* name) const {
+  const std::shared_ptr<element::ElementBase> Beamline::get(const char* name) const {
     for (size_t i = 0; i < elements_.size(); ++i) {
       const auto elem = elements_.at(i);
       if (elem->name().find(name) != std::string::npos)
@@ -112,7 +112,7 @@ namespace Hector {
     return 0;
   }
 
-  std::shared_ptr<Element::ElementBase>& Beamline::get(const char* name) {
+  std::shared_ptr<element::ElementBase>& Beamline::get(const char* name) {
     for (auto& elem : elements_) {
       if (elem->name().find(name) != std::string::npos)
         return elem;
@@ -120,7 +120,7 @@ namespace Hector {
     return *elements_.end();
   }
 
-  const std::shared_ptr<Element::ElementBase> Beamline::get(double s) const {
+  const std::shared_ptr<element::ElementBase> Beamline::get(double s) const {
     for (size_t i = 0; i < elements_.size(); ++i) {
       const auto elem = elements_.at(i);
       if (elem->s() > s)
@@ -131,7 +131,7 @@ namespace Hector {
     return 0;
   }
 
-  std::shared_ptr<Element::ElementBase>& Beamline::get(double s) {
+  std::shared_ptr<element::ElementBase>& Beamline::get(double s) {
     for (auto& elem : elements_) {
       if (elem->s() > s)
         continue;
@@ -141,11 +141,11 @@ namespace Hector {
     return *elements_.end();
   }
 
-  std::vector<std::shared_ptr<Element::ElementBase> > Beamline::find(const char* regex) {
+  std::vector<std::shared_ptr<element::ElementBase> > Beamline::find(const char* regex) {
     try {
       std::regex rgx_search(regex);
       std::cmatch m;
-      std::vector<std::shared_ptr<Element::ElementBase> > out;
+      std::vector<std::shared_ptr<element::ElementBase> > out;
       for (auto& elem : elements_)
         if (std::regex_search(elem->name().c_str(), m, rgx_search))
           out.emplace_back(elem);
@@ -178,7 +178,7 @@ namespace Hector {
        << " length: " << length() << " m\n"
        << " elements list: ";
     for (const auto& elemPtr : elements_) {
-      if (!show_drifts && elemPtr->type() == Element::aDrift)
+      if (!show_drifts && elemPtr->type() == element::aDrift)
         continue;
       os << "\n  * " << *elemPtr;
     }
@@ -210,13 +210,13 @@ namespace Hector {
     // convert all empty spaces into drifts
     for (const auto& elemPtr : *beamline) {
       // skip the markers
-      if (elemPtr->type() == Element::aMarker && elemPtr->name() != beamline->interactionPoint()->name())
+      if (elemPtr->type() == element::aMarker && elemPtr->name() != beamline->interactionPoint()->name())
         continue;
       // add a drift whenever there is a gap in s
       const double drift_length = elemPtr->s() - pos;
       try {
         if (drift_length > 0.)
-          tmp->add(std::make_shared<Element::Drift>(Form("drift:%.4E", pos).c_str(), pos, drift_length));
+          tmp->add(std::make_shared<element::Drift>(Form("drift:%.4E", pos).c_str(), pos, drift_length));
         tmp->add(elemPtr);
       } catch (Exception& e) {
         e.dump();
@@ -227,7 +227,7 @@ namespace Hector {
     const double drift_length = tmp->length() - pos;
     if (drift_length > 0) {
       try {
-        tmp->add(std::make_shared<Element::Drift>(Form("drift:%.4E", pos).c_str(), pos, drift_length));
+        tmp->add(std::make_shared<element::Drift>(Form("drift:%.4E", pos).c_str(), pos, drift_length));
       } catch (Exception& e) {
         e.dump();
       }
@@ -240,4 +240,4 @@ namespace Hector {
     for (const auto& elem : moth_bl)
       add(elem);
   }
-}  // namespace Hector
+}  // namespace hector

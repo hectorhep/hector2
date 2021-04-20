@@ -14,9 +14,9 @@
 
 using std::ostream;
 
-namespace Hector {
+namespace hector {
   class Beamline;
-  namespace IO {
+  namespace io {
     /// Parsing tool for MAD-X output Twiss files
     /// \note A list of variables stored in Twiss files can be retrieved from http://mad.web.cern.ch/mad/madx.old/Introduction/tables.html
     class Twiss {
@@ -45,11 +45,11 @@ namespace Hector {
       Beamline* rawBeamline() const { return raw_beamline_.get(); }
 
       /// Get a Hector element type from a Twiss element name string
-      static Element::Type findElementTypeByName(std::string name);
+      static element::Type findElementTypeByName(std::string name);
       /// Get a Hector element type from a Twiss element keyword string
-      static Element::Type findElementTypeByKeyword(std::string keyword);
+      static element::Type findElementTypeByKeyword(std::string keyword);
       /// Get a Hector element aperture type from a Twiss element apertype string
-      static Aperture::Type findApertureTypeByApertype(std::string apertype);
+      static aperture::Type findApertureTypeByApertype(std::string apertype);
 
       /// Print all useful information parsed from the MAD-X Twiss file
       void printInfo() const;
@@ -70,19 +70,19 @@ namespace Hector {
       void parseElementsFields();
       void parseElements();
       void findInteractionPoint();
-      std::shared_ptr<Element::ElementBase> parseElement(const ValuesCollection&);
+      std::shared_ptr<element::ElementBase> parseElement(const ValuesCollection&);
 
-      ParametersMap::Ordered<std::string> header_str_;
-      ParametersMap::Ordered<float> header_float_;
+      pmap::Ordered<std::string> header_str_;
+      pmap::Ordered<float> header_float_;
 
-      ParametersMap::Unordered<ValueType> elements_fields_;
+      pmap::Unordered<ValueType> elements_fields_;
 
       std::ifstream in_file_;
       std::streampos in_file_lastline_;
 
       std::unique_ptr<Beamline> beamline_;
       std::unique_ptr<Beamline> raw_beamline_;
-      std::shared_ptr<Element::ElementBase> interaction_point_;
+      std::shared_ptr<element::ElementBase> interaction_point_;
 
       std::string ip_name_;
       float min_s_;
@@ -93,7 +93,7 @@ namespace Hector {
       static std::regex rgx_sect_dipole_name_, rgx_rect_dipole_name_;
       static std::regex rgx_rect_coll_name_;
     };
-  }  // namespace IO
-}  // namespace Hector
+  }  // namespace io
+}  // namespace hector
 
 #endif

@@ -3,7 +3,7 @@
 
 #include <CLHEP/Random/RandFlat.h>
 
-namespace Hector {
+namespace hector {
   Particle::Particle() : charge_(0), pdgId_(0), stopped_(false) { addPosition(0., StateVector()); }
 
   Particle::Particle(const StateVector& sv0, double s0) : charge_(0), pdgId_(0), stopped_(false) {
@@ -71,4 +71,4 @@ namespace Hector {
     for (const auto& pos : positions_)
       os << Form("   s = %8.3f m:", pos.first) << " " << pos.second << std::endl;
   }
-}  // namespace Hector
+}  // namespace hector

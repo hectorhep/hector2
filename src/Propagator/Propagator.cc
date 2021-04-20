@@ -1,6 +1,6 @@
 #include "Hector/Propagator/Propagator.h"
 
-#include "Hector/Beamline/Beamline.h"
+#include "Hector/Beamline.h"
 #include "Hector/Elements/ElementBase.h"
 
 #include "Hector/Core/Exception.h"
@@ -10,7 +10,7 @@
 
 #include <sstream>
 
-namespace Hector {
+namespace hector {
   void Propagator::propagate(Particle& part, double s_max) const {
     part.clear();
 
@@ -35,7 +35,7 @@ namespace Hector {
         // between two elements
         if (first_s > prev_elem->s() && first_s < elem->s()) {
           switch (prev_elem->type()) {
-            case Element::aDrift:
+            case element::aDrift:
               PrintInfo << "Path starts inside drift " << prev_elem->name() << ".";
               break;
             default:
@@ -62,7 +62,7 @@ namespace Hector {
           continue;
 
         const auto& aper = prev_elem->aperture();
-        if (!aper || aper->type() != Aperture::anInvalidAperture)
+        if (!aper || aper->type() != aperture::anInvalidAperture)
           continue;
 
         const TwoVector pos_prev_elem(part.stateVectorAt(prev_elem->s()).position());
@@ -95,7 +95,7 @@ namespace Hector {
         return false;
 
       const auto& aper = prev_elem->aperture();
-      if (aper && aper->type() != Aperture::anInvalidAperture) {
+      if (aper && aper->type() != aperture::anInvalidAperture) {
         // has passed the element entrance?
         if (!aper->contains(part.stateVectorAt(prev_elem->s()).position()))
           return true;
@@ -108,7 +108,7 @@ namespace Hector {
   }
 
   Particle::Position Propagator::propagateThrough(const Particle::Position& ini_pos,
-                                                  const std::shared_ptr<Element::ElementBase> elem,
+                                                  const std::shared_ptr<element::ElementBase> elem,
                                                   double eloss,
                                                   int qp) const {
     try {
@@ -145,4 +145,4 @@ namespace Hector {
     for (auto& part : beam)
       propagate(part, s_max);
   }
-}  // namespace Hector
+}  // namespace hector

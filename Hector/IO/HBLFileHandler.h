@@ -4,10 +4,10 @@
 #include <string>
 #include <memory>
 
-namespace Hector {
+namespace hector {
   class Beamline;
   /// Collection of input/output utilitaries
-  namespace IO {
+  namespace io {
     /// An HBL (Hector BeamLine) files handler
     class HBL {
     public:
@@ -29,7 +29,7 @@ namespace Hector {
       static constexpr unsigned long long magic_number = 0x464c4248;
       static constexpr unsigned short version = 100;
     };
-  }  // namespace IO
-}  // namespace Hector
+  }  // namespace io
+}  // namespace hector
 
 #endif

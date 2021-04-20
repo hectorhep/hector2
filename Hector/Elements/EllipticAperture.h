@@ -3,8 +3,8 @@
 
 #include "ApertureBase.h"
 
-namespace Hector {
-  namespace Aperture {
+namespace hector {
+  namespace aperture {
     /// Elliptic shape aperture
     class EllipticAperture : public ApertureBase {
     public:
@@ -17,7 +17,7 @@ namespace Hector {
       bool contains(const TwoVector&) const override;
       TwoVector limits() const override;
     };
-  }  // namespace Aperture
-}  // namespace Hector
+  }  // namespace aperture
+}  // namespace hector
 
 #endif

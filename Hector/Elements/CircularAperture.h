@@ -3,8 +3,8 @@
 
 #include "EllipticAperture.h"
 
-namespace Hector {
-  namespace Aperture {
+namespace hector {
+  namespace aperture {
     /// Round shape aperture
     class CircularAperture : public EllipticAperture {
     public:
@@ -14,7 +14,7 @@ namespace Hector {
 
       std::shared_ptr<ApertureBase> clone() const override { return std::make_shared<CircularAperture>(*this); }
     };
-  }  // namespace Aperture
-}  // namespace Hector
+  }  // namespace aperture
+}  // namespace hector
 
 #endif

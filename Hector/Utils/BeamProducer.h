@@ -10,9 +10,9 @@ namespace CLHEP {
   class RandGauss;
 }  // namespace CLHEP
 
-namespace Hector {
+namespace hector {
   /// Generator for beam of particles
-  namespace BeamProducer {
+  namespace beam {
     /// Lower and upper limits
     typedef std::pair<float, float> params_t;
     /// Generic scanner for a given granularity of a parameter
@@ -230,7 +230,7 @@ namespace Hector {
       void smearEnergy(float e_mean, float e_sigma) { setEparams(e_mean, e_sigma); }
       void smearXi(float xi_mean, float xi_sigma);
     };
-  }  // namespace BeamProducer
-}  // namespace Hector
+  }  // namespace beam
+}  // namespace hector
 
 #endif

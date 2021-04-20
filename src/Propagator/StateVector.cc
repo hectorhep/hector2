@@ -1,7 +1,7 @@
 #include "Hector/Propagator/StateVector.h"
 #include "Hector/Core/Exception.h"
 
-namespace Hector {
+namespace hector {
   StateVector::StateVector() : Vector(6, 0), m_(0.) {
     (*this)[K] = 1.;
     (*this)[E] = Parameters::get()->beamEnergy();
@@ -92,4 +92,4 @@ namespace Hector {
                       vec.kick(),
                       vec.energy());
   }
-}  // namespace Hector
+}  // namespace hector

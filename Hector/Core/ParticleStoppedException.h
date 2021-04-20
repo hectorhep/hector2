@@ -4,7 +4,7 @@
 #include "Hector/Core/Exception.h"
 #include "Hector/Elements/ElementBase.h"
 
-namespace Hector {
+namespace hector {
   /// Specific exception for particles stopped in the course of a beamline propagation
   class ParticleStoppedException : public Exception {
   public:
@@ -15,7 +15,7 @@ namespace Hector {
     /// \param[in] additional_info Any other useful information to help the debugging
     ParticleStoppedException(const char* from,
                              ExceptionType type = Undefined,
-                             const Element::ElementBase* elem = nullptr)
+                             const element::ElementBase* elem = nullptr)
         : Exception(from, type, 10000), elem_(elem) {
       message_ << "Particle stopped";
       if (elem)
@@ -23,12 +23,12 @@ namespace Hector {
       message_ << ".\n";
     }
     /// Retrieve the beamline element that stopped the particle
-    const Element::ElementBase* stoppingElement() const { return elem_; }
+    const element::ElementBase* stoppingElement() const { return elem_; }
 
   private:
     /// Beamline element that stopped the particle
-    const Element::ElementBase* elem_;
+    const element::ElementBase* elem_;
   };
-}  // namespace Hector
+}  // namespace hector
 
 #endif

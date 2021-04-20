@@ -1,7 +1,7 @@
 #include "Hector/Elements/Collimator.h"
 
-namespace Hector {
-  namespace Element {
+namespace hector {
+  namespace element {
     Collimator::Collimator(const std::string& name, double spos, double length) : Drift(name, spos, length) {}
-  }  // namespace Element
-}  // namespace Hector
+  }  // namespace element
+}  // namespace hector

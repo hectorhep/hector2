@@ -1,6 +1,6 @@
 #include "Hector/Core/Parameters.h"
 
-namespace Hector {
+namespace hector {
   Parameters::Parameters()
       : beam_energy_(6500.),                // in GeV
         beam_particles_mass_(0.938272046),  // in GeV
@@ -16,4 +16,4 @@ namespace Hector {
     static std::shared_ptr<Parameters> params(new Parameters);
     return params;
   }
-}  // namespace Hector
+}  // namespace hector

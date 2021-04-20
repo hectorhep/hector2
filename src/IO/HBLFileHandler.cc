@@ -1,7 +1,7 @@
 #include "Hector/IO/HBLFileHandler.h"
 #include "Hector/Core/Exception.h"
 
-#include "Hector/Beamline/Beamline.h"
+#include "Hector/Beamline.h"
 
 #include "Hector/Elements/Drift.h"
 #include "Hector/Elements/Kicker.h"
@@ -18,8 +18,8 @@
 #include <fstream>
 #include <sstream>
 
-namespace Hector {
-  namespace IO {
+namespace hector {
+  namespace io {
     HBL::HBL(const std::string& filename) : beamline_(new Beamline) { parse(filename); }
 
     HBL::HBL(HBL& rhs) : beamline_(std::move(rhs.beamline_)) {}
@@ -40,90 +40,91 @@ namespace Hector {
             << "Version " << hdr.version << " is not (yet) supported! Currently peaking at " << version << "!";
 
       HBLElement el;
-      std::shared_ptr<Element::ElementBase> elem;
+      std::shared_ptr<element::ElementBase> elem;
       while (file.read(reinterpret_cast<char*>(&el), sizeof(HBLElement))) {
         if (Parameters::get()->loggingThreshold() > JustWarning)
-          PrintInfo << "Retrieved a " << (Element::Type)el.element_type << " element\n\t"
+          PrintInfo << "Retrieved a " << (element::Type)el.element_type << " element\n\t"
                     << "with name " << el.element_name << "\n\tat s=" << el.element_s << " m\n\t"
                     << "with length=" << el.element_length << " m (magnetic strength=" << el.element_magnetic_strength
                     << ").";
-        switch ((Element::Type)el.element_type) {
-          case Element::aMarker:
-          case Element::aMonitor:
-            elem = std::make_shared<Element::Marker>(el.element_name, el.element_s, el.element_length);
+        switch ((element::Type)el.element_type) {
+          case element::aMarker:
+          case element::aMonitor:
+          case element::anInstrument:
+            elem = std::make_shared<element::Marker>(el.element_name, el.element_s, el.element_length);
             break;
-          case Element::aDrift:
-            elem = std::make_shared<Element::Drift>(el.element_name, el.element_s, el.element_length);
+          case element::aDrift:
+            elem = std::make_shared<element::Drift>(el.element_name, el.element_s, el.element_length);
             break;
-          case Element::aRectangularDipole:
-            elem = std::make_shared<Element::RectangularDipole>(
+          case element::aRectangularDipole:
+            elem = std::make_shared<element::RectangularDipole>(
                 el.element_name, el.element_s, el.element_length, el.element_magnetic_strength);
             break;
-          case Element::aSectorDipole:
-            elem = std::make_shared<Element::SectorDipole>(
+          case element::aSectorDipole:
+            elem = std::make_shared<element::SectorDipole>(
                 el.element_name, el.element_s, el.element_length, el.element_magnetic_strength);
             break;
-          //case Element::aGenericQuadrupole:
-          case Element::aVerticalQuadrupole:
-            elem = std::make_shared<Element::VerticalQuadrupole>(
+          //case element::aGenericQuadrupole:
+          case element::aVerticalQuadrupole:
+            elem = std::make_shared<element::VerticalQuadrupole>(
                 el.element_name, el.element_s, el.element_length, el.element_magnetic_strength);
             break;
-          case Element::anHorizontalQuadrupole:
-            elem = std::make_shared<Element::HorizontalQuadrupole>(
+          case element::anHorizontalQuadrupole:
+            elem = std::make_shared<element::HorizontalQuadrupole>(
                 el.element_name, el.element_s, el.element_length, el.element_magnetic_strength);
             break;
-          case Element::aVerticalKicker:
-            elem = std::make_shared<Element::VerticalKicker>(
+          case element::aVerticalKicker:
+            elem = std::make_shared<element::VerticalKicker>(
                 el.element_name, el.element_s, el.element_length, el.element_magnetic_strength);
             break;
-          case Element::anHorizontalKicker:
-            elem = std::make_shared<Element::HorizontalKicker>(
+          case element::anHorizontalKicker:
+            elem = std::make_shared<element::HorizontalKicker>(
                 el.element_name, el.element_s, el.element_length, el.element_magnetic_strength);
             break;
-          case Element::aRectangularCollimator:
-          case Element::anEllipticalCollimator:
-          case Element::aCircularCollimator:
-          case Element::aCollimator:
-            elem = std::make_shared<Element::Collimator>(el.element_name, el.element_s, el.element_length);
+          case element::aRectangularCollimator:
+          case element::anEllipticalCollimator:
+          case element::aCircularCollimator:
+          case element::aCollimator:
+            elem = std::make_shared<element::Collimator>(el.element_name, el.element_s, el.element_length);
             break;
-          //case Element::anEllipticalCollimator:
-          //case Element::aCircularCollimator:
+          //case element::anEllipticalCollimator:
+          //case element::aCircularCollimator:
           default:
             throw Exception(__PRETTY_FUNCTION__, Fatal) << "Invalid element type: " << (int)el.element_type << ".";
         }
-        switch ((Aperture::Type)el.aperture_type) {
-          case Aperture::anInvalidAperture:
+        switch ((aperture::Type)el.aperture_type) {
+          case aperture::anInvalidAperture:
             break;
-          case Aperture::aRectangularAperture:
-            elem->setAperture(std::make_shared<Aperture::RectangularAperture>(
+          case aperture::aRectangularAperture:
+            elem->setAperture(std::make_shared<aperture::RectangularAperture>(
                 el.aperture_p1, el.aperture_p2, TwoVector(el.aperture_x, el.aperture_y)));
             break;
-          case Aperture::anEllipticAperture:
-            elem->setAperture(std::make_shared<Aperture::EllipticAperture>(
+          case aperture::anEllipticAperture:
+            elem->setAperture(std::make_shared<aperture::EllipticAperture>(
                 el.aperture_p1, el.aperture_p2, TwoVector(el.aperture_x, el.aperture_y)));
             break;
-          case Aperture::aCircularAperture:
+          case aperture::aCircularAperture:
             elem->setAperture(
-                std::make_shared<Aperture::CircularAperture>(el.aperture_p1, TwoVector(el.aperture_x, el.aperture_y)));
+                std::make_shared<aperture::CircularAperture>(el.aperture_p1, TwoVector(el.aperture_x, el.aperture_y)));
             break;
-          case Aperture::aRectEllipticAperture:
+          case aperture::aRectEllipticAperture:
             elem->setAperture(
-                std::make_shared<Aperture::RectEllipticAperture>(el.aperture_p1,
+                std::make_shared<aperture::RectEllipticAperture>(el.aperture_p1,
                                                                  el.aperture_p2,
                                                                  el.aperture_p3,
                                                                  el.aperture_p4,
                                                                  TwoVector(el.aperture_x, el.aperture_y)));
             break;
-          case Aperture::aRectCircularAperture:
+          case aperture::aRectCircularAperture:
             elem->setAperture(
-                std::make_shared<Aperture::RectEllipticAperture>(el.aperture_p1,
+                std::make_shared<aperture::RectEllipticAperture>(el.aperture_p1,
                                                                  el.aperture_p2,
                                                                  el.aperture_p3,
                                                                  el.aperture_p3,
                                                                  TwoVector(el.aperture_x, el.aperture_y)));
             break;
-          //case Aperture::aRaceTrackAperture:
-          //case Aperture::anOctagonalAperture:
+          //case aperture::aRaceTrackAperture:
+          //case aperture::anOctagonalAperture:
           default:
             throw Exception(__PRETTY_FUNCTION__, Fatal) << "Invalid aperture type: " << (int)el.aperture_type << ".";
         }
@@ -170,5 +171,5 @@ namespace Hector {
         }
       }
     }
-  }  // namespace IO
-}  // namespace Hector
+  }  // namespace io
+}  // namespace hector

@@ -9,9 +9,9 @@
 
 using std::ostream;
 
-namespace Hector {
+namespace hector {
   /// Collection of apertures to be associated to element objects
-  namespace Aperture {
+  namespace aperture {
     /// A generic aperture object for a beamline element
     class ApertureBase {
     public:
@@ -20,7 +20,7 @@ namespace Hector {
 
     public:
       /// Build a new aperture to an element
-      /// \param[in] type Aperture type (see Aperture::Type)
+      /// \param[in] type Aperture type (see aperture::Type)
       /// \param[in] pos Aperture position
       /// \param[in] param Shape parameters
       ApertureBase(const Type& type, const TwoVector& pos, const std::vector<double>& param);
@@ -75,11 +75,11 @@ namespace Hector {
       /// Aperture shape parameters
       Parameters param_;
     };
-  }  // namespace Aperture
+  }  // namespace aperture
   /// Human-readable printout of the properties of an aperture
-  std::ostream& operator<<(std::ostream&, const Aperture::ApertureBase&);
+  std::ostream& operator<<(std::ostream&, const aperture::ApertureBase&);
   /// Human-readable printout of the properties of an aperture
-  std::ostream& operator<<(std::ostream&, const Aperture::ApertureBase*);
-}  // namespace Hector
+  std::ostream& operator<<(std::ostream&, const aperture::ApertureBase*);
+}  // namespace hector
 
 #endif

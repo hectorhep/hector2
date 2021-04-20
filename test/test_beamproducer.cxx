@@ -7,7 +7,7 @@ using namespace std;
 int main(int argc, char* argv[]) {
   unsigned int num_particles;
   double min_xi, max_xi;
-  Hector::ArgsParser(argc,
+  hector::ArgsParser(argc,
                      argv,
                      {},
                      {
@@ -16,10 +16,10 @@ int main(int argc, char* argv[]) {
                          {"max-xi", "maximal particle momentum loss", 0.1, &max_xi},
                      });
 
-  //Hector::BeamProducer::gaussianParticleGun gun( 6000., 6500. );
-  Hector::BeamProducer::Xiscanner gun(num_particles, min_xi, max_xi);
+  //hector::beam::gaussianParticleGun gun( 6000., 6500. );
+  hector::beam::Xiscanner gun(num_particles, min_xi, max_xi);
   for (unsigned short i = 0; i < num_particles; ++i) {
-    Hector::Particle p = gun.shoot();
+    hector::Particle p = gun.shoot();
     //p.dump();
     cout << p.firstStateVector().xi() << endl;
   }

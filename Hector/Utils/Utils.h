@@ -5,7 +5,7 @@
 
 #include <string>
 
-namespace Hector {
+namespace hector {
   class Particle;
   /// Format a string using a printf style format descriptor.
   std::string Form(const std::string fmt, ...);
@@ -19,6 +19,6 @@ namespace Hector {
   double e_to_xi(double energy, double e0 = Parameters::get()->beamEnergy());
   /// Convert a particle momentum loss to its energy
   double xi_to_e(double xi, double e0 = Parameters::get()->beamEnergy());
-}  // namespace Hector
+}  // namespace hector
 
 #endif

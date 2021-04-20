@@ -24,7 +24,7 @@ int main(int argc, char* argv[]) {
   double beam_angular_divergence_ip, beam_lateral_width_ip, particles_energy;
   double s_pos;
 
-  Hector::ArgsParser args(
+  hector::ArgsParser args(
       argc,
       argv,
       {{"--twiss-file", "Twiss file", &twiss_filename}, {"--s-pos", "s-coordinate (m)", &s_pos}},
@@ -39,14 +39,14 @@ int main(int argc, char* argv[]) {
         &beam_angular_divergence_ip},
        {"--beam-width", "beam lateral width at the interaction point (m)", 13.63e-6, &beam_lateral_width_ip},
        {"--particles-energy", "beam particles energy (GeV)", 6500., &particles_energy}});
-  Hector::IO::Twiss parser(twiss_filename, interaction_point, s_pos);
+  hector::IO::Twiss parser(twiss_filename, interaction_point, s_pos);
   parser.printInfo();
 
   //const CLHEP::Hep2Vector offset( -0.097, 0. );
   const CLHEP::Hep2Vector offset(0., 0.);
   parser.beamline()->offsetElementsAfter(120., offset);
 
-  Hector::Propagator prop(parser.beamline());
+  hector::Propagator prop(parser.beamline());
 
   //TH2D hitmap( "hitmap", "x (mm)@@y (mm)", 200, -10., 10., 200, -10., 10. );
   //TH2D hitmap( "hitmap", "x (mm)@@y (mm)", 200, -5., 5., 200, -5., 5. );
@@ -62,23 +62,23 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  Hector::BeamProducer::GaussianParticleGun gun;
+  hector::BeamProducer::GaussianParticleGun gun;
   //gun.setElimits( particles_energy*0.95, particles_energy );
   gun.setElimits(particles_energy);
   gun.setXparams(0., beam_lateral_width_ip);
   gun.setYparams(0., beam_lateral_width_ip);
   gun.setTXparams(crossing_angle_x, beam_angular_divergence_ip);
   gun.setTYparams(crossing_angle_y, beam_angular_divergence_ip);
-  //Hector::BeamProducer::Xscanner gun( num_particles, Hector::Parameters::get()->beamEnergy(), 0., 0.01 );
+  //hector::BeamProducer::Xscanner gun( num_particles, hector::Parameters::get()->beamEnergy(), 0., 0.01 );
 
   unsigned short num_stopped = 0;
-  map<const Hector::Element::ElementBase*, unsigned short> stopped_at;
+  map<const hector::Element::ElementBase*, unsigned short> stopped_at;
   for (size_t i = 0; i < num_particles; ++i) {
     if ((int)(i * (double)num_particles / num_particles) % 1000 == 0)
       cout << ">>> Generating particle " << i << " / " << num_particles << endl;
 
     // propagation through the beamline
-    Hector::Particle p = gun.shoot();
+    hector::Particle p = gun.shoot();
     try {
       prop.propagate(p, s_pos);
       //p.dump();
@@ -86,7 +86,7 @@ int main(int argc, char* argv[]) {
       const CLHEP::Hep2Vector pos(p.stateVectorAt(s_pos).position() - offset);
       cout << s_pos << " -> " << pos << endl;
       hitmap.Fill(pos.x() * 1.e3, pos.y() * 1.e3);
-    } catch (Hector::ParticleStoppedException& pse) {
+    } catch (hector::ParticleStoppedException& pse) {
       //pse.dump();
       stopped_at[pse.stoppingElement()]++;
       num_stopped++;
@@ -98,7 +98,7 @@ int main(int argc, char* argv[]) {
         prop.propagate(p, hm.first);
         const CLHEP::Hep2Vector pos(p.stateVectorAt(hm.first).position() - offset);
         hm.second->Fill(pos.x(), pos.y());
-      } catch (Hector::Exception& e) {
+      } catch (hector::Exception& e) {
         continue;
       }
     }
@@ -121,11 +121,11 @@ int main(int argc, char* argv[]) {
 
   const string top_label = Form("s = %.2f m, #alpha_{X} = %.1f #murad", s_pos, crossing_angle_x * 1.e6);
   {
-    Hector::Canvas c("hitmap", top_label.c_str());
+    hector::Canvas c("hitmap", top_label.c_str());
     hitmap.Draw("colz");
     c.Prettify(&hitmap);
 
-    Hector::Canvas::PaveText(
+    hector::Canvas::PaveText(
         0.01,
         0.,
         0.05,
@@ -136,7 +136,7 @@ int main(int argc, char* argv[]) {
     c.Save("pdf");
   }
   if (m_hitmaps.size() > 0) {
-    Hector::Canvas c("hitmap_combined", top_label.c_str());
+    hector::Canvas c("hitmap_combined", top_label.c_str());
     unsigned int num_rows = sqrt(m_hitmaps.size()),
                  num_cols = m_hitmaps.size() / num_rows + (m_hitmaps.size() % num_rows == 0 ? 0 : 1);
     c.Divide(num_rows, num_cols);

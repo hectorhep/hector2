@@ -1,9 +1,9 @@
 #include "Hector/Elements/CircularAperture.h"
 
-namespace Hector {
-  namespace Aperture {
+namespace hector {
+  namespace aperture {
     CircularAperture::CircularAperture(double radius, const TwoVector& pos) : EllipticAperture(radius, radius, pos) {}
 
     CircularAperture::~CircularAperture() {}
-  }  // namespace Aperture
-}  // namespace Hector
+  }  // namespace aperture
+}  // namespace hector

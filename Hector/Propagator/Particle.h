@@ -7,7 +7,7 @@
 
 using std::cout;
 
-namespace Hector {
+namespace hector {
   /// Generic particle model inserted in a beam
   class Particle {
   public:
@@ -114,6 +114,6 @@ namespace Hector {
 
   /// Collection of particles composing the beam
   typedef std::vector<Particle> Particles;
-}  // namespace Hector
+}  // namespace hector
 
 #endif

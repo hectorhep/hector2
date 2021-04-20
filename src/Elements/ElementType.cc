@@ -1,50 +1,50 @@
 #include "Hector/Elements/ElementType.h"
 
-namespace Hector {
+namespace hector {
   /// Human-readable printout of a beamline element type
-  std::ostream& operator<<(std::ostream& os, const Element::Type& type) {
+  std::ostream& operator<<(std::ostream& os, const element::Type& type) {
     switch (type) {
-      case Element::anInvalidElement:
+      case element::anInvalidElement:
         return os << "invalid";
-      case Element::aMarker:
+      case element::aMarker:
         return os << "marker";
-      case Element::aDrift:
+      case element::aDrift:
         return os << "drift";
-      case Element::aMonitor:
+      case element::aMonitor:
         return os << "monitor";
-      case Element::aRectangularDipole:
+      case element::aRectangularDipole:
         return os << "rect.dipole";
-      case Element::aSectorDipole:
+      case element::aSectorDipole:
         return os << "sector dipole";
-      case Element::aGenericQuadrupole:
+      case element::aGenericQuadrupole:
         return os << "quadrupole";
-      case Element::anHorizontalQuadrupole:
+      case element::anHorizontalQuadrupole:
         return os << "hor.quadrupole";
-      case Element::aVerticalQuadrupole:
+      case element::aVerticalQuadrupole:
         return os << "vert.quadrupole";
-      case Element::aSextupole:
+      case element::aSextupole:
         return os << "sextupole";
-      case Element::aMultipole:
+      case element::aMultipole:
         return os << "multipole";
-      case Element::aVerticalKicker:
+      case element::aVerticalKicker:
         return os << "vertic.kicker";
-      case Element::anHorizontalKicker:
+      case element::anHorizontalKicker:
         return os << "horiz.kicker";
-      case Element::aRectangularCollimator:
+      case element::aRectangularCollimator:
         return os << "rect.collimator";
-      case Element::anEllipticalCollimator:
+      case element::anEllipticalCollimator:
         return os << "ellip.collimator";
-      case Element::aCircularCollimator:
+      case element::aCircularCollimator:
         return os << "circular collimator";
-      case Element::aCollimator:
+      case element::aCollimator:
         return os << "collimator";
-      case Element::aPlaceholder:
+      case element::aPlaceholder:
         return os << "placeholder";
-      case Element::anInstrument:
+      case element::anInstrument:
         return os << "instrument";
-      case Element::aSolenoid:
+      case element::aSolenoid:
         return os << "solenoid";
     }
     return os;
   }
-}  // namespace Hector
+}  // namespace hector

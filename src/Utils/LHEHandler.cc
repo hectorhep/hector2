@@ -10,8 +10,8 @@
 
 #include <sstream>
 
-namespace Hector {
-  namespace IO {
+namespace hector {
+  namespace io {
     LHE::LHE(const char* filename)
 #if defined(GOOD_HEPMC)
         : reader_(new LHEF::Reader(filename)) {
@@ -136,5 +136,5 @@ namespace Hector {
       return -1.;
 #endif
     }
-  }  // namespace IO
-}  // namespace Hector
+  }  // namespace io
+}  // namespace hector

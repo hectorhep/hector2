@@ -1,5 +1,5 @@
 #include "Hector/Core/Exception.h"
-#include "Hector/Beamline/Beamline.h"
+#include "Hector/Beamline.h"
 #include "Hector/IO/TwissHandler.h"
 #include "Hector/Propagator/Propagator.h"
 
@@ -26,7 +26,7 @@ int main(int argc, char* argv[]) {
   string twiss_file;
   unsigned int num_events;
 
-  Hector::ArgsParser args(argc,
+  hector::ArgsParser args(argc,
                           argv,
                           {{"twiss-file", "beamline Twiss file", &twiss_file, 'i'}},
                           {
@@ -37,18 +37,18 @@ int main(int argc, char* argv[]) {
                               {"vertex-size", "vertex size (m)", 10.e-6, &vertex_size},
                           });
 
-  Hector::IO::Twiss twiss(twiss_file.c_str(), "IP5", max_s);
-  //twiss.beamline()->offsetElementsAfter( 120., Hector::TwoVector( -0.097, 0. ) );
+  hector::io::Twiss twiss(twiss_file.c_str(), "IP5", max_s);
+  //twiss.beamline()->offsetElementsAfter( 120., hector::TwoVector( -0.097, 0. ) );
 
-  Hector::Propagator prop(twiss.beamline());
+  hector::Propagator prop(twiss.beamline());
 
   const auto& rps = twiss.beamline()->find("XRPH\\.");
 
   auto h_xi_raw = new TH1D("xi_raw", "Proton momentum loss #xi@@Events@@?.3f", 250, -0.125, 1.125),
        h_tx_raw = new TH1D("tx_raw", "#theta_{X}@@Events@@#murad?.1f", 100, -500., 500.),
        h_ty_raw = new TH1D("ty_raw", "#theta_{Y}@@Events@@#murad?.1f", 100, -500., 500.);
-  map<Hector::Element::ElementBase*, TH1D*> h_xi_sp, h_tx_sp, h_ty_sp;
-  map<Hector::Element::ElementBase*, TH2D*> h_hitmap;
+  map<hector::element::ElementBase*, TH1D*> h_xi_sp, h_tx_sp, h_ty_sp;
+  map<hector::element::ElementBase*, TH2D*> h_hitmap;
 
   TH1D h_num_protons("num_protons", "Proton multiplicity in event@@Events", 10, 0., 10.);
   double max_rp_s = 0.;
@@ -63,7 +63,7 @@ int main(int argc, char* argv[]) {
         new TH2D(Form("hitmap_%s", rp->name().c_str()), "x (m)@@y (m)", 300, -0.15, 0., 300, -0.03, 0.03);
   }
 
-  Hector::Parameters::get()->setComputeApertureAcceptance(false);
+  hector::Parameters::get()->setComputeApertureAcceptance(false);
 
   // configuration shamelessly stolen from CMSSW (9_1_X development cycle)
   vector<string> config{{
@@ -90,7 +90,7 @@ int main(int argc, char* argv[]) {
       // disable the hadronisation
       //"HadronLevel:all = off",
   }};
-  Hector::Pythia8Generator gen(config);
+  hector::Pythia8Generator gen(config);
 
   for (unsigned short i = 0; i < num_events; ++i) {
     const double ev_weight = 1. / num_events;
@@ -130,7 +130,7 @@ int main(int argc, char* argv[]) {
           h_tx_sp[rp]->Fill(part.firstStateVector().Tx() * 1.e6, ev_weight);
           h_ty_sp[rp]->Fill(part.firstStateVector().Ty() * 1.e6, ev_weight);
         }
-      } catch (Hector::Exception& e) {
+      } catch (hector::Exception& e) {
         //e.dump();
       }
     }
@@ -159,7 +159,7 @@ int main(int argc, char* argv[]) {
   }
 
   for (const auto& rp : rps) {
-    Hector::Canvas c(Form("hitmap_single_diffr_%s", rp->name().c_str()), "");
+    hector::Canvas c(Form("hitmap_single_diffr_%s", rp->name().c_str()), "");
     h_hitmap[rp.get()]->Draw("colz");
     c.Prettify(h_hitmap[rp.get()]);
     c.Save("pdf");
@@ -169,7 +169,7 @@ int main(int argc, char* argv[]) {
 }
 
 void plot_multi(const string& name, const string& title, vector<pair<string, TH1*> > graphs, const string& extra_label) {
-  Hector::Canvas c(name.c_str(), title.c_str());
+  hector::Canvas c(name.c_str(), title.c_str());
   THStack st;
   c.SetLegendX1(0.225);
   unsigned short i = 0;
@@ -191,7 +191,7 @@ void plot_multi(const string& name, const string& title, vector<pair<string, TH1
   c.Prettify(st.GetHistogram());
   st.SetTitle("");
   if (!extra_label.empty()) {
-    auto el = new Hector::Canvas::PaveText(0., 0.02, 0.35, 0.025);
+    auto el = new hector::Canvas::PaveText(0., 0.02, 0.35, 0.025);
     el->AddText(extra_label.c_str());
     el->SetTextSize(0.02);
     el->Draw();

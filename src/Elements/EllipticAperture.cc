@@ -1,7 +1,7 @@
 #include "Hector/Elements/EllipticAperture.h"
 
-namespace Hector {
-  namespace Aperture {
+namespace hector {
+  namespace aperture {
     EllipticAperture::EllipticAperture(double ell_length, double ell_height, const TwoVector& pos)
         : ApertureBase(anEllipticAperture, pos, {{ell_length, ell_height, 0.f, 0.f}}) {}
 
@@ -13,5 +13,5 @@ namespace Hector {
     }
 
     TwoVector EllipticAperture::limits() const { return TwoVector(p(0), p(1)); }
-  }  // namespace Aperture
-}  // namespace Hector
+  }  // namespace aperture
+}  // namespace hector

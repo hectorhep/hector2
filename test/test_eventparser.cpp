@@ -7,18 +7,18 @@ using namespace std;
 
 int main(int argc, char* argv[]) {
   string lhe_file;
-  Hector::ArgsParser(argc,
+  hector::ArgsParser(argc,
                      argv,
                      {
                          {"lhe-file", "input LHE file", &lhe_file, 'i'},
                      },
                      {});
 
-  Hector::IO::LHE parser(lhe_file.c_str());
+  hector::io::LHE parser(lhe_file.c_str());
 
   parser.printInfo();
 
-  Hector::Particles particles;
+  hector::Particles particles;
   while (parser.nextEvent(particles)) {
     for (const auto& part : particles) {
       //it->dump();

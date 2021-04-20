@@ -5,7 +5,7 @@
 #include <string>
 #include <map>
 
-namespace Hector {
+namespace hector {
   /// A generic command line arguments parser
   /// \author Laurent Forthomme
   /// \date Nov 2017
@@ -138,6 +138,6 @@ namespace Hector {
     ParametersList required_params_, optional_params_;
     std::vector<std::string> args_;
   };
-}  // namespace Hector
+}  // namespace hector
 
 #endif

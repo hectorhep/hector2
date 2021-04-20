@@ -9,12 +9,12 @@
 
 using std::cout;
 
-namespace Hector {
+namespace hector {
   /// A beamline, or collection of optics elements
   class Beamline {
   public:
     /// List of markers in the beamline
-    typedef std::map<double, Element::Marker> MarkersMap;
+    typedef std::map<double, element::Marker> MarkersMap;
 
   public:
     Beamline();
@@ -23,7 +23,7 @@ namespace Hector {
     /// Build a beamline from a longitudinal size and a interaction point position
     /// \param[in] length Longitudinal length of the beamline
     /// \param[in] ip Position of the interaction point
-    Beamline(double length, const std::shared_ptr<Element::ElementBase>& ip = nullptr);
+    Beamline(double length, const std::shared_ptr<element::ElementBase>& ip = nullptr);
     ~Beamline();
 
     /// Compute all drifts between each element in the beamline
@@ -37,31 +37,31 @@ namespace Hector {
     void dump(std::ostream& os = std::cout, bool show_drifts = true) const;
 
     /// Set the position of the interaction point
-    void setInteractionPoint(std::shared_ptr<Element::ElementBase> ip) { ip_ = ip; }
+    void setInteractionPoint(std::shared_ptr<element::ElementBase> ip) { ip_ = ip; }
     /// Retrieve the position of the interaction point
-    const std::shared_ptr<Element::ElementBase>& interactionPoint() const { return ip_; }
+    const std::shared_ptr<element::ElementBase>& interactionPoint() const { return ip_; }
 
     /// Add a new element in the beamline
     /// \param[in] elem Element to be copied and added to the beamline
-    void add(const std::shared_ptr<Element::ElementBase> elem);
+    void add(const std::shared_ptr<element::ElementBase> elem);
     /// Get the full beamline content (vector of elements)
     const Elements& elements() const { return elements_; }
     /// Get the full beamline content (vector of elements)
     Elements& elements() { return elements_; }
     /// Retrieve a beamline element given its name
     /// \param[in] name Name of the element to be retrieved
-    std::shared_ptr<Element::ElementBase>& get(const char* name);
+    std::shared_ptr<element::ElementBase>& get(const char* name);
     /// Retrieve a beamline element given its name
     /// \param[in] name Name of the element to be retrieved
-    const std::shared_ptr<Element::ElementBase> get(const char* name) const;
+    const std::shared_ptr<element::ElementBase> get(const char* name) const;
     /// Retrieve a beamline element given its s-position
     /// \param[in] s s-position of the element (computed wrt the interaction point)
-    std::shared_ptr<Element::ElementBase>& get(double s);
+    std::shared_ptr<element::ElementBase>& get(double s);
     /// Retrieve a beamline element given its s-position
     /// \param[in] s s-position of the element (computed wrt the interaction point)
-    const std::shared_ptr<Element::ElementBase> get(double s) const;
+    const std::shared_ptr<element::ElementBase> get(double s) const;
     /// Find an element by name
-    std::vector<std::shared_ptr<Element::ElementBase> > find(const char*);
+    std::vector<std::shared_ptr<element::ElementBase> > find(const char*);
     /// Number of elements in the beamline
     unsigned short numElements() const { return elements_.size(); }
 
@@ -75,7 +75,7 @@ namespace Hector {
     const Elements::const_iterator end() const { return elements_.end(); }
 
     /// Add a new marker element to the collection
-    void addMarker(const Element::Marker& marker);
+    void addMarker(const element::Marker& marker);
     /// Constant iterator to the first marker in the beamline
     const MarkersMap::const_iterator markers_begin() const { return markers_.begin(); }
     /// Constant iterator to the last marker in the beamline
@@ -104,13 +104,13 @@ namespace Hector {
     /// Beamline maximal length (in m)
     double max_length_;
     /// Pointer to the interaction point
-    std::shared_ptr<Element::ElementBase> ip_;
+    std::shared_ptr<element::ElementBase> ip_;
 
     /// List of elements defining the beamline
     Elements elements_;
     /// List of markers in the beamline
     MarkersMap markers_;
   };
-}  // namespace Hector
+}  // namespace hector
 
 #endif

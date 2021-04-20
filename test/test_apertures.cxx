@@ -14,9 +14,9 @@ int main() {
   const float x_min = -0.5, x_max = 0.5, y_min = -0.5, y_max = 0.5;
   const unsigned short num_steps = 500;
 
-  Hector::Aperture::RectangularAperture aper_rect(0.35, 0.25);
-  Hector::Aperture::EllipticAperture aper_el(0.4, 0.2);
-  Hector::Aperture::RectEllipticAperture aper(0.35, 0.25, 0.4, 0.2, CLHEP::Hep2Vector(0.0, 0.0));
+  hector::aperture::RectangularAperture aper_rect(0.35, 0.25);
+  hector::aperture::EllipticAperture aper_el(0.4, 0.2);
+  hector::aperture::RectEllipticAperture aper(0.35, 0.25, 0.4, 0.2, CLHEP::Hep2Vector(0.0, 0.0));
   CLHEP::Hep2Vector limits = aper.limits();
 
   std::cout << "Aperture has limits: " << limits.x() << " / " << limits.y() << std::endl;
@@ -38,7 +38,7 @@ int main() {
       }*/
     }
   }
-  Hector::Canvas c("aperture_plot", "Rect-elliptic aperture (0.35, 0.25, 0.4, 0.2)");
+  hector::Canvas c("aperture_plot", "Rect-elliptic aperture (0.35, 0.25, 0.4, 0.2)");
   TMultiGraph mg;
   g_inside.SetMarkerStyle(20);
   g_inside.SetMarkerColor(kRed + 1);

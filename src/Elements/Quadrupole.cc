@@ -2,8 +2,8 @@
 #include "Hector/Elements/Drift.h"
 #include "Hector/Core/Exception.h"
 
-namespace Hector {
-  namespace Element {
+namespace hector {
+  namespace element {
     Matrix HorizontalQuadrupole::matrix(double eloss, double mp, int qp) const {
       Matrix mat = Drift::genericMatrix(length_);
 
@@ -63,5 +63,5 @@ namespace Hector {
       mat(4, 4) = c_omega;
       return mat;
     }
-  }  // namespace Element
-}  // namespace Hector
+  }  // namespace element
+}  // namespace hector

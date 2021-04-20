@@ -25,13 +25,14 @@ file(GLOB LIB_SRC ${HECTOR_SOURCE_DIR}/*.cc
                   ${HECTOR_SOURCE_DIR}/Elements/*.cc
                   ${HECTOR_SOURCE_DIR}/Propagator/*.cc
                   ${HECTOR_SOURCE_DIR}/Utils/*.cc)
+file(GLOB_RECURSE HECTOR_INCLUDES ${PROJECT_SOURCE_DIR}/Hector/*.h)
 
 #----- link everything into the library and executable
 
 # do not forget to retrieve
 # http://home.thep.lu.se/~leif/LHEF/LHEF.h
 
-add_library(Hector2 SHARED ${LIB_SRC})
+add_library(Hector2 SHARED ${LIB_SRC} ${HECTOR_INCLUDES})
 set_target_properties(Hector2 PROPERTIES LINKER_LANGUAGE CXX)
 
 install(TARGETS Hector2 DESTINATION lib)

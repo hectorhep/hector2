@@ -3,8 +3,8 @@
 
 #include "ElementBase.h"
 
-namespace Hector {
-  namespace Element {
+namespace hector {
+  namespace element {
     /// A generic dipole object
     class Dipole : public ElementBase {
     public:
@@ -83,7 +83,7 @@ namespace Hector {
                     double mp = Parameters::get()->beamParticlesMass(),
                     int qp = Parameters::get()->beamParticlesCharge()) const override;
     };
-  }  // namespace Element
-}  // namespace Hector
+  }  // namespace element
+}  // namespace hector
 
 #endif
