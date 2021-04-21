@@ -47,6 +47,9 @@ if(PYTHIA8)
   else()
     list(APPEND HECTOR_DEPENDENCIES lhapdfdummy)
   endif()
+else()
+  list(REMOVE_ITEM LIB_SRC ${HECTOR_SOURCE_DIR}/IO/Pythia8Generator.cc)
+  list(REMOVE_ITEM HECTOR_INCLUDES ${PROJECT_SOURCE_DIR}/Hector/IO/Pythia8Generator.h)
 endif()
 
 # do not forget to retrieve

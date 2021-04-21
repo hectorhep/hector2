@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <cstring>
 #include <iostream>
+#include <stdexcept>
 
 namespace hector {
   ArgsParser::ArgsParser(int argc,
