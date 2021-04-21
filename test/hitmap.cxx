@@ -1,7 +1,7 @@
-#include "Hector/Beamline/Beamline.h"
-#include "Hector/Core/ParticleStoppedException.h"
+#include "Hector/Beamline.h"
+#include "Hector/ParticleStoppedException.h"
 #include "Hector/IO/TwissHandler.h"
-#include "Hector/Propagator/Propagator.h"
+#include "Hector/Propagator.h"
 #include "Hector/Utils/BeamProducer.h"
 #include "Hector/Utils/ArgsParser.h"
 
@@ -39,7 +39,7 @@ int main(int argc, char* argv[]) {
         &beam_angular_divergence_ip},
        {"--beam-width", "beam lateral width at the interaction point (m)", 13.63e-6, &beam_lateral_width_ip},
        {"--particles-energy", "beam particles energy (GeV)", 6500., &particles_energy}});
-  hector::IO::Twiss parser(twiss_filename, interaction_point, s_pos);
+  hector::io::Twiss parser(twiss_filename, interaction_point, s_pos);
   parser.printInfo();
 
   //const CLHEP::Hep2Vector offset( -0.097, 0. );
@@ -62,7 +62,7 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  hector::BeamProducer::GaussianParticleGun gun;
+  hector::beam::GaussianParticleGun gun;
   //gun.setElimits( particles_energy*0.95, particles_energy );
   gun.setElimits(particles_energy);
   gun.setXparams(0., beam_lateral_width_ip);
@@ -72,7 +72,7 @@ int main(int argc, char* argv[]) {
   //hector::BeamProducer::Xscanner gun( num_particles, hector::Parameters::get()->beamEnergy(), 0., 0.01 );
 
   unsigned short num_stopped = 0;
-  map<const hector::Element::ElementBase*, unsigned short> stopped_at;
+  map<const hector::element::ElementBase*, unsigned short> stopped_at;
   for (size_t i = 0; i < num_particles; ++i) {
     if ((int)(i * (double)num_particles / num_particles) % 1000 == 0)
       cout << ">>> Generating particle " << i << " / " << num_particles << endl;

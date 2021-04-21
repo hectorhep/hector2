@@ -39,7 +39,7 @@ namespace hector {
     Twiss::Twiss(std::string filename, std::string ip_name, float max_s, float min_s)
         : in_file_(filename), ip_name_(ip_name), min_s_(min_s) {
       if (!in_file_.is_open())
-        throw Exception(__PRETTY_FUNCTION__, Fatal)
+        throw Exception(__PRETTY_FUNCTION__, ExceptionType::fatal)
             << "Failed to open the Twiss file \"" << filename << "\"\n\tPlease check the path!";
       parseHeader();
 
@@ -128,7 +128,7 @@ namespace hector {
 
     void Twiss::parseHeader() {
       if (!in_file_.is_open())
-        throw Exception(__PRETTY_FUNCTION__, Fatal) << "Twiss file is not opened nor ready for parsing!";
+        throw Exception(__PRETTY_FUNCTION__, ExceptionType::fatal) << "Twiss file is not opened nor ready for parsing!";
       std::string line;
       while (!in_file_.eof()) {
         std::getline(in_file_, line);
@@ -147,7 +147,7 @@ namespace hector {
           // keep track of the last line read in the file
           in_file_lastline_ = in_file_.tellg();
         } catch (std::regex_error& e) {
-          throw Exception(__PRETTY_FUNCTION__, Fatal)
+          throw Exception(__PRETTY_FUNCTION__, ExceptionType::fatal)
               << "Error at line " << in_file_.tellg() << " while parsing the header!\n\t" << e.what();
         }
       }
@@ -167,7 +167,7 @@ namespace hector {
 
     void Twiss::parseElementsFields() {
       if (!in_file_.is_open())
-        throw Exception(__PRETTY_FUNCTION__, Fatal) << "Twiss file is not opened nor ready for parsing!";
+        throw Exception(__PRETTY_FUNCTION__, ExceptionType::fatal) << "Twiss file is not opened nor ready for parsing!";
       std::string line;
 
       in_file_.seekg(in_file_lastline_);
@@ -197,7 +197,7 @@ namespace hector {
           }
           in_file_lastline_ = in_file_.tellg();
         } catch (std::regex_error& e) {
-          throw Exception(__PRETTY_FUNCTION__, Fatal)
+          throw Exception(__PRETTY_FUNCTION__, ExceptionType::fatal)
               << "Error at line " << in_file_.tellg() << " while parsing elements fields!\n\t" << e.what();
         }
       }
@@ -216,7 +216,7 @@ namespace hector {
           }
           elements_fields_.add(list_names.at(i), type);
         } catch (std::regex_error& e) {
-          throw Exception(__PRETTY_FUNCTION__, Fatal)
+          throw Exception(__PRETTY_FUNCTION__, ExceptionType::fatal)
               << "Error while performing the matching name-data!\n\t" << e.what();
         }
       }
@@ -224,7 +224,7 @@ namespace hector {
 
     void Twiss::findInteractionPoint() {
       if (!in_file_.is_open())
-        throw Exception(__PRETTY_FUNCTION__, Fatal) << "Twiss file is not opened nor ready for parsing!";
+        throw Exception(__PRETTY_FUNCTION__, ExceptionType::fatal) << "Twiss file is not opened nor ready for parsing!";
       std::string line;
       in_file_.seekg(in_file_lastline_);
 
@@ -239,10 +239,11 @@ namespace hector {
           values.push_back(buffer);
         // first check if the "correct" number of element properties is parsed
         if (values.size() != elements_fields_.size())
-          throw Exception(__PRETTY_FUNCTION__, Fatal) << "Twiss file seems corrupted!\n\t"
-                                                      << "Element " << trim(values.at(0)) << " at line "
-                                                      << in_file_.tellg() << " has " << values.size() << " fields"
-                                                      << " when " << elements_fields_.size() << " are expected.";
+          throw Exception(__PRETTY_FUNCTION__, ExceptionType::fatal)
+              << "Twiss file seems corrupted!\n\t"
+              << "Element " << trim(values.at(0)) << " at line " << in_file_.tellg() << " has " << values.size()
+              << " fields"
+              << " when " << elements_fields_.size() << " are expected.";
         try {
           auto elem = parseElement(values);
           if (!elem || elem->name() != ip_name_)
@@ -252,7 +253,7 @@ namespace hector {
           break;
         } catch (Exception& e) {
           e.dump(std::cerr);
-          throw Exception(__PRETTY_FUNCTION__, Fatal)
+          throw Exception(__PRETTY_FUNCTION__, ExceptionType::fatal)
               << "Failed to retrieve the interaction point with name=\"" << ip_name_ << "\".";
         }
       }
@@ -260,12 +261,12 @@ namespace hector {
 
     void Twiss::parseElements() {
       if (!in_file_.is_open())
-        throw Exception(__PRETTY_FUNCTION__, Fatal) << "Twiss file is not opened nor ready for parsing!";
+        throw Exception(__PRETTY_FUNCTION__, ExceptionType::fatal) << "Twiss file is not opened nor ready for parsing!";
       // parse the optics elements and their characteristics
       std::string line;
 
       if (!interaction_point_)
-        throw Exception(__PRETTY_FUNCTION__, Fatal)
+        throw Exception(__PRETTY_FUNCTION__, ExceptionType::fatal)
             << "Interaction point \"" << ip_name_ << "\" has not been found in the beamline!";
 
       in_file_.seekg(in_file_lastline_);  // return to the first element line
@@ -291,7 +292,7 @@ namespace hector {
             continue;
           if (elem->s() + elem->length() > raw_beamline_->maxLength()) {
             if (has_next_element)
-              throw Exception(__PRETTY_FUNCTION__, Info, 20001) << "Finished to parse the beamline";
+              throw Exception(__PRETTY_FUNCTION__, ExceptionType::info, 20001) << "Finished to parse the beamline";
             if (elem->type() != element::anInstrument && elem->type() != element::aDrift)
               has_next_element = true;
           }
@@ -309,7 +310,7 @@ namespace hector {
     std::shared_ptr<element::ElementBase> Twiss::parseElement(const ValuesCollection& values) {
       // first check if the "correct" number of element properties is parsed
       if (values.size() != elements_fields_.size())
-        throw Exception(__PRETTY_FUNCTION__, Fatal)
+        throw Exception(__PRETTY_FUNCTION__, ExceptionType::fatal)
             << "Twiss file seems corrupted!\n\t"
             << "Element " << trim(values.at(0)) << " has " << values.size() << " fields"
             << " when " << elements_fields_.size() << " are expected.";
@@ -329,7 +330,7 @@ namespace hector {
             break;
           case Unknown:
           default: {
-            throw Exception(__PRETTY_FUNCTION__, JustWarning)
+            throw Exception(__PRETTY_FUNCTION__, ExceptionType::warning)
                 << "Twiss file predicts an unknown-type optics element parameter:\n\t"
                 << " (" << elements_fields_.key(i) << ") for " << trim(values.at(0)) << ".";
           } break;
@@ -351,7 +352,7 @@ namespace hector {
         switch (elemtype) {
           case element::aGenericQuadrupole: {
             if (length <= 0.)
-              throw Exception(__PRETTY_FUNCTION__, JustWarning)
+              throw Exception(__PRETTY_FUNCTION__, ExceptionType::warning)
                   << "Trying to add a quadrupole with invalid length (l=" << length << " m).";
 
             const double k1l = elem_map_floats.get("k1l");
@@ -365,10 +366,10 @@ namespace hector {
           case element::aSectorDipole: {
             const double k0l = elem_map_floats.get("k0l");
             if (length <= 0.)
-              throw Exception(__PRETTY_FUNCTION__, JustWarning)
+              throw Exception(__PRETTY_FUNCTION__, ExceptionType::warning)
                   << "Trying to add a dipole with invalid length (l=" << length << " m).";
             if (k0l == 0.)
-              throw Exception(__PRETTY_FUNCTION__, JustWarning)
+              throw Exception(__PRETTY_FUNCTION__, ExceptionType::warning)
                   << "Trying to add a dipole (" << name << ") with k0l=" << k0l << ".";
 
             const double mag_strength = k0l / length;
@@ -472,7 +473,8 @@ namespace hector {
         if (std::regex_match(name, rgx_rect_coll_name_))
           return element::aRectangularCollimator;
       } catch (std::regex_error& e) {
-        throw Exception(__PRETTY_FUNCTION__, Fatal) << "Error while retrieving the element type!\n\t" << e.what();
+        throw Exception(__PRETTY_FUNCTION__, ExceptionType::fatal)
+            << "Error while retrieving the element type!\n\t" << e.what();
       }
       return element::anInvalidElement;
     }

@@ -15,17 +15,17 @@ namespace hector {
     // parameterise the generator
     for (const auto& param : params)
       if (!pythia_->readString(param.c_str()))
-        throw Exception(__PRETTY_FUNCTION__, JustWarning) << "Failed to parse the command:\n\t"
-                                                          << "  \"" << param << "\"";
+        throw Exception(__PRETTY_FUNCTION__, ExceptionType::warning) << "Failed to parse the command:\n\t"
+                                                                     << "  \"" << param << "\"";
     // initialise the core
     if (!pythia_->init())
-      throw Exception(__PRETTY_FUNCTION__, JustWarning) << "Failed to initialise the Pythia8 core.";
+      throw Exception(__PRETTY_FUNCTION__, ExceptionType::warning) << "Failed to initialise the Pythia8 core.";
   }
 
   Pythia8Generator::Pythia8Generator(const std::string& xml_input) : pythia_(new Pythia8::Pythia(xml_input)) {
     // initialise the core
     if (!pythia_->init())
-      throw Exception(__PRETTY_FUNCTION__, JustWarning) << "Failed to initialise the Pythia8 core.";
+      throw Exception(__PRETTY_FUNCTION__, ExceptionType::warning) << "Failed to initialise the Pythia8 core.";
   }
 
   Pythia8Generator::~Pythia8Generator() {
@@ -58,7 +58,7 @@ namespace hector {
         return Particle(LorentzVector(part.px(), part.py(), part.pz(), part.e()), (int)part.charge(), part.id());
       }
     }
-    throw Exception(__PRETTY_FUNCTION__, JustWarning) << "Failed to generate the diffractive proton!";
+    throw Exception(__PRETTY_FUNCTION__, ExceptionType::warning) << "Failed to generate the diffractive proton!";
   }
 
   void Pythia8Generator::generate(Particle& in_part) {
@@ -73,7 +73,7 @@ namespace hector {
         return;
       }
     }
-    throw Exception(__PRETTY_FUNCTION__, JustWarning)
+    throw Exception(__PRETTY_FUNCTION__, ExceptionType::warning)
         << "Failed to generate the modified kinematics for the particle template!";
   }
 }  // namespace hector

@@ -65,14 +65,14 @@ namespace hector {
 
         const TwoVector pos_prev_elem(part.stateVectorAt(prev_elem->s()).position());
         if (!aper->contains(pos_prev_elem))
-          throw ParticleStoppedException(__PRETTY_FUNCTION__, JustWarning, prev_elem.get())
+          throw ParticleStoppedException(__PRETTY_FUNCTION__, ExceptionType::warning, prev_elem.get())
               << "Entering at " << pos_prev_elem << ", s = " << prev_elem->s() << " m\n\t"
               << "Aperture centre at " << aper->position() << "\n\t"
               << "Distance to aperture centre: " << (aper->position() - pos_prev_elem).mag() * 1.e2 << " cm.";
         // has passed through the element?
         //std::cout << prev_elem->s()+prev_elem->length() << "\t" << part.stateVectorAt( prev_elem->s()+prev_elem->length() ).position() << std::endl;
         if (!aper->contains(part.stateVectorAt(prev_elem->s() + prev_elem->length()).position()))
-          throw ParticleStoppedException(__PRETTY_FUNCTION__, JustWarning, prev_elem.get())
+          throw ParticleStoppedException(__PRETTY_FUNCTION__, ExceptionType::warning, prev_elem.get())
               << "Did not pass aperture " << aper->type() << ".";
       }
     } catch (const ParticleStoppedException&) {
@@ -117,7 +117,7 @@ namespace hector {
           elem->matrix(eloss, ini_pos.stateVector().m(), qp) * (ini_pos.stateVector().vector() - shift.vector()) +
           shift.vector();
 
-      if (Parameters::get()->loggingThreshold() >= Debug)
+      if (Parameters::get()->loggingThreshold() >= ExceptionType::debug)
         PrintDebug << "Propagating particle of mass " << ini_pos.stateVector().m() << " GeV"
                    << " and state vector at s = " << ini_pos.s() << " m:" << ini_pos.stateVector().vector().T() << "\t"
                    << "through " << elem->type() << " element \"" << elem->name() << "\" "

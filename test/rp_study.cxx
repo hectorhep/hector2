@@ -1,9 +1,9 @@
 #include "Hector/IO/TwissHandler.h"
-#include "Hector/Core/Exception.h"
-#include "Hector/Core/ParticleStoppedException.h"
+#include "Hector/Exception.h"
+#include "Hector/ParticleStoppedException.h"
 #include "Hector/Beamline.h"
-#include "Hector/Propagator/Propagator.h"
-//#include "Hector/Propagator/BeamProducer.h"
+#include "Hector/Propagator.h"
+//#include "Hector/Utils/BeamProducer.h"
 #include "Hector/Utils/ArgsParser.h"
 
 #include "utils.h"
@@ -92,7 +92,7 @@ int main(int argc, char* argv[]) {
       gr_x_vs_xi.SetPoint(gr_x_vs_xi.GetN(), xi, pos_rp.x() * 1.e3);
       gr_y_vs_xi.SetPoint(gr_y_vs_xi.GetN(), xi, pos_rp.y() * 1.e3);
     } catch (hector::Exception& e) {
-      e.dump();
+      e.dump(std::cerr);
     }
   }
 

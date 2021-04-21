@@ -82,7 +82,7 @@ namespace {
     int err;
     hector::Matrix out = mat.inverse(err);
     if (err != 0)
-      throw hector::Exception(__PRETTY_FUNCTION__, hector::JustWarning) << "Failed to invert the matrix";
+      throw hector::Exception(__PRETTY_FUNCTION__, hector::ExceptionType::warning) << "Failed to invert the matrix";
     return out;
   }
   //--- helper python <-> C++ converters
@@ -245,11 +245,11 @@ BOOST_PYTHON_MODULE(pyhector) {
   //----- EXCEPTIONS
 
   py::enum_<hector::ExceptionType>("ExceptionType")
-      .value("undefined", hector::ExceptionType::Undefined)
-      .value("debug", hector::ExceptionType::Debug)
-      .value("info", hector::ExceptionType::Info)
-      .value("justWarning", hector::ExceptionType::JustWarning)
-      .value("fatal", hector::ExceptionType::Fatal);
+      .value("undefined", hector::ExceptionType::undefined)
+      .value("debug", hector::ExceptionType::debug)
+      .value("info", hector::ExceptionType::info)
+      .value("justWarning", hector::ExceptionType::warning)
+      .value("fatal", hector::ExceptionType::fatal);
 
   py::class_<hector::Exception> except("Exception", py::init<const char*, py::optional<hector::ExceptionType, int> >());
   except.add_property("type", &hector::Exception::type)

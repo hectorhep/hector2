@@ -9,7 +9,7 @@ namespace hector {
 
       const double ke = fieldStrength(eloss, mp, qp);  // should be negative
       if (ke > 0.)
-        throw Exception(__PRETTY_FUNCTION__, Fatal)
+        throw Exception(__PRETTY_FUNCTION__, ExceptionType::fatal)
             << "Magnetic strength for horizontal quadrupole " << name_ << " should be negative!\n\t"
             << "Value = " << ke << ".";
       if (ke == 0.) {  // simple drift matrix
@@ -39,7 +39,7 @@ namespace hector {
 
       const double ke = fieldStrength(eloss, mp, qp);
       if (ke < 0.)
-        throw Exception(__PRETTY_FUNCTION__, Fatal)
+        throw Exception(__PRETTY_FUNCTION__, ExceptionType::fatal)
             << "Magnetic strength for vertical quadrupole " << name_ << " should be positive!\n\t"
             << "Value = " << ke << ".";
       if (ke == 0.) {  // simple drift matrix

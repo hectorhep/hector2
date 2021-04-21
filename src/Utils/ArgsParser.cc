@@ -40,11 +40,13 @@ namespace hector {
       const auto skey = find(args_.begin(), args_.end(), "-" + std::string(1, par.sname));
       if (key == args_.end() && skey == args_.end()) {
         print_help();
-        throw Exception(__PRETTY_FUNCTION__, Fatal, 64) << "The following parameter was not set: " << par.name << ".";
+        throw Exception(__PRETTY_FUNCTION__, ExceptionType::fatal, 64)
+            << "The following parameter was not set: " << par.name << ".";
       }
       const auto value = (key != args_.end()) ? key + 1 : skey + 1;
       if (value == args_.end())
-        throw Exception(__PRETTY_FUNCTION__, Fatal, 64) << "Invalid value for parameter: " << par.name << ".";
+        throw Exception(__PRETTY_FUNCTION__, ExceptionType::fatal, 64)
+            << "Invalid value for parameter: " << par.name << ".";
 
       par.value = *value;
       par.parse();
@@ -57,12 +59,14 @@ namespace hector {
         if (value != args_.end()) {
           for (const auto& par2 : optional_params_)
             if (*value == "--" + par2.name || *value == "-" + std::string(1, par.sname))
-              throw Exception(__PRETTY_FUNCTION__, Fatal, 64) << "Invalid value for parameter: " << par.name << ".";
+              throw Exception(__PRETTY_FUNCTION__, ExceptionType::fatal, 64)
+                  << "Invalid value for parameter: " << par.name << ".";
           par.value = *value;
         } else if (par.bool_variable)
           par.value = "1";  // if the flag is set, enabled by default
         else
-          throw Exception(__PRETTY_FUNCTION__, Fatal, 64) << "Invalid value for parameter: " << par.name << ".";
+          throw Exception(__PRETTY_FUNCTION__, ExceptionType::fatal, 64)
+              << "Invalid value for parameter: " << par.name << ".";
       }
       par.parse();
     }
@@ -81,7 +85,7 @@ namespace hector {
       if (par.sname != '\0' && "-" + std::string(1, par.sname) == name)
         return par.value;
     }
-    throw Exception(__PRETTY_FUNCTION__, Fatal, 64)
+    throw Exception(__PRETTY_FUNCTION__, ExceptionType::fatal, 64)
         << "The parameter \"" << name << "\" was not declared in the arguments parser constructor!";
   }
 

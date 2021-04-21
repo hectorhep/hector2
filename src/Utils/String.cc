@@ -35,10 +35,26 @@ namespace hector {
     return tmp.substr(first, (last - first + 1));
   }
 
-  /// Get the lowercase version of a string
   std::string lowercase(const std::string& str) {
     std::string s(str);
     std::transform(str.begin(), str.end(), s.begin(), ::tolower);
     return s;
+  }
+
+  std::string colourise(const std::string& str, Colour col, Modifier mod) {
+    if (mod == Modifier::reset)
+      return format("\033[%dm%s\033[0m", (int)col, str.c_str());
+    if (col == Colour::reset)
+      return format("\033[%dm%s\033[0m", (int)mod, str.c_str());
+    return format("\033[%d;%dm%s\033[0m", (int)col, (int)mod, str.c_str());
+  }
+
+  std::string now() {
+    static char buffer[25];
+    time_t raw_time;
+    time(&raw_time);
+    struct tm* time_info = localtime(&raw_time);
+    strftime(buffer, 25, "%Y-%d-%m %H:%M:%S", time_info);
+    return std::string(buffer);
   }
 }  // namespace hector

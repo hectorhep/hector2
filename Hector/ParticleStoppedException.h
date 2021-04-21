@@ -14,7 +14,7 @@ namespace hector {
     /// \param[in] type Exception type
     /// \param[in] additional_info Any other useful information to help the debugging
     ParticleStoppedException(const std::string& from,
-                             ExceptionType type = Undefined,
+                             ExceptionType type = ExceptionType::undefined,
                              const element::ElementBase* elem = nullptr)
         : Exception(from, type, 10000), elem_(elem) {
       message_ << "Particle stopped";

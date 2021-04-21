@@ -1,7 +1,6 @@
-#include "Hector/Core/Exception.h"
-#include "Hector/Utils/Utils.h"
+#include "Hector/Exception.h"
 #include "Hector/Utils/ArgsParser.h"
-#include "Hector/Utils/LHEHandler.h"
+#include "Hector/IO/LHEHandler.h"
 
 using namespace std;
 

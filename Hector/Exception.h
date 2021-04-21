@@ -7,9 +7,9 @@
 
 #include "Hector/ExceptionType.h"
 
-#define PrintDebug hector::Exception(__PRETTY_FUNCTION__, hector::Debug)
-#define PrintInfo hector::Exception(__PRETTY_FUNCTION__, hector::Info)
-#define PrintWarning hector::Exception(__PRETTY_FUNCTION__, hector::JustWarning)
+#define PrintDebug hector::Exception(__PRETTY_FUNCTION__, hector::ExceptionType::debug)
+#define PrintInfo hector::Exception(__PRETTY_FUNCTION__, hector::ExceptionType::info)
+#define PrintWarning hector::Exception(__PRETTY_FUNCTION__, hector::ExceptionType::warning)
 
 namespace hector {
   /// A simple exception handler
@@ -20,7 +20,7 @@ namespace hector {
     /// \param[in] desc Error message
     /// \param[in] type Type of exception encountered
     /// \param[in] id Error code associated to the exception
-    explicit Exception(const std::string& from, ExceptionType type = Undefined, int id = 0);
+    explicit Exception(const std::string& from, ExceptionType type = ExceptionType::undefined, int id = 0);
     /// Copy constructor
     Exception(const Exception& rhs);
 

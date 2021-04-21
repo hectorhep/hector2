@@ -1,7 +1,7 @@
 #include "Hector/Beamline.h"
 #include "Hector/IO/TwissHandler.h"
-#include "Hector/Core/ParticleStoppedException.h"
-#include "Hector/Propagator/Propagator.h"
+#include "Hector/ParticleStoppedException.h"
+#include "Hector/Propagator.h"
 
 #include "Hector/Utils/ArgsParser.h"
 #include "Hector/Utils/BeamProducer.h"

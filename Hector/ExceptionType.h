@@ -3,13 +3,13 @@
 
 namespace hector {
   /// Enumeration of exception severities
-  typedef enum {
-    Undefined = -1,  ///< Invalid exception type
-    Debug,           ///< Debugging information for developers
-    Info,            ///< Simple log to interact with the end user
-    JustWarning,     ///< Simple warning (proceeds with the execution)
-    Fatal            ///< Fatal error (exits the program)
-  } ExceptionType;
+  enum struct ExceptionType {
+    undefined = -1,  ///< Invalid exception type
+    debug,           ///< Debugging information for developers
+    info,            ///< Simple log to interact with the end user
+    warning,         ///< Simple warning (proceeds with the execution)
+    fatal            ///< Fatal error (exits the program)
+  };
 }  // namespace hector
 
 #endif

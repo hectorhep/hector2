@@ -11,7 +11,7 @@ namespace hector {
 
   unsigned short beam::LinearScanner::LinearScanner::next() {
     if (num_gen_ >= num_part_)
-      throw Exception(__PRETTY_FUNCTION__, JustWarning) << "Too much particles already generated!";
+      throw Exception(__PRETTY_FUNCTION__, ExceptionType::warning) << "Too much particles already generated!";
     return num_gen_++;
   }
 

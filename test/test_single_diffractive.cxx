@@ -1,10 +1,11 @@
-#include "Hector/Core/Exception.h"
+#include "Hector/Exception.h"
 #include "Hector/Beamline.h"
-#include "Hector/IO/TwissHandler.h"
-#include "Hector/Propagator/Propagator.h"
+#include "Hector/Propagator.h"
 
 #include "Hector/Utils/ArgsParser.h"
-#include "Hector/Utils/Pythia8Generator.h"
+
+#include "Hector/IO/TwissHandler.h"
+#include "Hector/IO/Pythia8Generator.h"
 
 #include "Canvas.h"
 #include "THStack.h"
