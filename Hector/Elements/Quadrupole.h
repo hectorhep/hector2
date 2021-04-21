@@ -1,7 +1,7 @@
 #ifndef Hector_Elements_Quadrupole_h
 #define Hector_Elements_Quadrupole_h
 
-#include "ElementBase.h"
+#include "Hector/Elements/ElementBase.h"
 
 namespace hector {
   namespace element {

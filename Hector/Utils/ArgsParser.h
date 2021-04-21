@@ -3,7 +3,6 @@
 
 #include <vector>
 #include <string>
-#include <map>
 
 namespace hector {
   /// A generic command line arguments parser

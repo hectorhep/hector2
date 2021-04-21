@@ -449,7 +449,7 @@ namespace hector {
         if (std::regex_match(name, rgx_drift_name_))
           return element::aDrift;
         if (std::regex_match(name, rgx_quadrup_name_))
-          return element::aGenericQuadrupole;  //FIXME
+          return element::aGenericQuadrupole;
         if (std::regex_match(name, rgx_sect_dipole_name_))
           return element::aSectorDipole;
         if (std::regex_match(name, rgx_rect_dipole_name_))

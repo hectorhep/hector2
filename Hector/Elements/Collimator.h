@@ -1,7 +1,7 @@
 #ifndef Hector_Elements_Collimator_h
 #define Hector_Elements_Collimator_h
 
-#include "Drift.h"
+#include "Hector/Elements/Drift.h"
 
 namespace hector {
   namespace element {

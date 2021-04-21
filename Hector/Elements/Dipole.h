@@ -1,7 +1,7 @@
 #ifndef Hector_Elements_Dipole_h
 #define Hector_Elements_Dipole_h
 
-#include "ElementBase.h"
+#include "Hector/Elements/ElementBase.h"
 
 namespace hector {
   namespace element {

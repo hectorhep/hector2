@@ -4,6 +4,7 @@
 #include "Hector/Utils/StateVector.h"
 
 #include <vector>
+#include <map>
 #include <iosfwd>
 
 namespace hector {
@@ -41,7 +42,7 @@ namespace hector {
     /// \param[in] mom Initial 4-momentum
     /// \param[in] charge Electric charge (in units of e)
     /// \param[in] pdgid PDG id
-    Particle(const LorentzVector& mom, int charge = Parameters::get()->beamParticlesCharge(), int pdgid = 2212);
+    Particle(const LorentzVector& mom, int charge = 999, int pdgid = 2212);
     ~Particle();
 
     /// Build a Particle object from a mass and electric charge
@@ -68,6 +69,11 @@ namespace hector {
 
     /// Mass (in GeV/c2)
     double mass() const { return firstStateVector().m(); }
+
+    /// Set if the particle has physical kinematics
+    void setPhysical(bool phys) { physical_ = phys; }
+    /// Reasonable kinematics for the particle?
+    bool physical() const { return physical_; }
 
     /// Print all useful information about a particle
     void dump(std::ostream& os) const;
@@ -106,6 +112,7 @@ namespace hector {
   private:
     int charge_;
     int pdgId_;
+    bool physical_;
     bool stopped_;
 
     PositionsMap positions_;

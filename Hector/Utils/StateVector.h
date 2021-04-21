@@ -2,9 +2,6 @@
 #define Hector_Utils_StateVector_h
 
 #include "Hector/Utils/Algebra.h"
-#include "Hector/Parameters.h"
-
-#include <map>
 
 namespace hector {
   /// Six-dimensional state vector associated to a particle at a given s
@@ -26,10 +23,7 @@ namespace hector {
     /// \param[in] pos x-y position of the particle (m)
     StateVector(const LorentzVector& mom, const TwoVector& pos = TwoVector());
     /// Build a state vector using the particle's position and its angle
-    StateVector(const TwoVector& pos,
-                const TwoVector& ang,
-                double energy = Parameters::get()->beamEnergy(),
-                double kick = 1.);
+    StateVector(const TwoVector& pos, const TwoVector& ang, double energy = -1., double kick = 1.);
     ~StateVector() {}
 
     /// Get the 6-vector associated to this state

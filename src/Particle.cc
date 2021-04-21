@@ -1,17 +1,21 @@
 #include "Hector/Particle.h"
+#include "Hector/Parameters.h"
 
 #include "Hector/Utils/String.h"
 #include "Hector/Exception.h"
 
 namespace hector {
-  Particle::Particle() : charge_(0), pdgId_(0), stopped_(false) { addPosition(0., StateVector()); }
+  Particle::Particle() : charge_(0), pdgId_(0), physical_(true), stopped_(false) { addPosition(0., StateVector()); }
 
-  Particle::Particle(const StateVector& sv0, double s0) : charge_(0), pdgId_(0), stopped_(false) {
+  Particle::Particle(const StateVector& sv0, double s0) : charge_(0), pdgId_(0), physical_(true), stopped_(false) {
     addPosition(s0, sv0);
   }
 
   Particle::Particle(const LorentzVector& mom, int charge, int pdgid)
-      : charge_(charge), pdgId_(pdgid), stopped_(false) {
+      : charge_(charge == 999 ? Parameters::get()->beamParticlesCharge() : charge),
+        pdgId_(pdgid),
+        physical_(true),
+        stopped_(false) {
     addPosition(0., StateVector(mom));
   }
 

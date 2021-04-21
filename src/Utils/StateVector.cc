@@ -2,6 +2,8 @@
 #include "Hector/Utils/String.h"
 #include "Hector/Utils/Kinematics.h"
 
+#include "Hector/Parameters.h"
+
 #include "Hector/Exception.h"
 
 namespace hector {
@@ -22,6 +24,8 @@ namespace hector {
       : Vector(6, 1), m_(0.) {
     setPosition(pos);
     setAngles(ang);
+    if (energy < 0.)
+      energy = Parameters::get()->beamEnergy();
     setEnergy(energy);
     setKick(kick);
   }

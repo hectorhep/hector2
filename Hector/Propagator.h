@@ -2,6 +2,7 @@
 #define Hector_Propagator_h
 
 #include "Hector/Particle.h"
+#include <memory>
 
 namespace hector {
   class Beamline;

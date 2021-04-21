@@ -2,6 +2,7 @@
 #define Hector_Utils_BeamProducer
 
 #include "Hector/Particle.h"
+#include "Hector/Parameters.h"
 
 #include <vector>
 

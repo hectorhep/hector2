@@ -41,7 +41,7 @@ namespace hector {
       /// Type of aperture (rectangular, elliptic, rect-elliptic, circular)
       Type type() const { return type_; }
       /// Set the type of aperture
-      void setType(const Type& type) { type_ = type; }  // FIXME checks to ensure the parameters are valid!
+      void setType(const Type& type) { type_ = type; }
       /// Human-readable aperture type
       const std::string typeName() const;
 
