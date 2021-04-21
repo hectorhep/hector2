@@ -57,7 +57,7 @@ endif()
 
 add_library(Hector2 SHARED ${LIB_SRC} ${HECTOR_INCLUDES})
 set_target_properties(Hector2 PROPERTIES LINKER_LANGUAGE CXX)
-target_include_directories(Hector2 PRIVATE ${HECTOR_INC_DEPENDENCIES})
+target_include_directories(Hector2 PUBLIC ${HECTOR_INC_DEPENDENCIES})
 
 add_executable(hector ${HECTOR_SOURCE_DIR}/hector.cc)
 target_link_libraries(hector Hector2 ${HECTOR_DEPENDENCIES})
