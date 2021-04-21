@@ -28,27 +28,25 @@ namespace hector {
     void HBL::parse(const std::string& filename) {
       std::ifstream file(filename, std::ios::binary | std::ios::in);
       if (!file.is_open())
-        throw Exception(__PRETTY_FUNCTION__, ExceptionType::fatal)
-            << "Impossible to open file \"" << filename << "\" for reading!";
+        throw H_ERROR << "Impossible to open file \"" << filename << "\" for reading!";
 
       HBLHeader hdr;
       file.read(reinterpret_cast<char*>(&hdr), sizeof(HBLHeader));
       if (hdr.magic != magic_number)
-        throw Exception(__PRETTY_FUNCTION__, ExceptionType::fatal)
-            << "Invalid magic number retrieved for file \"" << filename << "\"!";
+        throw H_ERROR << "Invalid magic number retrieved for file \"" << filename << "\"!";
 
       if (hdr.version > version)
-        throw Exception(__PRETTY_FUNCTION__, ExceptionType::fatal)
-            << "Version " << hdr.version << " is not (yet) supported! Currently peaking at " << version << "!";
+        throw H_ERROR << "Version " << hdr.version << " is not (yet) supported! Currently peaking at " << version
+                      << "!";
 
       HBLElement el;
       std::shared_ptr<element::ElementBase> elem;
       while (file.read(reinterpret_cast<char*>(&el), sizeof(HBLElement))) {
         if (Parameters::get()->loggingThreshold() > ExceptionType::warning)
-          PrintInfo << "Retrieved a " << (element::Type)el.element_type << " element\n\t"
-                    << "with name " << el.element_name << "\n\tat s=" << el.element_s << " m\n\t"
-                    << "with length=" << el.element_length << " m (magnetic strength=" << el.element_magnetic_strength
-                    << ").";
+          H_INFO << "Retrieved a " << (element::Type)el.element_type << " element\n\t"
+                 << "with name " << el.element_name << "\n\tat s=" << el.element_s << " m\n\t"
+                 << "with length=" << el.element_length << " m (magnetic strength=" << el.element_magnetic_strength
+                 << ").";
         switch ((element::Type)el.element_type) {
           case element::aMarker:
           case element::aMonitor:
@@ -92,8 +90,7 @@ namespace hector {
           //case element::anEllipticalCollimator:
           //case element::aCircularCollimator:
           default:
-            throw Exception(__PRETTY_FUNCTION__, ExceptionType::fatal)
-                << "Invalid element type: " << (int)el.element_type << ".";
+            throw H_ERROR << "Invalid element type: " << (int)el.element_type << ".";
         }
         switch ((aperture::Type)el.aperture_type) {
           case aperture::anInvalidAperture:
@@ -127,15 +124,13 @@ namespace hector {
           //case aperture::aRaceTrackAperture:
           //case aperture::anOctagonalAperture:
           default:
-            throw Exception(__PRETTY_FUNCTION__, ExceptionType::fatal)
-                << "Invalid aperture type: " << (int)el.aperture_type << ".";
+            throw H_ERROR << "Invalid aperture type: " << (int)el.aperture_type << ".";
         }
         if (elem)
           beamline_->add(elem);
       }
       if (beamline_->numElements() != hdr.num_elements)
-        throw Exception(__PRETTY_FUNCTION__, ExceptionType::fatal)
-            << "Expecting " << hdr.num_elements << " elements, retrieved " << beamline_->numElements() << "!";
+        throw H_ERROR << "Expecting " << hdr.num_elements << " elements, retrieved " << beamline_->numElements() << "!";
     }
 
     void HBL::write(const Beamline* bl, const std::string& filename) {

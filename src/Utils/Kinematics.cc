@@ -11,7 +11,7 @@ namespace hector {
     StateVector sv_ini = part.firstStateVector();
 
     if (q2_gamma == 0.) {
-      PrintInfo << "Virtuality is null: only energy has changed.";
+      H_INFO << "Virtuality is null: only energy has changed.";
       sv_ini.setEnergy(sv_ini.energy() - e_gamma);
       return;
     }

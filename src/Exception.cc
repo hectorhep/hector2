@@ -22,48 +22,42 @@ namespace hector {
 
   const std::string Exception::typeString() const {
     switch (type_) {
+      case ExceptionType::debug:
+        return colourise("Debug:", Colour::yellow, Modifier::reverse);
       case ExceptionType::warning:
-        return "\033[32;1mJustWarning\033[0m";
+        return colourise("Warning:", Colour::blue, Modifier::bold);
       case ExceptionType::info:
-        return "\033[33;1mInfo\033[0m";
+        return colourise("Info:", Colour::green, Modifier::bold);
       case ExceptionType::fatal:
-        return "\033[31;1mFatal\033[0m";
+        return colourise("Error", Colour::red, Modifier::bold);
       case ExceptionType::undefined:
       default:
-        return "\33[7;1mUndefined\033[0m";
+        return colourise("Undefined exception", Colour::reset, Modifier::reverse);
     }
   }
 
   void Exception::dump(std::ostream& os) const {
     if (type_ < Parameters::get()->loggingThreshold())
       return;
+    os << typeString();
     switch (type_) {
       case ExceptionType::info:
-        os << colourise("Info:", Colour::green, Modifier::bold) << "\t" << message_.str() << "\n";
+        os << "\t" << message_.str() << "\n";
         break;
       case ExceptionType::debug:
-        os << colourise("Debug:", Colour::yellow, Modifier::reverse) << " "
-           << colourise(from_, Colour::reset, Modifier::underline) << "\n\t" << message_.str() << "\n";
-        break;
       case ExceptionType::warning:
-        os << colourise("Warning:", Colour::blue, Modifier::bold) << " "
-           << colourise(from_, Colour::reset, Modifier::underline) << "\n\t" << message_.str() << "\n";
+        os << " " << colourise(from_, Colour::reset, Modifier::underline) << "\n\t" << message_.str() << "\n";
         break;
       case ExceptionType::undefined:
       case ExceptionType::fatal: {
         const std::string sep(80, '-');
-        os << sep << "\n";
-        if (type_ == ExceptionType::fatal)
-          os << colourise("Error", Colour::red, Modifier::bold);
-        else if (type_ == ExceptionType::undefined)
-          os << colourise("Undefined exception", Colour::reset, Modifier::reverse);
-        os << " occurred at " << now() << "\n";
+        os << sep << "\n"
+           << " occurred at " << now() << "\n";
         if (!from_.empty())
           os << "  raised by: " << colourise(from_, Colour::reset, Modifier::underline) << "\n";
         if (errorNumber() != 0)
           os << "  error #" << error_num_ << "\n";
-        os << "\n" << message_.str() << "\n";
-        os << sep << "\n";
+        os << "\n" << message_.str() << "\n" << sep << "\n";
       } break;
     }
     os << std::flush;

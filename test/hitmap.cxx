@@ -117,7 +117,7 @@ int main(int argc, char* argv[]) {
                     num_particles)
             << se.first->name() << " " << se.first->typeName();
   }
-  PrintInfo << summary.str() << ".";
+  H_INFO << summary.str() << ".";
 
   const string top_label = Form("s = %.2f m, #alpha_{X} = %.1f #murad", s_pos, crossing_angle_x * 1.e6);
   {

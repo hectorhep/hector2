@@ -25,9 +25,9 @@ namespace hector {
 
   void Particle::addPosition(const Position& pos, bool stopped) {
     if (!positions_.empty() > 0 && lastStateVector().m() != pos.stateVector().m())
-      throw Exception(__PRETTY_FUNCTION__, ExceptionType::fatal)
-          << "Particle mass is not conserved in propagation!\n\t"
-          << "Previous mass was " << lastStateVector().m() << " GeV, new mass is " << pos.stateVector().m() << " GeV.";
+      throw H_ERROR << "Particle mass is not conserved in propagation!\n\t"
+                    << "Previous mass was " << lastStateVector().m() << " GeV, new mass is " << pos.stateVector().m()
+                    << " GeV.";
     positions_.insert(pos.pair());
     stopped_ = stopped;
   }
@@ -40,8 +40,7 @@ namespace hector {
     const auto &lower_it = --positions_.upper_bound(s), upper_it = positions_.upper_bound(s);
 
     if (lower_it == positions_.end() || upper_it->first < lower_it->first)
-      throw Exception(__PRETTY_FUNCTION__, ExceptionType::warning)
-          << "Impossible to interpolate the position at s = " << s << " m.";
+      throw H_ERROR << "Impossible to interpolate the position at s = " << s << " m.";
 
     //PrintInfo( Form( "Interpolating for s = %.2f between %.2f and %.2f", s, lower_it->first, upper_it->first ) );
 
@@ -50,9 +49,8 @@ namespace hector {
 
     const double drift_length = upper_it->first - lower_it->first;
     if (drift_length == 0)
-      throw Exception(__PRETTY_FUNCTION__, ExceptionType::warning)
-          << "No luck in choosing position (s=" << s << " m)\n\t"
-          << "Interpolation is impossible!";
+      throw H_ERROR << "No luck in choosing position (s=" << s << " m)\n\t"
+                    << "Interpolation is impossible!";
 
     const TwoVector s_pos = in + ((s - lower_it->first) / drift_length) * (out - in);
 

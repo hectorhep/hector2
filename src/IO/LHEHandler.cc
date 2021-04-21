@@ -23,17 +23,17 @@ namespace hector {
     }
 #else
     {
-      PrintWarning << "No parser found to read LHEF file \"" << filename << "\".";
+      H_WARNING << "No parser found to read LHEF file \"" << filename << "\".";
     }
 #endif
 
     LHE::~LHE() {}
 
     void LHE::printInfo() const {
-      PrintInfo << "LHEF file successfully parsed. General info:"
-                << "\n\t Beams: " << beam1Energy() << " GeV (" << beam1PDGId() << ") on " << beam2Energy() << " GeV ("
-                << beam2PDGid() << ")"
-                << "\n\t Process cross section: " << crossSection() << " +- " << crossSectionError() << " pb.";
+      H_INFO << "LHEF file successfully parsed. General info:"
+             << "\n\tBeams: " << beam1Energy() << " GeV (" << beam1PDGId() << ") on " << beam2Energy() << " GeV ("
+             << beam2PDGid() << ")"
+             << "\n\tProcess cross section: " << crossSection() << " +- " << crossSectionError() << " pb.";
     }
 
     bool LHE::nextEvent(Particles& parts) {

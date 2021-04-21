@@ -7,9 +7,10 @@
 
 #include "Hector/ExceptionType.h"
 
-#define PrintDebug hector::Exception(__PRETTY_FUNCTION__, hector::ExceptionType::debug)
-#define PrintInfo hector::Exception(__PRETTY_FUNCTION__, hector::ExceptionType::info)
-#define PrintWarning hector::Exception(__PRETTY_FUNCTION__, hector::ExceptionType::warning)
+#define H_DEBUG hector::Exception(__PRETTY_FUNCTION__, hector::ExceptionType::debug)
+#define H_INFO hector::Exception(__PRETTY_FUNCTION__, hector::ExceptionType::info)
+#define H_WARNING hector::Exception(__PRETTY_FUNCTION__, hector::ExceptionType::warning)
+#define H_ERROR hector::Exception(__PRETTY_FUNCTION__, hector::ExceptionType::fatal)
 
 namespace hector {
   /// A simple exception handler

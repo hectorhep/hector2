@@ -70,7 +70,7 @@ namespace hector {
         return 0.;
 
       if (e_loss < 0.)
-        throw Exception(__PRETTY_FUNCTION__, ExceptionType::fatal) << "Invalid energy loss: " << e_loss << " GeV.";
+        throw H_ERROR << "Invalid energy loss: " << e_loss << " GeV.";
 
       double p_bal = 1.;
       if (e_loss > 0.) {
@@ -80,7 +80,7 @@ namespace hector {
             p_out = sqrt((e_out - mp) * (e_out + mp));             // e_out^2 - p_out^2 = mp^2
 
         if (p_out == 0)
-          throw Exception(__PRETTY_FUNCTION__, ExceptionType::warning) << "Invalid particle momentum.";
+          throw H_WARNING << "Invalid particle momentum.";
 
         p_bal = p_ini / p_out;
       }

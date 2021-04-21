@@ -34,10 +34,10 @@ namespace hector {
         if (first_s > prev_elem->s() && first_s < elem->s()) {
           switch (prev_elem->type()) {
             case element::aDrift:
-              PrintInfo << "Path starts inside drift " << prev_elem->name() << ".";
+              H_INFO << "Path starts inside drift " << prev_elem->name() << ".";
               break;
             default:
-              PrintInfo << "Path starts inside element " << prev_elem->name() << ".";
+              H_INFO << "Path starts inside element " << prev_elem->name() << ".";
               break;
           }
 
@@ -118,13 +118,13 @@ namespace hector {
           shift.vector();
 
       if (Parameters::get()->loggingThreshold() >= ExceptionType::debug)
-        PrintDebug << "Propagating particle of mass " << ini_pos.stateVector().m() << " GeV"
-                   << " and state vector at s = " << ini_pos.s() << " m:" << ini_pos.stateVector().vector().T() << "\t"
-                   << "through " << elem->type() << " element \"" << elem->name() << "\" "
-                   << "at s = " << elem->s() << " m, "
-                   << "of length " << elem->length() << " m,\n\t"
-                   << "and with transfer matrix:" << elem->matrix(eloss, ini_pos.stateVector().m(), qp) << "\t"
-                   << "Resulting state vector:" << prop.T();
+        H_DEBUG << "Propagating particle of mass " << ini_pos.stateVector().m() << " GeV"
+                << " and state vector at s = " << ini_pos.s() << " m:" << ini_pos.stateVector().vector().T() << "\t"
+                << "through " << elem->type() << " element \"" << elem->name() << "\" "
+                << "at s = " << elem->s() << " m, "
+                << "of length " << elem->length() << " m,\n\t"
+                << "and with transfer matrix:" << elem->matrix(eloss, ini_pos.stateVector().m(), qp) << "\t"
+                << "Resulting state vector:" << prop.T();
 
       // perform the propagation (assuming that mass is conserved...)
       StateVector vec(prop, ini_pos.stateVector().m());

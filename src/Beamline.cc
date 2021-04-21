@@ -38,9 +38,8 @@ namespace hector {
   void Beamline::add(const std::shared_ptr<element::ElementBase> elem) {
     const double new_size = elem->s() + elem->length();
     if (new_size > max_length_ && max_length_ < 0.)
-      throw Exception(__PRETTY_FUNCTION__, ExceptionType::debug)
-          << "Element " << elem->name() << " is too far away for this beamline!\n"
-          << "\tBeamline length: " << max_length_ << " m, this element: " << new_size << " m.";
+      throw H_ERROR << "Element " << elem->name() << " is too far away for this beamline!\n"
+                    << "\tBeamline length: " << max_length_ << " m, this element: " << new_size << " m.";
 
     bool already_added = false;
 
@@ -62,16 +61,15 @@ namespace hector {
         continue;
 
       if (!Parameters::get()->correctBeamlineOverlaps())
-        throw Exception(__PRETTY_FUNCTION__, ExceptionType::fatal)
-            << "Elements overlap with \"" << prev_elem->name() << "\" "
-            << "detected while adding \"" << elem->name() << "\"!";
+        throw H_ERROR << "Elements overlap with \"" << prev_elem->name() << "\" "
+                      << "detected while adding \"" << elem->name() << "\"!";
 
       // from that point on, an overlap is detected
       // reduce or separate that element in two sub-parts
 
-      PrintDebug << elem->name() << " (" << elem->type() << ") is inside " << prev_elem->name() << " ("
-                 << prev_elem->type() << ")\n\t"
-                 << "Hector will fix the overlap by splitting the earlier.";
+      H_DEBUG << elem->name() << " (" << elem->type() << ") is inside " << prev_elem->name() << " ("
+              << prev_elem->type() << ")\n\t"
+              << "Hector will fix the overlap by splitting the earlier.";
       const double prev_length = prev_elem->length();
 
       std::shared_ptr<element::ElementBase> next_elem = nullptr;
@@ -155,8 +153,7 @@ namespace hector {
           out.emplace_back(elem);
       return out;
     } catch (const std::regex_error& e) {
-      throw Exception(__PRETTY_FUNCTION__, ExceptionType::fatal)
-          << "Invalid regular expression required:\n\t" << regex << "\n\tError code: " << e.code() << ".";
+      throw H_ERROR << "Invalid regular expression required:\n\t" << regex << "\n\tError code: " << e.code() << ".";
     }
   }
 

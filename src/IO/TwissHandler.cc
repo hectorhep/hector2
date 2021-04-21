@@ -39,8 +39,7 @@ namespace hector {
     Twiss::Twiss(std::string filename, std::string ip_name, float max_s, float min_s)
         : in_file_(filename), ip_name_(ip_name), min_s_(min_s) {
       if (!in_file_.is_open())
-        throw Exception(__PRETTY_FUNCTION__, ExceptionType::fatal)
-            << "Failed to open the Twiss file \"" << filename << "\"\n\tPlease check the path!";
+        throw H_ERROR << "Failed to open the Twiss file \"" << filename << "\"\n\tPlease check the path!";
       parseHeader();
 
       raw_beamline_ = std::unique_ptr<Beamline>(new Beamline(max_s - min_s));
@@ -48,19 +47,19 @@ namespace hector {
         raw_beamline_->setLength(header_float_.get("length"));
       if (header_float_.hasKey("energy") && Parameters::get()->beamEnergy() != header_float_.get("energy")) {
         Parameters::get()->setBeamEnergy(header_float_.get("energy"));
-        PrintWarning << "Beam energy changed to " << Parameters::get()->beamEnergy()
-                     << " GeV to match Twiss optics parameters.";
+        H_WARNING << "Beam energy changed to " << Parameters::get()->beamEnergy()
+                  << " GeV to match Twiss optics parameters.";
       }
       if (header_float_.hasKey("mass") && Parameters::get()->beamParticlesMass() != header_float_.get("mass")) {
         Parameters::get()->setBeamParticlesMass(header_float_.get("mass"));
-        PrintWarning << "Beam particles mass changed to " << Parameters::get()->beamParticlesMass()
-                     << " GeV to match Twiss optics parameters.";
+        H_WARNING << "Beam particles mass changed to " << Parameters::get()->beamParticlesMass()
+                  << " GeV to match Twiss optics parameters.";
       }
       if (header_float_.hasKey("charge") &&
           Parameters::get()->beamParticlesCharge() != static_cast<int>(header_float_.get("charge"))) {
         Parameters::get()->setBeamParticlesCharge(static_cast<int>(header_float_.get("charge")));
-        PrintWarning << "Beam particles charge changed to " << Parameters::get()->beamParticlesCharge()
-                     << " e to match Twiss optics parameters.";
+        H_WARNING << "Beam particles charge changed to " << Parameters::get()->beamParticlesCharge()
+                  << " e to match Twiss optics parameters.";
       }
 
       parseElementsFields();
@@ -86,9 +85,9 @@ namespace hector {
 
     Beamline* Twiss::beamline() const {
       if (!beamline_) {
-        PrintWarning << "Sequenced beamline not computed from the Twiss file."
-                     << " Retrieving the raw version."
-                     << " You may encounter some numerical issues.";
+        H_WARNING << "Sequenced beamline not computed from the Twiss file."
+                  << " Retrieving the raw version."
+                  << " You may encounter some numerical issues.";
         return raw_beamline_.get();
       }
       return beamline_.get();
@@ -98,28 +97,28 @@ namespace hector {
       std::ostringstream os;
       os << "Twiss file successfully parsed. Metadata:";
       if (header_str_.hasKey("title"))
-        os << "\n\t Title: " << header_str_.get("title");
+        os << "\n\tTitle: " << header_str_.get("title");
       if (header_str_.hasKey("origin"))
-        os << "\n\t Origin: " << trim(header_str_.get("origin"));
+        os << "\n\tOrigin: " << trim(header_str_.get("origin"));
       if (header_float_.hasKey("timestamp")) {
         // C implementation for pre-gcc5 compilers
         time_t time = (long)header_float_.get("timestamp");
         std::tm tm;
         char* time_chr = new char[100];
         strftime(time_chr, 100, "%c", localtime_r(&time, &tm));
-        os << "\n\t Export date: " << time_chr;
+        os << "\n\tExport date: " << time_chr;
         delete[] time_chr;
       } else if (header_str_.hasKey("date") || header_str_.hasKey("time"))
-        os << "\n\t Export date: " << trim(header_str_.get("date")) << " @ " << trim(header_str_.get("time"));
+        os << "\n\tExport date: " << trim(header_str_.get("date")) << " @ " << trim(header_str_.get("time"));
       if (header_float_.hasKey("energy"))
-        os << "\n\t Simulated single beam energy: " << header_float_.get("energy") << " GeV";
+        os << "\n\tSimulated single beam energy: " << header_float_.get("energy") << " GeV";
       if (header_str_.hasKey("sequence"))
-        os << "\n\t Sequence: " << header_str_.get("sequence");
+        os << "\n\tSequence: " << header_str_.get("sequence");
       if (header_str_.hasKey("particle"))
-        os << "\n\t Beam particles: " << header_str_.get("particle");
+        os << "\n\tBeam particles: " << header_str_.get("particle");
       if (header_float_.hasKey("length"))
-        os << "\n\t Maximal beamline length: " << header_float_.get("length") << " m";
-      PrintInfo << os.str() << ".";
+        os << "\n\tMaximal beamline length: " << header_float_.get("length") << " m";
+      H_INFO << os.str() << ".";
     }
 
     std::map<std::string, std::string> Twiss::headerStrings() const { return header_str_.asMap(); }
@@ -128,7 +127,7 @@ namespace hector {
 
     void Twiss::parseHeader() {
       if (!in_file_.is_open())
-        throw Exception(__PRETTY_FUNCTION__, ExceptionType::fatal) << "Twiss file is not opened nor ready for parsing!";
+        throw H_ERROR << "Twiss file is not opened nor ready for parsing!";
       std::string line;
       while (!in_file_.eof()) {
         std::getline(in_file_, line);
@@ -147,8 +146,7 @@ namespace hector {
           // keep track of the last line read in the file
           in_file_lastline_ = in_file_.tellg();
         } catch (std::regex_error& e) {
-          throw Exception(__PRETTY_FUNCTION__, ExceptionType::fatal)
-              << "Error at line " << in_file_.tellg() << " while parsing the header!\n\t" << e.what();
+          throw H_ERROR << "Error at line " << in_file_.tellg() << " while parsing the header!\n\t" << e.what();
         }
       }
       // parse the Twiss file production timestamp
@@ -167,7 +165,7 @@ namespace hector {
 
     void Twiss::parseElementsFields() {
       if (!in_file_.is_open())
-        throw Exception(__PRETTY_FUNCTION__, ExceptionType::fatal) << "Twiss file is not opened nor ready for parsing!";
+        throw H_ERROR << "Twiss file is not opened nor ready for parsing!";
       std::string line;
 
       in_file_.seekg(in_file_lastline_);
@@ -197,8 +195,7 @@ namespace hector {
           }
           in_file_lastline_ = in_file_.tellg();
         } catch (std::regex_error& e) {
-          throw Exception(__PRETTY_FUNCTION__, ExceptionType::fatal)
-              << "Error at line " << in_file_.tellg() << " while parsing elements fields!\n\t" << e.what();
+          throw H_ERROR << "Error at line " << in_file_.tellg() << " while parsing elements fields!\n\t" << e.what();
         }
       }
 
@@ -216,15 +213,14 @@ namespace hector {
           }
           elements_fields_.add(list_names.at(i), type);
         } catch (std::regex_error& e) {
-          throw Exception(__PRETTY_FUNCTION__, ExceptionType::fatal)
-              << "Error while performing the matching name-data!\n\t" << e.what();
+          throw H_ERROR << "Error while performing the matching name-data!\n\t" << e.what();
         }
       }
     }
 
     void Twiss::findInteractionPoint() {
       if (!in_file_.is_open())
-        throw Exception(__PRETTY_FUNCTION__, ExceptionType::fatal) << "Twiss file is not opened nor ready for parsing!";
+        throw H_ERROR << "Twiss file is not opened nor ready for parsing!";
       std::string line;
       in_file_.seekg(in_file_lastline_);
 
@@ -239,11 +235,10 @@ namespace hector {
           values.push_back(buffer);
         // first check if the "correct" number of element properties is parsed
         if (values.size() != elements_fields_.size())
-          throw Exception(__PRETTY_FUNCTION__, ExceptionType::fatal)
-              << "Twiss file seems corrupted!\n\t"
-              << "Element " << trim(values.at(0)) << " at line " << in_file_.tellg() << " has " << values.size()
-              << " fields"
-              << " when " << elements_fields_.size() << " are expected.";
+          throw H_ERROR << "Twiss file seems corrupted!\n\t"
+                        << "Element " << trim(values.at(0)) << " at line " << in_file_.tellg() << " has "
+                        << values.size() << " fields"
+                        << " when " << elements_fields_.size() << " are expected.";
         try {
           auto elem = parseElement(values);
           if (!elem || elem->name() != ip_name_)
@@ -253,21 +248,19 @@ namespace hector {
           break;
         } catch (Exception& e) {
           e.dump(std::cerr);
-          throw Exception(__PRETTY_FUNCTION__, ExceptionType::fatal)
-              << "Failed to retrieve the interaction point with name=\"" << ip_name_ << "\".";
+          throw H_ERROR << "Failed to retrieve the interaction point with name=\"" << ip_name_ << "\".";
         }
       }
     }
 
     void Twiss::parseElements() {
       if (!in_file_.is_open())
-        throw Exception(__PRETTY_FUNCTION__, ExceptionType::fatal) << "Twiss file is not opened nor ready for parsing!";
+        throw H_ERROR << "Twiss file is not opened nor ready for parsing!";
       // parse the optics elements and their characteristics
       std::string line;
 
       if (!interaction_point_)
-        throw Exception(__PRETTY_FUNCTION__, ExceptionType::fatal)
-            << "Interaction point \"" << ip_name_ << "\" has not been found in the beamline!";
+        throw H_ERROR << "Interaction point \"" << ip_name_ << "\" has not been found in the beamline!";
 
       in_file_.seekg(in_file_lastline_);  // return to the first element line
 
@@ -310,10 +303,9 @@ namespace hector {
     std::shared_ptr<element::ElementBase> Twiss::parseElement(const ValuesCollection& values) {
       // first check if the "correct" number of element properties is parsed
       if (values.size() != elements_fields_.size())
-        throw Exception(__PRETTY_FUNCTION__, ExceptionType::fatal)
-            << "Twiss file seems corrupted!\n\t"
-            << "Element " << trim(values.at(0)) << " has " << values.size() << " fields"
-            << " when " << elements_fields_.size() << " are expected.";
+        throw H_ERROR << "Twiss file seems corrupted!\n\t"
+                      << "Element " << trim(values.at(0)) << " has " << values.size() << " fields"
+                      << " when " << elements_fields_.size() << " are expected.";
 
       // then perform the 3-fold matching key <-> value <-> value type
       pmap::Ordered<float> elem_map_floats;
@@ -330,9 +322,8 @@ namespace hector {
             break;
           case Unknown:
           default: {
-            throw Exception(__PRETTY_FUNCTION__, ExceptionType::warning)
-                << "Twiss file predicts an unknown-type optics element parameter:\n\t"
-                << " (" << elements_fields_.key(i) << ") for " << trim(values.at(0)) << ".";
+            throw H_ERROR << "Twiss file predicts an unknown-type optics element parameter:\n\t"
+                          << " (" << elements_fields_.key(i) << ") for " << trim(values.at(0)) << ".";
           } break;
         }
       }
@@ -352,8 +343,7 @@ namespace hector {
         switch (elemtype) {
           case element::aGenericQuadrupole: {
             if (length <= 0.)
-              throw Exception(__PRETTY_FUNCTION__, ExceptionType::warning)
-                  << "Trying to add a quadrupole with invalid length (l=" << length << " m).";
+              throw H_ERROR << "Trying to add a quadrupole with invalid length (l=" << length << " m).";
 
             const double k1l = elem_map_floats.get("k1l");
             const double mag_str_k = -k1l / length;
@@ -366,11 +356,9 @@ namespace hector {
           case element::aSectorDipole: {
             const double k0l = elem_map_floats.get("k0l");
             if (length <= 0.)
-              throw Exception(__PRETTY_FUNCTION__, ExceptionType::warning)
-                  << "Trying to add a dipole with invalid length (l=" << length << " m).";
+              throw H_ERROR << "Trying to add a dipole with invalid length (l=" << length << " m).";
             if (k0l == 0.)
-              throw Exception(__PRETTY_FUNCTION__, ExceptionType::warning)
-                  << "Trying to add a dipole (" << name << ") with k0l=" << k0l << ".";
+              throw H_ERROR << "Trying to add a dipole (" << name << ") with k0l=" << k0l << ".";
 
             const double mag_strength = k0l / length;
             //            std::cout << name << "|" << s << "|" << mag_strength << std::endl;
@@ -473,8 +461,7 @@ namespace hector {
         if (std::regex_match(name, rgx_rect_coll_name_))
           return element::aRectangularCollimator;
       } catch (std::regex_error& e) {
-        throw Exception(__PRETTY_FUNCTION__, ExceptionType::fatal)
-            << "Error while retrieving the element type!\n\t" << e.what();
+        throw H_ERROR << "Error while retrieving the element type!\n\t" << e.what();
       }
       return element::anInvalidElement;
     }
