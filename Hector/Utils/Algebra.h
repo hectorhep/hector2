@@ -1,5 +1,5 @@
-#ifndef Hector_Algebra_h
-#define Hector_Algebra_h
+#ifndef Hector_Utils_Algebra_h
+#define Hector_Utils_Algebra_h
 
 #include <CLHEP/Matrix/DiagMatrix.h>
 #include <CLHEP/Matrix/Matrix.h>

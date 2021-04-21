@@ -1,5 +1,5 @@
 #include "Hector/Utils/BeamProducer.h"
-#include "Hector/Utils/Utils.h"
+#include "Hector/Utils/Kinematics.h"
 #include "Hector/Exception.h"
 
 #include <CLHEP/Random/RandFlat.h>

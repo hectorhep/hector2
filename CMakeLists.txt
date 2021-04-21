@@ -5,6 +5,7 @@ set(PROJECT_VERSION 2)
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/cmake)
 
 option(BUILD_PYTHON "Build the Python bindings" OFF)
+option(BUILD_TESTS "Build the tests" ON)
 
 #----- include external dependencies, prepare the environment
 
@@ -13,6 +14,7 @@ include(SetEnvironment)
 #----- define all individual modules to be built beforehand
 
 set(HECTOR_SOURCE_DIR ${PROJECT_SOURCE_DIR}/src)
+set(HECTOR_TEST_DIR ${PROJECT_SOURCE_DIR}/test)
 set(PYHECTOR_SOURCE_DIR ${PROJECT_SOURCE_DIR}/python)
 
 #----- build all the intermediate objects
@@ -33,7 +35,11 @@ file(GLOB_RECURSE HECTOR_INCLUDES ${PROJECT_SOURCE_DIR}/Hector/*.h)
 add_library(Hector2 SHARED ${LIB_SRC} ${HECTOR_INCLUDES})
 set_target_properties(Hector2 PROPERTIES LINKER_LANGUAGE CXX)
 
+add_executable(hector ${HECTOR_SOURCE_DIR}/hector.cc)
+target_link_libraries(hector Hector2 ${HECTOR_DEPENDENCIES})
+
 install(TARGETS Hector2 DESTINATION lib)
+install(TARGETS hector DESTINATION bin)
 install(DIRECTORY Hector DESTINATION include FILES_MATCHING PATTERN "*.h")
 
 #----- python wrapper

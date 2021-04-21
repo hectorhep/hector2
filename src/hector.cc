@@ -1,12 +1,14 @@
-#include "Hector/Core/Exception.h"
-#include "Hector/Core/ParticleStoppedException.h"
+#include "Hector/Exception.h"
+#include "Hector/ParticleStoppedException.h"
 
 #include "Hector/IO/TwissHandler.h"
-#include "Hector/Beamline.h"
 
-#include "Hector/Propagator/Propagator.h"
+#include "Hector/Beamline.h"
+#include "Hector/Propagator.h"
+
 #include "Hector/Utils/BeamProducer.h"
 #include "Hector/Utils/ArgsParser.h"
+#include "Hector/Utils/String.h"
 
 #include <CLHEP/Random/RandGauss.h>
 
@@ -31,18 +33,19 @@ int main(int argc, char* argv[]) {
   hector::io::Twiss parser(twiss_file.c_str(), ip.c_str(), max_s, min_s);
   parser.printInfo();
   cout << "+---------------------+--------------------+----------------------" << endl;
-  cout << hector::Form("| %-19s | %-18s | %20s|", "Name", "Type", "Position along s (m)") << endl;
+  cout << hector::format("| %-19s | %-18s | %20s|", "Name", "Type", "Position along s (m)") << endl;
   cout << "+---------------------+--------------------+----------------------" << endl;
   for (const auto& elem : parser.beamline()->elements()) {
     //if ( elem->type() == hector::element::aDrift ) continue;
-    cout << hector::Form("|%20s | %-18s [ ",
-                         elem->name().c_str(),
-                         (elem->type() != hector::element::aDrift) ? elem->typeName().c_str() : "");
-    string pos_ini = hector::Form("%7s", hector::Form("%#0.3f", elem->s()).c_str());
+    cout << hector::format("|%20s | %-18s [ ",
+                           elem->name().c_str(),
+                           (elem->type() != hector::element::aDrift) ? elem->typeName().c_str() : "");
+    string pos_ini = hector::format("%7s", hector::format("%#0.3f", elem->s()).c_str());
     if (elem->length() > 0.)
-      cout << hector::Form("%.7s → %7s m", pos_ini.c_str(), hector::Form("%#0.3f", elem->s() + elem->length()).c_str());
+      cout << hector::format(
+          "%.7s → %7s m", pos_ini.c_str(), hector::format("%#0.3f", elem->s() + elem->length()).c_str());
     else
-      cout << hector::Form("%17s m", pos_ini.c_str());
+      cout << hector::format("%17s m", pos_ini.c_str());
     cout << " ]" << endl;
   }
   cout << "+---------------------+-------------------------------------------" << endl;
@@ -64,18 +67,18 @@ int main(int argc, char* argv[]) {
       p.setCharge(+1);
       try {
         prop.propagate(p, 203.826);
-      } catch (hector::ParticleStoppedException& e) {
+      } catch (const hector::ParticleStoppedException& e) {
         stopping_elements[e.stoppingElement()->name()]++;
         continue;
-      } catch (hector::Exception& e) {
-        e.dump();
+      } catch (const hector::Exception& e) {
+        e.dump(std::cerr);
       }
     }
 
     ostringstream os;
     os << "Summary\n\t-------";
     for (const auto& el : stopping_elements)
-      os << hector::Form("\n\t*) %.2f%% of particles stopped in %s", 100. * el.second / num_part, el.first.c_str());
+      os << hector::format("\n\t*) %.2f%% of particles stopped in %s", 100. * el.second / num_part, el.first.c_str());
     PrintInfo << os.str() << ".";
   }
 

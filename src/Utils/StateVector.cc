@@ -1,7 +1,8 @@
-#include "Hector/StateVector.h"
-#include "Hector/Exception.h"
+#include "Hector/Utils/StateVector.h"
 #include "Hector/Utils/String.h"
-#include "Hector/Utils/Utils.h"
+#include "Hector/Utils/Kinematics.h"
+
+#include "Hector/Exception.h"
 
 namespace hector {
   StateVector::StateVector() : Vector(6, 0), m_(0.) {

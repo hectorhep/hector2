@@ -4,7 +4,6 @@
 
 #include "Hector/Propagator.h"
 #include "Hector/Particle.h"
-#include "Hector/StateVector.h"
 
 #include "Hector/Beamline.h"
 
@@ -25,6 +24,8 @@
 #include "Hector/IO/HBLFileHandler.h"
 
 #include "Hector/Utils/BeamProducer.h"
+#include "Hector/Utils/StateVector.h"
+
 #include <CLHEP/Matrix/Matrix.h>
 #include <CLHEP/Random/RandGauss.h>
 

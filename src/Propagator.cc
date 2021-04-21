@@ -6,8 +6,6 @@
 #include "Hector/Exception.h"
 #include "Hector/ParticleStoppedException.h"
 
-#include "Hector/Utils/Utils.h"
-
 #include <sstream>
 
 namespace hector {

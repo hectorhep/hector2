@@ -1,7 +1,7 @@
 #ifndef Hector_Particle_h
 #define Hector_Particle_h
 
-#include "Hector/StateVector.h"
+#include "Hector/Utils/StateVector.h"
 
 #include <vector>
 #include <iosfwd>

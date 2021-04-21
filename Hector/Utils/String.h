@@ -1,8 +1,6 @@
 #ifndef Hector_Utils_String_h
 #define Hector_Utils_String_h
 
-#include "Hector/Parameters.h"
-
 #include <string>
 
 namespace hector {

@@ -4,7 +4,7 @@
 #include "Hector/Utils/OrderedParametersMap.h"
 #include "Hector/Utils/UnorderedParametersMap.h"
 
-#include "Hector/Elements/ElementBase.h"
+#include "Hector/Elements/ElementType.h"
 #include "Hector/Apertures/ApertureType.h"
 
 #include <fstream>
@@ -15,9 +15,13 @@
 using std::ostream;
 
 namespace hector {
+  // forward-declarations
+  namespace element {
+    class ElementBase;
+  }
   class Beamline;
   namespace io {
-    /// Parsing tool for MAD-X output Twiss files
+    /// Parsing tool for MAD-X Twiss output files
     /// \note A list of variables stored in Twiss files can be retrieved from http://mad.web.cern.ch/mad/madx.old/Introduction/tables.html
     class Twiss {
     public:

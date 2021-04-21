@@ -1,5 +1,5 @@
-#ifndef Hector_Utils_Utils_h
-#define Hector_Utils_Utils_h
+#ifndef Hector_Utils_Kinematics_h
+#define Hector_Utils_Kinematics_h
 
 #include "Hector/Parameters.h"
 

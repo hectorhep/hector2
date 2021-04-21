@@ -1,5 +1,4 @@
 #include "Hector/IO/Pythia8Generator.h"
-#include "Hector/Utils/Utils.h"
 
 #include "Hector/Parameters.h"
 #include "Hector/Exception.h"

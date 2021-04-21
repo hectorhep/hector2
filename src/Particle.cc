@@ -1,8 +1,7 @@
 #include "Hector/Particle.h"
-#include "Hector/Exception.h"
-#include "Hector/Utils/String.h"
 
-#include <CLHEP/Random/RandFlat.h>
+#include "Hector/Utils/String.h"
+#include "Hector/Exception.h"
 
 namespace hector {
   Particle::Particle() : charge_(0), pdgId_(0), stopped_(false) { addPosition(0., StateVector()); }

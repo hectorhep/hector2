@@ -1,12 +1,10 @@
-#ifndef Hector_StateVector_h
-#define Hector_StateVector_h
+#ifndef Hector_Utils_StateVector_h
+#define Hector_Utils_StateVector_h
 
-#include "Hector/Algebra.h"
+#include "Hector/Utils/Algebra.h"
 #include "Hector/Parameters.h"
 
 #include <map>
-
-using std::cout;
 
 namespace hector {
   /// Six-dimensional state vector associated to a particle at a given s
