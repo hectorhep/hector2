@@ -1,7 +1,8 @@
 #----- check if we are building from CERN's lxplus machines
 
 if($ENV{HOSTNAME} MATCHES "^lxplus[0-9]+.cern.ch")
-  set(LXPLUS 1)
+  message(STATUS "Compiling on LXPLUS")
+  set(LXPLUS TRUE)
 endif()
 
 #----- check the gcc/clang version
@@ -31,9 +32,6 @@ else()
   find_path(CLHEP_INCLUDE CLHEP)
 endif()
 
-set(HECTOR_DEPENDENCIES ${CLHEP_LIB})
-include_directories(${CLHEP_INCLUDE})
-
 #----- Pythia 8 for physics samples generation and/or LHE files parsing
 
 if(LXPLUS)
@@ -43,30 +41,12 @@ endif()
 set(PYTHIA8_DIRS $ENV{PYTHIA8_DIR} ${PYTHIA8_DIR} /usr /opt/pythia8)
 find_library(PYTHIA8 pythia8 HINTS ${PYTHIA8_DIRS} PATH_SUFFIXES lib)
 find_path(PYTHIA8_INCLUDE NAMES Pythia8/Pythia.h HINTS ${PYTHIA8_DIRS} PATH_SUFFIXES include include/Pythia8 include/pythia8)
-
-if(PYTHIA8)
-  message(STATUS "Pythia8 found in ${PYTHIA8}")
-  message(STATUS "Pythia8 includes located in ${PYTHIA8_INCLUDE}")
-  list(APPEND HECTOR_DEPENDENCIES ${PYTHIA8} dl)
-  include_directories(${PYTHIA8_INCLUDE})
-  find_library(LHAPDF LHAPDF)
-  if(LHAPDF)
-    list(APPEND HECTOR_DEPENDENCIES ${LHAPDF})
-  else()
-    list(APPEND HECTOR_DEPENDENCIES lhapdfdummy)
-  endif()
-endif()
+find_library(LHAPDF LHAPDF)
 
 #----- HepMC for I/O
 
 find_library(HEPMC_LIB HepMC)
 find_path(HEPMC_INCLUDE HepMC)
-
-if(HEPMC_LIB)
-  include_directories(${HEPMC_INCLUDE})
-  list(APPEND HECTOR_DEPENDENCIES ${HEPMC_LIB})
-  add_definitions(-DHEPMC)
-endif()
 
 #----- Boost for Python wrapper
 

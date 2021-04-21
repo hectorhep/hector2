@@ -15,6 +15,9 @@ include(SetEnvironment)
 
 set(HECTOR_SOURCE_DIR ${PROJECT_SOURCE_DIR}/src)
 set(HECTOR_TEST_DIR ${PROJECT_SOURCE_DIR}/test)
+set(HECTOR_DEPENDENCIES ${CLHEP_LIB})
+set(HECTOR_INC_DEPENDENCIES ${CLHEP_INCLUDE})
+
 set(PYHECTOR_SOURCE_DIR ${PROJECT_SOURCE_DIR}/python)
 
 #----- build all the intermediate objects
@@ -29,11 +32,29 @@ file(GLOB_RECURSE HECTOR_INCLUDES ${PROJECT_SOURCE_DIR}/Hector/*.h)
 
 #----- link everything into the library and executable
 
+if(HEPMC_LIB)
+  list(APPEND HECTOR_INC_DEPENDENCIES ${HEPMC_INCLUDE})
+  list(APPEND HECTOR_DEPENDENCIES ${HEPMC_LIB})
+  add_definitions(-DHEPMC)
+endif()
+if(PYTHIA8)
+  message(STATUS "Pythia8 found in ${PYTHIA8}")
+  message(STATUS "Pythia8 includes located in ${PYTHIA8_INCLUDE}")
+  list(APPEND HECTOR_DEPENDENCIES ${PYTHIA8} dl)
+  list(APPEND HECTOR_INC_DEPENDENCIES ${PYTHIA8_INCLUDE})
+  if(LHAPDF)
+    list(APPEND HECTOR_DEPENDENCIES ${LHAPDF})
+  else()
+    list(APPEND HECTOR_DEPENDENCIES lhapdfdummy)
+  endif()
+endif()
+
 # do not forget to retrieve
 # http://home.thep.lu.se/~leif/LHEF/LHEF.h
 
 add_library(Hector2 SHARED ${LIB_SRC} ${HECTOR_INCLUDES})
 set_target_properties(Hector2 PROPERTIES LINKER_LANGUAGE CXX)
+target_include_directories(Hector2 PRIVATE ${HECTOR_INC_DEPENDENCIES})
 
 add_executable(hector ${HECTOR_SOURCE_DIR}/hector.cc)
 target_link_libraries(hector Hector2 ${HECTOR_DEPENDENCIES})
