@@ -75,11 +75,12 @@ int main(int argc, char* argv[]) {
       }
     }
 
-    ostringstream os;
-    os << "Summary\n\t-------";
-    for (const auto& el : stopping_elements)
-      os << hector::format("\n\t*) %.2f%% of particles stopped in %s", 100. * el.second / num_part, el.first.c_str());
-    H_INFO << os.str() << ".";
+    H_INFO.log([&](auto& log) {
+      log << "Summary\n\t-------";
+      for (const auto& el : stopping_elements)
+        log << hector::format(
+            "\n\t*) %.2f%% of particles stopped in %s", 100. * el.second / num_part, el.first.c_str());
+    });
   }
 
   return 0;

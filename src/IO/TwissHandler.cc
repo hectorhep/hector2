@@ -94,31 +94,32 @@ namespace hector {
     }
 
     void Twiss::printInfo() const {
-      std::ostringstream os;
-      os << "Twiss file successfully parsed. Metadata:";
-      if (header_str_.hasKey("title"))
-        os << "\n\tTitle: " << header_str_.get("title");
-      if (header_str_.hasKey("origin"))
-        os << "\n\tOrigin: " << trim(header_str_.get("origin"));
-      if (header_float_.hasKey("timestamp")) {
-        // C implementation for pre-gcc5 compilers
-        time_t time = (long)header_float_.get("timestamp");
-        std::tm tm;
-        char* time_chr = new char[100];
-        strftime(time_chr, 100, "%c", localtime_r(&time, &tm));
-        os << "\n\tExport date: " << time_chr;
-        delete[] time_chr;
-      } else if (header_str_.hasKey("date") || header_str_.hasKey("time"))
-        os << "\n\tExport date: " << trim(header_str_.get("date")) << " @ " << trim(header_str_.get("time"));
-      if (header_float_.hasKey("energy"))
-        os << "\n\tSimulated single beam energy: " << header_float_.get("energy") << " GeV";
-      if (header_str_.hasKey("sequence"))
-        os << "\n\tSequence: " << header_str_.get("sequence");
-      if (header_str_.hasKey("particle"))
-        os << "\n\tBeam particles: " << header_str_.get("particle");
-      if (header_float_.hasKey("length"))
-        os << "\n\tMaximal beamline length: " << header_float_.get("length") << " m";
-      H_INFO << os.str() << ".";
+      H_INFO.log([&](auto& log) {
+        log << "Twiss file successfully parsed. Metadata:";
+        if (header_str_.hasKey("title"))
+          log << "\n\tTitle: " << header_str_.get("title");
+        if (header_str_.hasKey("origin"))
+          log << "\n\tOrigin: " << trim(header_str_.get("origin"));
+        if (header_float_.hasKey("timestamp")) {
+          // C implementation for pre-gcc5 compilers
+          time_t time = (long)header_float_.get("timestamp");
+          std::tm tm;
+          char* time_chr = new char[100];
+          strftime(time_chr, 100, "%c", localtime_r(&time, &tm));
+          log << "\n\tExport date: " << time_chr;
+          delete[] time_chr;
+        } else if (header_str_.hasKey("date") || header_str_.hasKey("time"))
+          log << "\n\tExport date: " << trim(header_str_.get("date")) << " @ " << trim(header_str_.get("time"));
+        if (header_float_.hasKey("energy"))
+          log << "\n\tSimulated single beam energy: " << header_float_.get("energy") << " GeV";
+        if (header_str_.hasKey("sequence"))
+          log << "\n\tSequence: " << header_str_.get("sequence");
+        if (header_str_.hasKey("particle"))
+          log << "\n\tBeam particles: " << header_str_.get("particle");
+        if (header_float_.hasKey("length"))
+          log << "\n\tMaximal beamline length: " << header_float_.get("length") << " m";
+        log << ".";
+      });
     }
 
     std::map<std::string, std::string> Twiss::headerStrings() const { return header_str_.asMap(); }

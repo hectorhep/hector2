@@ -44,6 +44,13 @@ namespace hector {
       return exc;
     }
 
+    /// Lambda function handler
+    template <typename T>
+    inline Exception& log(T&& lam) {
+      lam(*this);
+      return *this;
+    }
+
     /// Method/function that raised the exception
     inline const std::string from() const { return from_; }
     /// Error code associated to the exception
