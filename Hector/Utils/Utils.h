@@ -5,21 +5,20 @@
 
 #include <string>
 
-namespace Hector
-{
+namespace Hector {
   class Particle;
   /// Format a string using a printf style format descriptor.
-  std::string Form( const std::string fmt, ... );
+  std::string Form(const std::string fmt, ...);
   /// Remove leading and trailing whitespaces to a string
-  std::string trim( const std::string& str );
+  std::string trim(const std::string& str);
   /// Get the lowercase version of a string
-  std::string lowercase( const std::string& str );
+  std::string lowercase(const std::string& str);
   /// Let the particle emit a photon
-  void emitGamma( Particle& part_in, double e_gamma, double q2_gamma, double phi_min, double phi_max );
+  void emitGamma(Particle& part_in, double e_gamma, double q2_gamma, double phi_min, double phi_max);
   /// Convert a particle energy to its momentum loss
-  double e_to_xi( double energy, double e0 = Parameters::get()->beamEnergy() );
+  double e_to_xi(double energy, double e0 = Parameters::get()->beamEnergy());
   /// Convert a particle momentum loss to its energy
-  double xi_to_e( double xi, double e0 = Parameters::get()->beamEnergy() );
-}
+  double xi_to_e(double xi, double e0 = Parameters::get()->beamEnergy());
+}  // namespace Hector
 
 #endif

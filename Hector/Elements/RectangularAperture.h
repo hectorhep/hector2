@@ -3,24 +3,21 @@
 
 #include "ApertureBase.h"
 
-namespace Hector
-{
-  namespace Aperture
-  {
+namespace Hector {
+  namespace Aperture {
     /// Rectangular shape aperture
-    class RectangularAperture : public ApertureBase
-    {
-      public:
-        /// Class constructor
-        RectangularAperture( double, double, const TwoVector& pos = TwoVector() );
-        ~RectangularAperture();
+    class RectangularAperture : public ApertureBase {
+    public:
+      /// Class constructor
+      RectangularAperture(double, double, const TwoVector& pos = TwoVector());
+      ~RectangularAperture();
 
-        std::shared_ptr<ApertureBase> clone() const override { return std::make_shared<RectangularAperture>( *this ); }
+      std::shared_ptr<ApertureBase> clone() const override { return std::make_shared<RectangularAperture>(*this); }
 
-        bool contains( const TwoVector& ) const override;
-        TwoVector limits() const override;
+      bool contains(const TwoVector&) const override;
+      TwoVector limits() const override;
     };
-  }
-}
+  }  // namespace Aperture
+}  // namespace Hector
 
 #endif
