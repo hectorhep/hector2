@@ -2,13 +2,11 @@
 #include "Hector/Apertures/Elliptic.h"
 #include "Hector/Apertures/Rectangular.h"
 #include "Hector/Apertures/RectElliptic.h"
+#include "Hector/Exception.h"
 
 #include "TGraph.h"
 #include "TMultiGraph.h"
 #include "Canvas.h"
-
-#include <iomanip>
-#include <memory>
 
 int main() {
   const float x_min = -0.5, x_max = 0.5, y_min = -0.5, y_max = 0.5;
@@ -19,7 +17,7 @@ int main() {
   hector::aperture::RectElliptic aper(0.35, 0.25, 0.4, 0.2, CLHEP::Hep2Vector(0.0, 0.0));
   CLHEP::Hep2Vector limits = aper.limits();
 
-  std::cout << "Aperture has limits: " << limits.x() << " / " << limits.y() << std::endl;
+  H_INFO << "Aperture has limits: " << limits.x() << " / " << limits.y() << ".";
 
   TGraph g_inside, g_outside, g_elliptic, g_rect;
   for (unsigned short i = 0; i < num_steps; i++) {

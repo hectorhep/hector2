@@ -103,21 +103,18 @@ int main(int argc, char* argv[]) {
       }
     }
   }
-  std::ostringstream summary;
-  summary << Form("%.1f%% of particles (%d/%d) stopped before s = %.2f",
-                  100. * num_stopped / num_particles,
-                  num_stopped,
-                  num_particles,
-                  s_pos);
-  for (const auto& se : stopped_at) {
-    summary << "\n\t>> "
-            << Form("%.1f%% of particles (%d/%d) stopped in ",
-                    100. * se.second / num_particles,
-                    se.second,
-                    num_particles)
-            << se.first->name() << " " << se.first->typeName();
-  }
-  H_INFO << summary.str() << ".";
+  H_INFO.log([&](auto& log) {
+    log << Form("%.1f%% of particles (%d/%d) stopped before s = %.2f",
+                100. * num_stopped / num_particles,
+                num_stopped,
+                num_particles,
+                s_pos);
+    for (const auto& se : stopped_at) {
+      log << "\n\t>> "
+          << Form("%.1f%% of particles (%d/%d) stopped in ", 100. * se.second / num_particles, se.second, num_particles)
+          << se.first->name() << " " << se.first->typeName();
+    }
+  });
 
   const string top_label = Form("s = %.2f m, #alpha_{X} = %.1f #murad", s_pos, crossing_angle_x * 1.e6);
   {

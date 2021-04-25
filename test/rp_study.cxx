@@ -46,18 +46,18 @@ int main(int argc, char* argv[]) {
       //{ "56-220-fr-hr", "XRPH.B6R5.B1" }
   };
 
-  cout << "list of horizontal roman pots: " << endl;
-  const auto& h_rp = parser.beamline()->find("XRPH\\.");
-  for (const auto& rp : h_rp) {
-    cout << ">> " << rp->name() << " at s = " << rp->s() << " m" << endl;
-  }
+  H_INFO.log([&](auto& log) {
+    log << "list of horizontal roman pots:";
+    const auto& h_rp = parser.beamline()->find("XRPH\\.");
+    for (const auto& rp : h_rp) {
+      log << "\n>> " << rp->name() << " at s = " << rp->s() << " m.";
+    }
+  });
 
   const auto rp = parser.beamline()->get(rp_names["56-210-fr-hr"]);
-  if (!rp) {
-    cerr << "Failed to retrieve Roman pot " << rp_names["56-210-fr-hr"] << " in beamline!" << endl;
-    return -1;
-  }
-  cout << "---> RP " << rp_names["56-210-fr-hr"] << " at " << rp->s() << " m" << endl;
+  if (!rp)
+    throw H_ERROR << "Failed to retrieve Roman pot " << rp_names["56-210-fr-hr"] << " in beamline!";
+  H_INFO << "---> RP " << rp_names["56-210-fr-hr"] << " at " << rp->s() << " m.";
 
   TGraph gr_x_vs_xi, gr_y_vs_xi;
 

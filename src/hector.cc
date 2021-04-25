@@ -32,27 +32,31 @@ int main(int argc, char* argv[]) {
 
   hector::io::Twiss parser(twiss_file.c_str(), ip.c_str(), max_s, min_s);
   parser.printInfo();
-  cout << "+---------------------+--------------------+----------------------" << endl;
-  cout << hector::format("| %-19s | %-18s | %20s|", "Name", "Type", "Position along s (m)") << endl;
-  cout << "+---------------------+--------------------+----------------------" << endl;
-  for (const auto& elem : parser.beamline()->elements()) {
-    //if ( elem->type() == hector::element::aDrift ) continue;
-    cout << hector::format("|%20s | %-18s [ ",
-                           elem->name().c_str(),
-                           (elem->type() != hector::element::aDrift) ? elem->typeName().c_str() : "");
-    string pos_ini = hector::format("%7s", hector::format("%#0.3f", elem->s()).c_str());
-    if (elem->length() > 0.)
-      cout << hector::format(
-          "%.7s → %7s m", pos_ini.c_str(), hector::format("%#0.3f", elem->s() + elem->length()).c_str());
-    else
-      cout << hector::format("%17s m", pos_ini.c_str());
-    cout << " ]" << endl;
-  }
-  cout << "+---------------------+-------------------------------------------" << endl;
+  H_INFO.log([&](auto& log) {
+    log << "\n"
+        << "+---------------------+--------------------+----------------------\n"
+        << hector::format("| %-19s | %-18s | %20s|\n", "Name", "Type", "Position along s (m)")
+        << "+---------------------+--------------------+----------------------\n";
+
+    for (const auto& elem : parser.beamline()->elements()) {
+      //if ( elem->type() == hector::element::aDrift ) continue;
+      log << hector::format("|%20s | %-18s [ ",
+                            elem->name().c_str(),
+                            (elem->type() != hector::element::aDrift) ? elem->typeName().c_str() : "");
+      string pos_ini = hector::format("%7s", hector::format("%#0.3f", elem->s()).c_str());
+      if (elem->length() > 0.)
+        log << hector::format(
+            "%.7s → %7s m", pos_ini.c_str(), hector::format("%#0.3f", elem->s() + elem->length()).c_str());
+      else
+        log << hector::format("%17s m", pos_ini.c_str());
+      log << " ]\n";
+    }
+    log << "+---------------------+-------------------------------------------\n";
+  });
   //parser.beamline()->dump();
 
-  cout << "beamline matrix at s = " << max_s
-       << " m: " << parser.beamline()->matrix(0., hector::Parameters::get()->beamParticlesMass(), +1) << endl;
+  H_INFO << "beamline matrix at s = " << max_s
+         << " m: " << parser.beamline()->matrix(0., hector::Parameters::get()->beamParticlesMass(), +1);
 
   if (shoot) {
     hector::Propagator prop(parser.beamline());

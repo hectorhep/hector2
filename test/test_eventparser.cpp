@@ -21,7 +21,7 @@ int main(int argc, char* argv[]) {
   while (parser.nextEvent(particles)) {
     for (const auto& part : particles) {
       //it->dump();
-      cout << "particle with pdgId=" << part.pdgId() << " has mass " << part.mass() << endl;
+      H_INFO << "particle with pdgId=" << part.pdgId() << " has mass " << part.mass() << ".";
     }
   }
 

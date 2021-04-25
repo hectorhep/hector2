@@ -138,7 +138,7 @@ int main(int argc, char* argv[]) {
     h_num_protons.Fill(num_protons - 0.5);
   }
 
-  cout << "cross section: " << Form("%.2e +/- %.2e pb", gen.crossSection(), gen.crossSectionError()) << endl;
+  H_INFO << "cross section: " << Form("%.2e +/- %.2e pb", gen.crossSection(), gen.crossSectionError()) << ".";
 
   gStyle->SetOptStat(111111);
   {
