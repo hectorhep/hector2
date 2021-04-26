@@ -161,8 +161,12 @@ namespace hector {
   Matrix Beamline::matrix(double eloss, double mp, int qp) const {
     Matrix out = DiagonalMatrix(6, 1);
 
-    for (const auto& elem : elements_)
-      out = out * elem->matrix(eloss, mp, qp);
+    for (const auto& elem : elements_) {
+      const auto mat = elem->matrix(eloss, mp, qp);
+      H_INFO << "Multiplication by transfer matrix of element \"" << elem->name() << "\".\n"
+             << " value: " << mat;
+      out = out * mat;
+    }
 
     return out;
   }
