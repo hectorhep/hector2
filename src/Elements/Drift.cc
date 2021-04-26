@@ -1,4 +1,5 @@
 #include "Hector/Elements/Drift.h"
+#include "Hector/Utils/StateVector.h"
 
 namespace hector {
   namespace element {
@@ -11,8 +12,8 @@ namespace hector {
 
     Matrix Drift::genericMatrix(double length) {
       Matrix mat = DiagonalMatrix(6, 1);
-      mat(1, 2) = length;
-      mat(3, 4) = length;
+      mat(StateVector::X, StateVector::TX) = length;
+      mat(StateVector::Y, StateVector::TY) = length;
       return mat;
     }
   }  // namespace element

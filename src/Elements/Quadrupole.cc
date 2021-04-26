@@ -1,6 +1,7 @@
 #include "Hector/Elements/Quadrupole.h"
 #include "Hector/Elements/Drift.h"
 #include "Hector/Exception.h"
+#include "Hector/Utils/StateVector.h"
 
 namespace hector {
   namespace element {
@@ -21,15 +22,15 @@ namespace hector {
       const double s_omega = sin(omega), c_omega = cos(omega), sh_omega = sinh(omega), ch_omega = cosh(omega);
 
       // Focussing Twiss matrix for the horizontal component
-      mat(1, 1) = c_omega;
-      mat(1, 2) = s_omega * inv_sq_k;
-      mat(2, 1) = s_omega * (-sq_k);
-      mat(2, 2) = c_omega;
+      mat(StateVector::X, StateVector::X) = c_omega;
+      mat(StateVector::X, StateVector::TX) = s_omega * inv_sq_k;
+      mat(StateVector::TX, StateVector::X) = s_omega * (-sq_k);
+      mat(StateVector::TX, StateVector::TX) = c_omega;
       // Defocussing Twiss matrix for the vertical component
-      mat(3, 3) = ch_omega;
-      mat(3, 4) = sh_omega * inv_sq_k;
-      mat(4, 3) = sh_omega * sq_k;
-      mat(4, 4) = ch_omega;
+      mat(StateVector::Y, StateVector::Y) = ch_omega;
+      mat(StateVector::Y, StateVector::TY) = sh_omega * inv_sq_k;
+      mat(StateVector::TY, StateVector::Y) = sh_omega * sq_k;
+      mat(StateVector::TY, StateVector::TY) = ch_omega;
       return mat;
     }
 
@@ -50,15 +51,15 @@ namespace hector {
       const double s_omega = sin(omega), c_omega = cos(omega), sh_omega = sinh(omega), ch_omega = cosh(omega);
 
       // Defocussing Twiss matrix for the horizontal component
-      mat(1, 1) = ch_omega;
-      mat(1, 2) = sh_omega * inv_sq_k;
-      mat(2, 1) = sh_omega * sq_k;
-      mat(2, 2) = ch_omega;
+      mat(StateVector::X, StateVector::X) = ch_omega;
+      mat(StateVector::X, StateVector::TX) = sh_omega * inv_sq_k;
+      mat(StateVector::TX, StateVector::X) = sh_omega * sq_k;
+      mat(StateVector::TX, StateVector::TX) = ch_omega;
       // Focussing Twiss matrix for the vertical component
-      mat(3, 3) = c_omega;
-      mat(3, 4) = s_omega * inv_sq_k;
-      mat(4, 3) = s_omega * (-sq_k);
-      mat(4, 4) = c_omega;
+      mat(StateVector::Y, StateVector::Y) = c_omega;
+      mat(StateVector::Y, StateVector::TY) = s_omega * inv_sq_k;
+      mat(StateVector::TY, StateVector::Y) = s_omega * (-sq_k);
+      mat(StateVector::TY, StateVector::TY) = c_omega;
       return mat;
     }
   }  // namespace element

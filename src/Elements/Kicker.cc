@@ -1,6 +1,7 @@
 #include "Hector/Elements/Kicker.h"
 #include "Hector/Elements/Drift.h"
 #include "Hector/Parameters.h"
+#include "Hector/Utils/StateVector.h"
 
 namespace hector {
   namespace element {
@@ -14,8 +15,8 @@ namespace hector {
       if (ke == 0.)
         return mat;
 
-      mat(1, 6) = length_ * tan(ke) * 0.5;
-      mat(2, 6) = ke;
+      mat(StateVector::X, StateVector::K) = length_ * tan(ke) * 0.5;
+      mat(StateVector::TX, StateVector::K) = ke;
       return mat;
     }
 
@@ -29,8 +30,8 @@ namespace hector {
       if (ke == 0.)
         return mat;
 
-      mat(3, 6) = length_ * tan(ke) * 0.5;
-      mat(4, 6) = ke;
+      mat(StateVector::Y, StateVector::K) = length_ * tan(ke) * 0.5;
+      mat(StateVector::TY, StateVector::K) = ke;
       return mat;
     }
   }  // namespace element

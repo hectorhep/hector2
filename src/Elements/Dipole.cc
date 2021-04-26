@@ -1,7 +1,7 @@
 #include "Hector/Elements/Dipole.h"
 #include "Hector/Elements/Drift.h"
 
-#include "Hector/Utils/Algebra.h"
+#include "Hector/Utils/StateVector.h"
 
 #include "Hector/Exception.h"
 
@@ -23,15 +23,15 @@ namespace hector {
       const double theta = length_ * ke, s_theta = sin(theta), c_theta = cos(theta);
       const double inv_energy = 1. / Parameters::get()->beamEnergy();
 
-      mat(1, 1) = c_theta;
-      mat(1, 2) = s_theta * radius;
-      mat(2, 1) = s_theta * (-ke);
-      mat(2, 2) = c_theta;
+      mat(StateVector::X, StateVector::X) = c_theta;
+      mat(StateVector::X, StateVector::TX) = s_theta * radius;
+      mat(StateVector::TX, StateVector::X) = s_theta * (-ke);
+      mat(StateVector::TX, StateVector::TX) = c_theta;
       if (Parameters::get()->useRelativeEnergy()) {
         const double simp = 2. * radius * pow(sin(theta * 0.5), 2) * inv_energy;
         // numerically stable version of ( r/E₀ )*( 1-cos θ )
-        mat(1, 5) = simp;
-        mat(2, 5) = s_theta * inv_energy;
+        mat(StateVector::X, StateVector::E) = simp;
+        mat(StateVector::TX, StateVector::E) = s_theta * inv_energy;
       }
       return mat;
     }
@@ -55,18 +55,18 @@ namespace hector {
       // numerically stable version of ( r/E₀ )*( 1-cos θ )
       const double simp = 2. * radius * pow(sin(theta * 0.5), 2) * inv_energy;
 
-      mat(1, 1) = c_theta;
-      mat(1, 2) = s_theta * radius;
-      mat(2, 1) = s_theta * (-ke);
-      mat(2, 2) = c_theta;
-      mat(1, 5) = simp;
-      mat(2, 5) = s_theta * inv_energy;
+      mat(StateVector::X, StateVector::X) = c_theta;
+      mat(StateVector::X, StateVector::TX) = s_theta * radius;
+      mat(StateVector::TX, StateVector::X) = s_theta * (-ke);
+      mat(StateVector::TX, StateVector::TX) = c_theta;
+      mat(StateVector::X, StateVector::E) = simp;
+      mat(StateVector::TX, StateVector::E) = s_theta * inv_energy;
 
       if (Parameters::get()->useRelativeEnergy()) {
         Matrix ef_matrix = DiagonalMatrix(6, 1);
         const double t_theta_half_ke = ke * tan(theta * 0.5);
-        ef_matrix(2, 1) = +t_theta_half_ke;
-        ef_matrix(4, 3) = -t_theta_half_ke;
+        ef_matrix(StateVector::TX, StateVector::X) = +t_theta_half_ke;
+        ef_matrix(StateVector::TY, StateVector::Y) = -t_theta_half_ke;
         return ef_matrix * mat * ef_matrix;
       }
 
