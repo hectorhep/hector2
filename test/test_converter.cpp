@@ -1,6 +1,6 @@
 #include "Hector/IO/TwissHandler.h"
-#include "Hector/Beamline/Beamline.h"
 #include "Hector/IO/HBLFileHandler.h"
+#include "Hector/Beamline.h"
 #include "Hector/Utils/ArgsParser.h"
 
 using namespace std;
@@ -8,7 +8,7 @@ using namespace std;
 int main(int argc, char* argv[]) {
   string twiss_file, interaction_point, output_file;
   double max_s;
-  Hector::ArgsParser(argc,
+  hector::ArgsParser(argc,
                      argv,
                      {
                          {"twiss-file", "beamline Twiss file", &twiss_file, 'i'},
@@ -19,10 +19,10 @@ int main(int argc, char* argv[]) {
                          {"output", "output HBL file", "output.hbl", &output_file, 'o'},
                      });
 
-  Hector::IO::Twiss in(twiss_file, interaction_point, max_s);
-  Hector::IO::HBL::write(in.beamline(), output_file.c_str());
+  hector::io::Twiss in(twiss_file, interaction_point, max_s);
+  hector::io::HBL::write(in.beamline(), output_file.c_str());
 
-  Hector::IO::HBL reader(output_file);
+  hector::io::HBL reader(output_file);
   //reader.beamline()->dump();
 
   return 0;

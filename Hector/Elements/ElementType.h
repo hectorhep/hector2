@@ -1,10 +1,10 @@
 #ifndef Hector_Elements_ElementType_h
 #define Hector_Elements_ElementType_h
 
-#include <iostream>
+#include <iosfwd>
 
-namespace Hector {
-  namespace Element {
+namespace hector {
+  namespace element {
     /// List of types allowed for an element
     enum Type {
       anInvalidElement = -1,   ///< Invalid element
@@ -29,9 +29,9 @@ namespace Hector {
       anInstrument,  ///< A measurement apparatus
       aSolenoid      ///< Solenoid
     };
-  }  // namespace Element
+  }  // namespace element
   /// Human-readable printout of a element type
-  std::ostream& operator<<(std::ostream&, const Element::Type&);
-}  // namespace Hector
+  std::ostream& operator<<(std::ostream&, const element::Type&);
+}  // namespace hector
 
 #endif

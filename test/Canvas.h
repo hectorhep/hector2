@@ -14,7 +14,7 @@
 
 #define font_type(x) 130 + x
 
-namespace Hector {
+namespace hector {
   class Canvas : public TCanvas {
   public:
     class PaveText : public TPaveText {
@@ -250,6 +250,6 @@ namespace Hector {
     double fLegX1, fLegY1;
     bool fRatio, fDrawLogo;
   };
-}  // namespace Hector
+}  // namespace hector
 
 #endif

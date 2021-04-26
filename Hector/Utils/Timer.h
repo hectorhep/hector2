@@ -3,7 +3,7 @@
 
 #include <chrono>
 
-namespace Hector {
+namespace hector {
   /**
    * A generic timer to extract the processing time between two steps in this software's flow
    * \author Laurent Forthomme <laurent.forthomme@cern.ch>
@@ -26,6 +26,6 @@ namespace Hector {
     /// Timestamp marking the beginning of the counter
     std::chrono::time_point<std::chrono::high_resolution_clock> beg_;
   };
-}  // namespace Hector
+}  // namespace hector
 
 #endif

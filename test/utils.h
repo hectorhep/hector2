@@ -5,51 +5,51 @@
 
 #include "TColor.h"
 
-void fillElementStyle(const std::shared_ptr<Hector::Element::ElementBase>& elem, Color_t& col, Style_t& style) {
+void fillElementStyle(const std::shared_ptr<hector::element::ElementBase>& elem, Color_t& col, Style_t& style) {
   col = kWhite;
   style = 1001;
   switch (elem->type()) {
-    case Hector::Element::aMarker:
+    case hector::element::aMarker:
       col = kBlue + 3;
       break;
-    case Hector::Element::aDrift:
+    case hector::element::aDrift:
       col = kBlack;
       break;
-    case Hector::Element::aRectangularDipole:
+    case hector::element::aRectangularDipole:
       col = kRed;
       style = 3004;
       break;
-    case Hector::Element::aSectorDipole:
+    case hector::element::aSectorDipole:
       col = kGreen;
       style = 3005;
       break;
-    case Hector::Element::aGenericQuadrupole: {
+    case hector::element::aGenericQuadrupole: {
       col = (elem->magneticStrength() > 0.) ? kYellow  // horizontal quadrupole
                                             : kBlue;   // vertical quadrupole
     } break;
-    case Hector::Element::anHorizontalQuadrupole:
+    case hector::element::anHorizontalQuadrupole:
       col = kYellow;
       style = 3001;
       break;
-    case Hector::Element::aVerticalQuadrupole:
+    case hector::element::aVerticalQuadrupole:
       col = kBlue;
       style = 3002;
       break;
-    case Hector::Element::aVerticalKicker:
+    case hector::element::aVerticalKicker:
       col = kMagenta;
       break;
-    case Hector::Element::anHorizontalKicker:
+    case hector::element::anHorizontalKicker:
       col = kCyan;
       break;
-    case Hector::Element::aRectangularCollimator:
+    case hector::element::aRectangularCollimator:
       col = 8;
       style = 3006;
       break;
-    case Hector::Element::anEllipticalCollimator:
+    case hector::element::anEllipticalCollimator:
       col = 9;
       style = 3007;
       break;
-    case Hector::Element::aCircularCollimator:
+    case hector::element::aCircularCollimator:
       col = 10;
       break;
     default:
@@ -68,7 +68,7 @@ void fillElementStyle(const std::shared_ptr<Hector::Element::ElementBase>& elem,
 static const float alpha = 1.0;
 
 void drawBeamline(const char axis,
-                  const Hector::Beamline* bl,
+                  const hector::Beamline* bl,
                   const unsigned short beam,
                   const char* ip = "IP5",
                   float scale = 0.2,
@@ -85,13 +85,13 @@ void drawBeamline(const char axis,
   const float aper_arr_len = 0.999;
 
   for (const auto& elemPtr : *bl) {
-    if (elemPtr->type() == Hector::Element::aDrift)
+    if (elemPtr->type() == hector::element::aDrift)
       continue;  //FIXME
     if (min_s != -999. && elemPtr->s() < min_s)
       continue;
     if (max_s != +999. && elemPtr->s() > max_s)
       break;
-    //if ( elemPtr->type() == Hector::Element::ElementBase::Marker && elemPtr->name() != ip ) continue;
+    //if ( elemPtr->type() == hector::element::ElementBase::Marker && elemPtr->name() != ip ) continue;
 
     // introduce a x- and y-offset for drawing purposes
     /*int offset = 0;
@@ -133,7 +133,7 @@ void drawBeamline(const char axis,
     elem_box->SetFillStyle(fill_style);
     elem_box->Draw();
 
-    if (elemPtr->type() != Hector::Element::aMarker || elemPtr->name() != ip) {
+    if (elemPtr->type() != hector::element::aMarker || elemPtr->name() != ip) {
       txt.SetTextSize(0.012);
       txt.SetTextAngle(90.);
       txt.SetTextAlign(22);
@@ -150,7 +150,7 @@ void drawBeamline(const char axis,
     g_aper->Draw( "l" );
     g_aper->SetLineColor( kGray );
   }*/
-  /*for ( Hector::Beamline::MarkersMap::const_iterator it=bl->markers_begin(); it!=bl->markers_end(); it++ ) {
+  /*for ( hector::Beamline::MarkersMap::const_iterator it=bl->markers_begin(); it!=bl->markers_end(); it++ ) {
     txt.SetTextSize( 0.01 );
     txt.SetTextAngle( 90. );
     txt.DrawLatex( it->first, -2*size_y, it->second.name().c_str() );
@@ -167,7 +167,7 @@ public:
   /// Build a helper producer with attributes
   /// \params[in] bl Hector beamline to parse
   elementsLegend(
-      const Hector::Beamline* bl = nullptr, float xmin = 0.05, float ymin = 0.05, float xmax = 0.95, float ymax = 0.95)
+      const hector::Beamline* bl = nullptr, float xmin = 0.05, float ymin = 0.05, float xmax = 0.95, float ymax = 0.95)
       : TLegend(xmin, ymin, xmax, ymax) {
     if (bl)
       feedBeamline(bl);
@@ -175,17 +175,17 @@ public:
     TLegend::SetHeader("#font[32]{Elements legend}");
   }
 
-  void feedBeamline(const Hector::Beamline* bl) {
+  void feedBeamline(const hector::Beamline* bl) {
     for (const auto& elemPtr : *bl) {
-      const Hector::Element::Type type = elemPtr->type();
+      const hector::element::Type type = elemPtr->type();
       // skip the markers and drifts
-      if (type == Hector::Element::aMarker)
+      if (type == hector::element::aMarker)
         continue;
-      if (type == Hector::Element::anInstrument)
+      if (type == hector::element::anInstrument)
         continue;
-      if (type == Hector::Element::aMonitor)
+      if (type == hector::element::aMonitor)
         continue;
-      if (type == Hector::Element::aDrift)
+      if (type == hector::element::aDrift)
         continue;
       // skip the elements already added
       if (already_in_.count(type) > 0)
@@ -206,7 +206,7 @@ public:
   }
 
 private:
-  std::map<Hector::Element::Type, std::unique_ptr<TPave> > already_in_;
+  std::map<hector::element::Type, std::unique_ptr<TPave> > already_in_;
 };
 
 #endif

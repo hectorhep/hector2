@@ -1,17 +1,12 @@
 #ifndef Hector_Core_UnorderedParametersMap_h
 #define Hector_Core_UnorderedParametersMap_h
 
-#include "Hector/Core/Exception.h"
-#include "Hector/Utils/Utils.h"
-
 #include <vector>
+#include <stdexcept>
 #include <string>
 
-using std::cout;
-
-namespace Hector {
-  class Exception;
-  namespace ParametersMap {
+namespace hector {
+  namespace pmap {
     /// Unordered set of parameters indexed by key
     template <class T>
     class Unordered : private std::vector<std::pair<std::string, T> > {
@@ -23,7 +18,7 @@ namespace Hector {
       size_t size() const { return map::size(); }
 
       /// Does the map have this key?
-      bool hasKey(const char* key) const {
+      bool hasKey(const std::string& key) const {
         for (const auto& val : *this) {
           if (val.first == std::string(key))
             return true;
@@ -32,43 +27,35 @@ namespace Hector {
       }
       /// Add a new key-value combination
       void add(const std::string& key, const T& value) { map::push_back(std::pair<std::string, T>(key, value)); }
-      /// Add a new key-value combination
-      void add(const char* key, const T& value) { add(std::string(key), value); }
 
       /// Retrieve the key associated to a position in the map
       const std::string key(const size_t i) const {
         if (i >= map::size())
-          throw Exception(__PRETTY_FUNCTION__, JustWarning)
-              << "Invalid index: " << i << " for an unordered map of size " << map::size() << ".";
+          throw std::runtime_error("Invalid index: " + std::to_string(i) + " for an unordered map of size " +
+                                   std::to_string(map::size()) + ".");
         return map::at(i).first;
       }
       /// Retrieve the value associated to a position in the map
       const T& value(const size_t i) const {
         if (i >= map::size())
-          throw Exception(__PRETTY_FUNCTION__, JustWarning)
-              << "Invalid index: " << i << " for an unordered map of size " << map::size() << ".";
+          throw std::runtime_error("Invalid index: " + std::to_string(i) + " for an unordered map of size " +
+                                   std::to_string(map::size()) + ".");
         return map::at(i).second;
       }
       /// Retrieve the position in the map for the given key
-      size_t id(const char* k) const {
+      size_t id(const std::string& k) const {
         for (size_t i = 0; i < map::size(); ++i)
           if (key(i) == k)
             return i;
-        throw Exception(__PRETTY_FUNCTION__, JustWarning) << "Key \"" << k << "\" was not found in the map.";
+        throw std::runtime_error("Key \"" + k + "\" was not found in the map.");
       }
 
       /// Retrieve the value associated to a key
-      const T get(const char* key) const {
+      const T get(const std::string& key) const {
         for (const auto& val : *this)
-          if (val.first == std::string(key))
+          if (val.first == key)
             return val.second;
         return static_cast<T>(0);
-      }
-
-      /// Print the whole list of key-values stored in the map
-      void dump(std::ostream& os = std::cout) const {
-        for (const auto& val : *this)
-          os << " [" << val.first << "] " << val.second << std::endl;
       }
 
     public:
@@ -78,7 +65,7 @@ namespace Hector {
     private:
       typedef std::vector<std::pair<std::string, T> > map;
     };
-  }  // namespace ParametersMap
-}  // namespace Hector
+  }  // namespace pmap
+}  // namespace hector
 
 #endif

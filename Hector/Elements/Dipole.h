@@ -1,10 +1,10 @@
 #ifndef Hector_Elements_Dipole_h
 #define Hector_Elements_Dipole_h
 
-#include "ElementBase.h"
+#include "Hector/Elements/ElementBase.h"
 
-namespace Hector {
-  namespace Element {
+namespace hector {
+  namespace element {
     /// A generic dipole object
     class Dipole : public ElementBase {
     public:
@@ -83,7 +83,7 @@ namespace Hector {
                     double mp = Parameters::get()->beamParticlesMass(),
                     int qp = Parameters::get()->beamParticlesCharge()) const override;
     };
-  }  // namespace Element
-}  // namespace Hector
+  }  // namespace element
+}  // namespace hector
 
 #endif

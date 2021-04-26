@@ -1,5 +1,5 @@
 #include "Hector/IO/TwissHandler.h"
-#include "Hector/Beamline/Beamline.h"
+#include "Hector/Beamline.h"
 #include "Hector/Utils/ArgsParser.h"
 
 #include "Canvas.h"
@@ -19,7 +19,7 @@ void drawBothGraphs(const char* name,
                     TGraph* gr_y,
                     vector<TLatex*> labels,
                     TPave* rp_region,
-                    Hector::Canvas::PaveText* pt,
+                    hector::Canvas::PaveText* pt,
                     float max_s) {
   TMultiGraph mg;
   mg.Add(gr_x);
@@ -35,7 +35,7 @@ void drawBothGraphs(const char* name,
   gr_x->SetMarkerSize(0.75);
   gr_y->SetMarkerSize(0.75);
 
-  Hector::Canvas c(name, title);
+  hector::Canvas c(name, title);
   mg.Draw(draw_markers ? "alp" : "al");
   mg.SetTitle(axes);
   mg.GetXaxis()->SetRangeUser(-max_s, max_s);
@@ -67,7 +67,7 @@ void drawBothGraphs(const char* name,
 int main(int argc, char* argv[]) {
   string twiss_filename, ip_name;
   double min_s, max_s;
-  Hector::ArgsParser args(argc,
+  hector::ArgsParser args(argc,
                           argv,
                           {{"twiss-file", "Twiss file", &twiss_filename, 'i'}},
                           {
@@ -77,8 +77,8 @@ int main(int argc, char* argv[]) {
                               {"markers", "draw the markers", false, &draw_markers, 'm'},
                           });
 
-  Hector::IO::Twiss twiss(twiss_filename, ip_name, max_s, min_s);
-  const Hector::Beamline* beamline = twiss.rawBeamline();
+  hector::io::Twiss twiss(twiss_filename, ip_name, max_s, min_s);
+  const hector::Beamline* beamline = twiss.rawBeamline();
 
   TGraph gr_betax, gr_betay, gr_dispx, gr_dispy, gr_relx, gr_rely;
 
@@ -103,7 +103,7 @@ int main(int argc, char* argv[]) {
 
     if (fabs(elemPtr->s()) > max_s && fabs(elemPtr->s() + elemPtr->length()) > max_s)
       continue;
-    if (elemPtr->type() == Hector::Element::aDrift && !regex_match(elemPtr->name(), rgx_cmspipe)) {
+    if (elemPtr->type() == hector::element::aDrift && !regex_match(elemPtr->name(), rgx_cmspipe)) {
       //cout << ">>> " << elemPtr->name() << endl;
       labels.push_back(txt.DrawLatex(elemPtr->s(), 100., elemPtr->name().c_str()));
     }
@@ -138,7 +138,7 @@ int main(int argc, char* argv[]) {
 
   //const char* label = Form( "#scale[0.33]{%s}", twiss_filename.substr( twiss_filename.find_last_of( "/\\" )+1 ).c_str() );
   const char* label = Form("#scale[0.33]{%s}", realpath(twiss_filename.c_str(), nullptr));
-  auto pt = new Hector::Canvas::PaveText(0.0, 0.0, 0.15, 0.01, label);
+  auto pt = new hector::Canvas::PaveText(0.0, 0.0, 0.15, 0.01, label);
   pt->SetTextAlign(kHAlignLeft + kVAlignBottom);
 
   drawBothGraphs(

@@ -1,10 +1,10 @@
 #ifndef Hector_Elements_Collimator_h
 #define Hector_Elements_Collimator_h
 
-#include "Drift.h"
+#include "Hector/Elements/Drift.h"
 
-namespace Hector {
-  namespace Element {
+namespace hector {
+  namespace element {
     /// Collimator object builder
     /// \note Treated as a simple drift with a finite aperture opening
     class Collimator : public Drift {
@@ -14,7 +14,7 @@ namespace Hector {
 
       std::shared_ptr<ElementBase> clone() const override { return std::make_shared<Collimator>(*this); }
     };
-  }  // namespace Element
-}  // namespace Hector
+  }  // namespace element
+}  // namespace hector
 
 #endif

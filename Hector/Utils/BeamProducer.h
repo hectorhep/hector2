@@ -1,14 +1,15 @@
-#ifndef Hector_Propagator_BeamProducer
-#define Hector_Propagator_BeamProducer
+#ifndef Hector_Utils_BeamProducer
+#define Hector_Utils_BeamProducer
 
-#include "Hector/Propagator/Particle.h"
+#include "Hector/Particle.h"
+#include "Hector/Parameters.h"
 
 #include <vector>
 #include <random>
 
-namespace Hector {
+namespace hector {
   /// Generator for beam of particles
-  namespace BeamProducer {
+  namespace beam {
     /// Lower and upper limits
     typedef std::pair<float, float> params_t;
     /// Generic scanner for a given granularity of a parameter
@@ -232,7 +233,7 @@ namespace Hector {
     typedef ParticleGun<rnd::Uniform> FlatParticleGun;
     /// Beam of particles with gaussian s, x, y, Tx, Ty and energy distributions
     struct GaussianParticleGun : ParticleGun<rnd::Gaussian> {
-      using ParticleGun<rnd::Gaussian>::ParticleGun;
+      using ParticleGun::ParticleGun;
       /// Specialization for Gaussian parameters
       params_t parameters(float lim1, float lim2);
       void smearX(float x_mean, float x_sigma) { setXparams(x_mean, x_sigma); }
@@ -242,7 +243,7 @@ namespace Hector {
       void smearEnergy(float e_mean, float e_sigma) { setEparams(e_mean, e_sigma); }
       void smearXi(float xi_mean, float xi_sigma);
     };
-  }  // namespace BeamProducer
-}  // namespace Hector
+  }  // namespace beam
+}  // namespace hector
 
 #endif

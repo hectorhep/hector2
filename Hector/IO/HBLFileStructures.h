@@ -1,8 +1,8 @@
 #ifndef Hector_IO_HBLFileStructures_h
 #define Hector_IO_HBLFileStructures_h
 
-namespace Hector {
-  namespace IO {
+namespace hector {
+  namespace io {
     /// Common header to HBL files
     /// \version 1.0.0
     struct HBLHeader {
@@ -72,7 +72,7 @@ namespace Hector {
       /// Aperture middle vertical position
       double aperture_y;
     };
-  }  // namespace IO
-}  // namespace Hector
+  }  // namespace io
+}  // namespace hector
 
 #endif

@@ -1,10 +1,10 @@
 #ifndef Hector_Elements_Quadrupole_h
 #define Hector_Elements_Quadrupole_h
 
-#include "ElementBase.h"
+#include "Hector/Elements/ElementBase.h"
 
-namespace Hector {
-  namespace Element {
+namespace hector {
+  namespace element {
     /// A generic quadrupole object
     class Quadrupole : public ElementBase {
     public:
@@ -68,7 +68,7 @@ namespace Hector {
                     double mp = Parameters::get()->beamParticlesMass(),
                     int qp = Parameters::get()->beamParticlesCharge()) const override;
     };
-  }  // namespace Element
-}  // namespace Hector
+  }  // namespace element
+}  // namespace hector
 
 #endif

@@ -1,14 +1,13 @@
-#----- list all test executables
-
-file(GLOB executables_noroot RELATIVE ${PROJECT_SOURCE_DIR}/test *.cpp)
-file(GLOB executables_root RELATIVE ${PROJECT_SOURCE_DIR}/test *.cxx)
+if(NOT ${BUILD_TESTS})
+  return()
+endif()
 
 #----- build all tests and link them to the core library
 
+file(GLOB executables_noroot RELATIVE ${HECTOR_TEST_DIR} *.cpp)
 foreach(exec_src ${executables_noroot})
     string(REGEX REPLACE "(test_|.cpp)" "" exec_bin ${exec_src})
     add_executable(${exec_bin} ${exec_src})
-    set_target_properties(${exec_bin} PROPERTIES EXCLUDE_FROM_ALL true)
     target_link_libraries(${exec_bin} Hector2 ${HECTOR_DEPENDENCIES})
     add_test(NAME ${exec_bin} COMMAND ${exec_bin})
 #    set_tests_properties(${exec_bin} PROPERTIES PASS_REGULAR_EXPRESSION "Passed")
@@ -23,10 +22,10 @@ if(${ROOT_FOUND})
     link_directories(${ROOT_LIBRARY_DIR})
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 
+    file(GLOB executables_root RELATIVE ${HECTOR_TEST_DIR} *.cxx)
     foreach(exec_src ${executables_root})
         string(REGEX REPLACE "(test_|.cxx)" "" exec_bin ${exec_src})
         add_executable(${exec_bin} ${exec_src})
-        set_target_properties(${exec_bin} PROPERTIES EXCLUDE_FROM_ALL true)
         target_link_libraries(${exec_bin} Hector2 ${HECTOR_DEPENDENCIES} ${ROOT_LIBRARIES})
         add_test(NAME ${exec_bin} COMMAND ${exec_bin})
     endforeach()
