@@ -3,6 +3,7 @@
 #include "Hector/Propagator.h"
 
 #include "Hector/Utils/ArgsParser.h"
+#include "Hector/Utils/BeamProducer.h"
 
 #include "Hector/IO/TwissHandler.h"
 #include "Hector/IO/Pythia8Generator.h"
@@ -93,6 +94,12 @@ int main(int argc, char* argv[]) {
   }};
   hector::Pythia8Generator gen(config);
 
+  hector::beam::GaussianParticleGun gun;
+  gun.smearX(0., vertex_size);
+  gun.smearY(0., vertex_size);
+  gun.smearTx(crossing_angle_x, beam_divergence);
+  gun.smearTy(0., beam_divergence);
+
   for (unsigned short i = 0; i < num_events; ++i) {
     const double ev_weight = 1. / num_events;
     //auto part = gen.diffractiveProton();
@@ -101,16 +108,18 @@ int main(int argc, char* argv[]) {
     for (auto& part : parts) {
       if (part.pdgId() != 2212)
         continue;
-      if (part.firstStateVector().momentum().pz() < 0.)
+      if (part.firstStateVector().momentum().z() < 0.)
         continue;
 
       // smear the vertex and divergence ; apply the crossing angle
+      //part.firstStateVector() += gun.shoot().firstStateVector();
       auto ang = part.firstStateVector().angles();
       auto pos = part.firstStateVector().position();
-      ang[CLHEP::Hep2Vector::X] += CLHEP::RandGauss::shoot(crossing_angle_x, beam_divergence);
-      ang[CLHEP::Hep2Vector::Y] += CLHEP::RandGauss::shoot(0., beam_divergence);
-      pos[CLHEP::Hep2Vector::X] += CLHEP::RandGauss::shoot(0., vertex_size);
-      pos[CLHEP::Hep2Vector::Y] += CLHEP::RandGauss::shoot(0., vertex_size);
+      const auto smearing = gun.shoot().firstStateVector();
+      ang[0] += smearing.Tx();
+      ang[1] += smearing.Ty();
+      pos[0] += smearing.x();
+      pos[1] += smearing.y();
       part.firstStateVector().setAngles(ang);
       part.firstStateVector().setPosition(pos);
 

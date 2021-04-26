@@ -1,6 +1,5 @@
 #include "Hector/Utils/Kinematics.h"
-
-#include <CLHEP/Random/RandFlat.h>
+#include "Hector/Utils/BeamProducer.h"
 
 #include "Hector/Parameters.h"
 #include "Hector/Exception.h"
@@ -49,7 +48,7 @@ namespace hector {
                  seta = sqrt(1. - ceta * ceta);
     // theta is the angle between particle and beam
     const double theta = atan(seta / (Parameters::get()->beamEnergy() / gkk - ceta)),
-                 phi = CLHEP::RandFlat::shoot(phi_min, phi_max);
+                 phi = phi_min + rand() * (phi_max - phi_min) / RAND_MAX;
 
     TwoVector old_ang(sv_ini.angles());
     sv_ini.setAngles(old_ang + TwoVector(theta * cos(phi), -theta * sin(phi)));

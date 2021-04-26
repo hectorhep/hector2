@@ -43,7 +43,7 @@ int main(int argc, char* argv[]) {
   parser.printInfo();
 
   //const CLHEP::Hep2Vector offset( -0.097, 0. );
-  const CLHEP::Hep2Vector offset(0., 0.);
+  const hector::TwoVector offset(0., 0.);
   parser.beamline()->offsetElementsAfter(120., offset);
 
   hector::Propagator prop(parser.beamline());
@@ -83,7 +83,7 @@ int main(int argc, char* argv[]) {
       prop.propagate(p, s_pos);
       //p.dump();
       //if ( prop.stopped( p, s_pos ) ) { /*cout << "prout" << endl;*/ num_stopped++; continue; }
-      const CLHEP::Hep2Vector pos(p.stateVectorAt(s_pos).position() - offset);
+      const hector::TwoVector pos(p.stateVectorAt(s_pos).position() - offset);
       cout << s_pos << " -> " << pos << endl;
       hitmap.Fill(pos.x() * 1.e3, pos.y() * 1.e3);
     } catch (hector::ParticleStoppedException& pse) {
@@ -96,7 +96,7 @@ int main(int argc, char* argv[]) {
       try {
         p.clear();
         prop.propagate(p, hm.first);
-        const CLHEP::Hep2Vector pos(p.stateVectorAt(hm.first).position() - offset);
+        const hector::TwoVector pos(p.stateVectorAt(hm.first).position() - offset);
         hm.second->Fill(pos.x(), pos.y());
       } catch (hector::Exception& e) {
         continue;

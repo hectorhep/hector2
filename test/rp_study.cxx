@@ -6,6 +6,8 @@
 //#include "Hector/Utils/BeamProducer.h"
 #include "Hector/Utils/ArgsParser.h"
 
+#include <iostream>
+
 #include "utils.h"
 #include "Canvas.h"
 
@@ -64,16 +66,16 @@ int main(int argc, char* argv[]) {
   const float cross_angle = 191.546e-6,  // in rad
       y0_pos = 200.e-6;                  // in m
 
-  CLHEP::Hep2Vector pos_rp0;
+  hector::TwoVector pos_rp0;
   hector::Particle p = hector::Particle::fromMassCharge(hector::Parameters::get()->beamParticlesMass(), +1);
   p.firstStateVector().setXi(0.);
   p.firstStateVector().setPosition(0., y0_pos);
   p.firstStateVector().setAngles(cross_angle, 0.);
-  cout << p.firstStateVector() << endl;
+  H_INFO << p.firstStateVector();
   try {
     prop.propagate(p, rp->s());
     pos_rp0 = p.stateVectorAt(rp->s()).position();
-    cout << "pos_0: " << pos_rp0 << endl;
+    H_INFO << "pos_0: " << pos_rp0;
   } catch (hector::ParticleStoppedException& e) {
   } catch (hector::Exception& e) {
   }
@@ -84,11 +86,11 @@ int main(int argc, char* argv[]) {
     p.firstStateVector().setPosition(0., y0_pos);
     p.firstStateVector().setAngles(cross_angle, 0.);
     p.firstStateVector().setXi(xi);
-    cout << p.firstStateVector().xi() << "\t" << p.firstStateVector() << endl;
+    H_INFO << p.firstStateVector().xi() << "\t" << p.firstStateVector();
     try {
       prop.propagate(p, rp->s());
-      CLHEP::Hep2Vector pos_rp = p.stateVectorAt(rp->s()).position();
-      cout << pos_rp << endl;
+      hector::TwoVector pos_rp = p.stateVectorAt(rp->s()).position();
+      H_INFO << pos_rp;
       gr_x_vs_xi.SetPoint(gr_x_vs_xi.GetN(), xi, pos_rp.x() * 1.e3);
       gr_y_vs_xi.SetPoint(gr_y_vs_xi.GetN(), xi, pos_rp.y() * 1.e3);
     } catch (hector::Exception& e) {

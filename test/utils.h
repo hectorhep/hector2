@@ -106,7 +106,7 @@ void drawBeamline(const char axis,
     if (draw_apertures) {
       const auto& aper = elemPtr->aperture();
       if (aper) {
-        const CLHEP::Hep2Vector aper_lim = aper->limits();
+        const auto& aper_lim = aper->limits();
         const float pos_aper = (axis == 'x') ? aper->x() : aper->y(),
                     half_len_aper = (axis == 'x') ? aper_lim.x() : aper_lim.y();
         const float min_pos = pos_rel + pos_aper - half_len_aper, max_pos = pos_rel + pos_aper + half_len_aper;
