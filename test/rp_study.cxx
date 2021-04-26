@@ -11,8 +11,6 @@
 #include "utils.h"
 #include "Canvas.h"
 
-#include <CLHEP/Units/SystemOfUnits.h>
-
 #include "TH1.h"
 
 using namespace std;
@@ -30,12 +28,12 @@ int main(int argc, char* argv[]) {
 
   hector::io::Twiss parser(twiss_file, ip_name, max_s);
   parser.printInfo();
-  //parser.beamline()->dump();
-  //parser.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( -0.097, 0. ) );
-  //hector::Parameters::get()->setUseRelativeEnergy( true );
-  //hector::Parameters::get()->setEnableKickers( true );
-  //hector::Parameters::get()->setEnableDipoles( false ); //FIXME
-  hector::Parameters::get()->setComputeApertureAcceptance(false);  //FIXME
+  //parser.beamline()->dump(std::cout);
+  //parser.beamline()->offsetElementsAfter(120., hector::TwoVector(-0.097, 0.));
+  //hector::Parameters::get()->setUseRelativeEnergy(true);
+  //hector::Parameters::get()->setEnableKickers(true);
+  //hector::Parameters::get()->setEnableDipoles(false);
+  hector::Parameters::get()->setComputeApertureAcceptance(false);
 
   hector::Propagator prop(parser.beamline());
 

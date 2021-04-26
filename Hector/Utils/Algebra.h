@@ -2,9 +2,7 @@
 #define Hector_Utils_Algebra_h
 
 #include <Eigen/Dense>
-
 #include <array>
-#include <vector>
 
 namespace hector {
   /// A generic N-dimensional matrix
@@ -20,7 +18,7 @@ namespace hector {
     /// Build a N-vector from an equivalent CLHEP object
     Vector(const Eigen::VectorXf vec) : Eigen::VectorXf(vec) {}
     /// Build a N-vector from its N-dimensional coordinates
-    Vector(const std::vector<double>& vec) : Eigen::VectorXf(vec.size()) {
+    Vector(const std::initializer_list<double>& vec) : Eigen::VectorXf(vec.size()) {
       unsigned short i = 0;
       for (const auto& c : vec) {
         operator()(i) = c;
@@ -36,7 +34,7 @@ namespace hector {
     /// Build a two-vector from an equivalent CLHEP object
     TwoVector(const Eigen::Vector2f& vec) : Eigen::Vector2f(vec) {}
     /// Build a two-vector from its two-dimensional spatial coordinates
-    TwoVector(const std::array<double, 2>& vec) : Eigen::Vector2f(vec[0], vec[1]) {}
+    TwoVector(const std::initializer_list<double>& vec) : Eigen::Vector2f(*vec.begin(), *(vec.begin() + 1)) {}
   };
   /// Three-vector of double-precision floats
   class ThreeVector : public Eigen::Vector3f {
@@ -46,7 +44,8 @@ namespace hector {
     /// Build a three-vector from an equivalent CLHEP object
     ThreeVector(const Eigen::Vector3f& vec) : Eigen::Vector3f(vec) {}
     /// Build a three-vector from its spatial coordinates
-    ThreeVector(const std::array<double, 3>& vec) : Eigen::Vector3f(vec[0], vec[1], vec[2]) {}
+    ThreeVector(const std::initializer_list<double>& vec)
+        : Eigen::Vector3f(*vec.begin(), *(vec.begin() + 1), *(vec.begin() + 2)) {}
   };
   /// Lorentz vector of double-precision floats
   class LorentzVector : public Eigen::Vector4f {
