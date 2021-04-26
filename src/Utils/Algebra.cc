@@ -15,8 +15,12 @@ namespace hector {
     }
   }  // namespace math
 
+  double LorentzVector::operator*(const LorentzVector& oth) {
+    return w() * oth.w() - x() * oth.x() - y() * oth.y() - z() * oth.z();
+  }
+
   double LorentzVector::m() const {
-    const double m2 = w() * w() - x() * x() - y() * y() - z() * z();
+    const double m2 = LorentzVector(*this) * (*this);
     if (m2 < 0.)
       return -std::sqrt(-m2);
     return std::sqrt(m2);

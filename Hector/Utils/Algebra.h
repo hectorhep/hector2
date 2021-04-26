@@ -35,6 +35,9 @@ namespace hector {
     TwoVector(const Eigen::Vector2f& vec) : Eigen::Vector2f(vec) {}
     /// Build a two-vector from its two-dimensional spatial coordinates
     TwoVector(const std::initializer_list<double>& vec) : Eigen::Vector2f(*vec.begin(), *(vec.begin() + 1)) {}
+    /// Set the horizontal component
+    void setX(double x) { (*this)[0] = x; }
+    /// Set the vertical component
   };
   /// Three-vector of double-precision floats
   class ThreeVector : public Eigen::Vector3f {
@@ -46,6 +49,12 @@ namespace hector {
     /// Build a three-vector from its spatial coordinates
     ThreeVector(const std::initializer_list<double>& vec)
         : Eigen::Vector3f(*vec.begin(), *(vec.begin() + 1), *(vec.begin() + 2)) {}
+    /// Set the horizontal component
+    void setX(double x) { (*this)[0] = x; }
+    /// Set the vertical component
+    void setY(double y) { (*this)[1] = y; }
+    /// Set the longitudinal component
+    void setZ(double z) { (*this)[2] = z; }
   };
   /// Lorentz vector of double-precision floats
   class LorentzVector : public Eigen::Vector4f {
@@ -58,6 +67,17 @@ namespace hector {
     LorentzVector(const std::array<double, 3>& sp, double t) : Eigen::Vector4f(sp[0], sp[1], sp[2], t) {}
     /// Build a Lorentz vector from a four-vector containing its spatial and temporal coordinates
     LorentzVector(const std::array<double, 4> vec) : Eigen::Vector4f(vec[0], vec[1], vec[2], vec[3]) {}
+    /// Set the horizontal momentum component
+    void setX(double x) { (*this)[0] = x; }
+    /// Set the vertical momentum component
+    void setY(double y) { (*this)[1] = y; }
+    /// Set the longitudinal momentum component
+    void setZ(double z) { (*this)[2] = z; }
+    /// Set the time/energy component
+    void setT(double t) { (*this)[3] = t; }
+    /// Four-momenta multiplication operator
+    double operator*(const LorentzVector& oth);
+    /// Four-momentum norm/Lorentz vector mass
     double m() const;
   };
 
