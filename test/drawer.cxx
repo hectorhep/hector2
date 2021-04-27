@@ -10,15 +10,16 @@
 #include "utils.h"
 #include "Canvas.h"
 
-#include <CLHEP/Random/RandGauss.h>
-#include <CLHEP/Units/SystemOfUnits.h>
-
 #include "TGraph.h"
 #include "THStack.h"
 #include "TH2.h"
 #include "TMultiGraph.h"
 #include "TAxis.h"
 #include "TStyle.h"
+
+#include <CLHEP/Random/RandGauss.h>
+
+#include <iostream>
 
 using namespace std;
 
@@ -90,8 +91,8 @@ int main(int argc, char* argv[]) {
     if (fn == "")
       continue;
     const hector::io::Twiss parser(fn, ip_name, max_s);
-    //parser.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( 0.097, 0. ) );
-    //parser.beamline()->offsetElementsAfter( 120., CLHEP::Hep2Vector( +0.097, 0. ) );
+    //parser.beamline()->offsetElementsAfter( 120., hector::TwoVector( 0.097, 0. ) );
+    //parser.beamline()->offsetElementsAfter( 120., hector::TwoVector( +0.097, 0. ) );
     //parser.printInfo();
     if (!parser.beamline())
       throw runtime_error("Failed to parse the beamline!");
@@ -116,7 +117,7 @@ int main(int argc, char* argv[]) {
 
     //--- look at the beamline(s)
     if (dump_beamlines)
-      bl->dump();
+      bl->dump(std::cout);
 
     auto rps = bl->find("XRPH\\.");
     cout << "---> beamline " << fn << " has " << rps.size() << " horizontal Roman pots!" << endl;
@@ -192,7 +193,7 @@ int main(int argc, char* argv[]) {
     }
     hector::Canvas c("beamline",
                      Form("E_{p} = %.1f TeV, #alpha_{X} = %s #murad",
-                          hector::Parameters::get()->beamEnergy() * CLHEP::GeV / CLHEP::TeV,
+                          hector::Parameters::get()->beamEnergy() * 1.e-3, /* GeV->TeV */
                           os_xa.str().c_str()),
                      true);
     c.SetWindowSize(800, 800);

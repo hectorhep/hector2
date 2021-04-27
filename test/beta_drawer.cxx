@@ -1,6 +1,7 @@
 #include "Hector/IO/TwissHandler.h"
 #include "Hector/Beamline.h"
 #include "Hector/Utils/ArgsParser.h"
+#include "Hector/Exception.h"
 
 #include "Canvas.h"
 
@@ -99,7 +100,7 @@ int main(int argc, char* argv[]) {
     if (elemPtr->parentElement())
       continue;
 
-    cout << elemPtr->name() << "::" << elemPtr->beta() << endl;
+    H_INFO << elemPtr->name() << "::" << elemPtr->beta();
 
     if (fabs(elemPtr->s()) > max_s && fabs(elemPtr->s() + elemPtr->length()) > max_s)
       continue;

@@ -1,5 +1,6 @@
 #include "Hector/Utils/ArgsParser.h"
 #include "Hector/Utils/BeamProducer.h"
+#include <iostream>
 
 using namespace std;
 

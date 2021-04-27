@@ -7,8 +7,6 @@
 #include <map>
 #include <memory>
 
-using std::cout;
-
 namespace hector {
   /// A beamline, or collection of optics elements
   class Beamline {
@@ -34,7 +32,7 @@ namespace hector {
     /// Print all useful information on a beamline and all its enclosing elements
     /// \param[inout] os Output stream where to dump the information
     /// \param[in] show_drifts Do we show the intermediate drifts
-    void dump(std::ostream& os = std::cout, bool show_drifts = true) const;
+    void dump(std::ostream& os, bool show_drifts = true) const;
 
     /// Set the position of the interaction point
     void setInteractionPoint(std::shared_ptr<element::ElementBase> ip) { ip_ = ip; }

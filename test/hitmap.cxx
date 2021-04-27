@@ -8,11 +8,10 @@
 #include "utils.h"
 #include "Canvas.h"
 
-#include <CLHEP/Units/SystemOfUnits.h>
-#include <CLHEP/Random/RandGauss.h>
-
 #include "TH2.h"
 #include "TH1.h"
+
+#include <CLHEP/Random/RandGauss.h>
 
 using namespace std;
 
@@ -42,8 +41,8 @@ int main(int argc, char* argv[]) {
   hector::io::Twiss parser(twiss_filename, interaction_point, s_pos);
   parser.printInfo();
 
-  //const CLHEP::Hep2Vector offset( -0.097, 0. );
-  const CLHEP::Hep2Vector offset(0., 0.);
+  //const hector::TwoVector offset( -0.097, 0. );
+  const hector::TwoVector offset(0., 0.);
   parser.beamline()->offsetElementsAfter(120., offset);
 
   hector::Propagator prop(parser.beamline());
@@ -75,7 +74,7 @@ int main(int argc, char* argv[]) {
   map<const hector::element::ElementBase*, unsigned short> stopped_at;
   for (size_t i = 0; i < num_particles; ++i) {
     if ((int)(i * (double)num_particles / num_particles) % 1000 == 0)
-      cout << ">>> Generating particle " << i << " / " << num_particles << endl;
+      H_INFO << ">>> Generating particle " << i << " / " << num_particles;
 
     // propagation through the beamline
     hector::Particle p = gun.shoot();
@@ -83,8 +82,8 @@ int main(int argc, char* argv[]) {
       prop.propagate(p, s_pos);
       //p.dump();
       //if ( prop.stopped( p, s_pos ) ) { /*cout << "prout" << endl;*/ num_stopped++; continue; }
-      const CLHEP::Hep2Vector pos(p.stateVectorAt(s_pos).position() - offset);
-      cout << s_pos << " -> " << pos << endl;
+      const hector::TwoVector pos(p.stateVectorAt(s_pos).position() - offset);
+      H_INFO << s_pos << " -> " << pos;
       hitmap.Fill(pos.x() * 1.e3, pos.y() * 1.e3);
     } catch (hector::ParticleStoppedException& pse) {
       //pse.dump();
@@ -96,7 +95,7 @@ int main(int argc, char* argv[]) {
       try {
         p.clear();
         prop.propagate(p, hm.first);
-        const CLHEP::Hep2Vector pos(p.stateVectorAt(hm.first).position() - offset);
+        const hector::TwoVector pos(p.stateVectorAt(hm.first).position() - offset);
         hm.second->Fill(pos.x(), pos.y());
       } catch (hector::Exception& e) {
         continue;

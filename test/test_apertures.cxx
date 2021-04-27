@@ -14,8 +14,8 @@ int main() {
 
   hector::aperture::Rectangular aper_rect(0.35, 0.25);
   hector::aperture::Elliptic aper_el(0.4, 0.2);
-  hector::aperture::RectElliptic aper(0.35, 0.25, 0.4, 0.2, CLHEP::Hep2Vector(0.0, 0.0));
-  CLHEP::Hep2Vector limits = aper.limits();
+  hector::aperture::RectElliptic aper(0.35, 0.25, 0.4, 0.2, hector::TwoVector(0.0, 0.0));
+  auto limits = aper.limits();
 
   H_INFO << "Aperture has limits: " << limits.x() << " / " << limits.y() << ".";
 
@@ -24,7 +24,7 @@ int main() {
     const float x = x_min + (x_max - x_min) * i / (num_steps - 1);
     for (unsigned short j = 0; j < num_steps; j++) {
       const float y = y_min + (y_max - y_min) * j / (num_steps - 1);
-      const CLHEP::Hep2Vector pos(x, y);
+      const hector::TwoVector pos(x, y);
       if (aper_rect.contains(pos))
         g_rect.SetPoint(g_rect.GetN(), x, y);
       if (aper_el.contains(pos))
