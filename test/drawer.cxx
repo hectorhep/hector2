@@ -17,8 +17,6 @@
 #include "TAxis.h"
 #include "TStyle.h"
 
-#include <CLHEP/Random/RandGauss.h>
-
 #include <iostream>
 
 using namespace std;

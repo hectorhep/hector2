@@ -10,7 +10,7 @@
 #include "Hector/Utils/ArgsParser.h"
 #include "Hector/Utils/String.h"
 
-#include <CLHEP/Random/RandGauss.h>
+#include <iostream>
 
 using namespace std;
 

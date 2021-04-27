@@ -11,8 +11,6 @@
 #include "TH2.h"
 #include "TH1.h"
 
-#include <CLHEP/Random/RandGauss.h>
-
 using namespace std;
 
 int main(int argc, char* argv[]) {

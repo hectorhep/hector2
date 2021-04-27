@@ -14,8 +14,6 @@
 #include "TH1.h"
 #include "TStyle.h"
 
-#include <CLHEP/Random/RandGauss.h>
-
 using namespace std;
 
 void plot_multi(const string& name,

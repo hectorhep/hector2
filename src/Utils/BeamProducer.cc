@@ -2,9 +2,6 @@
 #include "Hector/Utils/Kinematics.h"
 #include "Hector/Exception.h"
 
-#include <CLHEP/Random/RandFlat.h>
-#include <CLHEP/Random/RandGauss.h>
-
 namespace hector {
   beam::Xiscanner::Xiscanner(unsigned short num_part, float xi_min, float xi_max, float x, float y, float s_ini)
       : LinearScanner(num_part, x, x, y, y, xi_to_e(xi_min), xi_to_e(xi_max), s_ini) {}

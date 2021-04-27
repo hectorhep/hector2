@@ -5,11 +5,7 @@
 #include "Hector/Parameters.h"
 
 #include <vector>
-
-namespace CLHEP {
-  class RandFlat;
-  class RandGauss;
-}  // namespace CLHEP
+#include <random>
 
 namespace hector {
   /// Generator for beam of particles
@@ -68,7 +64,7 @@ namespace hector {
       /// \param[in] s_ini initial s position
       Xscanner(unsigned short num_part, float e_ini, float x_min, float x_max, float y = 0., float s_ini = 0.)
           : LinearScanner(num_part, x_min, x_max, y, y, e_ini, e_ini, s_ini) {}
-      Particle shoot();
+      Particle shoot() override;
     };
 
     /// Beam of particles to scan the optics following the y axis
@@ -83,7 +79,7 @@ namespace hector {
       /// \param[in] s_ini initial s position
       Yscanner(unsigned short num_part, float e_ini, float y_min, float y_max, float x = 0., float s_ini = 0.)
           : LinearScanner(num_part, y_min, y_max, x, x, e_ini, e_ini, s_ini) {}
-      Particle shoot();
+      Particle shoot() override;
     };
 
     /// Beam of particles to scan the optics with respect to the x angle
@@ -98,7 +94,7 @@ namespace hector {
       /// \param[in] s_ini initial s position
       TXscanner(unsigned short num_part, float e_ini, float tx_min, float tx_max, float ty = 0., float s_ini = 0.)
           : LinearScanner(num_part, tx_min, tx_max, ty, ty, e_ini, e_ini, s_ini) {}
-      Particle shoot();
+      Particle shoot() override;
     };
 
     /// Beam of particles to scan the optics with respect to the y angle
@@ -113,7 +109,7 @@ namespace hector {
       /// \param[in] s_ini initial s position
       TYscanner(unsigned short num_part, float e_ini, float ty_min, float ty_max, float tx = 0., float s_ini = 0.)
           : LinearScanner(num_part, ty_min, ty_max, tx, tx, e_ini, e_ini, s_ini) {}
-      Particle shoot();
+      Particle shoot() override;
     };
     /// Beam of particles to scan the optics with respect to the longitudinal momentum loss
     class Xiscanner : public LinearScanner {
@@ -126,7 +122,7 @@ namespace hector {
       /// \param[in] y vertical particle position
       /// \param[in] s_ini initial s position
       Xiscanner(unsigned short num_part, float xi_min, float xi_max, float x = 0., float y = 0., float s_ini = 0.);
-      Particle shoot();
+      Particle shoot() override;
     };
 
     /// A generic templated particle gun
@@ -142,14 +138,20 @@ namespace hector {
             tx_(parameters(0., 0.)),
             ty_(parameters(0., 0.)),
             mass_(Parameters::get()->beamParticlesMass()),
-            charge_(Parameters::get()->beamParticlesCharge()) {}
+            charge_(Parameters::get()->beamParticlesCharge()) {
+        rngs_[0] = T(s_.first, s_.second);
+        rngs_[1] = T(x_.first, x_.second);
+        rngs_[2] = T(y_.first, y_.second);
+        rngs_[3] = T(tx_.first, tx_.second);
+        rngs_[4] = T(ty_.first, ty_.second);
+        rngs_[5] = T(e_.first, e_.second);
+      }
 
       /// Generate one particle according to the templated distribution
-      Particle shoot() const {
+      Particle shoot() {
         StateVector vec;
-        const float s = T::shoot(s_.first, s_.second), x = T::shoot(x_.first, x_.second),
-                    y = T::shoot(y_.first, y_.second), tx = T::shoot(tx_.first, tx_.second),
-                    ty = T::shoot(ty_.first, ty_.second), e = T::shoot(e_.first, e_.second);
+        const float s = rngs_[0](gen_), x = rngs_[1](gen_), y = rngs_[2](gen_), tx = rngs_[3](gen_),
+                    ty = rngs_[4](gen_), e = rngs_[5](gen_);
         vec.setPosition(TwoVector(x, y));
         vec.setAngles(TwoVector(tx, ty));
         vec.setM(mass_);
@@ -211,17 +213,27 @@ namespace hector {
       /// Translate lower and upper limits into parameters to give to the random generator
       params_t parameters(float lim1, float lim2) { return params_t(lim1, lim2); }
 
+      std::array<T, 6> rngs_;
+      std::default_random_engine gen_;
       params_t e_, s_;
       params_t x_, y_;
       params_t tx_, ty_;
       float mass_, charge_;
     };
 
+    namespace rnd {
+      struct Uniform : std::uniform_real_distribution<double> {
+        explicit Uniform(double min = 0., double max = 1.) : std::uniform_real_distribution<double>(min, max) {}
+      };
+      struct Gaussian : std::normal_distribution<double> {
+        explicit Gaussian(double mean = 0., double stddev = 1.) : std::normal_distribution<double>(mean, stddev) {}
+      };
+    }  // namespace rnd
     /// Beam of particles with flat s, x, y, Tx, Ty and energy distributions
-    typedef ParticleGun<CLHEP::RandFlat> FlatParticleGun;
+    typedef ParticleGun<rnd::Uniform> FlatParticleGun;
     /// Beam of particles with gaussian s, x, y, Tx, Ty and energy distributions
-    struct GaussianParticleGun : ParticleGun<CLHEP::RandGauss> {
-      using ParticleGun<CLHEP::RandGauss>::ParticleGun;
+    struct GaussianParticleGun : ParticleGun<rnd::Gaussian> {
+      using ParticleGun::ParticleGun;
       /// Specialization for Gaussian parameters
       params_t parameters(float lim1, float lim2);
       void smearX(float x_mean, float x_sigma) { setXparams(x_mean, x_sigma); }
