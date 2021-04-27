@@ -38,6 +38,7 @@ namespace hector {
     /// Set the horizontal component
     void setX(double x) { (*this)[0] = x; }
     /// Set the vertical component
+    void setY(double y) { (*this)[1] = y; }
   };
   /// Three-vector of double-precision floats
   class ThreeVector : public Eigen::Vector3f {

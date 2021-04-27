@@ -197,10 +197,10 @@ BOOST_PYTHON_MODULE(pyhector) {
       .def(py::self -= py::other<hector::TwoVector>())
       .add_property("x", &hector::TwoVector::x, &hector::TwoVector::setX, "Horizontal coordinate")
       .add_property("y", &hector::TwoVector::y, &hector::TwoVector::setY, "Vertical coordinate")
-      .add_property("mag", &hector::TwoVector::mag, &hector::TwoVector::setMag, "2-vector norm")
-      .add_property("phi", &hector::TwoVector::phi, &hector::TwoVector::setPhi, "2-vector angle");
+      .add_property("norm", &hector::TwoVector::norm, "2-vector norm")
+      //.add_property("phi", &hector::TwoVector::phi, "2-vector angle");
 
-  double (hector::ThreeVector::*theta_val)() const = &hector::ThreeVector::theta;
+      double (hector::ThreeVector::*theta_val)() const = &hector::ThreeVector::theta;
   py::class_<hector::ThreeVector>("ThreeVector", "A generic 3-vector for spatial coordinates")
       .def(py::init<double, double, double>())
       .def(py::self_ns::str(py::self_ns::self))
@@ -209,9 +209,9 @@ BOOST_PYTHON_MODULE(pyhector) {
       .add_property("x", &hector::ThreeVector::x, &hector::ThreeVector::setX, "Horizontal coordinate")
       .add_property("y", &hector::ThreeVector::y, &hector::ThreeVector::setY, "Vertical coordinate")
       .add_property("z", &hector::ThreeVector::z, &hector::ThreeVector::setZ, "Longitudinal coordinate")
-      .add_property("mag", &hector::ThreeVector::mag, &hector::ThreeVector::setMag, "3-vector norm")
-      .add_property("theta", theta_val, &hector::ThreeVector::setTheta, "3-vector polar angle")
-      .add_property("phi", &hector::ThreeVector::phi, &hector::ThreeVector::setPhi, "3-vector azimuthal angle")
+      .add_property("norm", &hector::ThreeVector::norm, "3-vector norm")
+      //.add_property("theta", theta_val, "3-vector polar angle")
+      //.add_property("phi", &hector::ThreeVector::phi, "3-vector azimuthal angle")
       .def("deltaR", &hector::ThreeVector::deltaR);
 
   py::class_<hector::LorentzVector>("LorentzVector")
@@ -223,11 +223,10 @@ BOOST_PYTHON_MODULE(pyhector) {
       .add_property("y", &hector::LorentzVector::y, &hector::LorentzVector::setY, "Vertical coordinate")
       .add_property("z", &hector::LorentzVector::z, &hector::LorentzVector::setZ, "Longitudinal coordinate")
       .add_property("t", &hector::LorentzVector::t, &hector::LorentzVector::setT, "Time coordinate")
-      .add_property("px", &hector::LorentzVector::px, &hector::LorentzVector::setPx, "Horizontal momentum")
-      .add_property("py", &hector::LorentzVector::py, &hector::LorentzVector::setPy, "Vertical momentum")
-      .add_property("pz", &hector::LorentzVector::pz, &hector::LorentzVector::setPz, "Longitudinal momentum")
-      .add_property("e", &hector::LorentzVector::e, &hector::LorentzVector::setE, "Energy")
-      .def("vect", &hector::LorentzVector::vect);
+      .add_property("px", &hector::LorentzVector::x, &hector::LorentzVector::setX, "Horizontal momentum")
+      .add_property("py", &hector::LorentzVector::y, &hector::LorentzVector::setY, "Vertical momentum")
+      .add_property("pz", &hector::LorentzVector::z, &hector::LorentzVector::setZ, "Longitudinal momentum")
+      .add_property("e", &hector::LorentzVector::t, &hector::LorentzVector::setT, "Energy");
 
   //double& ( hector::Matrix::*mat_elem )( int i, int j ) = &hector::Matrix::operator();
   py::class_<hector::Matrix>("Matrix", "A generic matrix (often used for propagation)")
