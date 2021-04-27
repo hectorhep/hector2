@@ -23,8 +23,8 @@ include(SetEnvironment)
 
 set(HECTOR_SOURCE_DIR ${PROJECT_SOURCE_DIR}/src)
 set(HECTOR_TEST_DIR ${PROJECT_SOURCE_DIR}/test)
-set(HECTOR_DEPENDENCIES ${CLHEP_LIB})
-set(HECTOR_INC_DEPENDENCIES ${CLHEP_INCLUDE})
+set(HECTOR_DEPENDENCIES ${EIGEN3})
+set(HECTOR_INC_DEPENDENCIES ${EIGEN3_INCLUDE_DIR})
 
 set(PYHECTOR_SOURCE_DIR ${PROJECT_SOURCE_DIR}/python)
 
@@ -77,8 +77,8 @@ install(DIRECTORY Hector DESTINATION include FILES_MATCHING PATTERN "*.h")
 #----- python wrapper
 
 if(BUILD_PYTHON AND Boost_FOUND)
-  include_directories(${Boost_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS})
   python_add_module(pyhector ${PYHECTOR_SOURCE_DIR}/PythonWrapper.cc ${PYHECTOR_SOURCE_DIR}/__init__.py)
+  target_include_directories(pyhector ${Boost_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS})
   target_link_libraries(pyhector Hector2 ${HECTOR_DEPENDENCIES} ${Boost_LIBRARIES})
   #execute_process(
   #  COMMAND python27 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())"
