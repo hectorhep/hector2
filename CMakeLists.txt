@@ -78,8 +78,8 @@ install(DIRECTORY Hector DESTINATION include FILES_MATCHING PATTERN "*.h")
 
 if(BUILD_PYTHON AND Boost_FOUND)
   python_add_module(pyhector ${PYHECTOR_SOURCE_DIR}/PythonWrapper.cc ${PYHECTOR_SOURCE_DIR}/__init__.py)
-  target_include_directories(pyhector ${Boost_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS})
   target_link_libraries(pyhector Hector2 ${HECTOR_DEPENDENCIES} ${Boost_LIBRARIES})
+  target_include_directories(pyhector INTERFACE ${Boost_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS})
   #execute_process(
   #  COMMAND python27 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())"
   #  OUTPUT_VARIABLE PYTHON_SITE_PACKAGES OUTPUT_STRIP_TRAILING_WHITESPACE)
