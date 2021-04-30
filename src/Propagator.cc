@@ -18,6 +18,10 @@ namespace hector {
 
     const double first_s = part.firstS();
 
+    if (beamline_->elements().size() < 2) {
+      H_WARNING << "Insufficiant number of beamline elements for propagation: " << beamline_->elements().size();
+      return;
+    }
     try {
       for (Elements::const_iterator it = beamline_->begin() + 1; it != beamline_->end(); ++it) {
         // extract the previous and the current element in the beamline
