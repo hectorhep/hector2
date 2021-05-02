@@ -48,8 +48,8 @@ namespace hector {
 
     //PrintInfo( Form( "Interpolating for s = %.2f between %.2f and %.2f", s, lower_it->first, upper_it->first ) );
 
-    const StateVector sv_before = lower_it->second, sv_after = upper_it->second;
-    const TwoVector in = sv_before.position(), out = sv_after.position();
+    const StateVector &sv_before = lower_it->second, &sv_after = upper_it->second;
+    const TwoVector &in = sv_before.position(), &out = sv_after.position();
 
     const double drift_length = upper_it->first - lower_it->first;
     if (drift_length == 0)
