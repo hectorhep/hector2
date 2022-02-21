@@ -5,6 +5,7 @@
 #include "TLegend.h"
 #include "TPaveText.h"
 #include "TH1.h"
+#include "TLine.h"
 #include "TObjArray.h"
 #include "TObjString.h"
 #include "TGraph.h"
