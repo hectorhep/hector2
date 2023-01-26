@@ -1,23 +1,37 @@
-#include "Hector/IO/TwissHandler.h"
-#include "Hector/Exception.h"
-
-#include "Hector/Beamline.h"
-
-#include "Hector/Elements/Quadrupole.h"
-#include "Hector/Elements/Dipole.h"
-#include "Hector/Elements/Collimator.h"
-#include "Hector/Elements/Kicker.h"
-#include "Hector/Elements/Marker.h"
-
-#include "Hector/Apertures/Elliptic.h"
-#include "Hector/Apertures/Circular.h"
-#include "Hector/Apertures/Rectangular.h"
-#include "Hector/Apertures/RectElliptic.h"
-
-#include "Hector/Utils/String.h"
+/*
+ *  Hector: a beamline propagation tool
+ *  Copyright (C) 2016-2023  Laurent Forthomme
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include <ctime>
 #include <iostream>
+
+#include "Hector/Apertures/Circular.h"
+#include "Hector/Apertures/Elliptic.h"
+#include "Hector/Apertures/RectElliptic.h"
+#include "Hector/Apertures/Rectangular.h"
+#include "Hector/Beamline.h"
+#include "Hector/Elements/Collimator.h"
+#include "Hector/Elements/Dipole.h"
+#include "Hector/Elements/Kicker.h"
+#include "Hector/Elements/Marker.h"
+#include "Hector/Elements/Quadrupole.h"
+#include "Hector/Exception.h"
+#include "Hector/IO/TwissHandler.h"
+#include "Hector/Utils/String.h"
 
 namespace hector {
   /*  namespace pmap
