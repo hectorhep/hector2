@@ -1,7 +1,8 @@
-#include "Hector/Utils/String.h"
-
-#include <cstdarg>  // For va_start, etc.
 #include <algorithm>
+#include <cstdarg>  // For va_start, etc.
+#include <locale>
+
+#include "Hector/Utils/String.h"
 
 namespace hector {
   std::string format(const std::string fmt, ...) {
@@ -49,12 +50,11 @@ namespace hector {
     return format("\033[%d;%dm%s\033[0m", (int)col, (int)mod, str.c_str());
   }
 
-  std::string now() {
-    static char buffer[25];
-    time_t raw_time;
-    time(&raw_time);
-    struct tm* time_info = localtime(&raw_time);
-    strftime(buffer, 25, "%Y-%d-%m %H:%M:%S", time_info);
-    return std::string(buffer);
+  std::string now(const std::string& fmt) {
+    auto now = std::time(nullptr);
+    auto tm = *std::localtime(&now);
+    char out_str[50];
+    strftime(out_str, 50, fmt.c_str(), &tm);
+    return std::string(out_str);
   }
 }  // namespace hector

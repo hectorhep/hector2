@@ -2,15 +2,28 @@ cmake_minimum_required(VERSION 2.9 FATAL_ERROR)
 project(Hector)
 set(PROJECT_VERSION 2)
 
-set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/cmake)
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE CACHE BOOL "RPATH USE LINK PATH")
+set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/cmake $ENV{ROOTSYS}/cmake)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+  set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_LIST_DIR}/install" CACHE PATH "default install path" FORCE)
+endif()
+
 if(CMAKE_VERSION VERSION_GREATER 3.1)
-  set(CMAKE_CXX_STANDARD 14)
+  set(CMAKE_CXX_STANDARD 17)
   set(CMAKE_C_STANDARD 11)
 else()
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11")
 endif()
 
+include(GNUInstallDirs)
+
+# Give user the choice to override installation directories
+set(INSTALL_LIB_DIR lib CACHE PATH "Installation directory for libraries")
+set(INSTALL_BIN_DIR bin CACHE PATH "Installation directory for executables")
+set(INSTALL_INCLUDE_DIR include CACHE PATH
+  "Installation directory for header files")
 
 option(BUILD_PYTHON "Build the Python bindings" OFF)
 option(BUILD_TESTS "Build the tests" ON)
@@ -70,9 +83,9 @@ target_include_directories(Hector2 PUBLIC ${HECTOR_INC_DEPENDENCIES})
 add_executable(hector ${HECTOR_SOURCE_DIR}/hector.cc)
 target_link_libraries(hector Hector2 ${HECTOR_DEPENDENCIES})
 
-install(TARGETS Hector2 DESTINATION lib)
-install(TARGETS hector DESTINATION bin)
-install(DIRECTORY Hector DESTINATION include FILES_MATCHING PATTERN "*.h")
+install(TARGETS Hector2 DESTINATION ${CMAKE_INSTALL_LIBDIR})
+install(TARGETS hector DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(DIRECTORY Hector DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} FILES_MATCHING PATTERN "*.h")
 
 #----- python wrapper
 

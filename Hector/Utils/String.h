@@ -27,7 +27,7 @@ namespace hector {
   /// Set the TTY colour and font style for a string
   std::string colourise(const std::string& str, Colour col, Modifier mod);
   /// Current human-readable date and time
-  std::string now();
+  std::string now(const std::string& fmt = "%Y-%d-%m %H:%M:%S");
 }  // namespace hector
 
 #endif
