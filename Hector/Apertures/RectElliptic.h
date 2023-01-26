@@ -26,7 +26,7 @@ namespace hector {
     /// Rectangular/elliptic shape aperture
     class RectElliptic : public Aperture {
     public:
-      explicit RectElliptic(double, double, double, double, const TwoVector& = TwoVector());
+      explicit RectElliptic(double, double, double, double, const TwoVector& = TwoVector(0., 0.));
 
       AperturePtr clone() const override { return AperturePtr(new RectElliptic(*this)); }
 

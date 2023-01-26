@@ -27,7 +27,7 @@ namespace hector {
     class Elliptic : public Aperture {
     public:
       /// Class constructor
-      explicit Elliptic(double, double, const TwoVector& = TwoVector());
+      explicit Elliptic(double, double, const TwoVector& = TwoVector(0., 0.));
       AperturePtr clone() const override { return std::make_shared<Elliptic>(*this); }
 
       bool contains(const TwoVector&) const override;

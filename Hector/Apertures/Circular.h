@@ -26,7 +26,7 @@ namespace hector {
     /// Round shape aperture
     class Circular : public Elliptic {
     public:
-      explicit Circular(double radius, const TwoVector& pos = TwoVector()) : Elliptic(radius, radius, pos) {}
+      explicit Circular(double radius, const TwoVector& pos = TwoVector(0., 0.)) : Elliptic(radius, radius, pos) {}
 
       AperturePtr clone() const override { return AperturePtr(new Circular(*this)); }
     };

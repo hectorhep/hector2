@@ -26,7 +26,7 @@ namespace hector {
     /// Rectangular shape aperture
     class Rectangular : public Aperture {
     public:
-      explicit Rectangular(double, double, const TwoVector& = TwoVector());
+      explicit Rectangular(double, double, const TwoVector& = TwoVector(0., 0.));
 
       AperturePtr clone() const override { return AperturePtr(new Rectangular(*this)); }
 
