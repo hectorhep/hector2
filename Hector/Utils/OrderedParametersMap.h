@@ -48,7 +48,7 @@ namespace hector {
       const T& get(const std::string& key) const {
         const auto& val = map::find(key);
         if (val == map::end())
-          throw std::out_of_range("Failed to retrieve key!");
+          throw std::out_of_range("Failed to retrieve key '" + key + "'");
         return val->second;
       }
 
