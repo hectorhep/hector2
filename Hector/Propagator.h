@@ -21,13 +21,11 @@
 
 #include <memory>
 
+#include "Hector/Elements/ElementFwd.h"
 #include "Hector/Particle.h"
 
 namespace hector {
   class Beamline;
-  namespace element {
-    class ElementBase;
-  }
   /// Main object to propagate particles through a beamline
   class Propagator {
   public:
@@ -48,7 +46,7 @@ namespace hector {
   private:
     /// Extract a particle position at the exit of an element once it enters it
     Particle::Position propagateThrough(const Particle::Position& ini_pos,
-                                        const std::shared_ptr<element::ElementBase> ele,
+                                        const element::ElementPtr& ele,
                                         double eloss,
                                         int qp) const;
 

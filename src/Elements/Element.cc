@@ -18,17 +18,17 @@
 
 #include <sstream>
 
-#include "Hector/Elements/ElementBase.h"
+#include "Hector/Elements/Element.h"
 #include "Hector/Exception.h"
 #include "Hector/Parameters.h"
 #include "Hector/Utils/String.h"
 
 namespace hector {
   namespace element {
-    ElementBase::ElementBase(const Type& type, const std::string& name, double spos, double length)
+    Element::Element(const Type& type, const std::string& name, double spos, double length)
         : type_(type), name_(name), length_(length), magnetic_strength_(0.), s_(spos) {}
 
-    ElementBase::ElementBase(ElementBase& rhs)
+    Element::Element(Element& rhs)
         : type_(rhs.type_),
           name_(rhs.name_),
           aperture_(rhs.aperture_),
@@ -41,7 +41,7 @@ namespace hector {
           disp_(rhs.disp_),
           rel_pos_(rhs.rel_pos_) {}
 
-    ElementBase::ElementBase(const ElementBase& rhs)
+    Element::Element(const Element& rhs)
         : type_(rhs.type_),
           name_(rhs.name_),
           aperture_(rhs.aperture_),
@@ -54,7 +54,7 @@ namespace hector {
           disp_(rhs.disp_),
           rel_pos_(rhs.rel_pos_) {}
 
-    bool ElementBase::operator==(const ElementBase& rhs) const {
+    bool Element::operator==(const Element& rhs) const {
       if (type_ != rhs.type_)
         return false;
       if (s_ != rhs.s_)
@@ -76,13 +76,11 @@ namespace hector {
       return true;
     }
 
-    void ElementBase::setAperture(const std::shared_ptr<aperture::ApertureBase>& apert) { aperture_ = apert; }
+    void Element::setAperture(const aperture::AperturePtr& apert) { aperture_ = apert; }
 
-    void ElementBase::setAperture(aperture::ApertureBase* apert) {
-      setAperture(std::shared_ptr<aperture::ApertureBase>(apert));
-    }
+    void Element::setAperture(aperture::Aperture* apert) { setAperture(aperture::AperturePtr(apert)); }
 
-    double ElementBase::fieldStrength(double e_loss, double mp, int qp) const {
+    double Element::fieldStrength(double e_loss, double mp, int qp) const {
       // only act on charged particles
       if (qp == 0)
         return 0.;
@@ -107,7 +105,7 @@ namespace hector {
       return magnetic_strength_ * p_bal * (qp / Parameters::get()->beamParticlesCharge());
     }
 
-    const std::string ElementBase::typeName() const {
+    const std::string Element::typeName() const {
       std::ostringstream os;
       os << type_;
       return os.str();
@@ -115,7 +113,7 @@ namespace hector {
   }  // namespace element
 
   /// Human-readable printout of a beamline element object
-  std::ostream& operator<<(std::ostream& os, const element::ElementBase& elem) {
+  std::ostream& operator<<(std::ostream& os, const element::Element& elem) {
     os << format("%-15s %17s (length = %5.2f m) at %6.2f < s < %6.2f m",
                  elem.typeName().c_str(),
                  elem.name().c_str(),
@@ -128,5 +126,5 @@ namespace hector {
   }
 
   /// Human-readable printout of a beamline element object
-  std::ostream& operator<<(std::ostream& os, const element::ElementBase* elem) { return os << *elem; }
+  std::ostream& operator<<(std::ostream& os, const element::Element* elem) { return os << *elem; }
 }  // namespace hector

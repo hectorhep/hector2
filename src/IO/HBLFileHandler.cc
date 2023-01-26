@@ -54,7 +54,7 @@ namespace hector {
                       << "!";
 
       HBLElement el;
-      std::shared_ptr<element::ElementBase> elem;
+      element::ElementPtr elem;
       while (file.read(reinterpret_cast<char*>(&el), sizeof(HBLElement))) {
         if (Parameters::get()->loggingThreshold() > ExceptionType::warning)
           H_INFO << "Retrieved a " << (element::Type)el.element_type << " element\n\t"

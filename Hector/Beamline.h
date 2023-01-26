@@ -22,7 +22,7 @@
 #include <map>
 #include <memory>
 
-#include "Hector/Elements/ElementBaseFwd.h"
+#include "Hector/Elements/ElementFwd.h"
 #include "Hector/Elements/Marker.h"
 
 namespace hector {

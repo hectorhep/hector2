@@ -19,16 +19,16 @@
 #ifndef Hector_Elements_Dipole_h
 #define Hector_Elements_Dipole_h
 
-#include "Hector/Elements/ElementBase.h"
+#include "Hector/Elements/Element.h"
+#include "Hector/Elements/ElementFwd.h"
 
 namespace hector {
   namespace element {
     /// A generic dipole object
-    class Dipole : public ElementBase {
+    class Dipole : public Element {
     public:
-      /// (virtual) class constructor
-      Dipole(const Type& type, const std::string& name, double spos, double length, double mag_str)
-          : ElementBase(type, name, spos, length) {
+      explicit Dipole(const Type& type, const std::string& name, double spos, double length, double mag_str)
+          : Element(type, name, spos, length) {
         setMagneticStrength(mag_str);
       }
     };
@@ -36,11 +36,10 @@ namespace hector {
     /// Rectangular dipole object builder
     class RectangularDipole : public Dipole {
     public:
-      /// Class constructor
-      RectangularDipole(const std::string& name, double spos, double length, double mag_str)
+      explicit RectangularDipole(const std::string& name, double spos, double length, double mag_str)
           : Dipole(aRectangularDipole, name, spos, length, mag_str) {}
 
-      std::shared_ptr<ElementBase> clone() const override { return std::make_shared<RectangularDipole>(*this); }
+      ElementPtr clone() const override { return std::make_shared<RectangularDipole>(*this); }
       /** \note \f$
          * \mathbf{M} = \left(
          * \begin{array}{cccccc}
@@ -65,11 +64,10 @@ namespace hector {
     /// Sector dipole object builder
     class SectorDipole : public Dipole {
     public:
-      /// Class constructor
-      SectorDipole(const std::string& name, double spos, double length, double mag_str)
+      explicit SectorDipole(const std::string& name, double spos, double length, double mag_str)
           : Dipole(aSectorDipole, name, spos, length, mag_str) {}
 
-      std::shared_ptr<ElementBase> clone() const override { return std::make_shared<SectorDipole>(*this); }
+      ElementPtr clone() const override { return std::make_shared<SectorDipole>(*this); }
 
       /// \note Matrix depends if the bending is on or off.
       /** \note \f$

@@ -25,6 +25,7 @@
 #include <string>
 
 #include "Hector/Apertures/ApertureType.h"
+#include "Hector/Elements/ElementFwd.h"
 #include "Hector/Elements/ElementType.h"
 #include "Hector/Utils/OrderedParametersMap.h"
 #include "Hector/Utils/UnorderedParametersMap.h"
@@ -32,10 +33,6 @@
 using std::ostream;
 
 namespace hector {
-  // forward-declarations
-  namespace element {
-    class ElementBase;
-  }
   class Beamline;
   namespace io {
     /// Parsing tool for MAD-X Twiss output files
@@ -85,7 +82,7 @@ namespace hector {
       void parseElementsFields();
       void parseElements();
       void findInteractionPoint();
-      std::shared_ptr<element::ElementBase> parseElement(const ValuesCollection&);
+      element::ElementPtr parseElement(const ValuesCollection&);
 
       pmap::Ordered<std::string> header_str_;
       pmap::Ordered<float> header_float_;
@@ -97,7 +94,7 @@ namespace hector {
 
       std::unique_ptr<Beamline> beamline_;
       std::unique_ptr<Beamline> raw_beamline_;
-      std::shared_ptr<element::ElementBase> interaction_point_;
+      element::ElementPtr interaction_point_;
 
       std::string ip_name_;
       float min_s_;

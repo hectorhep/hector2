@@ -26,11 +26,9 @@ namespace hector {
     /// Round shape aperture
     class Circular : public Elliptic {
     public:
-      /// Class constructor
-      Circular(double, const TwoVector& pos = TwoVector());
-      ~Circular();
+      explicit Circular(double radius, const TwoVector& pos = TwoVector()) : Elliptic(radius, radius, pos) {}
 
-      std::shared_ptr<ApertureBase> clone() const override { return std::make_shared<Circular>(*this); }
+      AperturePtr clone() const override { return AperturePtr(new Circular(*this)); }
     };
   }  // namespace aperture
 }  // namespace hector

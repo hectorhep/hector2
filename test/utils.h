@@ -1,11 +1,20 @@
 #ifndef Hector_test_utils_h
 #define Hector_test_utils_h
 
-#include "Hector/Elements/ElementBase.h"
+#include <TArrow.h>
+#include <TColor.h>
+#include <TGraph.h>
+#include <TLatex.h>
+#include <TLegend.h>
+#include <TMarker.h>
+#include <TPave.h>
 
-#include "TColor.h"
+#include <map>
 
-void fillElementStyle(const std::shared_ptr<hector::element::ElementBase>& elem, Color_t& col, Style_t& style) {
+#include "Canvas.h"
+#include "Hector/Elements/ElementFwd.h"
+
+void fillElementStyle(const hector::element::ElementPtr& elem, Color_t& col, Style_t& style) {
   col = kWhite;
   style = 1001;
   switch (elem->type()) {
@@ -57,12 +66,6 @@ void fillElementStyle(const std::shared_ptr<hector::element::ElementBase>& elem,
       break;
   }
 }
-
-#include "TPave.h"
-#include "TLatex.h"
-#include "TMarker.h"
-#include "TArrow.h"
-#include "TGraph.h"
 
 //static const float alpha = 0.8;
 static const float alpha = 1.0;
@@ -156,10 +159,6 @@ void drawBeamline(const char axis,
     txt.DrawLatex( it->first, -2*size_y, it->second.name().c_str() );
   }*/
 }
-
-#include "TLegend.h"
-#include <map>
-#include "Canvas.h"
 
 /// Helper class to build a beamline legend in ROOT
 class elementsLegend : public TLegend {

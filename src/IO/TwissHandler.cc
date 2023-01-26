@@ -26,6 +26,7 @@
 #include "Hector/Beamline.h"
 #include "Hector/Elements/Collimator.h"
 #include "Hector/Elements/Dipole.h"
+#include "Hector/Elements/ElementFwd.h"
 #include "Hector/Elements/Kicker.h"
 #include "Hector/Elements/Marker.h"
 #include "Hector/Elements/Quadrupole.h"
@@ -316,7 +317,7 @@ namespace hector {
       raw_beamline_->add(interaction_point_);
     }
 
-    std::shared_ptr<element::ElementBase> Twiss::parseElement(const ValuesCollection& values) {
+    element::ElementPtr Twiss::parseElement(const ValuesCollection& values) {
       // first check if the "correct" number of element properties is parsed
       if (values.size() != elements_fields_.size())
         throw H_ERROR << "Twiss file seems corrupted!\n\t"
@@ -352,7 +353,7 @@ namespace hector {
                                          ? findElementTypeByKeyword(lowercase(trim(elem_map_str.get("keyword"))))
                                          : findElementTypeByName(name);
 
-      std::shared_ptr<element::ElementBase> elem;
+      element::ElementPtr elem;
 
       try {
         // create the element

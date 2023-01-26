@@ -47,8 +47,8 @@ int main(int argc, char* argv[]) {
   auto h_xi_raw = new TH1D("xi_raw", "Proton momentum loss #xi@@Events@@?.3f", 250, -0.125, 1.125),
        h_tx_raw = new TH1D("tx_raw", "#theta_{X}@@Events@@#murad?.1f", 100, -500., 500.),
        h_ty_raw = new TH1D("ty_raw", "#theta_{Y}@@Events@@#murad?.1f", 100, -500., 500.);
-  map<hector::element::ElementBase*, TH1D*> h_xi_sp, h_tx_sp, h_ty_sp;
-  map<hector::element::ElementBase*, TH2D*> h_hitmap;
+  map<hector::element::Element*, TH1D*> h_xi_sp, h_tx_sp, h_ty_sp;
+  map<hector::element::Element*, TH2D*> h_hitmap;
 
   TH1D h_num_protons("num_protons", "Proton multiplicity in event@@Events", 10, 0., 10.);
   double max_rp_s = 0.;

@@ -22,9 +22,7 @@ namespace hector {
   namespace aperture {
     RectElliptic::RectElliptic(
         double rect_size_x, double rect_size_y, double ell_size_x, double ell_size_y, const TwoVector& pos)
-        : ApertureBase(aRectEllipticAperture, pos, {{rect_size_x, rect_size_y, ell_size_x, ell_size_y}}) {}
-
-    RectElliptic::~RectElliptic() {}
+        : Aperture(aRectEllipticAperture, pos, {{rect_size_x, rect_size_y, ell_size_x, ell_size_y}}) {}
 
     bool RectElliptic::contains(const TwoVector& pos) const {
       const TwoVector vec1(pos - pos_), vec2(vec1.x() / p(2), vec1.y() / p(3));

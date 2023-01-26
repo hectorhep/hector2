@@ -16,22 +16,21 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef Hector_Apertures_ApertureBase_h
-#define Hector_Apertures_ApertureBase_h
+#ifndef Hector_Apertures_Aperture_h
+#define Hector_Apertures_Aperture_h
 
+#include <iosfwd>
 #include <memory>
 #include <vector>
 
+#include "Hector/Apertures/ApertureFwd.h"
 #include "Hector/Apertures/ApertureType.h"
 #include "Hector/Utils/Algebra.h"
 
-using std::ostream;
-
 namespace hector {
-  /// Collection of apertures to be associated to element objects
   namespace aperture {
     /// A generic aperture object for a beamline element
-    class ApertureBase {
+    class Aperture {
     public:
       /// Collection of shape parameters for this aperture
       typedef std::vector<double> Parameters;
@@ -41,15 +40,15 @@ namespace hector {
       /// \param[in] type Aperture type (see aperture::Type)
       /// \param[in] pos Aperture position
       /// \param[in] param Shape parameters
-      ApertureBase(const Type& type, const TwoVector& pos, const std::vector<double>& param);
-      virtual ~ApertureBase();
+      explicit Aperture(const Type& type, const TwoVector& pos, const std::vector<double>& param);
+      virtual ~Aperture();
 
       /// Return a pointer to a clone of the current aperture
-      virtual std::shared_ptr<ApertureBase> clone() const = 0;
+      virtual AperturePtr clone() const = 0;
       /// Check if two apertures (and their properties) are identical
-      bool operator==(const ApertureBase&) const;
+      bool operator==(const Aperture&) const;
       /// Check if two apertures (and their properties) are different
-      bool operator!=(const ApertureBase& rhs) const { return !(*this == rhs); }
+      bool operator!=(const Aperture& rhs) const { return !(*this == rhs); }
 
       /// Check if a position is contained in the aperture
       virtual bool contains(const TwoVector&) const = 0;
@@ -95,9 +94,9 @@ namespace hector {
     };
   }  // namespace aperture
   /// Human-readable printout of the properties of an aperture
-  std::ostream& operator<<(std::ostream&, const aperture::ApertureBase&);
+  std::ostream& operator<<(std::ostream&, const aperture::Aperture&);
   /// Human-readable printout of the properties of an aperture
-  std::ostream& operator<<(std::ostream&, const aperture::ApertureBase*);
+  std::ostream& operator<<(std::ostream&, const aperture::Aperture*);
 }  // namespace hector
 
 #endif

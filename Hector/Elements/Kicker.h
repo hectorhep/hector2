@@ -19,16 +19,15 @@
 #ifndef Hector_Elements_Kicker_h
 #define Hector_Elements_Kicker_h
 
-#include "Hector/Elements/ElementBase.h"
+#include "Hector/Elements/Element.h"
 
 namespace hector {
   namespace element {
     /// A generic kicker object
-    class Kicker : public ElementBase {
+    class Kicker : public Element {
     public:
-      /// (virtual) class constructor
-      Kicker(const Type& type, const std::string& name, double spos, double length, double mag_str)
-          : ElementBase(type, name, spos, length) {
+      explicit Kicker(const Type& type, const std::string& name, double spos, double length, double mag_str)
+          : Element(type, name, spos, length) {
         setMagneticStrength(mag_str);
       }
     };
@@ -36,11 +35,10 @@ namespace hector {
     /// Horizontal kicker object builder
     class HorizontalKicker : public Kicker {
     public:
-      /// Class constructor
-      HorizontalKicker(const std::string& name, double spos, double length, double mag_str)
+      explicit HorizontalKicker(const std::string& name, double spos, double length, double mag_str)
           : Kicker(anHorizontalKicker, name, spos, length, mag_str) {}
 
-      std::shared_ptr<ElementBase> clone() const override { return std::make_shared<HorizontalKicker>(*this); }
+      ElementPtr clone() const override { return ElementPtr(new HorizontalKicker(*this)); }
       /** \note \f$
          * \mathbf{M} = \left(
          * \begin{array}{cccccc}
@@ -63,11 +61,10 @@ namespace hector {
     /// Vertical kicker object builder
     class VerticalKicker : public Kicker {
     public:
-      /// Class constructor
-      VerticalKicker(const std::string& name, double spos, double length, double mag_str)
+      explicit VerticalKicker(const std::string& name, double spos, double length, double mag_str)
           : Kicker(aVerticalKicker, name, spos, length, mag_str) {}
 
-      std::shared_ptr<ElementBase> clone() const override { return std::make_shared<VerticalKicker>(*this); }
+      ElementPtr clone() const override { return ElementPtr(new VerticalKicker(*this)); }
       /** \note \f$
          * \mathbf{M} = \left(
          * \begin{array}{cccccc}

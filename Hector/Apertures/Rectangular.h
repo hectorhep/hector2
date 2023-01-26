@@ -19,18 +19,16 @@
 #ifndef Hector_Apertures_Rectangular_h
 #define Hector_Apertures_Rectangular_h
 
-#include "Hector/Apertures/ApertureBase.h"
+#include "Hector/Apertures/Aperture.h"
 
 namespace hector {
   namespace aperture {
     /// Rectangular shape aperture
-    class Rectangular : public ApertureBase {
+    class Rectangular : public Aperture {
     public:
-      /// Class constructor
-      Rectangular(double, double, const TwoVector& pos = TwoVector());
-      ~Rectangular();
+      explicit Rectangular(double, double, const TwoVector& = TwoVector());
 
-      std::shared_ptr<ApertureBase> clone() const override { return std::make_shared<Rectangular>(*this); }
+      AperturePtr clone() const override { return AperturePtr(new Rectangular(*this)); }
 
       bool contains(const TwoVector&) const override;
       TwoVector limits() const override;

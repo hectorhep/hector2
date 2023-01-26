@@ -19,16 +19,15 @@
 #ifndef Hector_Elements_Quadrupole_h
 #define Hector_Elements_Quadrupole_h
 
-#include "Hector/Elements/ElementBase.h"
+#include "Hector/Elements/Element.h"
 
 namespace hector {
   namespace element {
     /// A generic quadrupole object
-    class Quadrupole : public ElementBase {
+    class Quadrupole : public Element {
     public:
-      /// (virtual) class constructor
-      Quadrupole(const Type& type, const std::string& name, double spos, double length, double mag_str)
-          : ElementBase(type, name, spos, length) {
+      explicit Quadrupole(const Type& type, const std::string& name, double spos, double length, double mag_str)
+          : Element(type, name, spos, length) {
         setMagneticStrength(mag_str);
       }
     };
@@ -36,11 +35,10 @@ namespace hector {
     /// Horizontal quadrupole object builder
     class HorizontalQuadrupole : public Quadrupole {
     public:
-      /// Class constructor
-      HorizontalQuadrupole(const std::string& name, double spos, double length, double mag_str)
+      explicit HorizontalQuadrupole(const std::string& name, double spos, double length, double mag_str)
           : Quadrupole(anHorizontalQuadrupole, name, spos, length, mag_str) {}
 
-      std::shared_ptr<ElementBase> clone() const override { return std::make_shared<HorizontalQuadrupole>(*this); }
+      ElementPtr clone() const override { return ElementPtr(new HorizontalQuadrupole(*this)); }
       /** \note \f$
          * \mathbf{M} = \left(
          * \begin{array}{cccccc}
@@ -63,11 +61,10 @@ namespace hector {
     /// Vertical quadrupole object builder
     class VerticalQuadrupole : public Quadrupole {
     public:
-      /// Class constructor
-      VerticalQuadrupole(const std::string& name, double spos, double length, double mag_str)
+      explicit VerticalQuadrupole(const std::string& name, double spos, double length, double mag_str)
           : Quadrupole(aVerticalQuadrupole, name, spos, length, mag_str) {}
 
-      std::shared_ptr<ElementBase> clone() const override { return std::make_shared<VerticalQuadrupole>(*this); }
+      ElementPtr clone() const override { return ElementPtr(new VerticalQuadrupole(*this)); }
       /** \note \f$
          * \mathbf{M} = \left(
          * \begin{array}{cccccc}

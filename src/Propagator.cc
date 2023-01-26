@@ -19,7 +19,7 @@
 #include <sstream>
 
 #include "Hector/Beamline.h"
-#include "Hector/Elements/ElementBase.h"
+#include "Hector/Elements/Element.h"
 #include "Hector/Exception.h"
 #include "Hector/ParticleStoppedException.h"
 #include "Hector/Propagator.h"
@@ -127,7 +127,7 @@ namespace hector {
   }
 
   Particle::Position Propagator::propagateThrough(const Particle::Position& ini_pos,
-                                                  const element::ElementPtr elem,
+                                                  const element::ElementPtr& elem,
                                                   double eloss,
                                                   int qp) const {
     try {
@@ -156,7 +156,7 @@ namespace hector {
       //vec.setAngles( math::atan2( ang_old ) );
 
       return Particle::Position(elem->s() + elem->length(), vec);
-    } catch (Exception& e) {
+    } catch (const Exception& e) {
       throw;
     }
   }

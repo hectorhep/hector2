@@ -19,8 +19,7 @@
 #ifndef Hector_ParticleStoppedException_h
 #define Hector_ParticleStoppedException_h
 
-#include "Hector/Elements/ElementBase.h"
-#include "Hector/Elements/ElementBaseFwd.h"
+#include "Hector/Elements/Element.h"
 #include "Hector/Exception.h"
 
 namespace hector {

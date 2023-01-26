@@ -21,9 +21,7 @@
 namespace hector {
   namespace aperture {
     Rectangular::Rectangular(double rect_length, double rect_height, const TwoVector& pos)
-        : ApertureBase(aRectangularAperture, pos, {{rect_length, rect_height, 0., 0.}}) {}
-
-    Rectangular::~Rectangular() {}
+        : Aperture(aRectangularAperture, pos, {{rect_length, rect_height, 0., 0.}}) {}
 
     bool Rectangular::contains(const TwoVector& pos) const {
       const TwoVector vec(pos - pos_);

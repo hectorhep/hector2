@@ -19,18 +19,16 @@
 #ifndef Hector_Apertures_RectElliptic_h
 #define Hector_Apertures_RectElliptic_h
 
-#include "Hector/Apertures/ApertureBase.h"
+#include "Hector/Apertures/Aperture.h"
 
 namespace hector {
   namespace aperture {
     /// Rectangular/elliptic shape aperture
-    class RectElliptic : public ApertureBase {
+    class RectElliptic : public Aperture {
     public:
-      /// Class constructor
-      RectElliptic(double, double, double, double, const TwoVector& pos = TwoVector());
-      ~RectElliptic();
+      explicit RectElliptic(double, double, double, double, const TwoVector& = TwoVector());
 
-      std::shared_ptr<ApertureBase> clone() const override { return std::make_shared<RectElliptic>(*this); }
+      AperturePtr clone() const override { return AperturePtr(new RectElliptic(*this)); }
 
       bool contains(const TwoVector&) const override;
       TwoVector limits() const override;

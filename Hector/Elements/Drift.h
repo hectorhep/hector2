@@ -19,19 +19,18 @@
 #ifndef Hector_Elements_Drift_h
 #define Hector_Elements_Drift_h
 
-#include "Hector/Elements/ElementBase.h"
+#include "Hector/Elements/Element.h"
+#include "Hector/Elements/ElementFwd.h"
 
 namespace hector {
   namespace element {
     /// Drift object builder
-    class Drift : public ElementBase {
+    class Drift : public Element {
     public:
-      /// Class constructor
-      Drift(const std::string&, double spos = 0., double length = 0.);
-      /// Class constructor
-      Drift(const std::string&, const Type& type, double spos = 0., double length = 0.);
+      explicit Drift(const std::string&, double spos = 0., double length = 0.);
+      explicit Drift(const std::string&, const Type& type, double spos = 0., double length = 0.);
 
-      std::shared_ptr<ElementBase> clone() const override { return std::make_shared<Drift>(*this); }
+      ElementPtr clone() const override { return ElementPtr(new Drift(*this)); }
       Matrix matrix(double eloss = -1.,
                     double mp = Parameters::get()->beamParticlesMass(),
                     int qp = Parameters::get()->beamParticlesCharge()) const override;

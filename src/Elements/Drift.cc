@@ -21,10 +21,10 @@
 
 namespace hector {
   namespace element {
-    Drift::Drift(const std::string& name, double spos, double length) : ElementBase(aDrift, name, spos, length) {}
+    Drift::Drift(const std::string& name, double spos, double length) : Element(aDrift, name, spos, length) {}
 
     Drift::Drift(const std::string& name, const Type& type, double spos, double length)
-        : ElementBase(type, name, spos, length) {}
+        : Element(type, name, spos, length) {}
 
     Matrix Drift::matrix(double, double, int) const { return genericMatrix(length_); }
 
