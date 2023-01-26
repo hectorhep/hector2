@@ -199,8 +199,6 @@ namespace hector {
       }
     };
   }  // namespace element
-  /// List of elements
-  typedef std::vector<std::shared_ptr<element::ElementBase> > Elements;
   /// Human-readable printout of the properties of an element
   std::ostream& operator<<(std::ostream&, const element::ElementBase&);
   /// Human-readable printout of the properties of an element

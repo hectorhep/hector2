@@ -37,7 +37,7 @@ namespace hector {
       setElements(rhs);
   }
 
-  Beamline::Beamline(double length, const std::shared_ptr<element::ElementBase>& ip)
+  Beamline::Beamline(double length, const element::ElementPtr& ip)
       : max_length_(length + 5.),  // artificially increase the size to include next elements
         ip_(ip) {}
 
@@ -52,7 +52,7 @@ namespace hector {
     markers_.insert(std::pair<double, element::Marker>(marker.s(), marker));
   }
 
-  void Beamline::add(const std::shared_ptr<element::ElementBase> elem) {
+  void Beamline::add(const element::ElementPtr& elem) {
     const double new_size = elem->s() + elem->length();
     if (new_size > max_length_ && max_length_ < 0.)
       throw H_ERROR << "Element " << elem->name() << " is too far away for this beamline!\n"
@@ -89,7 +89,7 @@ namespace hector {
               << "Hector will fix the overlap by splitting the earlier.";
       const double prev_length = prev_elem->length();
 
-      std::shared_ptr<element::ElementBase> next_elem = nullptr;
+      element::ElementPtr next_elem = nullptr;
       // check if one needs to add an extra piece to the previous element
       if (elem->s() + elem->length() < prev_elem->s() + prev_elem->length()) {
         const std::string prev_name = prev_elem->name();
@@ -122,35 +122,34 @@ namespace hector {
     std::sort(elements_.begin(), elements_.end(), element::ElementsSorter());
   }
 
-  const std::shared_ptr<element::ElementBase> Beamline::get(const std::string& name) const {
-    for (size_t i = 0; i < elements_.size(); ++i) {
-      const auto elem = elements_.at(i);
+  const element::ElementPtr& Beamline::get(const std::string& name) const {
+    for (const auto& elem : elements_)
       if (elem->name().find(name) != std::string::npos)
         return elem;
-    }
-    return 0;
-  }
-
-  std::shared_ptr<element::ElementBase>& Beamline::get(const std::string& name) {
-    for (auto& elem : elements_) {
-      if (elem->name().find(name) != std::string::npos)
-        return elem;
-    }
+    H_WARNING << "Beamline element \"" << name << "\" not found.";
     return *elements_.end();
   }
 
-  const std::shared_ptr<element::ElementBase> Beamline::get(double s) const {
-    for (size_t i = 0; i < elements_.size(); ++i) {
-      const auto elem = elements_.at(i);
+  element::ElementPtr& Beamline::get(const std::string& name) {
+    for (auto& elem : elements_)
+      if (elem->name().find(name) != std::string::npos)
+        return elem;
+    H_WARNING << "Beamline element \"" << name << "\" not found.";
+    return *elements_.end();
+  }
+
+  const element::ElementPtr& Beamline::get(double s) const {
+    for (const auto& elem : elements_) {
       if (elem->s() > s)
         continue;
       if (elem->s() <= s && elem->s() + elem->length() >= s)
         return elem;
     }
-    return 0;
+    H_WARNING << "Beamline has no element at s=" << s << ".";
+    return *elements_.end();
   }
 
-  std::shared_ptr<element::ElementBase>& Beamline::get(double s) {
+  element::ElementPtr& Beamline::get(double s) {
     for (auto& elem : elements_) {
       if (elem->s() > s)
         continue;
@@ -160,11 +159,11 @@ namespace hector {
     return *elements_.end();
   }
 
-  std::vector<std::shared_ptr<element::ElementBase> > Beamline::find(const std::string& regex) {
+  element::Elements Beamline::find(const std::string& regex) {
     try {
       std::regex rgx_search(regex);
       std::cmatch m;
-      std::vector<std::shared_ptr<element::ElementBase> > out;
+      element::Elements out;
       for (auto& elem : elements_)
         if (std::regex_search(elem->name().c_str(), m, rgx_search))
           out.emplace_back(elem);
@@ -178,7 +177,7 @@ namespace hector {
     Matrix out = DiagonalMatrix(6, 1);
 
     for (const auto& elem : elements_) {
-      const auto mat = elem->matrix(eloss, mp, qp);
+      const auto& mat = elem->matrix(eloss, mp, qp);
       H_INFO << "Multiplication by transfer matrix of element \"" << elem->name() << "\".\n"
              << " value: " << mat;
       out = out * mat;
@@ -190,14 +189,15 @@ namespace hector {
   double Beamline::length() const {
     if (elements_.empty())
       return 0.;
-    const auto elem = *elements_.rbegin();
-    return (elem->s() + elem->length());
+    const auto& elem = *elements_.rbegin();
+    return elem->s() + elem->length();
   }
 
   void Beamline::dump(std::ostream& os, bool show_drifts) const {
-    os << "=============== Beamline dump ===============\n"
-       << " interaction point: " << ip_->name() << " at " << ip_->position() << "\n"
-       << " length: " << length() << " m\n"
+    os << "=============== Beamline dump ===============\n";
+    if (ip_)
+      os << " interaction point: " << ip_->name() << " at " << ip_->position() << "\n";
+    os << " length: " << length() << " m\n"
        << " elements list: ";
     for (const auto& elemPtr : elements_) {
       if (!show_drifts && elemPtr->type() == element::aDrift)

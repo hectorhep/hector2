@@ -69,7 +69,7 @@ int main(int argc, char* argv[]) {
   //hector::BeamProducer::Xscanner gun( num_particles, hector::Parameters::get()->beamEnergy(), 0., 0.01 );
 
   unsigned short num_stopped = 0;
-  map<const hector::element::ElementBase*, unsigned short> stopped_at;
+  map<const hector::element::ElementPtr, unsigned short> stopped_at;
   for (size_t i = 0; i < num_particles; ++i) {
     if ((int)(i * (double)num_particles / num_particles) % 1000 == 0)
       H_INFO << ">>> Generating particle " << i << " / " << num_particles;

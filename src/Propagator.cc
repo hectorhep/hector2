@@ -34,8 +34,12 @@ namespace hector {
 
     const double first_s = part.firstS();
 
+    if (beamline_->elements().size() < 2) {
+      H_WARNING << "Insufficiant number of beamline elements for propagation: " << beamline_->elements().size();
+      return;
+    }
     try {
-      for (Elements::const_iterator it = beamline_->begin() + 1; it != beamline_->end(); ++it) {
+      for (auto it = beamline_->begin() + 1; it != beamline_->end(); ++it) {
         // extract the previous and the current element in the beamline
         const auto prev_elem = *(it - 1), elem = *it;
         if (elem->s() > s_max)
@@ -81,7 +85,7 @@ namespace hector {
 
         const TwoVector pos_prev_elem(part.stateVectorAt(prev_elem->s()).position());
         if (!aper->contains(pos_prev_elem))
-          throw ParticleStoppedException(__PRETTY_FUNCTION__, ExceptionType::warning, prev_elem.get())
+          throw ParticleStoppedException(__PRETTY_FUNCTION__, ExceptionType::warning, prev_elem)
               << "Entering at " << pos_prev_elem << ", s = " << prev_elem->s() << " m\n\t"
               << "Aperture centre at " << aper->position() << "\n\t"
               << "Distance to aperture centre: " << hector::TwoVector(aper->position() - pos_prev_elem).norm() * 1.e2
@@ -89,7 +93,7 @@ namespace hector {
         // has passed through the element?
         //std::cout << prev_elem->s()+prev_elem->length() << "\t" << part.stateVectorAt( prev_elem->s()+prev_elem->length() ).position() << std::endl;
         if (!aper->contains(part.stateVectorAt(prev_elem->s() + prev_elem->length()).position()))
-          throw ParticleStoppedException(__PRETTY_FUNCTION__, ExceptionType::warning, prev_elem.get())
+          throw ParticleStoppedException(__PRETTY_FUNCTION__, ExceptionType::warning, prev_elem)
               << "Did not pass aperture " << aper->type() << ".";
       }
     } catch (const ParticleStoppedException&) {
@@ -103,7 +107,7 @@ namespace hector {
   }
 
   bool Propagator::stopped(Particle& part, double s_max) const {
-    for (Elements::const_iterator it = beamline_->begin() + 1; it != beamline_->end(); ++it) {
+    for (auto it = beamline_->begin() + 1; it != beamline_->end(); ++it) {
       // extract the previous and the current element in the beamline
       const auto prev_elem = *(it - 1), elem = *it;
       if (s_max > 0 && elem->s() > s_max)
@@ -123,7 +127,7 @@ namespace hector {
   }
 
   Particle::Position Propagator::propagateThrough(const Particle::Position& ini_pos,
-                                                  const std::shared_ptr<element::ElementBase> elem,
+                                                  const element::ElementPtr elem,
                                                   double eloss,
                                                   int qp) const {
     try {
