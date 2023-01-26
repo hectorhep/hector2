@@ -1,12 +1,30 @@
+/*
+ *  Hector: a beamline propagation tool
+ *  Copyright (C) 2016-2023  Laurent Forthomme
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include <TGraph.h>
+#include <TMultiGraph.h>
+
+#include "Canvas.h"
 #include "Hector/Apertures/Circular.h"
 #include "Hector/Apertures/Elliptic.h"
-#include "Hector/Apertures/Rectangular.h"
 #include "Hector/Apertures/RectElliptic.h"
+#include "Hector/Apertures/Rectangular.h"
 #include "Hector/Exception.h"
-
-#include "TGraph.h"
-#include "TMultiGraph.h"
-#include "Canvas.h"
 
 int main() {
   const float x_min = -0.5, x_max = 0.5, y_min = -0.5, y_max = 0.5;

@@ -1,23 +1,39 @@
+/*
+ *  Hector: a beamline propagation tool
+ *  Copyright (C) 2016-2023  Laurent Forthomme
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include <TAxis.h>
+#include <TGraph.h>
+#include <TH2.h>
+#include <THStack.h>
+#include <TMultiGraph.h>
+#include <TStyle.h>
+
+#include <iostream>
+
+#include "Canvas.h"
 #include "Hector/Beamline.h"
 #include "Hector/IO/TwissHandler.h"
 #include "Hector/ParticleStoppedException.h"
 #include "Hector/Propagator.h"
-
 #include "Hector/Utils/ArgsParser.h"
 #include "Hector/Utils/BeamProducer.h"
 #include "Hector/Utils/Timer.h"
-
 #include "utils.h"
-#include "Canvas.h"
-
-#include "TGraph.h"
-#include "THStack.h"
-#include "TH2.h"
-#include "TMultiGraph.h"
-#include "TAxis.h"
-#include "TStyle.h"
-
-#include <iostream>
 
 using namespace std;
 
