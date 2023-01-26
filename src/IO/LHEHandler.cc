@@ -1,19 +1,36 @@
+/*
+ *  Hector: a beamline propagation tool
+ *  Copyright (C) 2016-2023  Laurent Forthomme
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include "Hector/IO/LHEHandler.h"
 
 #if !defined(GOOD_HEPMC) and !defined(PYTHIA8)
 #pragma message "No HepMC v3+ nor Pythia8 release was found on your system! Disabling LHEF parsing!"
 #endif
 
-#include "Hector/Exception.h"
-
 #include <sstream>
+
+#include "Hector/Exception.h"
 
 namespace hector {
   namespace io {
     LHE::LHE(const std::string& filename)
 #if defined(GOOD_HEPMC)
-        : reader_(new LHEF::Reader(filename)) {
-    }
+        : reader_(new LHEF::Reader(filename)){}
 #elif defined(PYTHIA8)
         : pythia_(new Pythia8::Pythia) {
       pythia_->settings.mode("Next:numberCount", 0);  // disabling unnecessary output
@@ -27,7 +44,8 @@ namespace hector {
     }
 #endif
 
-    LHE::~LHE() {}
+          LHE::~LHE() {
+    }
 
     void LHE::printInfo() const {
       H_INFO << "LHEF file successfully parsed. General info:"

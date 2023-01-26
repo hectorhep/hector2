@@ -1,7 +1,26 @@
-#include "Hector/Utils/String.h"
+/*
+ *  Hector: a beamline propagation tool
+ *  Copyright (C) 2016-2023  Laurent Forthomme
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
-#include <cstdarg>  // For va_start, etc.
 #include <algorithm>
+#include <cstdarg>  // For va_start, etc.
+#include <locale>
+
+#include "Hector/Utils/String.h"
 
 namespace hector {
   std::string format(const std::string fmt, ...) {
@@ -49,12 +68,11 @@ namespace hector {
     return format("\033[%d;%dm%s\033[0m", (int)col, (int)mod, str.c_str());
   }
 
-  std::string now() {
-    static char buffer[25];
-    time_t raw_time;
-    time(&raw_time);
-    struct tm* time_info = localtime(&raw_time);
-    strftime(buffer, 25, "%Y-%d-%m %H:%M:%S", time_info);
-    return std::string(buffer);
+  std::string now(const std::string& fmt) {
+    auto now = std::time(nullptr);
+    auto tm = *std::localtime(&now);
+    char out_str[50];
+    strftime(out_str, 50, fmt.c_str(), &tm);
+    return std::string(out_str);
   }
 }  // namespace hector

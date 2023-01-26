@@ -1,12 +1,28 @@
-#include "Hector/Propagator.h"
-
-#include "Hector/Beamline.h"
-#include "Hector/Elements/ElementBase.h"
-
-#include "Hector/Exception.h"
-#include "Hector/ParticleStoppedException.h"
+/*
+ *  Hector: a beamline propagation tool
+ *  Copyright (C) 2016-2023  Laurent Forthomme
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include <sstream>
+
+#include "Hector/Beamline.h"
+#include "Hector/Elements/Element.h"
+#include "Hector/Exception.h"
+#include "Hector/ParticleStoppedException.h"
+#include "Hector/Propagator.h"
 
 namespace hector {
   void Propagator::propagate(Particle& part, double s_max) const {
@@ -72,7 +88,8 @@ namespace hector {
           throw ParticleStoppedException(__PRETTY_FUNCTION__, ExceptionType::warning, prev_elem)
               << "Entering at " << pos_prev_elem << ", s = " << prev_elem->s() << " m\n\t"
               << "Aperture centre at " << aper->position() << "\n\t"
-              << "Distance to aperture centre: " << (aper->position() - pos_prev_elem).mag() * 1.e2 << " cm.";
+              << "Distance to aperture centre: " << hector::TwoVector(aper->position() - pos_prev_elem).norm() * 1.e2
+              << " cm.";
         // has passed through the element?
         //std::cout << prev_elem->s()+prev_elem->length() << "\t" << part.stateVectorAt( prev_elem->s()+prev_elem->length() ).position() << std::endl;
         if (!aper->contains(part.stateVectorAt(prev_elem->s() + prev_elem->length()).position()))
@@ -110,7 +127,7 @@ namespace hector {
   }
 
   Particle::Position Propagator::propagateThrough(const Particle::Position& ini_pos,
-                                                  const element::ElementPtr elem,
+                                                  const element::ElementPtr& elem,
                                                   double eloss,
                                                   int qp) const {
     try {
@@ -123,12 +140,13 @@ namespace hector {
 
       if (Parameters::get()->loggingThreshold() >= ExceptionType::debug)
         H_DEBUG << "Propagating particle of mass " << ini_pos.stateVector().m() << " GeV"
-                << " and state vector at s = " << ini_pos.s() << " m:" << ini_pos.stateVector().vector().T() << "\t"
+                << " and state vector at s = " << ini_pos.s() << " m:" << ini_pos.stateVector().vector().transpose()
+                << "\t"
                 << "through " << elem->type() << " element \"" << elem->name() << "\" "
                 << "at s = " << elem->s() << " m, "
                 << "of length " << elem->length() << " m,\n\t"
                 << "and with transfer matrix:" << elem->matrix(eloss, ini_pos.stateVector().m(), qp) << "\t"
-                << "Resulting state vector:" << prop.T();
+                << "Resulting state vector:" << prop.transpose();
 
       // perform the propagation (assuming that mass is conserved...)
       StateVector vec(prop, ini_pos.stateVector().m());
@@ -138,7 +156,7 @@ namespace hector {
       //vec.setAngles( math::atan2( ang_old ) );
 
       return Particle::Position(elem->s() + elem->length(), vec);
-    } catch (Exception& e) {
+    } catch (const Exception& e) {
       throw;
     }
   }

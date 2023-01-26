@@ -1,19 +1,36 @@
-#ifndef Hector_Apertures_ApertureBase_h
-#define Hector_Apertures_ApertureBase_h
+/*
+ *  Hector: a beamline propagation tool
+ *  Copyright (C) 2016-2023  Laurent Forthomme
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
-#include "Hector/Utils/Algebra.h"
-#include "Hector/Apertures/ApertureType.h"
+#ifndef Hector_Apertures_Aperture_h
+#define Hector_Apertures_Aperture_h
 
-#include <vector>
+#include <iosfwd>
 #include <memory>
+#include <vector>
 
-using std::ostream;
+#include "Hector/Apertures/ApertureFwd.h"
+#include "Hector/Apertures/ApertureType.h"
+#include "Hector/Utils/Algebra.h"
 
 namespace hector {
-  /// Collection of apertures to be associated to element objects
   namespace aperture {
     /// A generic aperture object for a beamline element
-    class ApertureBase {
+    class Aperture {
     public:
       /// Collection of shape parameters for this aperture
       typedef std::vector<double> Parameters;
@@ -23,15 +40,15 @@ namespace hector {
       /// \param[in] type Aperture type (see aperture::Type)
       /// \param[in] pos Aperture position
       /// \param[in] param Shape parameters
-      ApertureBase(const Type& type, const TwoVector& pos, const std::vector<double>& param);
-      virtual ~ApertureBase();
+      explicit Aperture(const Type& type, const TwoVector& pos, const std::vector<double>& param);
+      virtual ~Aperture();
 
       /// Return a pointer to a clone of the current aperture
-      virtual std::shared_ptr<ApertureBase> clone() const = 0;
+      virtual AperturePtr clone() const = 0;
       /// Check if two apertures (and their properties) are identical
-      bool operator==(const ApertureBase&) const;
+      bool operator==(const Aperture&) const;
       /// Check if two apertures (and their properties) are different
-      bool operator!=(const ApertureBase& rhs) const { return !(*this == rhs); }
+      bool operator!=(const Aperture& rhs) const { return !(*this == rhs); }
 
       /// Check if a position is contained in the aperture
       virtual bool contains(const TwoVector&) const = 0;
@@ -58,11 +75,11 @@ namespace hector {
       /// Get the horizontal position of the aperture barycentre
       double x() const { return pos_.x(); }
       /// Set the horizontal position of the aperture barycentre
-      void setX(double x) { pos_.setX(x); }
+      void setX(double x) { pos_[0] = x; }
       /// Get the vertical position of the aperture barycentre
       double y() const { return pos_.y(); }
       /// Set the vertical position of the aperture barycentre
-      void setY(double y) { pos_.setY(y); }
+      void setY(double y) { pos_[1] = y; }
 
       /// Change the x-y position of the aperture barycentre
       void offset(const TwoVector& offs) { pos_ += offs; }
@@ -77,9 +94,9 @@ namespace hector {
     };
   }  // namespace aperture
   /// Human-readable printout of the properties of an aperture
-  std::ostream& operator<<(std::ostream&, const aperture::ApertureBase&);
+  std::ostream& operator<<(std::ostream&, const aperture::Aperture&);
   /// Human-readable printout of the properties of an aperture
-  std::ostream& operator<<(std::ostream&, const aperture::ApertureBase*);
+  std::ostream& operator<<(std::ostream&, const aperture::Aperture*);
 }  // namespace hector
 
 #endif

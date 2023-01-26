@@ -21,16 +21,18 @@ else()
   endif()
 endif()
 
-#----- CLHEP for physics
+#----- Eigen for physics
 
 if(LXPLUS)
   set(BASE_DIR "/cvmfs/sft.cern.ch/lcg/external")
   find_library(CLHEP_LIB CLHEP REQUIRED HINTS "${BASE_DIR}/clhep/2.2.0.4/x86_64-slc6-gcc48-opt/lib")
   find_path(CLHEP_INCLUDE CLHEP HINTS "${BASE_DIR}/clhep/2.2.0.4/x86_64-slc6-gcc48-opt/include")
 else()
-  find_library(CLHEP_LIB CLHEP REQUIRED)
-  find_path(CLHEP_INCLUDE CLHEP)
+  find_package(Eigen3 REQUIRED)
+  message(STATUS "Eigen found in ${EIGEN3_INCLUDE_DIR}")
 endif()
+
+include_directories(${EIGEN3_INCLUDE_DIR})
 
 #----- Pythia 8 for physics samples generation and/or LHE files parsing
 

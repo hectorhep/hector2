@@ -1,16 +1,31 @@
-#include "Hector/Exception.h"
-#include "Hector/ParticleStoppedException.h"
-
-#include "Hector/IO/TwissHandler.h"
-
-#include "Hector/Beamline.h"
-#include "Hector/Propagator.h"
-
-#include "Hector/Utils/BeamProducer.h"
-#include "Hector/Utils/ArgsParser.h"
-#include "Hector/Utils/String.h"
+/*
+ *  Hector: a beamline propagation tool
+ *  Copyright (C) 2016-2023  Laurent Forthomme
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include <iostream>
+
+#include "Hector/Beamline.h"
+#include "Hector/Exception.h"
+#include "Hector/IO/TwissHandler.h"
+#include "Hector/ParticleStoppedException.h"
+#include "Hector/Propagator.h"
+#include "Hector/Utils/ArgsParser.h"
+#include "Hector/Utils/BeamProducer.h"
+#include "Hector/Utils/String.h"
 
 using namespace std;
 

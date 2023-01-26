@@ -1,17 +1,17 @@
 #ifndef Hector_test_Canvas_h
 #define Hector_test_Canvas_h
 
-#include "TCanvas.h"
-#include "TLegend.h"
-#include "TPaveText.h"
-#include "TH1.h"
-#include "TLine.h"
-#include "TObjArray.h"
-#include "TObjString.h"
-#include "TGraph.h"
-#include "TGraphErrors.h"
+#include <TCanvas.h>
+#include <TGraph.h>
+#include <TGraphErrors.h>
+#include <TH1.h>
+#include <TLegend.h>
+#include <TLine.h>
+#include <TObjArray.h>
+#include <TObjString.h>
+#include <TPaveText.h>
 
-#include <string.h>
+#include <cstring>
 
 #define font_type(x) 130 + x
 

@@ -79,7 +79,7 @@ int main(int argc, char* argv[]) {
 
   vector<TMultiGraph*> mg_x, mg_y;
   vector<std::unique_ptr<TH1D> > h_timing;
-  vector<map<hector::element::ElementBase*, std::unique_ptr<TH2D> > > monitors_plts(twiss_filenames.size());
+  vector<map<hector::element::Element*, std::unique_ptr<TH2D> > > monitors_plts(twiss_filenames.size());
 
   for (const auto& fn : twiss_filenames)
     h_timing.emplace_back(new TH1D(("timing" + fn).c_str(), "Propagation time@@Event@@ms?.2f", 100, 0., 10.));

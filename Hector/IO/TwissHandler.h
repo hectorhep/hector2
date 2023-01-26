@@ -1,24 +1,38 @@
+/*
+ *  Hector: a beamline propagation tool
+ *  Copyright (C) 2016-2023  Laurent Forthomme
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #ifndef Hector_IO_TwissHandler_h
 #define Hector_IO_TwissHandler_h
 
-#include "Hector/Utils/OrderedParametersMap.h"
-#include "Hector/Utils/UnorderedParametersMap.h"
-
-#include "Hector/Elements/ElementType.h"
-#include "Hector/Apertures/ApertureType.h"
-
 #include <fstream>
+#include <memory>
 #include <regex>
 #include <string>
-#include <memory>
+
+#include "Hector/Apertures/ApertureType.h"
+#include "Hector/Elements/ElementFwd.h"
+#include "Hector/Elements/ElementType.h"
+#include "Hector/Utils/OrderedParametersMap.h"
+#include "Hector/Utils/UnorderedParametersMap.h"
 
 using std::ostream;
 
 namespace hector {
-  // forward-declarations
-  namespace element {
-    class ElementBase;
-  }
   class Beamline;
   namespace io {
     /// Parsing tool for MAD-X Twiss output files
@@ -68,7 +82,7 @@ namespace hector {
       void parseElementsFields();
       void parseElements();
       void findInteractionPoint();
-      std::shared_ptr<element::ElementBase> parseElement(const ValuesCollection&);
+      element::ElementPtr parseElement(const ValuesCollection&);
 
       pmap::Ordered<std::string> header_str_;
       pmap::Ordered<float> header_float_;
@@ -80,7 +94,7 @@ namespace hector {
 
       std::unique_ptr<Beamline> beamline_;
       std::unique_ptr<Beamline> raw_beamline_;
-      std::shared_ptr<element::ElementBase> interaction_point_;
+      element::ElementPtr interaction_point_;
 
       std::string ip_name_;
       float min_s_;

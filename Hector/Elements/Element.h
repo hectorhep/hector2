@@ -1,37 +1,60 @@
-#ifndef Hector_Elements_ElementBase_h
-#define Hector_Elements_ElementBase_h
+/*
+ *  Hector: a beamline propagation tool
+ *  Copyright (C) 2016-2023  Laurent Forthomme
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
-#include "Hector/Utils/Algebra.h"
-#include "Hector/Parameters.h"
-#include "Hector/Apertures/ApertureBase.h"
-#include "Hector/Elements/ElementType.h"
+#ifndef Hector_Elements_Element_h
+#define Hector_Elements_Element_h
 
+#include <iosfwd>
 #include <memory>
+
+#include "Hector/Apertures/Aperture.h"
+#include "Hector/Elements/ElementFwd.h"
+#include "Hector/Elements/ElementType.h"
+#include "Hector/Parameters.h"
+#include "Hector/Utils/Algebra.h"
 
 namespace hector {
   /// Collection of beamline elements
   namespace element {
     /// A generic beamline element object
-    class ElementBase {
+    class Element {
     public:
       /// Build a new element
       /// \param[in] type Element type (see element::Type)
       /// \param[in] name Element name
       /// \param[in] spos s-position of the element in the beamline
       /// \param[in] length Element length (in m)
-      ElementBase(const Type& type, const std::string& name = "invalid element", double spos = 0., double length = 0.);
+      explicit Element(const Type& type,
+                       const std::string& name = "invalid element",
+                       double spos = 0.,
+                       double length = 0.);
       /// Copy constructor (moving the associated aperture if any)
-      ElementBase(ElementBase& elem);
+      Element(Element& elem);
       /// Copy constructor (cloning the associated aperture if any)
-      ElementBase(const ElementBase& elem);
-      virtual ~ElementBase() {}
+      Element(const Element& elem);
+      virtual ~Element() {}
 
       /// Return a pointer to a clone of the current element
-      virtual std::shared_ptr<ElementBase> clone() const = 0;
+      virtual ElementPtr clone() const = 0;
       /// Check if two elements (and their properties) are identical
-      bool operator==(const ElementBase&) const;
+      bool operator==(const Element&) const;
       /// Check if two elements (and their properties) are different
-      bool operator!=(const ElementBase& rhs) const { return !(*this == rhs); }
+      bool operator!=(const Element& rhs) const { return !(*this == rhs); }
 
       /// Compute the propagation matrix for this element
       /// \param[in] eloss Particle energy loss in the element (GeV)
@@ -112,16 +135,16 @@ namespace hector {
       TwoVector relativePosition() const { return rel_pos_; }
 
       /// Set the aperture for this element
-      void setAperture(aperture::ApertureBase* apert);
+      void setAperture(aperture::Aperture* apert);
       /// Set the aperture for this element
-      void setAperture(const std::shared_ptr<aperture::ApertureBase>& apert);
+      void setAperture(const aperture::AperturePtr& apert);
       /// Aperture
-      aperture::ApertureBase* aperture() const { return aperture_.get(); }
+      aperture::Aperture* aperture() const { return aperture_.get(); }
 
       /// Set the parent element if this one is splitted
-      void setParentElement(const std::shared_ptr<ElementBase>& parent) { parent_elem_ = parent; }
+      void setParentElement(const ElementPtr& parent) { parent_elem_ = parent; }
       /// Parent element if this one is splitted
-      ElementBase* parentElement() const { return parent_elem_.get(); }
+      Element* parentElement() const { return parent_elem_.get(); }
 
       /// Compute the modified field strength of the element for a given energy loss of a particle of given mass and charge
       /// \note \f$ k_e = k \cdot \frac{p}{p-\mathrm{d}p} \cdot \frac{q_{\mathrm{part}}}{q_{\mathrm{b}}} \f$
@@ -133,9 +156,9 @@ namespace hector {
       /// Element name
       std::string name_;
       /// Pointer to the associated aperture object (if any)
-      std::shared_ptr<aperture::ApertureBase> aperture_;
+      aperture::AperturePtr aperture_;
       /// Pointer to the parent element (if divided)
-      std::shared_ptr<ElementBase> parent_elem_;
+      ElementPtr parent_elem_;
 
       /// Element longitudinal length
       double length_;
@@ -160,7 +183,7 @@ namespace hector {
     /// Sorting methods for the beamline construction (using the s position of each elements)
     struct ElementsSorter {
       /// Compare the pointers to two elements
-      inline bool operator()(const ElementBase* lhs, const ElementBase* rhs) const {
+      inline bool operator()(const Element* lhs, const Element* rhs) const {
         if (!lhs || !rhs)
           return false;
         if (lhs->s() < rhs->s())
@@ -170,9 +193,9 @@ namespace hector {
         return false;
       }
       /// Compare the references to two elements
-      inline bool operator()(const ElementBase& lhs, const ElementBase& rhs) const { return (&lhs < &rhs); }
+      inline bool operator()(const Element& lhs, const Element& rhs) const { return (&lhs < &rhs); }
       /// Compare the smart pointers to two elements
-      inline bool operator()(const std::shared_ptr<ElementBase>& lhs, const std::shared_ptr<ElementBase>& rhs) const {
+      inline bool operator()(const ElementPtr& lhs, const ElementPtr& rhs) const {
         if (lhs->s() < rhs->s())
           return true;
         if (lhs->s() + lhs->length() < rhs->s() + rhs->length())
@@ -182,9 +205,9 @@ namespace hector {
     };
   }  // namespace element
   /// Human-readable printout of the properties of an element
-  std::ostream& operator<<(std::ostream&, const element::ElementBase&);
+  std::ostream& operator<<(std::ostream&, const element::Element&);
   /// Human-readable printout of the properties of an element
-  std::ostream& operator<<(std::ostream&, const element::ElementBase*);
+  std::ostream& operator<<(std::ostream&, const element::Element*);
 }  // namespace hector
 
 #endif

@@ -1,31 +1,41 @@
+/*
+ *  Hector: a beamline propagation tool
+ *  Copyright (C) 2016-2023  Laurent Forthomme
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #ifndef Hector_Utils_Algebra_h
 #define Hector_Utils_Algebra_h
 
-#include <CLHEP/Matrix/DiagMatrix.h>
-#include <CLHEP/Matrix/Matrix.h>
-#include <CLHEP/Matrix/Vector.h>
-
-#include <CLHEP/Vector/TwoVector.h>
-#include <CLHEP/Vector/ThreeVector.h>
-#include <CLHEP/Vector/LorentzVector.h>
-
+#include <Eigen/Dense>
 #include <array>
 
 namespace hector {
   /// A generic N-dimensional matrix
-  typedef CLHEP::HepMatrix Matrix;
+  typedef Eigen::MatrixXf Matrix;
   /// A generic N-dimensional diagonal matrix
-  typedef CLHEP::HepDiagMatrix DiagonalMatrix;
+  typedef Eigen::MatrixXf DiagonalMatrix;
 
   /// N-dimensional vector of double-precision floats
-  class Vector : public CLHEP::HepVector {
+  class Vector : public Eigen::VectorXf {
   public:
-    using CLHEP::HepVector::HepVector;
-    Vector() : CLHEP::HepVector() {}
+    using Eigen::VectorXf::VectorXf;
     /// Build a N-vector from an equivalent CLHEP object
-    Vector(const CLHEP::HepVector vec) : CLHEP::HepVector(vec) {}
+    explicit Vector(const Eigen::VectorXf vec) : Eigen::VectorXf(vec) {}
     /// Build a N-vector from its N-dimensional coordinates
-    Vector(const std::vector<double>& vec) : CLHEP::HepVector(vec.size()) {
+    explicit Vector(const std::initializer_list<double>& vec) : Eigen::VectorXf(vec.size()) {
       unsigned short i = 0;
       for (const auto& c : vec) {
         operator()(i) = c;
@@ -34,36 +44,56 @@ namespace hector {
     }
   };
   /// Two-vector of double-precision floats
-  class TwoVector : public CLHEP::Hep2Vector {
+  class TwoVector : public Eigen::Vector2f {
   public:
-    using CLHEP::Hep2Vector::Hep2Vector;
-    TwoVector() : CLHEP::Hep2Vector() {}
+    using Eigen::Vector2f::Vector2f;
     /// Build a two-vector from an equivalent CLHEP object
-    TwoVector(const CLHEP::Hep2Vector& vec) : CLHEP::Hep2Vector(vec) {}
+    explicit TwoVector(const Eigen::Vector2f& vec) : Eigen::Vector2f(vec) {}
     /// Build a two-vector from its two-dimensional spatial coordinates
-    TwoVector(const std::array<double, 2>& vec) : CLHEP::Hep2Vector(vec[0], vec[1]) {}
+    explicit TwoVector(const std::initializer_list<double>& vec) : Eigen::Vector2f(*vec.begin(), *(vec.begin() + 1)) {}
+    /// Set the horizontal component
+    void setX(double x) { (*this)[0] = x; }
+    /// Set the vertical component
+    void setY(double y) { (*this)[1] = y; }
   };
   /// Three-vector of double-precision floats
-  class ThreeVector : public CLHEP::Hep3Vector {
+  class ThreeVector : public Eigen::Vector3f {
   public:
-    using CLHEP::Hep3Vector::Hep3Vector;
-    ThreeVector() : CLHEP::Hep3Vector() {}
+    using Eigen::Vector3f::Vector3f;
     /// Build a three-vector from an equivalent CLHEP object
-    ThreeVector(const CLHEP::Hep3Vector& vec) : CLHEP::Hep3Vector(vec) {}
+    explicit ThreeVector(const Eigen::Vector3f& vec) : Eigen::Vector3f(vec) {}
     /// Build a three-vector from its spatial coordinates
-    ThreeVector(const std::array<double, 3>& vec) : CLHEP::Hep3Vector(vec[0], vec[1], vec[2]) {}
+    explicit ThreeVector(const std::initializer_list<double>& vec)
+        : Eigen::Vector3f(*vec.begin(), *(vec.begin() + 1), *(vec.begin() + 2)) {}
+    /// Set the horizontal component
+    void setX(double x) { (*this)[0] = x; }
+    /// Set the vertical component
+    void setY(double y) { (*this)[1] = y; }
+    /// Set the longitudinal component
+    void setZ(double z) { (*this)[2] = z; }
   };
   /// Lorentz vector of double-precision floats
-  class LorentzVector : public CLHEP::HepLorentzVector {
+  class LorentzVector : public Eigen::Vector4f {
   public:
-    using CLHEP::HepLorentzVector::HepLorentzVector;
-    LorentzVector() : CLHEP::HepLorentzVector() {}
+    using Eigen::Vector4f::Vector4f;
     /// Build a Lorentz vector from an equivalent CLHEP object
-    LorentzVector(const CLHEP::HepLorentzVector& vec) : CLHEP::HepLorentzVector(vec) {}
+    explicit LorentzVector(const Eigen::Vector4f& vec) : Eigen::Vector4f(vec) {}
     /// Build a Lorentz vector from its spatial and temporal coordinates
-    LorentzVector(const std::array<double, 3>& sp, double t) : CLHEP::HepLorentzVector(sp[0], sp[1], sp[2], t) {}
+    explicit LorentzVector(const std::array<double, 3>& sp, double t) : Eigen::Vector4f(sp[0], sp[1], sp[2], t) {}
     /// Build a Lorentz vector from a four-vector containing its spatial and temporal coordinates
-    LorentzVector(const std::array<double, 4> vec) : CLHEP::HepLorentzVector(vec[0], vec[1], vec[2], vec[3]) {}
+    explicit LorentzVector(const std::array<double, 4> vec) : Eigen::Vector4f(vec[0], vec[1], vec[2], vec[3]) {}
+    /// Set the horizontal momentum component
+    void setX(double x) { (*this)[0] = x; }
+    /// Set the vertical momentum component
+    void setY(double y) { (*this)[1] = y; }
+    /// Set the longitudinal momentum component
+    void setZ(double z) { (*this)[2] = z; }
+    /// Set the time/energy component
+    void setT(double t) { (*this)[3] = t; }
+    /// Four-momenta multiplication operator
+    double operator*(const LorentzVector& oth);
+    /// Four-momentum norm/Lorentz vector mass
+    double m() const;
   };
 
   namespace math {

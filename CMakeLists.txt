@@ -2,15 +2,39 @@ cmake_minimum_required(VERSION 2.9 FATAL_ERROR)
 project(Hector)
 set(PROJECT_VERSION 2)
 
-set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/cmake)
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE CACHE BOOL "RPATH USE LINK PATH")
+set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/cmake $ENV{ROOTSYS}/cmake)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+  set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_LIST_DIR}/install" CACHE PATH "default install path" FORCE)
+endif()
+
 if(CMAKE_VERSION VERSION_GREATER 3.1)
-  set(CMAKE_CXX_STANDARD 14)
+  set(CMAKE_CXX_STANDARD 17)
   set(CMAKE_C_STANDARD 11)
+  find_program(CCACHE ccache HINTS $ENV{CCACHE_PATH} PATH_SUFFIXES bin)
+  if(CCACHE)
+    message(STATUS "CCache found in ${CCACHE}")
+    if(IS_LXPLUS)
+      set(CCACHE_DIR "${CMAKE_SOURCE_DIR}/ccache")
+      file(MAKE_DIRECTORY ${CCACHE_DIR})
+      message(STATUS "CCache output directory set to ${CCACHE_DIR}")
+    endif(IS_LXPLUS)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ${CCACHE})
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ${CCACHE}) # Less useful to do it for linking, see edit2
+  endif(CCACHE)
 else()
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11")
 endif()
 
+include(GNUInstallDirs)
+
+# Give user the choice to override installation directories
+set(INSTALL_LIB_DIR lib CACHE PATH "Installation directory for libraries")
+set(INSTALL_BIN_DIR bin CACHE PATH "Installation directory for executables")
+set(INSTALL_INCLUDE_DIR include CACHE PATH
+  "Installation directory for header files")
 
 option(BUILD_PYTHON "Build the Python bindings" OFF)
 option(BUILD_TESTS "Build the tests" ON)
@@ -23,8 +47,8 @@ include(SetEnvironment)
 
 set(HECTOR_SOURCE_DIR ${PROJECT_SOURCE_DIR}/src)
 set(HECTOR_TEST_DIR ${PROJECT_SOURCE_DIR}/test)
-set(HECTOR_DEPENDENCIES ${CLHEP_LIB})
-set(HECTOR_INC_DEPENDENCIES ${CLHEP_INCLUDE})
+set(HECTOR_DEPENDENCIES ${EIGEN3})
+set(HECTOR_INC_DEPENDENCIES ${EIGEN3_INCLUDE_DIR})
 
 set(PYHECTOR_SOURCE_DIR ${PROJECT_SOURCE_DIR}/python)
 
@@ -71,9 +95,9 @@ target_link_libraries(Hector2 ${HECTOR_DEPENDENCIES})
 add_executable(hector ${HECTOR_SOURCE_DIR}/hector.cc)
 target_link_libraries(hector Hector2)
 
-install(TARGETS Hector2 DESTINATION lib)
-install(TARGETS hector DESTINATION bin)
-install(DIRECTORY Hector DESTINATION include FILES_MATCHING PATTERN "*.h")
+install(TARGETS Hector2 DESTINATION ${CMAKE_INSTALL_LIBDIR})
+install(TARGETS hector DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(DIRECTORY Hector DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} FILES_MATCHING PATTERN "*.h")
 
 #----- python wrapper
 

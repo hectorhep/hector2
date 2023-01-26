@@ -1,10 +1,26 @@
-#include "Hector/Utils/StateVector.h"
-#include "Hector/Utils/String.h"
-#include "Hector/Utils/Kinematics.h"
-
-#include "Hector/Parameters.h"
+/*
+ *  Hector: a beamline propagation tool
+ *  Copyright (C) 2016-2023  Laurent Forthomme
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include "Hector/Exception.h"
+#include "Hector/Parameters.h"
+#include "Hector/Utils/Kinematics.h"
+#include "Hector/Utils/StateVector.h"
+#include "Hector/Utils/String.h"
 
 namespace hector {
   StateVector::StateVector() : Vector(6, 0), m_(0.) {
@@ -56,33 +72,33 @@ namespace hector {
   }
 
   void StateVector::setMomentum(const LorentzVector& mom) {
-    setAngles(mom.px() / mom.pz(), mom.py() / mom.pz());
-    setEnergy(mom.e());
+    setAngles(mom.x() / mom.z(), mom.y() / mom.z());
+    setEnergy(mom.w());
     m_ = mom.m();
   }
 
   void StateVector::addMomentum(const LorentzVector& mom) {
-    setAngles(angles() + TwoVector(mom.px() / mom.pz(), mom.py() / mom.pz()));
-    (*this)[E] = mom.e();
+    setAngles(angles() + TwoVector(mom.x() / mom.z(), mom.y() / mom.z()));
+    (*this)[E] = mom.w();
     m_ = mom.m();
   }
 
   LorentzVector StateVector::momentum() const {
     const TwoVector tan_ang(math::tan2(angles()));
-    const double pz = sqrt((energy() * energy() - m_ * m_) / (1. + tan_ang.mag2())), px = pz * tan_ang.x(),
-                 py = pz * tan_ang.y();
+    const double pz = std::sqrt((energy() * energy() - m_ * m_) / (1. + std::pow(tan_ang.norm(), 2))),
+                 px = pz * tan_ang.x(), py = pz * tan_ang.y();
     return LorentzVector(px, py, pz, energy());
   }
 
   void StateVector::setM(double mass) {
     if (mass != momentum().m()) {
       m_ = mass;
-      if (momentum().mag2() != 0.)
-        (*this)[E] = std::hypot(momentum().mag(), m_);  // match the energy accordingly
+      if (momentum().norm() != 0.)
+        (*this)[E] = std::hypot(momentum().norm(), m_);  // match the energy accordingly
       else {
         const int sign = 1;  //FIXME
-        setMomentum(
-            LorentzVector(0., 0., sign * sqrt(energy() * energy() - m_ * m_), energy()));  // longitudinal momentum only
+        setMomentum(LorentzVector(
+            0., 0., sign * std::sqrt(energy() * energy() - m_ * m_), energy()));  // longitudinal momentum only
       }
       return;
     }
