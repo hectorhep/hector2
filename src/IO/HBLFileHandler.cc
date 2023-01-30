@@ -56,7 +56,7 @@ namespace hector {
       HBLElement el;
       element::ElementPtr elem;
       while (file.read(reinterpret_cast<char*>(&el), sizeof(HBLElement))) {
-        if (Parameters::get()->loggingThreshold() > ExceptionType::warning)
+        if (Parameters::get().loggingThreshold() > ExceptionType::warning)
           H_INFO << "Retrieved a " << (element::Type)el.element_type << " element\n\t"
                  << "with name " << el.element_name << "\n\tat s=" << el.element_s << " m\n\t"
                  << "with length=" << el.element_length << " m (magnetic strength=" << el.element_magnetic_strength

@@ -77,7 +77,7 @@ namespace hector {
       if (prev_elem->s() == elem->s() && elem->length() == 0)
         continue;
 
-      if (!Parameters::get()->correctBeamlineOverlaps())
+      if (!Parameters::get().correctBeamlineOverlaps())
         throw H_ERROR << "Elements overlap with \"" << prev_elem->name() << "\" "
                       << "detected while adding \"" << elem->name() << "\"!";
 

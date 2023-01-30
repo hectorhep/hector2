@@ -47,10 +47,10 @@ int main(int argc, char* argv[]) {
   parser.printInfo();
   //parser.beamline()->dump(std::cout);
   //parser.beamline()->offsetElementsAfter(120., hector::TwoVector(-0.097, 0.));
-  //hector::Parameters::get()->setUseRelativeEnergy(true);
-  //hector::Parameters::get()->setEnableKickers(true);
-  //hector::Parameters::get()->setEnableDipoles(false);
-  hector::Parameters::get()->setComputeApertureAcceptance(false);
+  //hector::Parameters::get().setUseRelativeEnergy(true);
+  //hector::Parameters::get().setEnableKickers(true);
+  //hector::Parameters::get().setEnableDipoles(false);
+  hector::Parameters::get().setComputeApertureAcceptance(false);
 
   hector::Propagator prop(parser.beamline());
 
@@ -82,7 +82,7 @@ int main(int argc, char* argv[]) {
       y0_pos = 200.e-6;                  // in m
 
   hector::TwoVector pos_rp0;
-  hector::Particle p = hector::Particle::fromMassCharge(hector::Parameters::get()->beamParticlesMass(), +1);
+  hector::Particle p = hector::Particle::fromMassCharge(hector::Parameters::get().beamParticlesMass(), +1);
   p.firstStateVector().setXi(0.);
   p.firstStateVector().setPosition(0., y0_pos);
   p.firstStateVector().setAngles(cross_angle, 0.);
@@ -97,7 +97,7 @@ int main(int argc, char* argv[]) {
 
   const vector<double> xi_values = {{0.01, 0.05, 0.1, 0.15}};
   for (const auto& xi : xi_values) {
-    hector::Particle p = hector::Particle::fromMassCharge(hector::Parameters::get()->beamParticlesMass(), +1);
+    hector::Particle p = hector::Particle::fromMassCharge(hector::Parameters::get().beamParticlesMass(), +1);
     p.firstStateVector().setPosition(0., y0_pos);
     p.firstStateVector().setAngles(cross_angle, 0.);
     p.firstStateVector().setXi(xi);

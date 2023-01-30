@@ -71,15 +71,15 @@ int main(int argc, char* argv[]) {
   //parser.beamline()->dump();
 
   H_INFO << "beamline matrix at s = " << max_s
-         << " m: " << parser.beamline()->matrix(0., hector::Parameters::get()->beamParticlesMass(), +1);
+         << " m: " << parser.beamline()->matrix(0., hector::Parameters::get().beamParticlesMass(), +1);
 
   if (shoot) {
     hector::Propagator prop(parser.beamline());
     //parser.beamline()->dump();
 
     hector::beam::GaussianParticleGun gun;
-    gun.smearEnergy(hector::Parameters::get()->beamEnergy(), hector::Parameters::get()->beamEnergy() * 0.);
-    //hector::beam::TXscanner gun( num_part, hector::Parameters::get()->beamEnergy(), 0., 1. );
+    gun.smearEnergy(hector::Parameters::get().beamEnergy(), hector::Parameters::get().beamEnergy() * 0.);
+    //hector::beam::TXscanner gun(num_part, hector::Parameters::get().beamEnergy(), 0., 1.);
     map<string, unsigned int> stopping_elements;
     for (unsigned int i = 0; i < num_part; ++i) {
       hector::Particle p = gun.shoot();

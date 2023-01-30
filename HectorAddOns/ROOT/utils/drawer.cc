@@ -40,7 +40,7 @@ using namespace std;
 TGraphErrors mean_trajectory(const TMultiGraph&);
 
 int main(int argc, char* argv[]) {
-  //hector::Parameters::get()->setLoggingThreshold( hector::Info );
+  //hector::Parameters::get().setLoggingThreshold(hector::Info);
 
   vector<string> twiss_filenames, meas_filenames;
   vector<int> colours;
@@ -86,9 +86,9 @@ int main(int argc, char* argv[]) {
 
   //for ( const auto& x : crossing_angles_x ) cout << x << endl;
   //--- general propagation parameters
-  //hector::Parameters::get()->setComputeApertureAcceptance( false ); //FIXME
-  //hector::Parameters::get()->setEnableKickers( false ); //FIXME
-  hector::Parameters::get()->setEnableDipoles(dipoles_enable);
+  //hector::Parameters::get().setComputeApertureAcceptance(false);  //FIXME
+  //hector::Parameters::get().setEnableKickers(false);              //FIXME
+  hector::Parameters::get().setEnableDipoles(dipoles_enable);
 
   //--- define the propagator objects
   vector<hector::Propagator> propagators;
@@ -207,7 +207,7 @@ int main(int argc, char* argv[]) {
     }
     hector::Canvas c("beamline",
                      Form("E_{p} = %.1f TeV, #alpha_{X} = %s #murad",
-                          hector::Parameters::get()->beamEnergy() * 1.e-3, /* GeV->TeV */
+                          hector::Parameters::get().beamEnergy() * 1.e-3, /* GeV->TeV */
                           os_xa.str().c_str()),
                      true);
     c.SetWindowSize(800, 800);

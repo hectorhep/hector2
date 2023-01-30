@@ -79,7 +79,7 @@ int main(int argc, char* argv[]) {
         new TH2D(Form("hitmap_%s", rp->name().c_str()), "x (m)@@y (m)", 300, -0.15, 0., 300, -0.03, 0.03);
   }
 
-  hector::Parameters::get()->setComputeApertureAcceptance(false);
+  hector::Parameters::get().setComputeApertureAcceptance(false);
 
   // configuration shamelessly stolen from CMSSW (9_1_X development cycle)
   vector<string> config{{

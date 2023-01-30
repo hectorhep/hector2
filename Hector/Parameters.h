@@ -32,7 +32,7 @@ namespace hector {
   class Parameters {
   public:
     /// Retrieve this (unique) singleton
-    static std::shared_ptr<Parameters> get();
+    static Parameters& get();
     /// Build a new set of parameters
     Parameters();
 

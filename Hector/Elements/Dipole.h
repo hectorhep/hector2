@@ -57,8 +57,8 @@ namespace hector {
       /// \note Numerical sensitivity (~\f$10^{-8}\f$ relative precision on a 64-bit Intel machine) expected with \f$ \frac{r}{E_{\mathrm{b}}} \left(1-\cos{\theta}\right)\f$.
       ///  Using \f$ \cos{2x} = 1-2\sin^{2}{x} \f$ to transform this term (see the variable called "simp")
       Matrix matrix(double,
-                    double mp = Parameters::get()->beamParticlesMass(),
-                    int qp = Parameters::get()->beamParticlesCharge()) const override;
+                    double mp = Parameters::get().beamParticlesMass(),
+                    int qp = Parameters::get().beamParticlesCharge()) const override;
     };
 
     /// Sector dipole object builder
@@ -96,8 +96,8 @@ namespace hector {
          * assuming \f$\theta = {L\over r}\f$, \f$ {1\over r} \equiv k =  k_{0} \cdot \frac{p_{0}}{p_{0} - \mathrm{d}p} \cdot \frac{q_{\mathrm{part}}}{q_{\mathrm{b}}} \f$
          */
       Matrix matrix(double,
-                    double mp = Parameters::get()->beamParticlesMass(),
-                    int qp = Parameters::get()->beamParticlesCharge()) const override;
+                    double mp = Parameters::get().beamParticlesMass(),
+                    int qp = Parameters::get().beamParticlesCharge()) const override;
     };
   }  // namespace element
 }  // namespace hector

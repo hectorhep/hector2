@@ -111,8 +111,8 @@ namespace hector {
 
     /// Total propagation matrix of all combined beamline elements
     Matrix matrix(double eloss,
-                  double mp = Parameters::get()->beamParticlesMass(),
-                  int qp = Parameters::get()->beamParticlesCharge()) const;
+                  double mp = Parameters::get().beamParticlesMass(),
+                  int qp = Parameters::get().beamParticlesCharge()) const;
 
   private:
     /// Copy the list of elements from one beamline to this one

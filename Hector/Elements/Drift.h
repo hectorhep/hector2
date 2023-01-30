@@ -32,8 +32,8 @@ namespace hector {
 
       ElementPtr clone() const override { return ElementPtr(new Drift(*this)); }
       Matrix matrix(double eloss = -1.,
-                    double mp = Parameters::get()->beamParticlesMass(),
-                    int qp = Parameters::get()->beamParticlesCharge()) const override;
+                    double mp = Parameters::get().beamParticlesMass(),
+                    int qp = Parameters::get().beamParticlesCharge()) const override;
       /// Build a transfer matrix for a given drift length
       /// \param[in] length drift length
       /** \note \f$

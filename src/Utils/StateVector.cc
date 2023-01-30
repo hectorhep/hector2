@@ -25,7 +25,7 @@
 namespace hector {
   StateVector::StateVector() : Vector(6, 0), m_(0.) {
     (*this)[K] = 1.;
-    (*this)[E] = Parameters::get()->beamEnergy();
+    (*this)[E] = Parameters::get().beamEnergy();
   }
 
   StateVector::StateVector(const Vector& vec, double mass) : Vector(vec), m_(mass) {}
@@ -41,7 +41,7 @@ namespace hector {
     setPosition(pos);
     setAngles(ang);
     if (energy < 0.)
-      energy = Parameters::get()->beamEnergy();
+      energy = Parameters::get().beamEnergy();
     setEnergy(energy);
     setKick(kick);
   }

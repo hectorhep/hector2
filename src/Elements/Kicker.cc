@@ -26,7 +26,7 @@ namespace hector {
     Matrix HorizontalKicker::matrix(double eloss, double mp, int qp) const {
       Matrix mat = Drift::genericMatrix(length_);
 
-      if (!Parameters::get()->enableKickers())
+      if (!Parameters::get().enableKickers())
         return mat;
 
       const double ke = -fieldStrength(eloss, mp, qp);
@@ -41,7 +41,7 @@ namespace hector {
     Matrix VerticalKicker::matrix(double eloss, double mp, int qp) const {
       Matrix mat = Drift::genericMatrix(length_);
 
-      if (!Parameters::get()->enableKickers())
+      if (!Parameters::get().enableKickers())
         return mat;
 
       const double ke = -fieldStrength(eloss, mp, qp);

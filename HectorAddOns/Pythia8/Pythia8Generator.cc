@@ -28,7 +28,7 @@ namespace hector {
     pythia_->settings.mode("Beams:idA", 2212);
     pythia_->settings.mode("Beams:idB", 2212);
     // one may also consider the asymmetric energies in the future
-    pythia_->settings.parm("Beams:eCM", 2. * Parameters::get()->beamEnergy());
+    pythia_->settings.parm("Beams:eCM", 2. * Parameters::get().beamEnergy());
     // parameterise the generator
     for (const auto& param : params)
       if (!pythia_->readString(param.c_str()))

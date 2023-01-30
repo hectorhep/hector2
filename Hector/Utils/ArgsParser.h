@@ -152,6 +152,7 @@ namespace hector {
   private:
     std::string command_name_;
     const ParametersList help_str_;
+    const ParametersList debug_str_;
     ParametersList required_params_, optional_params_;
     std::vector<std::string> args_;
   };

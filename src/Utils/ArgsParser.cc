@@ -23,6 +23,7 @@
 #include <stdexcept>
 
 #include "Hector/Exception.h"
+#include "Hector/Parameters.h"
 #include "Hector/Utils/ArgsParser.h"
 #include "Hector/Utils/String.h"
 
@@ -31,7 +32,10 @@ namespace hector {
                          char* argv[],
                          const ParametersList& required_parameters,
                          const ParametersList& optional_parameters)
-      : help_str_({{"help", 'h'}}), required_params_(required_parameters), optional_params_(optional_parameters) {
+      : help_str_({{"help", 'h'}}),
+        debug_str_({{"debug", 'd'}}),
+        required_params_(required_parameters),
+        optional_params_(optional_parameters) {
     command_name_ = argv[0];
     std::vector<std::string> args_tmp;
     if (argc > 1) {
@@ -54,6 +58,10 @@ namespace hector {
         exit(0);
       }
     }
+    for (const auto& str : debug_str_)
+      if (find(args_.begin(), args_.end(), "--" + str.name) != args_.end() ||
+          find(args_.begin(), args_.end(), "-" + std::string(1, str.sname)) != args_.end())
+        Parameters::get().setLoggingThreshold(ExceptionType::debug);
     for (auto& par : required_params_) {
       const auto key = find(args_.begin(), args_.end(), "--" + par.name);
       const auto skey = find(args_.begin(), args_.end(), "-" + std::string(1, par.sname));

@@ -54,7 +54,7 @@ namespace hector {
   }
 
   void Exception::dump(std::ostream& os) const {
-    if (type_ < Parameters::get()->loggingThreshold())
+    if (type_ < Parameters::get().loggingThreshold())
       return;
     os << typeString();
     switch (type_) {

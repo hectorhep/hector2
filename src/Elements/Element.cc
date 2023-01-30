@@ -90,7 +90,7 @@ namespace hector {
 
       double p_bal = 1.;
       if (e_loss > 0.) {
-        const double e_ini = Parameters::get()->beamEnergy(), mp0 = Parameters::get()->beamParticlesMass(),
+        const double e_ini = Parameters::get().beamEnergy(), mp0 = Parameters::get().beamParticlesMass(),
                      e_out = e_ini - e_loss;
         const double p_ini = sqrt((e_ini - mp0) * (e_ini + mp0)),  // e_ini^2 - p_ini^2 = mp0^2
             p_out = sqrt((e_out - mp) * (e_out + mp));             // e_out^2 - p_out^2 = mp^2
@@ -102,7 +102,7 @@ namespace hector {
       }
 
       // reweight the field strength by the particle charge and momentum
-      return magnetic_strength_ * p_bal * (qp / Parameters::get()->beamParticlesCharge());
+      return magnetic_strength_ * p_bal * (qp / Parameters::get().beamParticlesCharge());
     }
 
     const std::string Element::typeName() const {

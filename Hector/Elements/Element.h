@@ -61,8 +61,8 @@ namespace hector {
       /// \param[in] mp Particle mass (GeV)
       /// \param[in] qp Particle charge (e)
       virtual Matrix matrix(double eloss,
-                            double mp = Parameters::get()->beamParticlesMass(),
-                            int qp = Parameters::get()->beamParticlesCharge()) const = 0;
+                            double mp = Parameters::get().beamParticlesMass(),
+                            int qp = Parameters::get().beamParticlesCharge()) const = 0;
 
       /// Set the name of the element
       void setName(const std::string& name) { name_ = name; }

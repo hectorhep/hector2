@@ -149,14 +149,14 @@ namespace hector {
     public:
       /// Class constructor
       ParticleGun()
-          : e_(parameters(Parameters::get()->beamEnergy(), Parameters::get()->beamEnergy())),
+          : e_(parameters(Parameters::get().beamEnergy(), Parameters::get().beamEnergy())),
             s_(parameters(0., 0.)),
             x_(parameters(0., 0.)),
             y_(parameters(0., 0.)),
             tx_(parameters(0., 0.)),
             ty_(parameters(0., 0.)),
-            mass_(Parameters::get()->beamParticlesMass()),
-            charge_(Parameters::get()->beamParticlesCharge()) {
+            mass_(Parameters::get().beamParticlesMass()),
+            charge_(Parameters::get().beamParticlesCharge()) {
         rngs_[0] = T(s_.first, s_.second);
         rngs_[1] = T(x_.first, x_.second);
         rngs_[2] = T(y_.first, y_.second);

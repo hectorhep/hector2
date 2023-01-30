@@ -28,8 +28,8 @@ namespace hector {
   void Propagator::propagate(Particle& part, double s_max) const {
     part.clear();
 
-    const double energy_loss = (Parameters::get()->useRelativeEnergy())
-                                   ? Parameters::get()->beamEnergy() - part.lastStateVector().energy()
+    const double energy_loss = (Parameters::get().useRelativeEnergy())
+                                   ? Parameters::get().beamEnergy() - part.lastStateVector().energy()
                                    : part.lastStateVector().energy();
 
     const double first_s = part.firstS();
@@ -76,7 +76,7 @@ namespace hector {
 
         part.addPosition(out_pos.s(), out_pos.stateVector());
 
-        if (!Parameters::get()->computeApertureAcceptance())
+        if (!Parameters::get().computeApertureAcceptance())
           continue;
 
         const auto& aper = prev_elem->aperture();
@@ -138,7 +138,7 @@ namespace hector {
           elem->matrix(eloss, ini_pos.stateVector().m(), qp) * (ini_pos.stateVector().vector() - shift.vector()) +
           shift.vector();
 
-      if (Parameters::get()->loggingThreshold() >= ExceptionType::debug)
+      if (Parameters::get().loggingThreshold() >= ExceptionType::debug)
         H_DEBUG << "Propagating particle of mass " << ini_pos.stateVector().m() << " GeV"
                 << " and state vector at s = " << ini_pos.s() << " m:" << ini_pos.stateVector().vector().transpose()
                 << "\t"

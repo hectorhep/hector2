@@ -61,20 +61,20 @@ namespace hector {
       raw_beamline_ = std::unique_ptr<Beamline>(new Beamline(max_s - min_s));
       if (max_s < 0. && header_float_.hasKey("length"))
         raw_beamline_->setLength(header_float_.get("length"));
-      if (header_float_.hasKey("energy") && Parameters::get()->beamEnergy() != header_float_.get("energy")) {
-        Parameters::get()->setBeamEnergy(header_float_.get("energy"));
-        H_WARNING << "Beam energy changed to " << Parameters::get()->beamEnergy()
+      if (header_float_.hasKey("energy") && Parameters::get().beamEnergy() != header_float_.get("energy")) {
+        Parameters::get().setBeamEnergy(header_float_.get("energy"));
+        H_WARNING << "Beam energy changed to " << Parameters::get().beamEnergy()
                   << " GeV to match Twiss optics parameters.";
       }
-      if (header_float_.hasKey("mass") && Parameters::get()->beamParticlesMass() != header_float_.get("mass")) {
-        Parameters::get()->setBeamParticlesMass(header_float_.get("mass"));
-        H_WARNING << "Beam particles mass changed to " << Parameters::get()->beamParticlesMass()
+      if (header_float_.hasKey("mass") && Parameters::get().beamParticlesMass() != header_float_.get("mass")) {
+        Parameters::get().setBeamParticlesMass(header_float_.get("mass"));
+        H_WARNING << "Beam particles mass changed to " << Parameters::get().beamParticlesMass()
                   << " GeV to match Twiss optics parameters.";
       }
       if (header_float_.hasKey("charge") &&
-          Parameters::get()->beamParticlesCharge() != static_cast<int>(header_float_.get("charge"))) {
-        Parameters::get()->setBeamParticlesCharge(static_cast<int>(header_float_.get("charge")));
-        H_WARNING << "Beam particles charge changed to " << Parameters::get()->beamParticlesCharge()
+          Parameters::get().beamParticlesCharge() != static_cast<int>(header_float_.get("charge"))) {
+        Parameters::get().setBeamParticlesCharge(static_cast<int>(header_float_.get("charge")));
+        H_WARNING << "Beam particles charge changed to " << Parameters::get().beamParticlesCharge()
                   << " e to match Twiss optics parameters.";
       }
 

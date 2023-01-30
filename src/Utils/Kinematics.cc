@@ -32,7 +32,7 @@ namespace hector {
       sv_ini.setEnergy(sv_ini.energy() - e_gamma);
       return;
     }
-    const double m1 = Parameters::get()->beamParticlesMass(), e1 = sv_ini.energy(),
+    const double m1 = Parameters::get().beamParticlesMass(), e1 = sv_ini.energy(),
                  e2 = sv_ini.energy() - e_gamma;  // particle energy : before (1) / after (2)
 
     const double p1 = sqrt(e1 * e1 - m1 * m1),
@@ -64,7 +64,7 @@ namespace hector {
     const double ceta = sqrt(1. + pow(m1 / p1, 2)) * sqrt(1. + q2 / gkk * gkk) - q2 / (2 * p1 * gkk),
                  seta = sqrt(1. - ceta * ceta);
     // theta is the angle between particle and beam
-    const double theta = atan(seta / (Parameters::get()->beamEnergy() / gkk - ceta)),
+    const double theta = atan(seta / (Parameters::get().beamEnergy() / gkk - ceta)),
                  phi = phi_min + rand() * (phi_max - phi_min) / RAND_MAX;
 
     TwoVector old_ang(sv_ini.angles());
@@ -77,13 +77,13 @@ namespace hector {
 
   double e_to_xi(double energy, double e0) {
     if (e0 < 0.)
-      e0 = Parameters::get()->beamEnergy();
+      e0 = Parameters::get().beamEnergy();
     return 1. - energy / e0;
   }
 
   double xi_to_e(double xi, double e0) {
     if (e0 < 0.)
-      e0 = Parameters::get()->beamEnergy();
+      e0 = Parameters::get().beamEnergy();
     return e0 * (1. - xi);
   }
 }  // namespace hector
