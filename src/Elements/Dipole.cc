@@ -19,6 +19,7 @@
 #include "Hector/Elements/Dipole.h"
 #include "Hector/Elements/Drift.h"
 #include "Hector/Exception.h"
+#include "Hector/Parameters.h"
 #include "Hector/Utils/StateVector.h"
 
 namespace hector {

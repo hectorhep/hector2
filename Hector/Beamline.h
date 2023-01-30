@@ -39,7 +39,7 @@ namespace hector {
     /// Build a beamline from a longitudinal size and a interaction point position
     /// \param[in] length Longitudinal length of the beamline
     /// \param[in] ip Position of the interaction point
-    Beamline(double length, const element::ElementPtr& ip = nullptr);
+    explicit Beamline(double length, const element::ElementPtr& ip = nullptr);
     ~Beamline();
 
     /// Compute all drifts between each element in the beamline
@@ -110,9 +110,7 @@ namespace hector {
     void tiltElementsAfter(double s, const TwoVector& offset);
 
     /// Total propagation matrix of all combined beamline elements
-    Matrix matrix(double eloss,
-                  double mp = Parameters::get().beamParticlesMass(),
-                  int qp = Parameters::get().beamParticlesCharge()) const;
+    Matrix matrix(double eloss, double mp = -1., int qp = 0) const;
 
   private:
     /// Copy the list of elements from one beamline to this one

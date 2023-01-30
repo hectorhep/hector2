@@ -25,7 +25,6 @@
 #include "Hector/Apertures/Aperture.h"
 #include "Hector/Elements/ElementFwd.h"
 #include "Hector/Elements/ElementType.h"
-#include "Hector/Parameters.h"
 #include "Hector/Utils/Algebra.h"
 
 namespace hector {
@@ -60,9 +59,7 @@ namespace hector {
       /// \param[in] eloss Particle energy loss in the element (GeV)
       /// \param[in] mp Particle mass (GeV)
       /// \param[in] qp Particle charge (e)
-      virtual Matrix matrix(double eloss,
-                            double mp = Parameters::get().beamParticlesMass(),
-                            int qp = Parameters::get().beamParticlesCharge()) const = 0;
+      virtual Matrix matrix(double eloss, double mp = -1., int qp = 0) const = 0;
 
       /// Set the name of the element
       void setName(const std::string& name) { name_ = name; }
@@ -148,7 +145,7 @@ namespace hector {
 
       /// Compute the modified field strength of the element for a given energy loss of a particle of given mass and charge
       /// \note \f$ k_e = k \cdot \frac{p}{p-\mathrm{d}p} \cdot \frac{q_{\mathrm{part}}}{q_{\mathrm{b}}} \f$
-      double fieldStrength(double, double, int) const;
+      double fieldStrength(double, double = -1., int = 0) const;
 
     protected:
       /// Element type

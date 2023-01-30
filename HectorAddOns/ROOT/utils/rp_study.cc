@@ -23,6 +23,7 @@
 #include "Hector/Beamline.h"
 #include "Hector/Exception.h"
 #include "Hector/IO/TwissHandler.h"
+#include "Hector/Parameters.h"
 #include "Hector/ParticleStoppedException.h"
 #include "Hector/Propagator.h"
 #include "Hector/Utils/ArgsParser.h"

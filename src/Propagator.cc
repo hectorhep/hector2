@@ -21,6 +21,7 @@
 #include "Hector/Beamline.h"
 #include "Hector/Elements/Element.h"
 #include "Hector/Exception.h"
+#include "Hector/Parameters.h"
 #include "Hector/ParticleStoppedException.h"
 #include "Hector/Propagator.h"
 

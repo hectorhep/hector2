@@ -17,6 +17,7 @@
  */
 
 #include "Hector/Elements/Drift.h"
+#include "Hector/Parameters.h"
 #include "Hector/Utils/StateVector.h"
 
 namespace hector {

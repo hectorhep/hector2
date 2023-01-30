@@ -24,6 +24,7 @@
 #include "Hector/Beamline.h"
 #include "Hector/Elements/Drift.h"
 #include "Hector/Exception.h"
+#include "Hector/Parameters.h"
 #include "Hector/Particle.h"
 #include "Hector/Utils/String.h"
 

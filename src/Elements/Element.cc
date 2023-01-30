@@ -81,6 +81,10 @@ namespace hector {
     void Element::setAperture(aperture::Aperture* apert) { setAperture(aperture::AperturePtr(apert)); }
 
     double Element::fieldStrength(double e_loss, double mp, int qp) const {
+      if (mp < 0.)
+        mp = Parameters::get().beamParticlesMass();
+      if (qp == 0)
+        qp = Parameters::get().beamParticlesCharge();
       // only act on charged particles
       if (qp == 0)
         return 0.;

@@ -32,6 +32,7 @@
 #include "Hector/Exception.h"
 #include "Hector/IO/HBLFileHandler.h"
 #include "Hector/IO/HBLFileStructures.h"
+#include "Hector/Parameters.h"
 
 namespace hector {
   namespace io {

@@ -53,9 +53,7 @@ namespace hector {
          * \f$
          * assuming \f$ k =  k_{0} \cdot \frac{p_{0}}{p_{0} - \mathrm{d}p} \cdot \frac{q_{\mathrm{particle}}}{q_{\mathrm{beam}}} \f$
          */
-      Matrix matrix(double,
-                    double mp = Parameters::get().beamParticlesMass(),
-                    int qp = Parameters::get().beamParticlesCharge()) const override;
+      Matrix matrix(double, double mp = -1., int qp = 0) const override;
     };
 
     /// Vertical kicker object builder
@@ -79,9 +77,7 @@ namespace hector {
          * \f$
          * assuming \f$ k =  k_{0} \cdot \frac{p_{0}}{p_{0} - \mathrm{d}p} \cdot \frac{q_{\mathrm{particle}}}{q_{\mathrm{beam}}} \f$
          */
-      Matrix matrix(double,
-                    double mp = Parameters::get().beamParticlesMass(),
-                    int qp = Parameters::get().beamParticlesCharge()) const override;
+      Matrix matrix(double, double mp = -1., int qp = 0) const override;
     };
   }  // namespace element
 }  // namespace hector

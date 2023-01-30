@@ -32,6 +32,7 @@
 #include "Hector/Elements/Quadrupole.h"
 #include "Hector/Exception.h"
 #include "Hector/IO/TwissHandler.h"
+#include "Hector/Parameters.h"
 #include "Hector/Utils/String.h"
 
 namespace hector {
