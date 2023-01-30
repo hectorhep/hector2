@@ -19,14 +19,14 @@
 #include <TH1.h>
 #include <TH2.h>
 
-#include "Canvas.h"
 #include "Hector/Beamline.h"
 #include "Hector/IO/TwissHandler.h"
 #include "Hector/ParticleStoppedException.h"
 #include "Hector/Propagator.h"
 #include "Hector/Utils/ArgsParser.h"
 #include "Hector/Utils/BeamProducer.h"
-#include "utils.h"
+#include "HectorAddOns/ROOT/Canvas.h"
+#include "HectorAddOns/ROOT/DrawUtils.h"
 
 using namespace std;
 
@@ -41,13 +41,13 @@ int main(int argc, char* argv[]) {
   hector::ArgsParser args(
       argc,
       argv,
-      {{"--twiss-file", "Twiss file", &twiss_filename}, {"--s-pos", "s-coordinate (m)", &s_pos}},
-      {{"--show-every", "s-step between two hitmaps", -1, &hitmaps_dist},
-       {"--num-parts", "number of particles to generate", 1000, &num_particles},
-       {"--ip-name", "name of the interaction point", "IP5", &interaction_point},
-       {"--xingangle-x", "crossing angle in the x direction (rad)", 180.e-6, &crossing_angle_x},
-       {"--xingangle-y", "crossing angle in the y direction (rad)", 0., &crossing_angle_y},
-       {"--angular-divergence",
+      {{"twiss-file", "Twiss file", &twiss_filename}, {"s-pos", "s-coordinate (m)", &s_pos}},
+      {{"show-every", "s-step between two hitmaps", -1, &hitmaps_dist},
+       {"num-parts", "number of particles to generate", 1000, &num_particles},
+       {"ip-name", "name of the interaction point", "IP5", &interaction_point},
+       {"xingangle-x", "crossing angle in the x direction (rad)", 180.e-6, &crossing_angle_x},
+       {"xingangle-y", "crossing angle in the y direction (rad)", 0., &crossing_angle_y},
+       {"angular-divergence",
         "beam angular divergence at the interaction point (rad)",
         30.23e-6,
         &beam_angular_divergence_ip},

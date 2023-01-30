@@ -42,6 +42,7 @@ option(BUILD_TESTS "Build the tests" ON)
 #----- include external dependencies, prepare the environment
 
 include(SetEnvironment)
+include(BuildUtils)
 
 #----- define all individual modules to be built beforehand
 
@@ -84,9 +85,6 @@ else()
   list(REMOVE_ITEM HECTOR_INCLUDES ${PROJECT_SOURCE_DIR}/Hector/IO/Pythia8Generator.h)
 endif()
 
-# do not forget to retrieve
-# http://home.thep.lu.se/~leif/LHEF/LHEF.h
-
 add_library(Hector2 SHARED ${LIB_SRC} ${HECTOR_INCLUDES})
 set_target_properties(Hector2 PROPERTIES LINKER_LANGUAGE CXX)
 target_include_directories(Hector2 PUBLIC ${HECTOR_INC_DEPENDENCIES})
@@ -94,10 +92,20 @@ target_link_libraries(Hector2 ${HECTOR_DEPENDENCIES})
 
 add_executable(hector ${HECTOR_SOURCE_DIR}/hector.cc)
 target_link_libraries(hector Hector2)
+set_target_properties(hector PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
 
 install(TARGETS Hector2 DESTINATION ${CMAKE_INSTALL_LIBDIR})
 install(TARGETS hector DESTINATION ${CMAKE_INSTALL_BINDIR})
 install(DIRECTORY Hector DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} FILES_MATCHING PATTERN "*.h")
+
+#----- add the tests
+
+enable_testing()
+add_subdirectory(test)
+
+#----- add-ons
+
+add_subdirectory(HectorAddOns)
 
 #----- python wrapper
 
@@ -114,11 +122,6 @@ if(BUILD_PYTHON AND Boost_FOUND)
   #  install(TARGETS pyhector ${CMAKE_CURRENT_BINARY_DIR}/src/__init__.py DESTINATION ${PYTHON_SITE_PACKAGES}/hector)
   #endif()
 endif()
-
-#----- add the tests
-
-enable_testing()
-add_subdirectory(test)
 
 #----- copy the data files
 

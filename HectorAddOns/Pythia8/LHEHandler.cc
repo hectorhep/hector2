@@ -16,15 +16,10 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Hector/IO/LHEHandler.h"
-
-#if !defined(GOOD_HEPMC) and !defined(PYTHIA8)
-#pragma message "No HepMC v3+ nor Pythia8 release was found on your system! Disabling LHEF parsing!"
-#endif
-
 #include <sstream>
 
 #include "Hector/Exception.h"
+#include "HectorAddOns/Pythia8/LHEHandler.h"
 
 namespace hector {
   namespace io {

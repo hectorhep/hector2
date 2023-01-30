@@ -20,11 +20,11 @@
 #include <TLatex.h>
 #include <TMultiGraph.h>
 
-#include "Canvas.h"
 #include "Hector/Beamline.h"
 #include "Hector/Exception.h"
 #include "Hector/IO/TwissHandler.h"
 #include "Hector/Utils/ArgsParser.h"
+#include "HectorAddOns/ROOT/Canvas.h"
 
 using namespace std;
 

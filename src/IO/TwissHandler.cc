@@ -293,25 +293,22 @@ namespace hector {
         ValuesCollection values;
         while (str >> buffer)
           values.emplace_back(buffer);
-        try {
-          auto elem = parseElement(values);
-          if (!elem || elem->type() == element::aDrift)
-            continue;
-          elem->offsetS(-interaction_point_->s());
-          if (elem->s() < min_s_)
-            continue;
-          if (elem->s() + elem->length() > raw_beamline_->maxLength()) {
-            if (has_next_element)
-              throw Exception(__PRETTY_FUNCTION__, ExceptionType::info, 20001) << "Finished to parse the beamline";
-            if (elem->type() != element::anInstrument && elem->type() != element::aDrift)
-              has_next_element = true;
+        auto elem = parseElement(values);
+        if (!elem || elem->type() == element::aDrift)
+          continue;
+        elem->offsetS(-interaction_point_->s());
+        if (elem->s() < min_s_)
+          continue;
+        if (elem->s() + elem->length() > raw_beamline_->maxLength()) {
+          if (has_next_element) {
+            H_INFO << "Finished to parse the beamline";
+            break;
           }
-          raw_beamline_->add(elem);
-        } catch (Exception& e) {
-          if (e.errorNumber() != 20001)
-            e.dump(std::cerr);
-          break;  // finished to parse
+          if (elem->type() != element::anInstrument && elem->type() != element::aDrift)
+            has_next_element = true;
         }
+        raw_beamline_->add(elem);
+        //break;  // finished to parse
       }
       interaction_point_->setS(0.);  // by convention
       raw_beamline_->add(interaction_point_);

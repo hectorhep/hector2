@@ -16,8 +16,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef Hector_IO_Pythia8Generator_h
-#define Hector_IO_Pythia8Generator_h
+#ifndef HectorAddOns_Pythia8_Pythia8Generator_h
+#define HectorAddOns_Pythia8_Pythia8Generator_h
 
 #include <Pythia8/Pythia.h>
 

@@ -25,7 +25,6 @@
 
 #include <iostream>
 
-#include "Canvas.h"
 #include "Hector/Beamline.h"
 #include "Hector/IO/TwissHandler.h"
 #include "Hector/ParticleStoppedException.h"
@@ -33,7 +32,8 @@
 #include "Hector/Utils/ArgsParser.h"
 #include "Hector/Utils/BeamProducer.h"
 #include "Hector/Utils/Timer.h"
-#include "utils.h"
+#include "HectorAddOns/ROOT/Canvas.h"
+#include "HectorAddOns/ROOT/DrawUtils.h"
 
 using namespace std;
 

@@ -16,21 +16,13 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef Hector_test_utils_h
-#define Hector_test_utils_h
-
 #include <TArrow.h>
-#include <TColor.h>
 #include <TGraph.h>
 #include <TLatex.h>
-#include <TLegend.h>
 #include <TMarker.h>
-#include <TPave.h>
 
-#include <map>
-
-#include "Canvas.h"
-#include "Hector/Elements/ElementFwd.h"
+#include "Hector/Beamline.h"
+#include "HectorAddOns/ROOT/DrawUtils.h"
 
 void fillElementStyle(const hector::element::ElementPtr& elem, Color_t& col, Style_t& style) {
   col = kWhite;
@@ -85,17 +77,14 @@ void fillElementStyle(const hector::element::ElementPtr& elem, Color_t& col, Sty
   }
 }
 
-//static const float alpha = 0.8;
-static const float alpha = 1.0;
-
 void drawBeamline(const char axis,
                   const hector::Beamline* bl,
                   const unsigned short beam,
-                  const char* ip = "IP5",
-                  float scale = 0.2,
-                  float min_s = -999.,
-                  float max_s = 999.,
-                  bool draw_apertures = false) {
+                  const char* ip,
+                  float scale,
+                  float min_s,
+                  float max_s,
+                  bool draw_apertures) {
   const float size_y = scale / 4.,  // general scale of the element x/y position
       scale_y = 0.8;                // element x/y displacement magnification factor
                                     //offset_at_s = 120.;
@@ -178,52 +167,40 @@ void drawBeamline(const char axis,
   }*/
 }
 
-/// Helper class to build a beamline legend in ROOT
-class elementsLegend : public TLegend {
-public:
-  /// Build a helper producer with attributes
-  /// \params[in] bl Hector beamline to parse
-  elementsLegend(
-      const hector::Beamline* bl = nullptr, float xmin = 0.05, float ymin = 0.05, float xmax = 0.95, float ymax = 0.95)
-      : TLegend(xmin, ymin, xmax, ymax) {
-    if (bl)
-      feedBeamline(bl);
-    TLegend::SetTextFont(font_type(2));
-    TLegend::SetHeader("#font[32]{Elements legend}");
+elementsLegend::elementsLegend(const hector::Beamline* bl, float xmin, float ymin, float xmax, float ymax)
+    : TLegend(xmin, ymin, xmax, ymax) {
+  if (bl)
+    feedBeamline(bl);
+  TLegend::SetTextFont(font_type(2));
+  TLegend::SetHeader("#font[32]{Elements legend}");
+}
+
+void elementsLegend::feedBeamline(const hector::Beamline* bl) {
+  for (const auto& elemPtr : *bl) {
+    const hector::element::Type type = elemPtr->type();
+    // skip the markers and drifts
+    if (type == hector::element::aMarker)
+      continue;
+    if (type == hector::element::anInstrument)
+      continue;
+    if (type == hector::element::aMonitor)
+      continue;
+    if (type == hector::element::aDrift)
+      continue;
+    // skip the elements already added
+    if (already_in_.count(type) > 0)
+      continue;
+
+    auto pv = new TPave(0., 0., 0., 0., 0);
+    short fill_colour, fill_style;
+    fillElementStyle(elemPtr, fill_colour, fill_style);
+    pv->SetFillColorAlpha(fill_colour, alpha);
+    pv->SetFillStyle(fill_style);
+    pv->SetLineColor(kGray);
+    pv->SetLineWidth(4);
+    TLegend::AddEntry(pv, elemPtr->typeName().c_str(), "f");
+    already_in_[type].reset(pv);
   }
-
-  void feedBeamline(const hector::Beamline* bl) {
-    for (const auto& elemPtr : *bl) {
-      const hector::element::Type type = elemPtr->type();
-      // skip the markers and drifts
-      if (type == hector::element::aMarker)
-        continue;
-      if (type == hector::element::anInstrument)
-        continue;
-      if (type == hector::element::aMonitor)
-        continue;
-      if (type == hector::element::aDrift)
-        continue;
-      // skip the elements already added
-      if (already_in_.count(type) > 0)
-        continue;
-
-      auto pv = new TPave(0., 0., 0., 0., 0);
-      short fill_colour, fill_style;
-      fillElementStyle(elemPtr, fill_colour, fill_style);
-      pv->SetFillColorAlpha(fill_colour, alpha);
-      pv->SetFillStyle(fill_style);
-      pv->SetLineColor(kGray);
-      pv->SetLineWidth(4);
-      TLegend::AddEntry(pv, elemPtr->typeName().c_str(), "f");
-      already_in_[type].reset(pv);
-    }
-    if (already_in_.size() > 7)
-      TLegend::SetNColumns(2);
-  }
-
-private:
-  std::map<hector::element::Type, std::unique_ptr<TPave> > already_in_;
-};
-
-#endif
+  if (already_in_.size() > 7)
+    TLegend::SetNColumns(2);
+}

@@ -20,15 +20,15 @@
 
 #include <iostream>
 
-#include "Canvas.h"
 #include "Hector/Beamline.h"
 #include "Hector/Exception.h"
 #include "Hector/IO/TwissHandler.h"
 #include "Hector/ParticleStoppedException.h"
 #include "Hector/Propagator.h"
 #include "Hector/Utils/ArgsParser.h"
+#include "HectorAddOns/ROOT/Canvas.h"
+#include "HectorAddOns/ROOT/DrawUtils.h"
 //#include "Hector/Utils/BeamProducer.h"
-#include "utils.h"
 
 using namespace std;
 

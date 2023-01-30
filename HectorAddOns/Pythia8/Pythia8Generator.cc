@@ -19,8 +19,8 @@
 #include <Pythia8/Event.h>
 
 #include "Hector/Exception.h"
-#include "Hector/IO/Pythia8Generator.h"
 #include "Hector/Parameters.h"
+#include "HectorAddOns/Pythia8/Pythia8Generator.h"
 
 namespace hector {
   Pythia8Generator::Pythia8Generator(const std::vector<std::string>& params) : pythia_(new Pythia8::Pythia) {

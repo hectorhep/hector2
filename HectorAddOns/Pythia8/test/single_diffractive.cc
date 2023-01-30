@@ -21,14 +21,14 @@
 #include <THStack.h>
 #include <TStyle.h>
 
-#include "Canvas.h"
 #include "Hector/Beamline.h"
 #include "Hector/Exception.h"
-#include "Hector/IO/Pythia8Generator.h"
 #include "Hector/IO/TwissHandler.h"
 #include "Hector/Propagator.h"
 #include "Hector/Utils/ArgsParser.h"
 #include "Hector/Utils/BeamProducer.h"
+#include "HectorAddOns/Pythia8/Pythia8Generator.h"
+#include "HectorAddOns/ROOT/Canvas.h"
 
 using namespace std;
 

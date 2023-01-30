@@ -19,12 +19,12 @@
 #include <TGraph.h>
 #include <TMultiGraph.h>
 
-#include "Canvas.h"
 #include "Hector/Apertures/Circular.h"
 #include "Hector/Apertures/Elliptic.h"
 #include "Hector/Apertures/RectElliptic.h"
 #include "Hector/Apertures/Rectangular.h"
 #include "Hector/Exception.h"
+#include "HectorAddOns/ROOT/Canvas.h"
 
 int main() {
   const float x_min = -0.5, x_max = 0.5, y_min = -0.5, y_max = 0.5;

@@ -17,8 +17,8 @@
  */
 
 #include "Hector/Exception.h"
-#include "Hector/IO/LHEHandler.h"
 #include "Hector/Utils/ArgsParser.h"
+#include "HectorAddOns/Pythia8/LHEHandler.h"
 
 using namespace std;
 
